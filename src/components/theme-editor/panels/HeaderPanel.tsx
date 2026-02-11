@@ -16,10 +16,14 @@ export function HeaderPanel() {
     <EditorSection icon={PanelTop} title="Cabeçalho" description="Layout, menu, busca e barra de anúncio">
       <OptionPicker label="Layout" value={h.layout} onChange={v => set({ layout: v })} options={[
         { value: 'classic', label: 'Clássico', description: 'Logo esq., nav dir.' },
-        { value: 'centered', label: 'Centralizado', description: 'Logo centro' },
-        { value: 'minimal', label: 'Minimalista', description: 'Sem topbar' },
+        { value: 'centered', label: 'Centralizado', description: 'Logo centro, nav abaixo' },
+        { value: 'minimal', label: 'Minimalista', description: 'Limpo e simples' },
         { value: 'logo-center-nav-left', label: 'Nav Esq.', description: 'Nav esq., logo centro' },
-        { value: 'hamburger-only', label: 'Hambúrguer', description: 'Menu recolhido' },
+        { value: 'hamburger-only', label: 'Hambúrguer', description: 'Menu recolhido sempre' },
+        { value: 'top-bar-split', label: 'Dividido', description: 'Nav esq. + ações dir.' },
+        { value: 'double-row', label: 'Duas Linhas', description: 'Logo em cima, nav embaixo' },
+        { value: 'sidebar-nav', label: 'Nav Lateral', description: 'Menu lateral deslizante' },
+        { value: 'transparent', label: 'Transparente', description: 'Sobre o hero/banner' },
       ]} />
       <SectionDivider label="Comportamento" />
       <ToggleRow label="Header fixo (sticky)" hint="Mantém o cabeçalho visível ao rolar a página" checked={h.sticky} onChange={v => set({ sticky: v })} />

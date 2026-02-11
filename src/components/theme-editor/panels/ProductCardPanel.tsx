@@ -52,7 +52,8 @@ export function ProductCardPanel() {
       <ToggleRow label="Parcelas" checked={c.showInstallments} onChange={v => set({ showInstallments: v })} />
 
       <SectionDivider label="Ações" />
-      <ToggleRow label="Adicionar ao carrinho" checked={c.showAddToCart} onChange={v => set({ showAddToCart: v })} />
+      <ToggleRow label="Botão Comprar Agora" hint="Exibe o botão vermelho de compra rápida nos cards de produto" checked={c.showBuyNow} onChange={v => set({ showBuyNow: v })} />
+      <ToggleRow label="Adicionar ao carrinho" hint="Exibe o botão de adicionar ao carrinho nos cards" checked={c.showAddToCart} onChange={v => set({ showAddToCart: v })} />
       {c.showAddToCart && (
         <SelectField label="Estilo" value={c.addToCartStyle} onChange={v => set({ addToCartStyle: v })} options={[
           { value: 'icon', label: 'Ícone' }, { value: 'button', label: 'Botão' }, { value: 'full-width', label: 'Largura total' },

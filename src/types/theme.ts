@@ -81,7 +81,7 @@ export interface ThemeBannerBelow {
 }
 
 export interface ThemeHeader {
-  layout: 'classic' | 'centered' | 'minimal' | 'logo-center-nav-left' | 'hamburger-only';
+  layout: 'classic' | 'centered' | 'minimal' | 'logo-center-nav-left' | 'hamburger-only' | 'top-bar-split' | 'double-row' | 'sidebar-nav' | 'transparent';
   sticky: boolean;
   shrinkOnScroll: boolean;
   shadowOnScroll: boolean;
