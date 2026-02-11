@@ -162,7 +162,7 @@ const HomePage = () => {
                 ))}
               </SectionCarousel>
             ) : (
-              <div className={cn('grid gap-6', gridCols[theme.category.columnsDesktop] || gridCols[4])}>
+              <div className={cn('grid gap-6', gridCols[theme.category?.columnsDesktop] || 'grid-cols-2 md:grid-cols-3 lg:grid-cols-4')}>
                 {featured.map(product => (
                   <ProductCard key={product.id} product={product} />
                 ))}

@@ -160,7 +160,7 @@ export function ProductCard({ product }: Props) {
   const { addItem } = useCart();
   const { theme } = useTheme();
   const navigate = useNavigate();
-  const c = theme.productCard;
+  const c = theme.productCard ?? {} as any;
   const [showPreview, setShowPreview] = useState(false);
 
   const discount = product.compareAtPrice
@@ -173,8 +173,9 @@ export function ProductCard({ product }: Props) {
     ? 'group-hover:translate-x-1'
     : '';
 
-  const showAdd = c.showAddToCart && (c.buttonVisibility === 'both' || c.buttonVisibility === 'add-only');
-  const showBuy = c.showBuyNow && (c.buttonVisibility === 'both' || c.buttonVisibility === 'buy-only');
+  const visibility = c.buttonVisibility ?? 'both';
+  const showAdd = (c.showAddToCart !== false) && (visibility === 'both' || visibility === 'add-only');
+  const showBuy = (c.showBuyNow !== false) && (visibility === 'both' || visibility === 'buy-only');
 
   const handleClick = (e: React.MouseEvent) => {
     if (c.clickBehavior === 'modal') {
