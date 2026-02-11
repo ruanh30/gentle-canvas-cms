@@ -12,7 +12,7 @@ import { cn } from '@/lib/utils';
 
 function AnnouncementBar() {
   const { theme } = useTheme();
-  const a = theme.header.announcement;
+  const a = theme.header?.announcement ?? { enabled: false, messages: [], speed: 5, backgroundColor: '#1a1a1a', textColor: '#fafafa', showIcon: false, icon: 'truck', link: '', pauseOnHover: true, style: 'static' as const, direction: 'rtl' as const };
   const [currentIdx, setCurrentIdx] = useState(0);
   const validMsgs = a.messages.filter(Boolean);
 
@@ -148,7 +148,7 @@ export function StoreHeader() {
   const [searchOpen, setSearchOpen] = useState(false);
 
   const navLinks = mockCategories.slice(0, 5);
-  const h = theme.header;
+  const h = theme.header ?? {} as any;
   const isMinimal = h.layout === 'minimal' || h.layout === 'hamburger-only';
   const isCentered = h.layout === 'centered' || h.layout === 'logo-center-nav-left';
 

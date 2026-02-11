@@ -100,11 +100,13 @@ function loadFromStorage<T>(key: string, fallback: T): T {
     if (!data) return fallback;
     const parsed = JSON.parse(data);
     // Deep merge with defaults to fill in any missing fields from schema updates
-    if (typeof parsed === 'object' && !Array.isArray(parsed) && typeof fallback === 'object' && !Array.isArray(fallback)) {
+    if (typeof parsed === 'object' && parsed !== null && !Array.isArray(parsed) && typeof fallback === 'object' && fallback !== null && !Array.isArray(fallback)) {
       return deepMerge(fallback, parsed);
     }
     return parsed;
   } catch {
+    // If localStorage data is corrupted, clear it and return fallback
+    try { localStorage.removeItem(key); } catch {}
     return fallback;
   }
 }
