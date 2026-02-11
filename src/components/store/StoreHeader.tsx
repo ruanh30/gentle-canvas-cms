@@ -1,34 +1,45 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ShoppingBag, Search, User, Menu, X, Heart } from 'lucide-react';
+import { ShoppingBag, Search, User, Menu } from 'lucide-react';
 import { useCart } from '@/contexts/CartContext';
 import { useAuth } from '@/contexts/AuthContext';
+import { useTheme } from '@/contexts/ThemeContext';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { mockCategories, mockStoreSettings } from '@/data/mock';
+import { mockCategories } from '@/data/mock';
+import { cn } from '@/lib/utils';
 
 export function StoreHeader() {
   const { itemCount } = useCart();
   const { user } = useAuth();
+  const { theme } = useTheme();
   const [searchOpen, setSearchOpen] = useState(false);
 
   const navLinks = mockCategories.slice(0, 5);
 
   return (
-    <header className="sticky top-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 border-b">
+    <header className={cn(
+      'z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 border-b',
+      theme.header.sticky && 'sticky top-0'
+    )}>
       {/* Top bar */}
-      <div className="bg-primary text-primary-foreground text-center text-xs py-1.5 font-body tracking-wide">
-        Frete grátis acima de {mockStoreSettings.freeShippingThreshold.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
-      </div>
+      {theme.header.announcementEnabled && theme.header.style !== 'minimal' && (
+        <div className="bg-primary text-primary-foreground text-center text-xs py-1.5 font-body tracking-wide">
+          {theme.header.announcementBar}
+        </div>
+      )}
 
       <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-16">
+        <div className={cn(
+          'flex items-center h-16',
+          theme.header.style === 'centered' ? 'justify-center relative' : 'justify-between'
+        )}>
           {/* Mobile menu */}
           <Sheet>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="lg:hidden">
+              <Button variant="ghost" size="icon" className={cn('lg:hidden', theme.header.style === 'centered' && 'absolute left-0')}>
                 <Menu className="h-5 w-5" />
               </Button>
             </SheetTrigger>
@@ -45,25 +56,34 @@ export function StoreHeader() {
           </Sheet>
 
           {/* Logo */}
-          <Link to="/" className="font-display text-xl md:text-2xl font-bold tracking-tight">
-            {mockStoreSettings.storeName}
+          <Link to="/" className="flex items-center gap-2">
+            {theme.logo.imageUrl && (
+              <img src={theme.logo.imageUrl} alt="Logo" className="h-8 object-contain" />
+            )}
+            {theme.logo.showText && (
+              <span className="font-display text-xl md:text-2xl font-bold tracking-tight">
+                {theme.logo.text}
+              </span>
+            )}
           </Link>
 
-          {/* Desktop nav */}
-          <nav className="hidden lg:flex items-center gap-8">
-            {navLinks.map(cat => (
-              <Link
-                key={cat.id}
-                to={`/products?category=${cat.slug}`}
-                className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors uppercase tracking-wider"
-              >
-                {cat.name}
-              </Link>
-            ))}
-          </nav>
+          {/* Desktop nav - hidden in centered */}
+          {theme.header.style !== 'centered' && (
+            <nav className="hidden lg:flex items-center gap-8">
+              {navLinks.map(cat => (
+                <Link
+                  key={cat.id}
+                  to={`/products?category=${cat.slug}`}
+                  className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors uppercase tracking-wider"
+                >
+                  {cat.name}
+                </Link>
+              ))}
+            </nav>
+          )}
 
           {/* Actions */}
-          <div className="flex items-center gap-1">
+          <div className={cn('flex items-center gap-1', theme.header.style === 'centered' && 'absolute right-0')}>
             <Button variant="ghost" size="icon" onClick={() => setSearchOpen(!searchOpen)}>
               <Search className="h-5 w-5" />
             </Button>
@@ -84,6 +104,21 @@ export function StoreHeader() {
             </Link>
           </div>
         </div>
+
+        {/* Centered nav below logo */}
+        {theme.header.style === 'centered' && (
+          <nav className="hidden lg:flex items-center justify-center gap-8 pb-3">
+            {navLinks.map(cat => (
+              <Link
+                key={cat.id}
+                to={`/products?category=${cat.slug}`}
+                className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors uppercase tracking-wider"
+              >
+                {cat.name}
+              </Link>
+            ))}
+          </nav>
+        )}
 
         {/* Search bar */}
         {searchOpen && (

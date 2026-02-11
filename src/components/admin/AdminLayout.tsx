@@ -2,7 +2,7 @@ import React from 'react';
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import {
-  LayoutDashboard, Package, ShoppingCart, Users, Tag, Settings, LogOut, ChevronLeft, ChevronRight, Store,
+  LayoutDashboard, Package, ShoppingCart, Users, Tag, Settings, LogOut, ChevronLeft, ChevronRight, Store, Paintbrush,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
@@ -15,6 +15,7 @@ const navItems = [
   { label: 'Clientes', icon: Users, path: '/admin/customers' },
   { label: 'Cupons', icon: Tag, path: '/admin/coupons' },
   { label: 'Configurações', icon: Settings, path: '/admin/settings' },
+  { label: 'Personalização', icon: Paintbrush, path: '/admin/customization' },
 ];
 
 export function AdminLayout() {

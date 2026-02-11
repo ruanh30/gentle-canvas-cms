@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { CartProvider } from "@/contexts/CartContext";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { ThemeProvider } from "@/contexts/ThemeContext";
 
 import { StoreLayout } from "@/components/store/StoreLayout";
 import { AdminLayout } from "@/components/admin/AdminLayout";
@@ -23,6 +24,7 @@ import AdminProducts from "@/pages/admin/AdminProducts";
 import AdminCustomers from "@/pages/admin/AdminCustomers";
 import AdminCoupons from "@/pages/admin/AdminCoupons";
 import AdminSettings from "@/pages/admin/AdminSettings";
+import AdminCustomization from "@/pages/admin/AdminCustomization";
 
 import NotFound from "./pages/NotFound";
 
@@ -32,6 +34,7 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <AuthProvider>
+        <ThemeProvider>
         <CartProvider>
           <Toaster />
           <Sonner />
@@ -56,12 +59,14 @@ const App = () => (
                 <Route path="customers" element={<AdminCustomers />} />
                 <Route path="coupons" element={<AdminCoupons />} />
                 <Route path="settings" element={<AdminSettings />} />
+                <Route path="customization" element={<AdminCustomization />} />
               </Route>
 
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>
         </CartProvider>
+        </ThemeProvider>
       </AuthProvider>
     </TooltipProvider>
   </QueryClientProvider>
