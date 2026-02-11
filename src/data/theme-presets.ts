@@ -27,15 +27,15 @@ const defaultFooterColumns = [
 ];
 
 const defaultHomeSections = [
-  { id: 'hero', type: 'hero' as const, enabled: true, title: 'Hero Banner', settings: {} },
-  { id: 'categories', type: 'categories' as const, enabled: true, title: 'Categorias', settings: {} },
-  { id: 'featured', type: 'featured-products' as const, enabled: true, title: 'Destaques', settings: {} },
-  { id: 'banner', type: 'banner' as const, enabled: true, title: 'Banner Promocional', settings: { title: 'Cadastre-se e ganhe 15% OFF', description: 'Use o cupom BEMVINDO na sua primeira compra.' } },
-  { id: 'benefits', type: 'benefits' as const, enabled: false, title: 'Benefícios', settings: {} },
-  { id: 'testimonials', type: 'testimonials' as const, enabled: false, title: 'Depoimentos', settings: {} },
-  { id: 'brands', type: 'brands' as const, enabled: false, title: 'Marcas', settings: {} },
-  { id: 'newsletter', type: 'newsletter' as const, enabled: false, title: 'Newsletter', settings: {} },
-  { id: 'trust-bar', type: 'trust-bar' as const, enabled: false, title: 'Selos de Confiança', settings: {} },
+  { id: 'hero', type: 'hero' as const, enabled: true, title: 'Hero Banner', showTitle: false, settings: {} },
+  { id: 'categories', type: 'categories' as const, enabled: true, title: 'Categorias', showTitle: true, settings: {} },
+  { id: 'featured', type: 'featured-products' as const, enabled: true, title: 'Destaques', showTitle: true, settings: {} },
+  { id: 'banner', type: 'banner' as const, enabled: true, title: 'Banner Promocional', showTitle: false, settings: { title: 'Cadastre-se e ganhe 15% OFF', description: 'Use o cupom BEMVINDO na sua primeira compra.' } },
+  { id: 'benefits', type: 'benefits' as const, enabled: false, title: 'Benefícios', showTitle: false, settings: {} },
+  { id: 'testimonials', type: 'testimonials' as const, enabled: false, title: 'Depoimentos', showTitle: true, settings: {} },
+  { id: 'brands', type: 'brands' as const, enabled: false, title: 'Marcas', showTitle: true, settings: {} },
+  { id: 'newsletter', type: 'newsletter' as const, enabled: false, title: 'Newsletter', showTitle: true, settings: {} },
+  { id: 'trust-bar', type: 'trust-bar' as const, enabled: false, title: 'Selos de Confiança', showTitle: false, settings: {} },
 ];
 
 export const defaultThemeConfig: ThemeConfig = {

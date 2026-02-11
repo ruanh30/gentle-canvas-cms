@@ -283,6 +283,7 @@ export interface ThemeHomepageSection {
         'trust-bar' | 'blog-preview' | 'custom-html';
   enabled: boolean;
   title: string;
+  showTitle: boolean;
   settings: Record<string, unknown>;
 }
 

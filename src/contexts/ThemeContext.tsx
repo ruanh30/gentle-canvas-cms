@@ -97,7 +97,13 @@ const STORAGE_KEYS = {
 function loadFromStorage<T>(key: string, fallback: T): T {
   try {
     const data = localStorage.getItem(key);
-    return data ? JSON.parse(data) : fallback;
+    if (!data) return fallback;
+    const parsed = JSON.parse(data);
+    // Deep merge with defaults to fill in any missing fields from schema updates
+    if (typeof parsed === 'object' && !Array.isArray(parsed) && typeof fallback === 'object' && !Array.isArray(fallback)) {
+      return deepMerge(fallback, parsed);
+    }
+    return parsed;
   } catch {
     return fallback;
   }
