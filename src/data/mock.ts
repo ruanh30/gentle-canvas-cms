@@ -11,7 +11,7 @@ export const mockCategories: Category[] = [
 
 const imgs = [
   'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=600',
-  'https://images.unsplash.com/photo-1434389677669-e08b4cda3a64?w=600',
+  'https://images.unsplash.com/photo-1542272604-787c3835535d?w=600',
   'https://images.unsplash.com/photo-1594938298603-c8148c4dae35?w=600',
   'https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?w=600',
   'https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?w=600',
