@@ -1,21 +1,53 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { mockProducts, mockCategories } from '@/data/mock';
 import { useTheme } from '@/contexts/ThemeContext';
 import { ProductCard } from '@/components/store/ProductCard';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Truck, RefreshCw, ShieldCheck, CreditCard, Lock, DatabaseBackup, PackageCheck } from 'lucide-react';
+import { ArrowRight, ChevronLeft, ChevronRight, Truck, RefreshCw, ShieldCheck, CreditCard, Lock, DatabaseBackup, PackageCheck } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { ThemeHomepageSection } from '@/types/theme';
+
+function SectionCarousel({ children, speed }: { children: React.ReactNode[]; speed: number }) {
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!scrollRef.current) return;
+    const interval = setInterval(() => {
+      const el = scrollRef.current;
+      if (!el) return;
+      if (el.scrollLeft + el.clientWidth >= el.scrollWidth - 10) {
+        el.scrollTo({ left: 0, behavior: 'smooth' });
+      } else {
+        el.scrollBy({ left: 280, behavior: 'smooth' });
+      }
+    }, speed * 1000);
+    return () => clearInterval(interval);
+  }, [speed]);
+
+  const scroll = (dir: 'left' | 'right') => {
+    scrollRef.current?.scrollBy({ left: dir === 'left' ? -300 : 300, behavior: 'smooth' });
+  };
+
+  return (
+    <div className="relative">
+      <button onClick={() => scroll('left')} className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-background/90 backdrop-blur-sm p-2 rounded-full shadow-md hover:bg-background">
+        <ChevronLeft className="h-5 w-5" />
+      </button>
+      <div ref={scrollRef} className="flex gap-4 overflow-x-auto scroll-smooth pb-4 px-8 snap-x snap-mandatory" style={{ scrollbarWidth: 'none' }}>
+        {children}
+      </div>
+      <button onClick={() => scroll('right')} className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-background/90 backdrop-blur-sm p-2 rounded-full shadow-md hover:bg-background">
+        <ChevronRight className="h-5 w-5" />
+      </button>
+    </div>
+  );
+}
 
 const HomePage = () => {
   const { theme } = useTheme();
   const featured = mockProducts.filter(p => p.featured);
   const sections = theme.homepageSections;
-
-  const heroSection = sections.find(s => s.type === 'hero');
-  const catSection = sections.find(s => s.type === 'categories');
-  const featSection = sections.find(s => s.type === 'featured-products');
-  const bannerSection = sections.find(s => s.type === 'banner');
 
   const slide = theme.hero.slides[0];
 
@@ -32,8 +64,10 @@ const HomePage = () => {
     right: 'text-right items-end ml-auto',
   };
 
-  // Render sections in order
-  const renderSection = (section: typeof sections[0]) => {
+  const renderSection = (section: ThemeHomepageSection) => {
+    const isCarousel = (section.settings?.displayMode as string) === 'carousel';
+    const carouselSpeed = (section.settings?.carouselSpeed as number) || 4;
+
     switch (section.type) {
       case 'hero':
         if (!theme.hero.enabled || !slide) return null;
@@ -80,17 +114,31 @@ const HomePage = () => {
             {section.showTitle !== false && (
               <h2 className="text-2xl font-display font-bold mb-8 text-center">{section.title}</h2>
             )}
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-              {mockCategories.map(cat => (
-                <Link
-                  key={cat.id}
-                  to={`/products?category=${cat.slug}`}
-                  className="group text-center p-6 rounded-xl bg-secondary hover:bg-accent transition-colors"
-                >
-                  <p className="text-sm font-medium group-hover:text-foreground transition-colors">{cat.name}</p>
-                </Link>
-              ))}
-            </div>
+            {isCarousel ? (
+              <SectionCarousel speed={carouselSpeed}>
+                {mockCategories.map(cat => (
+                  <Link
+                    key={cat.id}
+                    to={`/products?category=${cat.slug}`}
+                    className="group text-center p-6 rounded-xl bg-secondary hover:bg-accent transition-colors min-w-[160px] flex-shrink-0 snap-start"
+                  >
+                    <p className="text-sm font-medium group-hover:text-foreground transition-colors">{cat.name}</p>
+                  </Link>
+                ))}
+              </SectionCarousel>
+            ) : (
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+                {mockCategories.map(cat => (
+                  <Link
+                    key={cat.id}
+                    to={`/products?category=${cat.slug}`}
+                    className="group text-center p-6 rounded-xl bg-secondary hover:bg-accent transition-colors"
+                  >
+                    <p className="text-sm font-medium group-hover:text-foreground transition-colors">{cat.name}</p>
+                  </Link>
+                ))}
+              </div>
+            )}
           </section>
         );
 
@@ -105,11 +153,21 @@ const HomePage = () => {
                 Ver todos <ArrowRight className="h-4 w-4" />
               </Link>
             </div>
-            <div className={cn('grid gap-6', gridCols[theme.category.columnsDesktop] || gridCols[4])}>
-              {featured.map(product => (
-                <ProductCard key={product.id} product={product} />
-              ))}
-            </div>
+            {isCarousel ? (
+              <SectionCarousel speed={carouselSpeed}>
+                {featured.map(product => (
+                  <div key={product.id} className="min-w-[260px] max-w-[280px] snap-start flex-shrink-0">
+                    <ProductCard product={product} />
+                  </div>
+                ))}
+              </SectionCarousel>
+            ) : (
+              <div className={cn('grid gap-6', gridCols[theme.category.columnsDesktop] || gridCols[4])}>
+                {featured.map(product => (
+                  <ProductCard key={product.id} product={product} />
+                ))}
+              </div>
+            )}
           </section>
         );
 
@@ -137,6 +195,9 @@ const HomePage = () => {
         ];
         return (
           <section key={section.id} className="container mx-auto px-4 py-16">
+            {section.showTitle !== false && (
+              <h2 className="text-2xl font-display font-bold mb-8 text-center">{section.title}</h2>
+            )}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
               {benefits.map((b, i) => (
                 <div key={i} className="flex flex-col items-center text-center p-6 rounded-xl bg-secondary/50">
