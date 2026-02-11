@@ -32,7 +32,7 @@ export interface ThemeTypography {
 }
 
 export interface ThemeButtons {
-  style: 'filled' | 'outline' | 'ghost' | 'soft';
+  style: 'filled' | 'outline' | 'ghost' | 'soft' | 'gradient' | '3d' | 'neon' | 'minimal';
   radius: 'none' | 'small' | 'medium' | 'large' | 'full';
   size: 'small' | 'medium' | 'large';
   uppercase: boolean;
@@ -65,6 +65,15 @@ export interface ThemeAnnouncementBar {
   icon: string;
   link: string;
   pauseOnHover: boolean;
+  style: 'static' | 'carousel' | 'ticker';
+}
+
+export interface ThemeBannerBelow {
+  enabled: boolean;
+  imageUrl: string;
+  link: string;
+  height: number;
+  fullWidth: boolean;
 }
 
 export interface ThemeHeader {
@@ -87,6 +96,7 @@ export interface ThemeHeader {
   showCart: boolean;
   cartBadgeStyle: 'dot' | 'count' | 'none';
   announcement: ThemeAnnouncementBar;
+  bannerBelow: ThemeBannerBelow;
 }
 
 export interface ThemeHeroSlide {
@@ -125,6 +135,7 @@ export interface ThemeProductCard {
   showBrand: boolean;
   showRating: boolean;
   showQuickView: boolean;
+  quickViewStyle: 'modal' | 'drawer' | 'expand' | 'side-panel';
   showWishlist: boolean;
   showAddToCart: boolean;
   addToCartStyle: 'icon' | 'button' | 'full-width';
@@ -170,6 +181,7 @@ export interface ThemeProductPage {
 
 export interface ThemeCategory {
   layout: 'sidebar-left' | 'sidebar-right' | 'top-filters' | 'no-filters';
+  displayMode: 'grid' | 'list' | 'masonry' | 'carousel' | 'compact-grid';
   columnsDesktop: 2 | 3 | 4 | 5;
   columnsMobile: 1 | 2;
   filterStyle: 'checkbox' | 'chips' | 'accordion';
@@ -181,6 +193,9 @@ export interface ThemeCategory {
   bannerHeight: number;
   showBreadcrumb: boolean;
   showProductCount: boolean;
+  carouselAutoplay: boolean;
+  carouselSpeed: number;      // seconds
+  showAddToCartOnListing: boolean;
 }
 
 export interface ThemeCart {

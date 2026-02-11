@@ -11,8 +11,14 @@ export function ButtonsPanel() {
   return (
     <EditorSection icon={MousePointer} title="Botões" description="Estilo global dos botões">
       <OptionPicker label="Estilo" value={b.style} onChange={v => set({ style: v })} options={[
-        { value: 'filled', label: 'Sólido' }, { value: 'outline', label: 'Contorno' },
-        { value: 'ghost', label: 'Fantasma' }, { value: 'soft', label: 'Suave' },
+        { value: 'filled', label: 'Sólido', description: 'Fundo preenchido' },
+        { value: 'outline', label: 'Contorno', description: 'Apenas borda' },
+        { value: 'ghost', label: 'Fantasma', description: 'Sem fundo/borda' },
+        { value: 'soft', label: 'Suave', description: 'Fundo translúcido' },
+        { value: 'gradient', label: 'Gradiente', description: 'Fundo degradê' },
+        { value: '3d', label: '3D', description: 'Com profundidade' },
+        { value: 'neon', label: 'Neon', description: 'Brilho luminoso' },
+        { value: 'minimal', label: 'Minimal', description: 'Apenas texto sublinhado' },
       ]} />
       <OptionPicker label="Arredondamento" value={b.radius} onChange={v => set({ radius: v })} options={[
         { value: 'none', label: 'Nenhum' }, { value: 'small', label: 'Pequeno' },
@@ -26,10 +32,28 @@ export function ButtonsPanel() {
       <ToggleRow label="Sombra" checked={b.shadow} onChange={v => set({ shadow: v })} />
       <SectionDivider label="Preview" />
       <div className="flex gap-2 flex-wrap p-3 bg-secondary rounded-lg">
-        <button className="px-4 py-2 bg-foreground text-background text-sm rounded-md">Primário</button>
-        <button className="px-4 py-2 border border-foreground text-foreground text-sm rounded-md">Contorno</button>
-        <button className="px-4 py-2 text-foreground text-sm rounded-md hover:bg-secondary">Fantasma</button>
+        <ButtonPreview style={b.style} label="Primário" />
+        <ButtonPreview style="outline" label="Contorno" />
+        <ButtonPreview style="ghost" label="Fantasma" />
       </div>
     </EditorSection>
+  );
+}
+
+function ButtonPreview({ style, label }: { style: string; label: string }) {
+  const styleMap: Record<string, string> = {
+    filled: 'bg-foreground text-background',
+    outline: 'border-2 border-foreground text-foreground',
+    ghost: 'text-foreground hover:bg-secondary',
+    soft: 'bg-foreground/10 text-foreground',
+    gradient: 'bg-gradient-to-r from-foreground to-foreground/70 text-background',
+    '3d': 'bg-foreground text-background shadow-[0_4px_0_0] shadow-foreground/50 translate-y-[-2px]',
+    neon: 'border-2 border-foreground text-foreground shadow-[0_0_10px] shadow-foreground/50',
+    minimal: 'text-foreground underline underline-offset-4',
+  };
+  return (
+    <button className={`px-4 py-2 text-sm rounded-md transition-all ${styleMap[style] || styleMap.filled}`}>
+      {label}
+    </button>
   );
 }

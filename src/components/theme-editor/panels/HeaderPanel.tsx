@@ -4,11 +4,13 @@ import { EditorSection, TextField, ToggleRow, NumberSlider, OptionPicker, Select
 import { PanelTop } from 'lucide-react';
 
 export function HeaderPanel() {
-  const { draft, updateDraftSection, setDraftDeep } = useTheme();
+  const { draft, updateDraftSection } = useTheme();
   const h = draft.header;
   const a = h.announcement;
+  const bb = h.bannerBelow;
   const set = (u: Partial<typeof h>) => updateDraftSection('header', u);
   const setAnn = (u: Partial<typeof a>) => updateDraftSection('header', { announcement: { ...a, ...u } });
+  const setBanner = (u: Partial<typeof bb>) => updateDraftSection('header', { bannerBelow: { ...bb, ...u } });
 
   return (
     <EditorSection icon={PanelTop} title="Cabeçalho" description="Layout, menu, busca e barra de anúncio">
@@ -48,16 +50,45 @@ export function HeaderPanel() {
         { value: 'count', label: 'Contador' }, { value: 'dot', label: 'Ponto' }, { value: 'none', label: 'Nenhum' },
       ]} />
 
-      <SectionDivider label="Barra de Anúncio" />
+      <SectionDivider label="Barra de Anúncio (Topo)" />
       <ToggleRow label="Ativar barra" checked={a.enabled} onChange={v => setAnn({ enabled: v })} />
       {a.enabled && (
         <>
-          <TextField label="Mensagem" value={a.messages[0] || ''} onChange={v => setAnn({ messages: [v] })} placeholder="Frete grátis acima de R$ 299" />
+          <OptionPicker label="Estilo" value={a.style} onChange={v => setAnn({ style: v })} options={[
+            { value: 'static', label: 'Estático', description: 'Mensagem fixa' },
+            { value: 'carousel', label: 'Carrossel', description: 'Rotação de msgs' },
+            { value: 'ticker', label: 'Ticker', description: 'Texto corrido' },
+          ]} />
+          <TextField label="Mensagem 1" value={a.messages[0] || ''} onChange={v => {
+            const msgs = [...a.messages]; msgs[0] = v; setAnn({ messages: msgs });
+          }} placeholder="Frete grátis acima de R$ 299" />
+          {(a.style === 'carousel' || a.style === 'ticker') && (
+            <>
+              <TextField label="Mensagem 2" value={a.messages[1] || ''} onChange={v => {
+                const msgs = [...a.messages]; msgs[1] = v; setAnn({ messages: msgs.filter(Boolean) });
+              }} placeholder="Parcele em até 12x" />
+              <TextField label="Mensagem 3" value={a.messages[2] || ''} onChange={v => {
+                const msgs = [...a.messages]; msgs[2] = v; setAnn({ messages: msgs.filter(Boolean) });
+              }} placeholder="Troca grátis em 30 dias" />
+              <NumberSlider label="Velocidade" value={a.speed} onChange={v => setAnn({ speed: v })} min={2} max={10} suffix="s" />
+            </>
+          )}
           <div className="grid grid-cols-2 gap-3">
             <ColorInput label="Fundo" value={a.backgroundColor} onChange={v => setAnn({ backgroundColor: v })} />
             <ColorInput label="Texto" value={a.textColor} onChange={v => setAnn({ textColor: v })} />
           </div>
           <ToggleRow label="Pausar no hover" checked={a.pauseOnHover} onChange={v => setAnn({ pauseOnHover: v })} />
+        </>
+      )}
+
+      <SectionDivider label="Banner abaixo do Cabeçalho" />
+      <ToggleRow label="Ativar banner" checked={bb.enabled} onChange={v => setBanner({ enabled: v })} />
+      {bb.enabled && (
+        <>
+          <TextField label="URL da imagem" value={bb.imageUrl} onChange={v => setBanner({ imageUrl: v })} placeholder="https://..." />
+          <TextField label="Link" value={bb.link} onChange={v => setBanner({ link: v })} placeholder="/products" />
+          <NumberSlider label="Altura" value={bb.height} onChange={v => setBanner({ height: v })} min={40} max={200} suffix="px" />
+          <ToggleRow label="Largura total" checked={bb.fullWidth} onChange={v => setBanner({ fullWidth: v })} />
         </>
       )}
     </EditorSection>

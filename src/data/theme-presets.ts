@@ -139,6 +139,14 @@ export const defaultThemeConfig: ThemeConfig = {
       icon: 'truck',
       link: '',
       pauseOnHover: true,
+      style: 'static',
+    },
+    bannerBelow: {
+      enabled: false,
+      imageUrl: '',
+      link: '',
+      height: 60,
+      fullWidth: true,
     },
   },
 
@@ -162,6 +170,7 @@ export const defaultThemeConfig: ThemeConfig = {
     showBrand: false,
     showRating: false,
     showQuickView: false,
+    quickViewStyle: 'modal',
     showWishlist: false,
     showAddToCart: true,
     addToCartStyle: 'icon',
@@ -207,6 +216,7 @@ export const defaultThemeConfig: ThemeConfig = {
 
   category: {
     layout: 'sidebar-left',
+    displayMode: 'grid',
     columnsDesktop: 4,
     columnsMobile: 2,
     filterStyle: 'accordion',
@@ -218,6 +228,9 @@ export const defaultThemeConfig: ThemeConfig = {
     bannerHeight: 200,
     showBreadcrumb: true,
     showProductCount: true,
+    carouselAutoplay: true,
+    carouselSpeed: 4,
+    showAddToCartOnListing: true,
   },
 
   cart: {
