@@ -94,6 +94,23 @@ const STORAGE_KEYS = {
   versions: 'theme-versions',
 };
 
+// Migrations: force-update fields that changed defaults across versions
+function migrateTheme(config: ThemeConfig): ThemeConfig {
+  const c = { ...config };
+  // v2: ensure Buy Now button + both visibility are the new defaults
+  if (c.productCard) {
+    const pc = { ...c.productCard };
+    // If buttonVisibility was 'add-only' (old default), migrate to 'both'
+    if (pc.buttonVisibility === 'add-only' && pc.showBuyNow === false) {
+      pc.showBuyNow = true;
+      pc.buttonVisibility = 'both';
+      pc.addToCartStyle = 'full-width';
+    }
+    c.productCard = pc;
+  }
+  return c;
+}
+
 function loadFromStorage<T>(key: string, fallback: T): T {
   try {
     const data = localStorage.getItem(key);
@@ -157,10 +174,10 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   const [isPreviewMode] = useState(checkIsPreviewMode);
 
   const [published, setPublished] = useState<ThemeConfig>(() =>
-    loadFromStorage(STORAGE_KEYS.published, defaultThemeConfig)
+    migrateTheme(loadFromStorage(STORAGE_KEYS.published, defaultThemeConfig))
   );
   const [draft, setDraft] = useState<ThemeConfig>(() =>
-    loadFromStorage(STORAGE_KEYS.draft, loadFromStorage(STORAGE_KEYS.published, defaultThemeConfig))
+    migrateTheme(loadFromStorage(STORAGE_KEYS.draft, loadFromStorage(STORAGE_KEYS.published, defaultThemeConfig)))
   );
   const [versions, setVersions] = useState<ThemeVersion[]>(() =>
     loadFromStorage(STORAGE_KEYS.versions, [])
