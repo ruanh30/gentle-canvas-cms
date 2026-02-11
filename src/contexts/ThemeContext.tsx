@@ -107,6 +107,7 @@ function migrateTheme(config: ThemeConfig): ThemeConfig {
     if (!pc.buyNowText) pc.buyNowText = 'Comprar Agora';
     if (!pc.addToCartText) pc.addToCartText = 'Adicionar ao Carrinho';
     if (!pc.buttonLayout) pc.buttonLayout = 'stacked';
+    if (!pc.buttonStyle) pc.buttonStyle = 'solid';
     c.productCard = pc;
   }
   return c;

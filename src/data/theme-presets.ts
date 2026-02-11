@@ -182,6 +182,7 @@ export const defaultThemeConfig: ThemeConfig = {
     addToCartText: 'Adicionar ao Carrinho',
     buttonVisibility: 'both',
     buttonLayout: 'stacked',
+    buttonStyle: 'solid',
     addToCartStyle: 'full-width',
     clickBehavior: 'navigate',
     badgePosition: 'top-left',

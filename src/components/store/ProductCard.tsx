@@ -156,6 +156,71 @@ function ProductQuickView({ product, open, onClose, style }: { product: Product;
   );
 }
 
+const btnStyleMap: Record<string, string> = {
+  solid: 'rounded-md',
+  outline: 'rounded-md',
+  pill: 'rounded-full',
+  rounded: 'rounded-xl',
+  sharp: 'rounded-none',
+  gradient: 'rounded-md',
+  underline: 'rounded-none',
+};
+
+function BuyButton({ label, btnStyle, color, hoverColor, sideBySide, onClick }: {
+  label: string; btnStyle: string; color: string; hoverColor: string; sideBySide: boolean; onClick: (e: React.MouseEvent) => void;
+}) {
+  const isOutline = btnStyle === 'outline';
+  const isUnderline = btnStyle === 'underline';
+  const isGradient = btnStyle === 'gradient';
+
+  return (
+    <button
+      onClick={onClick}
+      className={cn(
+        'py-2 text-xs font-medium transition-all hover:opacity-90',
+        btnStyleMap[btnStyle] || 'rounded-md',
+        sideBySide ? 'flex-1' : 'w-full',
+      )}
+      style={
+        isOutline
+          ? { border: `2px solid ${color}`, color, backgroundColor: 'transparent' }
+          : isUnderline
+          ? { borderBottom: `2px solid ${color}`, color, backgroundColor: 'transparent' }
+          : isGradient
+          ? { background: `linear-gradient(135deg, ${color}, ${hoverColor})`, color: '#fff' }
+          : { backgroundColor: color, color: '#fff' }
+      }
+    >
+      {label}
+    </button>
+  );
+}
+
+function CartButton({ label, btnStyle, sideBySide, compact, onClick }: {
+  label: string; btnStyle: string; sideBySide: boolean; compact?: boolean; onClick: (e: React.MouseEvent) => void;
+}) {
+  const isOutline = btnStyle === 'outline';
+  const isUnderline = btnStyle === 'underline';
+  const isGradient = btnStyle === 'gradient';
+
+  return (
+    <button
+      onClick={onClick}
+      className={cn(
+        'text-xs font-medium transition-all hover:opacity-90',
+        btnStyleMap[btnStyle] || 'rounded-md',
+        compact ? 'px-4 py-1.5' : sideBySide ? 'flex-1 py-2' : 'w-full py-2',
+        isOutline && 'border-2 border-foreground text-foreground bg-transparent',
+        isUnderline && 'border-b-2 border-foreground text-foreground bg-transparent',
+        isGradient && 'bg-gradient-to-r from-foreground/90 to-foreground text-background',
+        !isOutline && !isUnderline && !isGradient && 'bg-foreground text-background',
+      )}
+    >
+      {label}
+    </button>
+  );
+}
+
 export function ProductCard({ product }: Props) {
   const { addItem } = useCart();
   const { theme } = useTheme();
@@ -272,29 +337,31 @@ export function ProductCard({ product }: Props) {
         {/* Action buttons */}
         <div className={cn('mt-2', c.buttonLayout === 'side-by-side' ? 'flex gap-1' : 'space-y-1')}>
           {showBuy && (
-            <button
+            <BuyButton
+              label={c.buyNowText || 'Comprar Agora'}
+              btnStyle={c.buttonStyle || 'solid'}
+              color={theme.colors.buyNow}
+              hoverColor={theme.colors.buyNowHover}
+              sideBySide={c.buttonLayout === 'side-by-side'}
               onClick={handleBuyNow}
-              className={cn('py-2 text-xs font-medium rounded-md transition-all hover:opacity-90', c.buttonLayout === 'side-by-side' ? 'flex-1' : 'w-full')}
-              style={{ backgroundColor: theme.colors.buyNow, color: '#fff' }}
-            >
-              {c.buyNowText || 'Comprar Agora'}
-            </button>
+            />
           )}
           {showAdd && (
             c.addToCartStyle === 'full-width' || c.buttonLayout === 'side-by-side' ? (
-              <button
+              <CartButton
+                label={c.addToCartText || 'Adicionar ao Carrinho'}
+                btnStyle={c.buttonStyle || 'solid'}
+                sideBySide={c.buttonLayout === 'side-by-side'}
                 onClick={(e) => { e.preventDefault(); addItem(product); }}
-                className={cn('py-2 bg-foreground text-background text-xs font-medium rounded-md hover:opacity-90 transition-opacity', c.buttonLayout === 'side-by-side' ? 'flex-1' : 'w-full')}
-              >
-                {c.addToCartText || 'Adicionar ao Carrinho'}
-              </button>
+              />
             ) : c.addToCartStyle === 'button' ? (
-              <button
+              <CartButton
+                label={c.addToCartText || 'Adicionar'}
+                btnStyle={c.buttonStyle || 'solid'}
+                sideBySide={false}
+                compact
                 onClick={(e) => { e.preventDefault(); addItem(product); }}
-                className="px-4 py-1.5 bg-foreground text-background text-xs font-medium rounded-md hover:opacity-90 transition-opacity"
-              >
-                {c.addToCartText || 'Adicionar'}
-              </button>
+              />
             ) : (
               <button
                 onClick={(e) => { e.preventDefault(); addItem(product); }}
