@@ -101,20 +101,26 @@ export function ThemeEditorLayout() {
   const [device, setDevice] = useState<DeviceSize>('desktop');
   const [showVersions, setShowVersions] = useState(false);
   const iframeRef = React.useRef<HTMLIFrameElement>(null);
+  const [iframeReady, setIframeReady] = React.useState(false);
 
-  // Send draft to iframe on every change
+  // Send draft to iframe on every change (only after iframe is loaded)
   React.useEffect(() => {
+    if (!iframeReady) return;
     const iframe = iframeRef.current;
     if (iframe?.contentWindow) {
       iframe.contentWindow.postMessage({ type: 'theme-preview-update', theme: draft }, '*');
     }
-  }, [draft]);
+  }, [draft, iframeReady]);
 
   const handleIframeLoad = () => {
-    const iframe = iframeRef.current;
-    if (iframe?.contentWindow) {
-      iframe.contentWindow.postMessage({ type: 'theme-preview-update', theme: draft }, '*');
-    }
+    setIframeReady(true);
+    // Small delay to ensure React has mounted inside the iframe
+    setTimeout(() => {
+      const iframe = iframeRef.current;
+      if (iframe?.contentWindow) {
+        iframe.contentWindow.postMessage({ type: 'theme-preview-update', theme: draft }, '*');
+      }
+    }, 500);
   };
   
   const filteredSections = searchQuery
@@ -246,7 +252,7 @@ export function ThemeEditorLayout() {
             >
               <iframe
                 ref={iframeRef}
-                src="/"
+                src="/?theme-preview=true"
                 className="w-full h-full border-0"
                 title="Preview da Loja"
                 onLoad={handleIframeLoad}
