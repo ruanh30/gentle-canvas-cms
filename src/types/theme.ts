@@ -143,7 +143,10 @@ export interface ThemeProductCard {
   showWishlist: boolean;
   showAddToCart: boolean;
   showBuyNow: boolean;
+  buyNowText: string;
+  addToCartText: string;
   buttonVisibility: 'both' | 'add-only' | 'buy-only';
+  buttonLayout: 'stacked' | 'side-by-side';
   addToCartStyle: 'icon' | 'button' | 'full-width';
   clickBehavior: 'navigate' | 'modal';
   badgePosition: 'top-left' | 'top-right' | 'bottom-left';
