@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useTheme } from '@/contexts/ThemeContext';
 import { EditorSection, ToggleRow, TextField, SectionDivider, HintTooltip } from '../EditorControls';
-import { Grid3X3, GripVertical, ChevronUp, ChevronDown, Plus, Trash2, Pencil, Check, X } from 'lucide-react';
+import { Grid3X3, GripVertical, ChevronUp, ChevronDown, Plus, Trash2, Pencil, Check, X, Eye, EyeOff } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -55,6 +55,7 @@ export function HomeSectionsPanel() {
       type: newType,
       enabled: true,
       title: newTitle.trim(),
+      showTitle: true,
       settings: {},
     };
     updateDraft({
@@ -117,6 +118,17 @@ export function HomeSectionsPanel() {
                 <ChevronDown className="h-3.5 w-3.5" />
               </button>
             </div>
+            <button
+              onClick={() => {
+                updateDraft({
+                  homepageSections: sections.map(s => s.id === section.id ? { ...s, showTitle: !(s.showTitle ?? true) } : s),
+                });
+              }}
+              className="p-0.5 hover:bg-background rounded opacity-60 hover:opacity-100"
+              title={section.showTitle !== false ? 'Ocultar título da seção' : 'Mostrar título da seção'}
+            >
+              {section.showTitle !== false ? <Eye className="h-3 w-3" /> : <EyeOff className="h-3 w-3" />}
+            </button>
             <button onClick={() => removeSection(section.id)} className="p-0.5 hover:bg-background rounded text-destructive opacity-60 hover:opacity-100">
               <Trash2 className="h-3 w-3" />
             </button>

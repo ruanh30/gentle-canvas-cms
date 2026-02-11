@@ -77,7 +77,9 @@ const HomePage = () => {
       case 'categories':
         return (
           <section key={section.id} className="container mx-auto px-4 py-16">
-            <h2 className="text-2xl font-display font-bold mb-8 text-center">Categorias</h2>
+            {section.showTitle !== false && (
+              <h2 className="text-2xl font-display font-bold mb-8 text-center">{section.title}</h2>
+            )}
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
               {mockCategories.map(cat => (
                 <Link
@@ -96,8 +98,10 @@ const HomePage = () => {
         return (
           <section key={section.id} className="container mx-auto px-4 py-16">
             <div className="flex items-center justify-between mb-8">
-              <h2 className="text-2xl font-display font-bold">Destaques</h2>
-              <Link to="/products" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1">
+              {section.showTitle !== false && (
+                <h2 className="text-2xl font-display font-bold">{section.title}</h2>
+              )}
+              <Link to="/products" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1 ml-auto">
                 Ver todos <ArrowRight className="h-4 w-4" />
               </Link>
             </div>
