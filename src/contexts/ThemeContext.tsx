@@ -97,15 +97,16 @@ const STORAGE_KEYS = {
 // Migrations: force-update fields that changed defaults across versions
 function migrateTheme(config: ThemeConfig): ThemeConfig {
   const c = { ...config };
-  // v2: ensure Buy Now button + both visibility are the new defaults
   if (c.productCard) {
     const pc = { ...c.productCard };
-    // If buttonVisibility was 'add-only' (old default), migrate to 'both'
     if (pc.buttonVisibility === 'add-only' && pc.showBuyNow === false) {
       pc.showBuyNow = true;
       pc.buttonVisibility = 'both';
       pc.addToCartStyle = 'full-width';
     }
+    if (!pc.buyNowText) pc.buyNowText = 'Comprar Agora';
+    if (!pc.addToCartText) pc.addToCartText = 'Adicionar ao Carrinho';
+    if (!pc.buttonLayout) pc.buttonLayout = 'stacked';
     c.productCard = pc;
   }
   return c;

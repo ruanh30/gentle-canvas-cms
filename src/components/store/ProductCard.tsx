@@ -115,12 +115,12 @@ function ProductQuickView({ product, open, onClose, style }: { product: Product;
               style={{ backgroundColor: theme.colors.buyNow, color: '#fff' }}
               onClick={() => { addItem(product, undefined, quantity); navigate('/cart'); onClose(); }}
             >
-              Comprar Agora
+              {c.buyNowText || 'Comprar Agora'}
             </Button>
           )}
           {showAdd && (
             <Button variant="outline" className="w-full" onClick={() => { addItem(product, undefined, quantity); onClose(); }}>
-              <ShoppingBag className="mr-2 h-4 w-4" /> Adicionar ao Carrinho
+              <ShoppingBag className="mr-2 h-4 w-4" /> {c.addToCartText || 'Adicionar ao Carrinho'}
             </Button>
           )}
         </div>
@@ -270,36 +270,36 @@ export function ProductCard({ product }: Props) {
         </Link>
 
         {/* Action buttons */}
-        <div className="mt-2 space-y-1">
+        <div className={cn('mt-2', c.buttonLayout === 'side-by-side' ? 'flex gap-1' : 'space-y-1')}>
           {showBuy && (
             <button
               onClick={handleBuyNow}
-              className="w-full py-2 text-xs font-medium rounded-md transition-opacity hover:opacity-90"
+              className={cn('py-2 text-xs font-medium rounded-md transition-all hover:opacity-90', c.buttonLayout === 'side-by-side' ? 'flex-1' : 'w-full')}
               style={{ backgroundColor: theme.colors.buyNow, color: '#fff' }}
             >
-              Comprar Agora
+              {c.buyNowText || 'Comprar Agora'}
             </button>
           )}
           {showAdd && (
-            c.addToCartStyle === 'full-width' ? (
+            c.addToCartStyle === 'full-width' || c.buttonLayout === 'side-by-side' ? (
               <button
                 onClick={(e) => { e.preventDefault(); addItem(product); }}
-                className="w-full py-2 bg-foreground text-background text-xs font-medium rounded-md hover:opacity-90 transition-opacity"
+                className={cn('py-2 bg-foreground text-background text-xs font-medium rounded-md hover:opacity-90 transition-opacity', c.buttonLayout === 'side-by-side' ? 'flex-1' : 'w-full')}
               >
-                Adicionar ao carrinho
+                {c.addToCartText || 'Adicionar ao Carrinho'}
               </button>
             ) : c.addToCartStyle === 'button' ? (
               <button
                 onClick={(e) => { e.preventDefault(); addItem(product); }}
                 className="px-4 py-1.5 bg-foreground text-background text-xs font-medium rounded-md hover:opacity-90 transition-opacity"
               >
-                Adicionar
+                {c.addToCartText || 'Adicionar'}
               </button>
             ) : (
               <button
                 onClick={(e) => { e.preventDefault(); addItem(product); }}
                 className="absolute top-3 right-3 bg-background/90 backdrop-blur-sm p-2 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-200 hover:bg-background shadow-sm"
-                aria-label="Adicionar ao carrinho"
+                aria-label={c.addToCartText || 'Adicionar ao carrinho'}
               >
                 <ShoppingBag className="h-4 w-4" />
               </button>
