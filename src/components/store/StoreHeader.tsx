@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ShoppingBag, Search, User, Menu } from 'lucide-react';
+import { ShoppingBag, Search, User, Menu, Heart } from 'lucide-react';
 import { useCart } from '@/contexts/CartContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -18,28 +18,36 @@ export function StoreHeader() {
   const [searchOpen, setSearchOpen] = useState(false);
 
   const navLinks = mockCategories.slice(0, 5);
+  const h = theme.header;
+  const ann = h.announcement;
+  const isMinimal = h.layout === 'minimal' || h.layout === 'hamburger-only';
+  const isCentered = h.layout === 'centered' || h.layout === 'logo-center-nav-left';
 
   return (
     <header className={cn(
-      'z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 border-b',
-      theme.header.sticky && 'sticky top-0'
+      'z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80',
+      h.borderBottom && 'border-b',
+      h.sticky && 'sticky top-0'
     )}>
-      {/* Top bar */}
-      {theme.header.announcementEnabled && theme.header.style !== 'minimal' && (
-        <div className="bg-primary text-primary-foreground text-center text-xs py-1.5 font-body tracking-wide">
-          {theme.header.announcementBar}
+      {/* Announcement bar */}
+      {ann.enabled && !isMinimal && (
+        <div
+          className="text-center text-xs py-1.5 font-body tracking-wide"
+          style={{ backgroundColor: ann.backgroundColor, color: ann.textColor }}
+        >
+          {ann.messages[0] || ''}
         </div>
       )}
 
       <div className="container mx-auto px-4">
         <div className={cn(
-          'flex items-center h-16',
-          theme.header.style === 'centered' ? 'justify-center relative' : 'justify-between'
-        )}>
+          'flex items-center',
+          isCentered ? 'justify-center relative' : 'justify-between'
+        )} style={{ height: h.height }}>
           {/* Mobile menu */}
           <Sheet>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className={cn('lg:hidden', theme.header.style === 'centered' && 'absolute left-0')}>
+              <Button variant="ghost" size="icon" className={cn('lg:hidden', isCentered && 'absolute left-0')}>
                 <Menu className="h-5 w-5" />
               </Button>
             </SheetTrigger>
@@ -58,7 +66,7 @@ export function StoreHeader() {
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2">
             {theme.logo.imageUrl && (
-              <img src={theme.logo.imageUrl} alt="Logo" className="h-8 object-contain" />
+              <img src={theme.logo.imageUrl} alt="Logo" style={{ maxHeight: theme.logo.maxHeight }} className="object-contain" />
             )}
             {theme.logo.showText && (
               <span className="font-display text-xl md:text-2xl font-bold tracking-tight">
@@ -67,14 +75,19 @@ export function StoreHeader() {
             )}
           </Link>
 
-          {/* Desktop nav - hidden in centered */}
-          {theme.header.style !== 'centered' && (
+          {/* Desktop nav */}
+          {h.layout !== 'hamburger-only' && h.layout !== 'centered' && (
             <nav className="hidden lg:flex items-center gap-8">
               {navLinks.map(cat => (
                 <Link
                   key={cat.id}
                   to={`/products?category=${cat.slug}`}
-                  className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors uppercase tracking-wider"
+                  className="font-medium text-muted-foreground hover:text-foreground transition-colors tracking-wider"
+                  style={{
+                    fontSize: h.menuFontSize,
+                    textTransform: h.menuUppercase ? 'uppercase' : 'none',
+                    letterSpacing: `${h.menuLetterSpacing}em`,
+                  }}
                 >
                   {cat.name}
                 </Link>
@@ -83,36 +96,51 @@ export function StoreHeader() {
           )}
 
           {/* Actions */}
-          <div className={cn('flex items-center gap-1', theme.header.style === 'centered' && 'absolute right-0')}>
-            <Button variant="ghost" size="icon" onClick={() => setSearchOpen(!searchOpen)}>
-              <Search className="h-5 w-5" />
-            </Button>
-            <Link to={user ? '/account' : '/login'}>
-              <Button variant="ghost" size="icon">
-                <User className="h-5 w-5" />
+          <div className={cn('flex items-center gap-1', isCentered && 'absolute right-0')}>
+            {h.showSearch && (
+              <Button variant="ghost" size="icon" onClick={() => setSearchOpen(!searchOpen)}>
+                <Search style={{ width: h.iconSize, height: h.iconSize }} />
               </Button>
-            </Link>
-            <Link to="/cart" className="relative">
+            )}
+            {h.showWishlist && (
               <Button variant="ghost" size="icon">
-                <ShoppingBag className="h-5 w-5" />
-                {itemCount > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-foreground text-background text-[10px] font-bold rounded-full h-5 w-5 flex items-center justify-center">
-                    {itemCount}
-                  </span>
-                )}
+                <Heart style={{ width: h.iconSize, height: h.iconSize }} />
               </Button>
-            </Link>
+            )}
+            {h.showAccount && (
+              <Link to={user ? '/account' : '/login'}>
+                <Button variant="ghost" size="icon">
+                  <User style={{ width: h.iconSize, height: h.iconSize }} />
+                </Button>
+              </Link>
+            )}
+            {h.showCart && (
+              <Link to="/cart" className="relative">
+                <Button variant="ghost" size="icon">
+                  <ShoppingBag style={{ width: h.iconSize, height: h.iconSize }} />
+                  {itemCount > 0 && h.cartBadgeStyle !== 'none' && (
+                    <span className="absolute -top-1 -right-1 bg-foreground text-background text-[10px] font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                      {h.cartBadgeStyle === 'count' ? itemCount : '●'}
+                    </span>
+                  )}
+                </Button>
+              </Link>
+            )}
           </div>
         </div>
 
         {/* Centered nav below logo */}
-        {theme.header.style === 'centered' && (
+        {h.layout === 'centered' && (
           <nav className="hidden lg:flex items-center justify-center gap-8 pb-3">
             {navLinks.map(cat => (
               <Link
                 key={cat.id}
                 to={`/products?category=${cat.slug}`}
-                className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors uppercase tracking-wider"
+                className="font-medium text-muted-foreground hover:text-foreground transition-colors tracking-wider"
+                style={{
+                  fontSize: h.menuFontSize,
+                  textTransform: h.menuUppercase ? 'uppercase' : 'none',
+                }}
               >
                 {cat.name}
               </Link>
@@ -129,9 +157,7 @@ export function StoreHeader() {
                 placeholder="Buscar produtos..."
                 className="pl-10 bg-secondary border-0"
                 autoFocus
-                onKeyDown={(e) => {
-                  if (e.key === 'Escape') setSearchOpen(false);
-                }}
+                onKeyDown={(e) => { if (e.key === 'Escape') setSearchOpen(false); }}
               />
             </div>
           </div>

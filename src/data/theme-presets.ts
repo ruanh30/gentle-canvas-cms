@@ -1,0 +1,426 @@
+import { ThemeConfig, ThemePreset } from '@/types/theme';
+
+function makeId() {
+  return Math.random().toString(36).slice(2, 10);
+}
+
+const defaultSlide = {
+  id: 'slide-1',
+  title: 'Estilo que\ndefine você',
+  subtitle: 'Nova Coleção',
+  description: 'Descubra peças únicas com design atemporal e qualidade premium.',
+  ctaText: 'Ver coleção',
+  ctaLink: '/products',
+  ctaStyle: 'filled' as const,
+  backgroundImage: '',
+  backgroundVideo: '',
+  overlayColor: '#000000',
+  overlayOpacity: 0,
+  contentAlign: 'left' as const,
+  textColor: '#1a1a1a',
+};
+
+const defaultFooterColumns = [
+  { title: 'Institucional', links: [{ label: 'Sobre nós', url: '/about' }, { label: 'Contato', url: '/contact' }, { label: 'FAQ', url: '/faq' }], enabled: true },
+  { title: 'Ajuda', links: [{ label: 'Entregas', url: '/shipping' }, { label: 'Trocas', url: '/returns' }, { label: 'Privacidade', url: '/privacy' }], enabled: true },
+  { title: 'Contato', links: [{ label: 'contato@loja.com', url: 'mailto:contato@loja.com' }, { label: '(11) 99999-0000', url: 'tel:+5511999990000' }], enabled: true },
+];
+
+const defaultHomeSections = [
+  { id: 'hero', type: 'hero' as const, enabled: true, title: 'Hero Banner', settings: {} },
+  { id: 'categories', type: 'categories' as const, enabled: true, title: 'Categorias', settings: {} },
+  { id: 'featured', type: 'featured-products' as const, enabled: true, title: 'Destaques', settings: {} },
+  { id: 'banner', type: 'banner' as const, enabled: true, title: 'Banner Promocional', settings: { title: 'Cadastre-se e ganhe 15% OFF', description: 'Use o cupom BEMVINDO na sua primeira compra.' } },
+  { id: 'benefits', type: 'benefits' as const, enabled: false, title: 'Benefícios', settings: {} },
+  { id: 'testimonials', type: 'testimonials' as const, enabled: false, title: 'Depoimentos', settings: {} },
+  { id: 'brands', type: 'brands' as const, enabled: false, title: 'Marcas', settings: {} },
+  { id: 'newsletter', type: 'newsletter' as const, enabled: false, title: 'Newsletter', settings: {} },
+  { id: 'trust-bar', type: 'trust-bar' as const, enabled: false, title: 'Selos de Confiança', settings: {} },
+];
+
+export const defaultThemeConfig: ThemeConfig = {
+  id: 'default',
+  name: 'Tema Padrão',
+  version: 1,
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+
+  colors: {
+    primary: '#1a1a1a',
+    primaryForeground: '#fafafa',
+    secondary: '#f5f5f5',
+    secondaryForeground: '#1a1a1a',
+    accent: '#f5f5f5',
+    accentForeground: '#1a1a1a',
+    background: '#ffffff',
+    foreground: '#1a1a1a',
+    muted: '#f5f5f5',
+    mutedForeground: '#737373',
+    border: '#e5e5e5',
+    success: '#16a34a',
+    warning: '#eab308',
+    error: '#dc2626',
+    buyNow: '#dc2626',
+    buyNowHover: '#b91c1c',
+  },
+
+  typography: {
+    headingFont: 'Playfair Display',
+    bodyFont: 'Inter',
+    baseFontSize: 16,
+    headingWeight: 700,
+    bodyWeight: 400,
+    lineHeight: 1.6,
+    letterSpacing: 0,
+  },
+
+  buttons: {
+    style: 'filled',
+    radius: 'medium',
+    size: 'medium',
+    uppercase: false,
+    fontWeight: 500,
+    shadow: false,
+  },
+
+  inputs: {
+    radius: 'medium',
+    borderWidth: 1,
+    focusRing: true,
+    style: 'default',
+  },
+
+  global: {
+    containerWidth: 'default',
+    containerMaxPx: 1400,
+    sectionSpacing: 'normal',
+    borderRadius: 'medium',
+    shadowLevel: 'subtle',
+    borderStyle: 'thin',
+    animationsEnabled: true,
+    animationSpeed: 'normal',
+    scrollBehavior: 'smooth',
+  },
+
+  logo: {
+    text: 'MODA STORE',
+    imageUrl: '',
+    showText: true,
+    maxHeight: 40,
+    position: 'left',
+  },
+
+  header: {
+    layout: 'classic',
+    sticky: true,
+    shrinkOnScroll: false,
+    shadowOnScroll: true,
+    backgroundColor: '#ffffff',
+    borderBottom: true,
+    height: 64,
+    menuStyle: 'horizontal',
+    menuFontSize: 13,
+    menuUppercase: true,
+    menuLetterSpacing: 0.1,
+    iconSize: 20,
+    showSearch: true,
+    searchStyle: 'modal',
+    showAccount: true,
+    showWishlist: false,
+    showCart: true,
+    cartBadgeStyle: 'count',
+    announcement: {
+      enabled: true,
+      messages: ['Frete grátis acima de R$ 299'],
+      speed: 5,
+      backgroundColor: '#1a1a1a',
+      textColor: '#fafafa',
+      showIcon: false,
+      icon: 'truck',
+      link: '',
+      pauseOnHover: true,
+    },
+  },
+
+  hero: {
+    enabled: true,
+    height: 'large',
+    autoplay: false,
+    autoplaySpeed: 5,
+    showDots: true,
+    showArrows: true,
+    transition: 'fade',
+    slides: [defaultSlide],
+  },
+
+  productCard: {
+    layout: 'standard',
+    imageAspect: '3:4',
+    imageHover: 'zoom',
+    imageBorderRadius: 'medium',
+    showCategory: true,
+    showBrand: false,
+    showRating: false,
+    showQuickView: false,
+    showWishlist: false,
+    showAddToCart: true,
+    addToCartStyle: 'icon',
+    badgePosition: 'top-left',
+    badgeStyle: 'rounded',
+    priceSize: 'medium',
+    showComparePrice: true,
+    showDiscount: true,
+    discountStyle: 'percentage',
+    showInstallments: false,
+    titleLines: 2,
+    contentAlign: 'left',
+    spacing: 'normal',
+    shadow: 'none',
+    hoverShadow: false,
+    border: false,
+  },
+
+  productPage: {
+    galleryLayout: 'side-by-side',
+    galleryPosition: 'left',
+    imageZoom: true,
+    stickyGallery: true,
+    showBreadcrumb: true,
+    showSKU: false,
+    showBrand: false,
+    showRating: false,
+    showStock: true,
+    showShareButtons: false,
+    variantStyle: 'buttons',
+    quantityStyle: 'stepper',
+    ctaLayout: 'stacked',
+    ctaStickyMobile: true,
+    showTrustBadges: true,
+    trustBadges: ['Compra Segura', 'Troca Grátis', 'Frete Rápido'],
+    tabsStyle: 'tabs',
+    showRelated: true,
+    relatedTitle: 'Você também pode gostar',
+    showRecentlyViewed: false,
+    sizeGuideEnabled: false,
+    shippingEstimate: true,
+  },
+
+  category: {
+    layout: 'sidebar-left',
+    columnsDesktop: 4,
+    columnsMobile: 2,
+    filterStyle: 'accordion',
+    showFilterCount: true,
+    sortStyle: 'dropdown',
+    pagination: 'load-more',
+    productsPerPage: 24,
+    showBanner: false,
+    bannerHeight: 200,
+    showBreadcrumb: true,
+    showProductCount: true,
+  },
+
+  cart: {
+    style: 'drawer',
+    showThumbnails: true,
+    showQuantity: true,
+    showCoupon: true,
+    showShippingEstimate: true,
+    showRecommendations: true,
+    recommendationsTitle: 'Aproveite e leve também',
+    showFreeShippingBar: true,
+    freeShippingThreshold: 299,
+    freeShippingMessage: 'Frete grátis acima de R$ {value}',
+    emptyCartMessage: 'Seu carrinho está vazio',
+    emptyCartCta: 'Continuar comprando',
+    showContinueShopping: true,
+  },
+
+  checkout: {
+    layout: 'two-columns',
+    stepsStyle: 'numbered',
+    showOrderSummary: true,
+    showCouponField: true,
+    showTrustBadges: true,
+    termsRequired: false,
+    termsText: 'Li e aceito os termos de uso',
+    successTitle: 'Pedido realizado com sucesso!',
+    successMessage: 'Você receberá um e-mail com os detalhes do pedido.',
+    showConfetti: true,
+  },
+
+  footer: {
+    layout: '4-columns',
+    backgroundColor: '#1a1a1a',
+    textColor: '#fafafa',
+    showNewsletter: false,
+    newsletterTitle: 'Receba novidades',
+    newsletterDescription: 'Cadastre-se e fique por dentro das promoções.',
+    showSocial: true,
+    socialLinks: [
+      { platform: 'instagram', url: '#' },
+      { platform: 'facebook', url: '#' },
+    ],
+    showPaymentIcons: true,
+    showTrustSeals: false,
+    copyrightText: '© 2024 {storeName}. Todos os direitos reservados.',
+    showBackToTop: true,
+    columns: defaultFooterColumns,
+    bottomLinks: [
+      { label: 'Termos de Uso', url: '/terms' },
+      { label: 'Política de Privacidade', url: '/privacy' },
+    ],
+  },
+
+  homepageSections: defaultHomeSections,
+
+  whatsapp: {
+    enabled: false,
+    number: '',
+    message: 'Olá! Gostaria de saber mais sobre os produtos.',
+    position: 'bottom-right',
+    showLabel: false,
+    label: 'Precisa de ajuda?',
+    backgroundColor: '#25d366',
+    delay: 3,
+  },
+
+  seo: {
+    titleTemplate: '{page} | {storeName}',
+    defaultDescription: 'Loja online com os melhores produtos.',
+    ogImage: '',
+    showBreadcrumbs: true,
+  },
+
+  accessibility: {
+    minContrastRatio: 4.5,
+    focusVisible: true,
+    minTouchTarget: 44,
+    reducedMotion: false,
+  },
+
+  customCode: {
+    css: '',
+    headScripts: '',
+  },
+};
+
+// ============================================================
+// Presets
+// ============================================================
+
+export const themePresets: ThemePreset[] = [
+  {
+    id: 'minimal',
+    name: 'Minimalista',
+    description: 'Design clean e elegante com foco no produto',
+    thumbnail: '⬜',
+    config: {
+      colors: { ...defaultThemeConfig.colors, primary: '#1a1a1a', accent: '#f5f5f5', buyNow: '#1a1a1a', buyNowHover: '#404040' },
+      typography: { ...defaultThemeConfig.typography, headingFont: 'Inter', bodyFont: 'Inter' },
+      productCard: { ...defaultThemeConfig.productCard, layout: 'minimal', shadow: 'none', border: false },
+      global: { ...defaultThemeConfig.global, borderRadius: 'none', shadowLevel: 'none' },
+    },
+  },
+  {
+    id: 'modern',
+    name: 'Moderno',
+    description: 'Linhas arredondadas, sombras suaves e cores vibrantes',
+    thumbnail: '🔵',
+    config: {
+      colors: { ...defaultThemeConfig.colors, primary: '#0f172a', accent: '#e2e8f0', buyNow: '#e11d48', buyNowHover: '#be123c', background: '#ffffff' },
+      typography: { ...defaultThemeConfig.typography, headingFont: 'Poppins', bodyFont: 'DM Sans' },
+      global: { ...defaultThemeConfig.global, borderRadius: 'large', shadowLevel: 'medium' },
+      buttons: { ...defaultThemeConfig.buttons, radius: 'full', shadow: true },
+    },
+  },
+  {
+    id: 'elegant',
+    name: 'Elegante',
+    description: 'Sofisticado com tipografia serifada e tons quentes',
+    thumbnail: '🟤',
+    config: {
+      colors: { ...defaultThemeConfig.colors, primary: '#2d2d2d', accent: '#f0ebe3', buyNow: '#b91c1c', buyNowHover: '#991b1b', background: '#faf8f5', foreground: '#1a1a1a' },
+      typography: { ...defaultThemeConfig.typography, headingFont: 'Cormorant Garamond', bodyFont: 'Lato', headingWeight: 600 },
+      global: { ...defaultThemeConfig.global, borderRadius: 'small' },
+    },
+  },
+  {
+    id: 'fashion',
+    name: 'Fashion',
+    description: 'Tipografia bold, imagens grandes e alto contraste',
+    thumbnail: '🖤',
+    config: {
+      colors: { ...defaultThemeConfig.colors, primary: '#000000', accent: '#f5f5f5', buyNow: '#000000', buyNowHover: '#262626', background: '#ffffff' },
+      typography: { ...defaultThemeConfig.typography, headingFont: 'Oswald', bodyFont: 'Work Sans', headingWeight: 700 },
+      productCard: { ...defaultThemeConfig.productCard, imageAspect: '2:3', layout: 'magazine' },
+      global: { ...defaultThemeConfig.global, borderRadius: 'none' },
+      buttons: { ...defaultThemeConfig.buttons, uppercase: true, radius: 'none' },
+    },
+  },
+  {
+    id: 'luxury',
+    name: 'Luxo',
+    description: 'Dourado, escuro e premium',
+    thumbnail: '✨',
+    config: {
+      colors: { ...defaultThemeConfig.colors, primary: '#78350f', accent: '#fef3c7', buyNow: '#b91c1c', buyNowHover: '#991b1b', background: '#fffbeb', foreground: '#1a1a1a' },
+      typography: { ...defaultThemeConfig.typography, headingFont: 'DM Serif Display', bodyFont: 'Lato', letterSpacing: 0.05 },
+      global: { ...defaultThemeConfig.global, borderRadius: 'small', shadowLevel: 'subtle' },
+    },
+  },
+  {
+    id: 'ocean',
+    name: 'Oceano',
+    description: 'Tons azuis calmos e refrescantes',
+    thumbnail: '🌊',
+    config: {
+      colors: { ...defaultThemeConfig.colors, primary: '#164e63', accent: '#e0f2fe', buyNow: '#0369a1', buyNowHover: '#075985', background: '#f0f9ff', foreground: '#0c4a6e' },
+      typography: { ...defaultThemeConfig.typography, headingFont: 'Raleway', bodyFont: 'Nunito' },
+      global: { ...defaultThemeConfig.global, borderRadius: 'large' },
+    },
+  },
+  {
+    id: 'rose',
+    name: 'Rosé',
+    description: 'Delicado e feminino com tons de rosa',
+    thumbnail: '🌸',
+    config: {
+      colors: { ...defaultThemeConfig.colors, primary: '#831843', accent: '#fce7f3', buyNow: '#be123c', buyNowHover: '#9f1239', background: '#fff1f2', foreground: '#1a1a1a', border: '#fecdd3' },
+      typography: { ...defaultThemeConfig.typography, headingFont: 'Lora', bodyFont: 'Nunito' },
+      global: { ...defaultThemeConfig.global, borderRadius: 'large' },
+    },
+  },
+  {
+    id: 'nature',
+    name: 'Natureza',
+    description: 'Tons verdes e orgânicos para lojas sustentáveis',
+    thumbnail: '🌿',
+    config: {
+      colors: { ...defaultThemeConfig.colors, primary: '#14532d', accent: '#dcfce7', buyNow: '#16a34a', buyNowHover: '#15803d', background: '#f0fdf4', foreground: '#14532d', border: '#bbf7d0' },
+      typography: { ...defaultThemeConfig.typography, headingFont: 'Merriweather', bodyFont: 'Open Sans' },
+    },
+  },
+  {
+    id: 'dark',
+    name: 'Dark Mode',
+    description: 'Tema escuro moderno e elegante',
+    thumbnail: '🌙',
+    config: {
+      colors: { ...defaultThemeConfig.colors, primary: '#fafafa', primaryForeground: '#0a0a0a', secondary: '#262626', secondaryForeground: '#fafafa', accent: '#262626', accentForeground: '#fafafa', background: '#0a0a0a', foreground: '#fafafa', muted: '#262626', mutedForeground: '#a3a3a3', border: '#404040', buyNow: '#ef4444', buyNowHover: '#dc2626' },
+      typography: { ...defaultThemeConfig.typography, headingFont: 'Montserrat', bodyFont: 'Inter' },
+    },
+  },
+  {
+    id: 'brutalist',
+    name: 'Brutalist',
+    description: 'Estilo ousado com bordas duras e cores fortes',
+    thumbnail: '🟥',
+    config: {
+      colors: { ...defaultThemeConfig.colors, primary: '#000000', accent: '#ffff00', accentForeground: '#000000', buyNow: '#ff0000', buyNowHover: '#cc0000', border: '#000000' },
+      typography: { ...defaultThemeConfig.typography, headingFont: 'Oswald', bodyFont: 'Roboto', headingWeight: 900 },
+      global: { ...defaultThemeConfig.global, borderRadius: 'none', borderStyle: 'thick', shadowLevel: 'none' },
+      buttons: { ...defaultThemeConfig.buttons, radius: 'none', uppercase: true, fontWeight: 700 },
+    },
+  },
+];
