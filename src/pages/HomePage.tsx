@@ -4,7 +4,7 @@ import { mockProducts, mockCategories } from '@/data/mock';
 import { useTheme } from '@/contexts/ThemeContext';
 import { ProductCard } from '@/components/store/ProductCard';
 import { Button } from '@/components/ui/button';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Truck, RefreshCw, ShieldCheck, CreditCard, Lock, DatabaseBackup, PackageCheck } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const HomePage = () => {
@@ -124,29 +124,49 @@ const HomePage = () => {
         );
       }
 
-      case 'benefits':
+      case 'benefits': {
+        const benefits = [
+          { icon: Truck, label: 'Frete Grátis', desc: 'Para todo o Brasil' },
+          { icon: RefreshCw, label: 'Troca Fácil', desc: 'Até 30 dias' },
+          { icon: ShieldCheck, label: 'Compra Segura', desc: '100% protegida' },
+          { icon: CreditCard, label: '12x sem juros', desc: 'No cartão de crédito' },
+        ];
         return (
           <section key={section.id} className="container mx-auto px-4 py-16">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-              {['🚚 Frete Grátis', '🔄 Troca Fácil', '🔒 Compra Segura', '💳 12x sem juros'].map((b, i) => (
-                <div key={i} className="p-4">
-                  <p className="text-sm font-medium">{b}</p>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+              {benefits.map((b, i) => (
+                <div key={i} className="flex flex-col items-center text-center p-6 rounded-xl bg-secondary/50">
+                  <div className="p-3 rounded-full bg-foreground/5 mb-3">
+                    <b.icon className="h-5 w-5 text-foreground" strokeWidth={1.5} />
+                  </div>
+                  <p className="text-sm font-semibold">{b.label}</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">{b.desc}</p>
                 </div>
               ))}
             </div>
           </section>
         );
+      }
 
-      case 'trust-bar':
+      case 'trust-bar': {
+        const trusts = [
+          { icon: Lock, label: 'Compra Segura' },
+          { icon: DatabaseBackup, label: 'Dados Protegidos' },
+          { icon: PackageCheck, label: 'Entrega Garantida' },
+        ];
         return (
           <section key={section.id} className="container mx-auto px-4 py-8">
-            <div className="flex items-center justify-center gap-8 text-muted-foreground text-sm">
-              {['Compra Segura', 'Dados Protegidos', 'Entrega Garantida'].map((s, i) => (
-                <span key={i} className="flex items-center gap-1">✅ {s}</span>
+            <div className="flex items-center justify-center gap-10 text-muted-foreground text-sm">
+              {trusts.map((t, i) => (
+                <span key={i} className="flex items-center gap-2">
+                  <t.icon className="h-4 w-4" strokeWidth={1.5} />
+                  {t.label}
+                </span>
               ))}
             </div>
           </section>
         );
+      }
 
       default:
         return null;
