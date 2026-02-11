@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, useCallback, useRef, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
 import { ThemeConfig, ThemeVersion } from '@/types/theme';
 import { defaultThemeConfig } from '@/data/theme-presets';
 
@@ -52,6 +52,7 @@ function deepMerge<T>(target: T, source: Partial<T>): T {
 
 function applyThemeCSS(t: ThemeConfig) {
   const root = document.documentElement;
+  // Colors
   root.style.setProperty('--primary', hexToHSL(t.colors.primary));
   root.style.setProperty('--primary-foreground', hexToHSL(t.colors.primaryForeground));
   root.style.setProperty('--secondary', hexToHSL(t.colors.secondary));
@@ -64,9 +65,23 @@ function applyThemeCSS(t: ThemeConfig) {
   root.style.setProperty('--muted-foreground', hexToHSL(t.colors.mutedForeground));
   root.style.setProperty('--border', hexToHSL(t.colors.border));
   root.style.setProperty('--buy-now', hexToHSL(t.colors.buyNow));
+  root.style.setProperty('--buy-now-hover', hexToHSL(t.colors.buyNowHover));
+  // Global
   root.style.setProperty('--radius', getRadiusValue(t.global.borderRadius));
+  // Typography
   root.style.setProperty('--font-heading', t.typography.headingFont);
   root.style.setProperty('--font-body', t.typography.bodyFont);
+  root.style.setProperty('--font-size-base', `${t.typography.baseFontSize}px`);
+  root.style.setProperty('--heading-weight', `${t.typography.headingWeight}`);
+  root.style.setProperty('--body-weight', `${t.typography.bodyWeight}`);
+  root.style.setProperty('--line-height', `${t.typography.lineHeight}`);
+  root.style.setProperty('--letter-spacing', `${t.typography.letterSpacing}em`);
+  // Set base font
+  root.style.fontSize = `${t.typography.baseFontSize}px`;
+  root.style.fontFamily = t.typography.bodyFont;
+  root.style.fontWeight = `${t.typography.bodyWeight}`;
+  root.style.lineHeight = `${t.typography.lineHeight}`;
+  root.style.letterSpacing = `${t.typography.letterSpacing}em`;
 }
 
 // ============================================================
@@ -94,8 +109,13 @@ function saveToStorage(key: string, value: unknown) {
   } catch { /* storage full — ignore */ }
 }
 
-// Detect if running inside an iframe (preview mode)
-const isPreviewMode = typeof window !== 'undefined' && window.self !== window.top;
+// Detect if running inside the theme editor iframe via URL parameter
+// This avoids the issue of Lovable's own preview iframe triggering preview mode
+function checkIsPreviewMode(): boolean {
+  if (typeof window === 'undefined') return false;
+  const params = new URLSearchParams(window.location.search);
+  return params.get('theme-preview') === 'true';
+}
 
 // ============================================================
 // Context type
@@ -126,6 +146,8 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 // ============================================================
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
+  const [isPreviewMode] = useState(checkIsPreviewMode);
+
   const [published, setPublished] = useState<ThemeConfig>(() =>
     loadFromStorage(STORAGE_KEYS.published, defaultThemeConfig)
   );
@@ -151,12 +173,12 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     };
     window.addEventListener('message', handler);
     return () => window.removeEventListener('message', handler);
-  }, []);
+  }, [isPreviewMode]);
 
-  // Persist
-  useEffect(() => { if (!isPreviewMode) saveToStorage(STORAGE_KEYS.draft, draft); }, [draft]);
-  useEffect(() => { if (!isPreviewMode) saveToStorage(STORAGE_KEYS.published, published); }, [published]);
-  useEffect(() => { if (!isPreviewMode) saveToStorage(STORAGE_KEYS.versions, versions); }, [versions]);
+  // Persist (only in non-preview mode)
+  useEffect(() => { if (!isPreviewMode) saveToStorage(STORAGE_KEYS.draft, draft); }, [draft, isPreviewMode]);
+  useEffect(() => { if (!isPreviewMode) saveToStorage(STORAGE_KEYS.published, published); }, [published, isPreviewMode]);
+  useEffect(() => { if (!isPreviewMode) saveToStorage(STORAGE_KEYS.versions, versions); }, [versions, isPreviewMode]);
 
   // The active theme for the storefront: in preview mode use previewTheme, otherwise published
   const activeTheme = isPreviewMode && previewTheme ? previewTheme : published;
