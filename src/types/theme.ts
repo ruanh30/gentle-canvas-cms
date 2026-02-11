@@ -147,6 +147,7 @@ export interface ThemeProductCard {
   addToCartText: string;
   buttonVisibility: 'both' | 'add-only' | 'buy-only';
   buttonLayout: 'stacked' | 'side-by-side';
+  buttonStyle: 'solid' | 'outline' | 'pill' | 'rounded' | 'sharp' | 'gradient' | 'underline';
   addToCartStyle: 'icon' | 'button' | 'full-width';
   clickBehavior: 'navigate' | 'modal';
   badgePosition: 'top-left' | 'top-right' | 'bottom-left';

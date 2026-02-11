@@ -87,10 +87,19 @@ export function ProductCardPanel() {
             { value: 'stacked', label: 'Empilhado', description: 'Um embaixo do outro' },
             { value: 'side-by-side', label: 'Lado a lado', description: 'Na mesma linha' },
           ]} />
+          <OptionPicker label="Estilo visual dos botões" value={c.buttonStyle || 'solid'} onChange={v => set({ buttonStyle: v })} options={[
+            { value: 'solid', label: 'Sólido', description: 'Fundo preenchido padrão' },
+            { value: 'outline', label: 'Contorno', description: 'Apenas borda, sem fundo' },
+            { value: 'pill', label: 'Pílula', description: 'Totalmente arredondado' },
+            { value: 'rounded', label: 'Arredondado', description: 'Cantos bem suaves' },
+            { value: 'sharp', label: 'Reto', description: 'Cantos 100% retos' },
+            { value: 'gradient', label: 'Gradiente', description: 'Degradê de cores' },
+            { value: 'underline', label: 'Sublinhado', description: 'Apenas linha embaixo' },
+          ]} />
         </>
       )}
       {c.showAddToCart && c.buttonLayout !== 'side-by-side' && (
-        <SelectField label="Estilo do botão carrinho" value={c.addToCartStyle} onChange={v => set({ addToCartStyle: v })} options={[
+        <SelectField label="Tamanho do botão carrinho" value={c.addToCartStyle} onChange={v => set({ addToCartStyle: v })} options={[
           { value: 'icon', label: 'Ícone — pequeno ícone no canto da imagem' },
           { value: 'button', label: 'Botão compacto — tamanho reduzido' },
           { value: 'full-width', label: 'Largura total — ocupa toda a largura do card' },
