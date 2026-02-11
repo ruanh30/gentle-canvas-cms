@@ -26,6 +26,8 @@ function AnnouncementBar() {
 
   if (!a.enabled || validMsgs.length === 0) return null;
 
+  const direction = a.direction || 'rtl';
+
   if (a.style === 'ticker') {
     return (
       <div
@@ -33,7 +35,7 @@ function AnnouncementBar() {
         style={{ backgroundColor: a.backgroundColor, color: a.textColor }}
       >
         <div
-          className="whitespace-nowrap animate-ticker inline-block"
+          className={cn('whitespace-nowrap inline-block', direction === 'rtl' ? 'animate-ticker' : 'animate-ticker-ltr')}
           style={{ animationDuration: `${a.speed * validMsgs.length * 3}s` }}
         >
           {validMsgs.map((m, i) => (
@@ -48,6 +50,7 @@ function AnnouncementBar() {
   }
 
   if (a.style === 'carousel' && validMsgs.length > 1) {
+    const slideDir = direction === 'ltr' ? 'translate-y-4' : '-translate-y-4';
     return (
       <div
         className="text-center text-xs py-1.5 font-body relative overflow-hidden h-7"
@@ -58,7 +61,7 @@ function AnnouncementBar() {
             key={i}
             className={cn(
               'absolute inset-0 flex items-center justify-center transition-all duration-500',
-              i === currentIdx ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
+              i === currentIdx ? 'opacity-100 translate-y-0' : `opacity-0 ${slideDir}`
             )}
           >
             {msg}
@@ -81,7 +84,43 @@ function AnnouncementBar() {
 function BannerBelow() {
   const { theme } = useTheme();
   const bb = theme.header.bannerBelow;
+  const [currentImg, setCurrentImg] = useState(0);
+
+  const allImages = [bb.imageUrl, ...(bb.images || [])].filter(Boolean);
+
+  useEffect(() => {
+    if (!bb.carousel || allImages.length <= 1) return;
+    const interval = setInterval(() => {
+      setCurrentImg(prev => (prev + 1) % allImages.length);
+    }, (bb.carouselSpeed || 5) * 1000);
+    return () => clearInterval(interval);
+  }, [bb.carousel, allImages.length, bb.carouselSpeed]);
+
   if (!bb?.enabled) return null;
+
+  if (bb.carousel && allImages.length > 1) {
+    return (
+      <div className="relative overflow-hidden" style={{ height: bb.height }}>
+        {allImages.map((img, i) => (
+          <div
+            key={i}
+            className={cn(
+              'absolute inset-0 transition-opacity duration-700',
+              i === currentImg ? 'opacity-100' : 'opacity-0'
+            )}
+          >
+            {img ? (
+              <img src={img} alt="Banner" className="w-full h-full object-cover" />
+            ) : (
+              <div className="w-full h-full bg-secondary flex items-center justify-center">
+                <span className="text-muted-foreground text-sm">Banner {i + 1}</span>
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+    );
+  }
 
   const content = bb.imageUrl ? (
     <img

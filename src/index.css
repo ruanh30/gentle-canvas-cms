@@ -124,6 +124,13 @@
   0% { transform: translateX(0); }
   100% { transform: translateX(-50%); }
 }
+@keyframes ticker-ltr {
+  0% { transform: translateX(-50%); }
+  100% { transform: translateX(0); }
+}
 .animate-ticker {
   animation: ticker linear infinite;
+}
+.animate-ticker-ltr {
+  animation: ticker-ltr linear infinite;
 }

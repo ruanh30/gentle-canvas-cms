@@ -42,6 +42,8 @@ const ProductsPage = () => {
     5: 'grid-cols-2 md:grid-cols-3 lg:grid-cols-5',
   };
 
+  const direction = cat.carouselDirection || 'ltr';
+
   const scrollCarousel = (dir: 'left' | 'right') => {
     if (scrollRef.current) {
       const amount = 300;
@@ -52,17 +54,33 @@ const ProductsPage = () => {
   // Auto-scroll for carousel
   useEffect(() => {
     if (localDisplay !== 'carousel' || !cat.carouselAutoplay || !scrollRef.current) return;
+    const scrollAmount = direction === 'ltr' ? 280 : -280;
     const interval = setInterval(() => {
       const el = scrollRef.current;
       if (!el) return;
-      if (el.scrollLeft + el.clientWidth >= el.scrollWidth - 10) {
-        el.scrollTo({ left: 0, behavior: 'smooth' });
+      if (direction === 'ltr') {
+        if (el.scrollLeft + el.clientWidth >= el.scrollWidth - 10) {
+          el.scrollTo({ left: 0, behavior: 'smooth' });
+        } else {
+          el.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+        }
       } else {
-        el.scrollBy({ left: 280, behavior: 'smooth' });
+        if (el.scrollLeft <= 10) {
+          el.scrollTo({ left: el.scrollWidth, behavior: 'smooth' });
+        } else {
+          el.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+        }
       }
     }, cat.carouselSpeed * 1000);
     return () => clearInterval(interval);
-  }, [localDisplay, cat.carouselAutoplay, cat.carouselSpeed]);
+  }, [localDisplay, cat.carouselAutoplay, cat.carouselSpeed, direction]);
+
+  // For RTL carousel, start scrolled to the right
+  useEffect(() => {
+    if (localDisplay === 'carousel' && direction === 'rtl' && scrollRef.current) {
+      scrollRef.current.scrollLeft = scrollRef.current.scrollWidth;
+    }
+  }, [localDisplay, direction]);
 
   const renderProducts = () => {
     if (filtered.length === 0) {
@@ -155,7 +173,6 @@ const ProductsPage = () => {
         </div>
 
         <div className="flex items-center gap-3">
-          {/* View mode switcher */}
           <div className="hidden md:flex items-center gap-1 border border-border rounded-md p-0.5">
             <button onClick={() => setLocalDisplay('grid')} className={cn('p-1.5 rounded', localDisplay === 'grid' && 'bg-foreground text-background')}>
               <Grid3X3 className="h-4 w-4" />

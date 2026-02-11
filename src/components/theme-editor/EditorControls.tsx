@@ -5,8 +5,26 @@ import { Switch } from '@/components/ui/switch';
 import { Slider } from '@/components/ui/slider';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { HelpCircle } from 'lucide-react';
+
+// Tooltip helper
+export function HintTooltip({ text }: { text: string }) {
+  return (
+    <TooltipProvider delayDuration={200}>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <HelpCircle className="h-3 w-3 text-muted-foreground/60 hover:text-muted-foreground cursor-help inline-block ml-1" />
+        </TooltipTrigger>
+        <TooltipContent side="top" className="max-w-[200px] text-xs">
+          {text}
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  );
+}
 
 // Color picker
 export function ColorInput({ label, value, onChange }: { label: string; value: string; onChange: (v: string) => void }) {
@@ -45,13 +63,13 @@ export function EditorSection({ icon: Icon, title, description, children }: {
 }
 
 // Toggle row
-export function ToggleRow({ label, description, checked, onChange }: {
-  label: string; description?: string; checked: boolean; onChange: (v: boolean) => void;
+export function ToggleRow({ label, description, hint, checked, onChange }: {
+  label: string; description?: string; hint?: string; checked: boolean; onChange: (v: boolean) => void;
 }) {
   return (
     <div className="flex items-center justify-between py-2">
       <div>
-        <p className="text-sm font-medium">{label}</p>
+        <p className="text-sm font-medium">{label}{hint && <HintTooltip text={hint} />}</p>
         {description && <p className="text-[11px] text-muted-foreground">{description}</p>}
       </div>
       <Switch checked={checked} onCheckedChange={onChange} />
