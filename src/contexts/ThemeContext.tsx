@@ -1,5 +1,5 @@
-import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
-import { ThemeConfig, ThemeVersion, ThemeState } from '@/types/theme';
+import React, { createContext, useContext, useState, useEffect, useCallback, useRef, ReactNode } from 'react';
+import { ThemeConfig, ThemeVersion } from '@/types/theme';
 import { defaultThemeConfig } from '@/data/theme-presets';
 
 // ============================================================
@@ -50,6 +50,25 @@ function deepMerge<T>(target: T, source: Partial<T>): T {
   return result;
 }
 
+function applyThemeCSS(t: ThemeConfig) {
+  const root = document.documentElement;
+  root.style.setProperty('--primary', hexToHSL(t.colors.primary));
+  root.style.setProperty('--primary-foreground', hexToHSL(t.colors.primaryForeground));
+  root.style.setProperty('--secondary', hexToHSL(t.colors.secondary));
+  root.style.setProperty('--secondary-foreground', hexToHSL(t.colors.secondaryForeground));
+  root.style.setProperty('--accent', hexToHSL(t.colors.accent));
+  root.style.setProperty('--accent-foreground', hexToHSL(t.colors.accentForeground));
+  root.style.setProperty('--background', hexToHSL(t.colors.background));
+  root.style.setProperty('--foreground', hexToHSL(t.colors.foreground));
+  root.style.setProperty('--muted', hexToHSL(t.colors.muted));
+  root.style.setProperty('--muted-foreground', hexToHSL(t.colors.mutedForeground));
+  root.style.setProperty('--border', hexToHSL(t.colors.border));
+  root.style.setProperty('--buy-now', hexToHSL(t.colors.buyNow));
+  root.style.setProperty('--radius', getRadiusValue(t.global.borderRadius));
+  root.style.setProperty('--font-heading', t.typography.headingFont);
+  root.style.setProperty('--font-body', t.typography.bodyFont);
+}
+
 // ============================================================
 // Storage keys
 // ============================================================
@@ -75,33 +94,27 @@ function saveToStorage(key: string, value: unknown) {
   } catch { /* storage full — ignore */ }
 }
 
+// Detect if running inside an iframe (preview mode)
+const isPreviewMode = typeof window !== 'undefined' && window.self !== window.top;
+
 // ============================================================
 // Context type
 // ============================================================
 
 interface ThemeContextType {
-  // Active theme (published, applied to storefront)
   theme: ThemeConfig;
-  // Draft (editor working copy)
   draft: ThemeConfig;
-  // Versioning
   versions: ThemeVersion[];
   isDirty: boolean;
-
-  // Draft mutations
   updateDraft: (updates: Partial<ThemeConfig>) => void;
   updateDraftSection: <K extends keyof ThemeConfig>(section: K, updates: Partial<ThemeConfig[K]>) => void;
   setDraftDeep: (path: string, value: unknown) => void;
-
-  // Lifecycle
   publish: (note?: string) => void;
   discardDraft: () => void;
   resetToDefault: () => void;
   applyPreset: (preset: Partial<ThemeConfig>) => void;
   rollback: (version: number) => void;
   duplicateTheme: (name: string) => void;
-
-  // Homepage sections
   reorderSections: (fromIndex: number, toIndex: number) => void;
   toggleSection: (sectionId: string) => void;
 }
@@ -123,33 +136,35 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     loadFromStorage(STORAGE_KEYS.versions, [])
   );
 
+  // Preview mode: override theme with incoming postMessage data
+  const [previewTheme, setPreviewTheme] = useState<ThemeConfig | null>(null);
+
   const isDirty = JSON.stringify(draft) !== JSON.stringify(published);
 
-  // Persist
-  useEffect(() => { saveToStorage(STORAGE_KEYS.draft, draft); }, [draft]);
-  useEffect(() => { saveToStorage(STORAGE_KEYS.published, published); }, [published]);
-  useEffect(() => { saveToStorage(STORAGE_KEYS.versions, versions); }, [versions]);
-
-  // Apply published theme CSS variables
+  // Listen for postMessage from editor (preview mode only)
   useEffect(() => {
-    const t = published;
-    const root = document.documentElement;
-    root.style.setProperty('--primary', hexToHSL(t.colors.primary));
-    root.style.setProperty('--primary-foreground', hexToHSL(t.colors.primaryForeground));
-    root.style.setProperty('--secondary', hexToHSL(t.colors.secondary));
-    root.style.setProperty('--secondary-foreground', hexToHSL(t.colors.secondaryForeground));
-    root.style.setProperty('--accent', hexToHSL(t.colors.accent));
-    root.style.setProperty('--accent-foreground', hexToHSL(t.colors.accentForeground));
-    root.style.setProperty('--background', hexToHSL(t.colors.background));
-    root.style.setProperty('--foreground', hexToHSL(t.colors.foreground));
-    root.style.setProperty('--muted', hexToHSL(t.colors.muted));
-    root.style.setProperty('--muted-foreground', hexToHSL(t.colors.mutedForeground));
-    root.style.setProperty('--border', hexToHSL(t.colors.border));
-    root.style.setProperty('--buy-now', hexToHSL(t.colors.buyNow));
-    root.style.setProperty('--radius', getRadiusValue(t.global.borderRadius));
-    root.style.setProperty('--font-heading', t.typography.headingFont);
-    root.style.setProperty('--font-body', t.typography.bodyFont);
-  }, [published]);
+    if (!isPreviewMode) return;
+    const handler = (event: MessageEvent) => {
+      if (event.data?.type === 'theme-preview-update' && event.data.theme) {
+        setPreviewTheme(event.data.theme);
+      }
+    };
+    window.addEventListener('message', handler);
+    return () => window.removeEventListener('message', handler);
+  }, []);
+
+  // Persist
+  useEffect(() => { if (!isPreviewMode) saveToStorage(STORAGE_KEYS.draft, draft); }, [draft]);
+  useEffect(() => { if (!isPreviewMode) saveToStorage(STORAGE_KEYS.published, published); }, [published]);
+  useEffect(() => { if (!isPreviewMode) saveToStorage(STORAGE_KEYS.versions, versions); }, [versions]);
+
+  // The active theme for the storefront: in preview mode use previewTheme, otherwise published
+  const activeTheme = isPreviewMode && previewTheme ? previewTheme : published;
+
+  // Apply theme CSS variables
+  useEffect(() => {
+    applyThemeCSS(activeTheme);
+  }, [activeTheme]);
 
   // Draft mutations
   const updateDraft = useCallback((updates: Partial<ThemeConfig>) => {
@@ -178,7 +193,6 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     });
   }, []);
 
-  // Publish
   const publish = useCallback((note = '') => {
     const newVersion: ThemeVersion = {
       version: (versions[0]?.version || 0) + 1,
@@ -237,7 +251,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
   return (
     <ThemeContext.Provider value={{
-      theme: published,
+      theme: activeTheme,
       draft,
       versions,
       isDirty,

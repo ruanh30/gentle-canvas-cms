@@ -95,12 +95,28 @@ function renderPanel(sectionId: string) {
 type DeviceSize = 'desktop' | 'tablet' | 'mobile';
 
 export function ThemeEditorLayout() {
-  const { isDirty, publish, discardDraft, resetToDefault, versions, rollback } = useTheme();
+  const { isDirty, publish, discardDraft, resetToDefault, versions, rollback, draft } = useTheme();
   const [activeSection, setActiveSection] = useState('presets');
   const [searchQuery, setSearchQuery] = useState('');
   const [device, setDevice] = useState<DeviceSize>('desktop');
   const [showVersions, setShowVersions] = useState(false);
+  const iframeRef = React.useRef<HTMLIFrameElement>(null);
 
+  // Send draft to iframe on every change
+  React.useEffect(() => {
+    const iframe = iframeRef.current;
+    if (iframe?.contentWindow) {
+      iframe.contentWindow.postMessage({ type: 'theme-preview-update', theme: draft }, '*');
+    }
+  }, [draft]);
+
+  const handleIframeLoad = () => {
+    const iframe = iframeRef.current;
+    if (iframe?.contentWindow) {
+      iframe.contentWindow.postMessage({ type: 'theme-preview-update', theme: draft }, '*');
+    }
+  };
+  
   const filteredSections = searchQuery
     ? sections.filter(s => s.label.toLowerCase().includes(searchQuery.toLowerCase()))
     : sections;
@@ -229,9 +245,11 @@ export function ThemeEditorLayout() {
               style={{ width: iframeWidth, maxWidth: '100%', height: 'calc(100vh - 160px)' }}
             >
               <iframe
+                ref={iframeRef}
                 src="/"
                 className="w-full h-full border-0"
                 title="Preview da Loja"
+                onLoad={handleIframeLoad}
               />
             </div>
           </div>
