@@ -223,13 +223,13 @@ export function ThemeEditorLayout() {
               </button>
             ))}
           </div>
-          <div className="flex-1 flex items-start justify-center p-4 overflow-auto">
+          <div className="flex-1 flex items-start justify-center p-4 overflow-auto min-h-0">
             <div
-              className="bg-background rounded-lg shadow-xl overflow-hidden transition-all duration-300 h-full"
-              style={{ width: iframeWidth, maxWidth: '100%' }}
+              className="bg-background rounded-lg shadow-xl overflow-hidden transition-all duration-300"
+              style={{ width: iframeWidth, maxWidth: '100%', height: 'calc(100vh - 160px)' }}
             >
               <iframe
-                src="/?preview=true"
+                src="/"
                 className="w-full h-full border-0"
                 title="Preview da Loja"
               />
