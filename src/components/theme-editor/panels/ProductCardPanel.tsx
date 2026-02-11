@@ -59,6 +59,12 @@ export function ProductCardPanel() {
         ]} />
       )}
       <ToggleRow label="Quick View" checked={c.showQuickView} onChange={v => set({ showQuickView: v })} />
+      {c.showQuickView && (
+        <SelectField label="Estilo do Quick View" value={c.quickViewStyle} onChange={v => set({ quickViewStyle: v })} options={[
+          { value: 'modal', label: 'Modal' }, { value: 'drawer', label: 'Drawer lateral' },
+          { value: 'expand', label: 'Expandir card' }, { value: 'side-panel', label: 'Painel lateral' },
+        ]} />
+      )}
       <ToggleRow label="Wishlist" checked={c.showWishlist} onChange={v => set({ showWishlist: v })} />
 
       <SectionDivider label="Badges" />

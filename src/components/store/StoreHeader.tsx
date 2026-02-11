@@ -1,15 +1,106 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ShoppingBag, Search, User, Menu, Heart } from 'lucide-react';
 import { useCart } from '@/contexts/CartContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTheme } from '@/contexts/ThemeContext';
-import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { mockCategories } from '@/data/mock';
 import { cn } from '@/lib/utils';
+
+function AnnouncementBar() {
+  const { theme } = useTheme();
+  const a = theme.header.announcement;
+  const [currentIdx, setCurrentIdx] = useState(0);
+  const validMsgs = a.messages.filter(Boolean);
+
+  useEffect(() => {
+    if (a.style === 'static' || validMsgs.length <= 1) return;
+    const interval = setInterval(() => {
+      setCurrentIdx(prev => (prev + 1) % validMsgs.length);
+    }, a.speed * 1000);
+    return () => clearInterval(interval);
+  }, [a.style, a.speed, validMsgs.length]);
+
+  if (!a.enabled || validMsgs.length === 0) return null;
+
+  if (a.style === 'ticker') {
+    return (
+      <div
+        className="overflow-hidden text-xs py-1.5 font-body"
+        style={{ backgroundColor: a.backgroundColor, color: a.textColor }}
+      >
+        <div
+          className="whitespace-nowrap animate-ticker inline-block"
+          style={{ animationDuration: `${a.speed * validMsgs.length * 3}s` }}
+        >
+          {validMsgs.map((m, i) => (
+            <span key={i} className="mx-8">{m}</span>
+          ))}
+          {validMsgs.map((m, i) => (
+            <span key={`dup-${i}`} className="mx-8">{m}</span>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  if (a.style === 'carousel' && validMsgs.length > 1) {
+    return (
+      <div
+        className="text-center text-xs py-1.5 font-body relative overflow-hidden h-7"
+        style={{ backgroundColor: a.backgroundColor, color: a.textColor }}
+      >
+        {validMsgs.map((msg, i) => (
+          <div
+            key={i}
+            className={cn(
+              'absolute inset-0 flex items-center justify-center transition-all duration-500',
+              i === currentIdx ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
+            )}
+          >
+            {msg}
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  return (
+    <div
+      className="text-center text-xs py-1.5 font-body tracking-wide"
+      style={{ backgroundColor: a.backgroundColor, color: a.textColor }}
+    >
+      {validMsgs[0]}
+    </div>
+  );
+}
+
+function BannerBelow() {
+  const { theme } = useTheme();
+  const bb = theme.header.bannerBelow;
+  if (!bb?.enabled) return null;
+
+  const content = bb.imageUrl ? (
+    <img
+      src={bb.imageUrl}
+      alt="Banner"
+      className="w-full object-cover"
+      style={{ height: bb.height }}
+    />
+  ) : (
+    <div className="w-full bg-secondary flex items-center justify-center" style={{ height: bb.height }}>
+      <span className="text-muted-foreground text-sm">Banner (configure a URL da imagem)</span>
+    </div>
+  );
+
+  if (bb.link) {
+    return <Link to={bb.link} className="block">{content}</Link>;
+  }
+  return <div>{content}</div>;
+}
 
 export function StoreHeader() {
   const { itemCount } = useCart();
@@ -19,7 +110,6 @@ export function StoreHeader() {
 
   const navLinks = mockCategories.slice(0, 5);
   const h = theme.header;
-  const ann = h.announcement;
   const isMinimal = h.layout === 'minimal' || h.layout === 'hamburger-only';
   const isCentered = h.layout === 'centered' || h.layout === 'logo-center-nav-left';
 
@@ -29,22 +119,13 @@ export function StoreHeader() {
       h.borderBottom && 'border-b',
       h.sticky && 'sticky top-0'
     )}>
-      {/* Announcement bar */}
-      {ann.enabled && !isMinimal && (
-        <div
-          className="text-center text-xs py-1.5 font-body tracking-wide"
-          style={{ backgroundColor: ann.backgroundColor, color: ann.textColor }}
-        >
-          {ann.messages[0] || ''}
-        </div>
-      )}
+      {!isMinimal && <AnnouncementBar />}
 
       <div className="container mx-auto px-4">
         <div className={cn(
           'flex items-center',
           isCentered ? 'justify-center relative' : 'justify-between'
         )} style={{ height: h.height }}>
-          {/* Mobile menu */}
           <Sheet>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon" className={cn('lg:hidden', isCentered && 'absolute left-0')}>
@@ -63,7 +144,6 @@ export function StoreHeader() {
             </SheetContent>
           </Sheet>
 
-          {/* Logo */}
           <Link to="/" className="flex items-center gap-2">
             {theme.logo.imageUrl && (
               <img src={theme.logo.imageUrl} alt="Logo" style={{ maxHeight: theme.logo.maxHeight }} className="object-contain" />
@@ -75,7 +155,6 @@ export function StoreHeader() {
             )}
           </Link>
 
-          {/* Desktop nav */}
           {h.layout !== 'hamburger-only' && h.layout !== 'centered' && (
             <nav className="hidden lg:flex items-center gap-8">
               {navLinks.map(cat => (
@@ -95,7 +174,6 @@ export function StoreHeader() {
             </nav>
           )}
 
-          {/* Actions */}
           <div className={cn('flex items-center gap-1', isCentered && 'absolute right-0')}>
             {h.showSearch && (
               <Button variant="ghost" size="icon" onClick={() => setSearchOpen(!searchOpen)}>
@@ -129,7 +207,6 @@ export function StoreHeader() {
           </div>
         </div>
 
-        {/* Centered nav below logo */}
         {h.layout === 'centered' && (
           <nav className="hidden lg:flex items-center justify-center gap-8 pb-3">
             {navLinks.map(cat => (
@@ -148,7 +225,6 @@ export function StoreHeader() {
           </nav>
         )}
 
-        {/* Search bar */}
         {searchOpen && (
           <div className="pb-4 animate-in slide-in-from-top-2">
             <div className="relative">
@@ -163,6 +239,8 @@ export function StoreHeader() {
           </div>
         )}
       </div>
+
+      <BannerBelow />
     </header>
   );
 }
