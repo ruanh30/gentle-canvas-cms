@@ -83,22 +83,22 @@ function AnnouncementBar() {
 
 function BannerBelow() {
   const { theme } = useTheme();
-  const bb = theme.header.bannerBelow;
+  const bb = theme.header?.bannerBelow;
   const [currentImg, setCurrentImg] = useState(0);
 
-  const allImages = [bb.imageUrl, ...(bb.images || [])].filter(Boolean);
+  const allImages = [bb?.imageUrl, ...(bb?.images || [])].filter(Boolean);
 
   useEffect(() => {
-    if (!bb.carousel || allImages.length <= 1) return;
+    if (!bb?.carousel || allImages.length <= 1) return;
     const interval = setInterval(() => {
       setCurrentImg(prev => (prev + 1) % allImages.length);
-    }, (bb.carouselSpeed || 5) * 1000);
+    }, (bb?.carouselSpeed || 5) * 1000);
     return () => clearInterval(interval);
-  }, [bb.carousel, allImages.length, bb.carouselSpeed]);
+  }, [bb?.carousel, allImages.length, bb?.carouselSpeed]);
 
   if (!bb?.enabled) return null;
 
-  if (bb.carousel && allImages.length > 1) {
+  if (bb?.carousel && allImages.length > 1) {
     return (
       <div className="relative overflow-hidden" style={{ height: bb.height }}>
         {allImages.map((img, i) => (
@@ -122,20 +122,20 @@ function BannerBelow() {
     );
   }
 
-  const content = bb.imageUrl ? (
+  const content = bb?.imageUrl ? (
     <img
-      src={bb.imageUrl}
+      src={bb!.imageUrl}
       alt="Banner"
       className="w-full object-cover"
-      style={{ height: bb.height }}
+      style={{ height: bb!.height }}
     />
   ) : (
-    <div className="w-full bg-secondary flex items-center justify-center" style={{ height: bb.height }}>
+    <div className="w-full bg-secondary flex items-center justify-center" style={{ height: bb?.height || 60 }}>
       <span className="text-muted-foreground text-sm">Banner (configure a URL da imagem)</span>
     </div>
   );
 
-  if (bb.link) {
+  if (bb?.link) {
     return <Link to={bb.link} className="block">{content}</Link>;
   }
   return <div>{content}</div>;
