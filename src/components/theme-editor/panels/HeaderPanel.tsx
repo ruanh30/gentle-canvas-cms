@@ -5,9 +5,9 @@ import { PanelTop } from 'lucide-react';
 
 export function HeaderPanel() {
   const { draft, updateDraftSection } = useTheme();
-  const h = draft.header;
-  const a = h.announcement;
-  const bb = h.bannerBelow;
+  const h = draft.header ?? {} as any;
+  const a = h.announcement ?? { enabled: false, messages: [], speed: 5, backgroundColor: '#1a1a1a', textColor: '#fafafa', showIcon: false, icon: 'truck', link: '', pauseOnHover: true, style: 'static' as const, direction: 'rtl' as const };
+  const bb = h.bannerBelow ?? { enabled: false, imageUrl: '', images: [], link: '', height: 60, fullWidth: true, carousel: false, carouselSpeed: 5 };
   const set = (u: Partial<typeof h>) => updateDraftSection('header', u);
   const setAnn = (u: Partial<typeof a>) => updateDraftSection('header', { announcement: { ...a, ...u } });
   const setBanner = (u: Partial<typeof bb>) => updateDraftSection('header', { bannerBelow: { ...bb, ...u } });
