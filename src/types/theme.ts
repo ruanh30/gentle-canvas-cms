@@ -66,14 +66,18 @@ export interface ThemeAnnouncementBar {
   link: string;
   pauseOnHover: boolean;
   style: 'static' | 'carousel' | 'ticker';
+  direction: 'ltr' | 'rtl';
 }
 
 export interface ThemeBannerBelow {
   enabled: boolean;
   imageUrl: string;
+  images: string[];
   link: string;
   height: number;
   fullWidth: boolean;
+  carousel: boolean;
+  carouselSpeed: number;
 }
 
 export interface ThemeHeader {
@@ -138,7 +142,10 @@ export interface ThemeProductCard {
   quickViewStyle: 'modal' | 'drawer' | 'expand' | 'side-panel';
   showWishlist: boolean;
   showAddToCart: boolean;
+  showBuyNow: boolean;
+  buttonVisibility: 'both' | 'add-only' | 'buy-only';
   addToCartStyle: 'icon' | 'button' | 'full-width';
+  clickBehavior: 'navigate' | 'modal';
   badgePosition: 'top-left' | 'top-right' | 'bottom-left';
   badgeStyle: 'square' | 'rounded' | 'pill';
   priceSize: 'small' | 'medium' | 'large';
@@ -195,6 +202,7 @@ export interface ThemeCategory {
   showProductCount: boolean;
   carouselAutoplay: boolean;
   carouselSpeed: number;      // seconds
+  carouselDirection: 'ltr' | 'rtl';
   showAddToCartOnListing: boolean;
 }
 
