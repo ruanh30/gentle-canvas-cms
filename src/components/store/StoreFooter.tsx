@@ -1,66 +1,66 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { mockStoreSettings } from '@/data/mock';
 import { useTheme } from '@/contexts/ThemeContext';
-import { Instagram } from 'lucide-react';
+import { Instagram, Facebook, ArrowUp } from 'lucide-react';
 
 export function StoreFooter() {
   const { theme } = useTheme();
-
-  const storeName = theme.logo.text || mockStoreSettings.storeName;
-  const copyright = theme.footer.copyrightText.replace('{storeName}', storeName);
+  const f = theme.footer;
+  const storeName = theme.logo.text || 'Loja';
+  const copyright = f.copyrightText.replace('{storeName}', storeName);
 
   return (
-    <footer className="bg-primary text-primary-foreground mt-20">
+    <footer className="mt-20" style={{ backgroundColor: f.backgroundColor, color: f.textColor }}>
       <div className="container mx-auto px-4 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div>
             <h3 className="font-display text-lg font-bold mb-4">{storeName}</h3>
-            <p className="text-sm text-primary-foreground/70">{mockStoreSettings.description}</p>
+            {f.showNewsletter && (
+              <div className="space-y-2">
+                <p className="text-sm opacity-70">{f.newsletterDescription}</p>
+              </div>
+            )}
           </div>
-          {theme.footer.showInstitutional && (
-            <div>
-              <h4 className="font-semibold text-sm uppercase tracking-wider mb-4">Institucional</h4>
-              <ul className="space-y-2 text-sm text-primary-foreground/70">
-                <li><Link to="/about" className="hover:text-primary-foreground transition-colors">Sobre nós</Link></li>
-                <li><Link to="/contact" className="hover:text-primary-foreground transition-colors">Contato</Link></li>
-                <li><Link to="/faq" className="hover:text-primary-foreground transition-colors">FAQ</Link></li>
+          {f.columns.filter(c => c.enabled).map((col, idx) => (
+            <div key={idx}>
+              <h4 className="font-semibold text-sm uppercase tracking-wider mb-4">{col.title}</h4>
+              <ul className="space-y-2 text-sm" style={{ color: `${f.textColor}b3` }}>
+                {col.links.map((link, i) => (
+                  <li key={i}>
+                    <Link to={link.url} className="hover:opacity-100 transition-opacity opacity-70">{link.label}</Link>
+                  </li>
+                ))}
               </ul>
             </div>
-          )}
-          {theme.footer.showHelp && (
-            <div>
-              <h4 className="font-semibold text-sm uppercase tracking-wider mb-4">Ajuda</h4>
-              <ul className="space-y-2 text-sm text-primary-foreground/70">
-                <li><Link to="/shipping" className="hover:text-primary-foreground transition-colors">Entregas</Link></li>
-                <li><Link to="/returns" className="hover:text-primary-foreground transition-colors">Trocas e Devoluções</Link></li>
-                <li><Link to="/privacy" className="hover:text-primary-foreground transition-colors">Privacidade</Link></li>
-              </ul>
-            </div>
-          )}
-          {(theme.footer.showContact || theme.footer.showSocial) && (
-            <div>
-              {theme.footer.showContact && (
-                <>
-                  <h4 className="font-semibold text-sm uppercase tracking-wider mb-4">Contato</h4>
-                  <p className="text-sm text-primary-foreground/70 mb-2">{mockStoreSettings.contactEmail}</p>
-                  <p className="text-sm text-primary-foreground/70 mb-4">{mockStoreSettings.contactPhone}</p>
-                </>
-              )}
-              {theme.footer.showSocial && (
-                <div className="flex gap-3">
-                  {mockStoreSettings.socialLinks.instagram && (
-                    <a href="#" className="text-primary-foreground/70 hover:text-primary-foreground transition-colors">
-                      <Instagram className="h-5 w-5" />
-                    </a>
-                  )}
-                </div>
-              )}
-            </div>
-          )}
+          ))}
         </div>
-        <div className="border-t border-primary-foreground/10 mt-8 pt-8 text-center text-xs text-primary-foreground/50">
-          {copyright}
+
+        {f.showSocial && (
+          <div className="flex gap-3 mt-8">
+            {f.socialLinks.map((s, i) => (
+              <a key={i} href={s.url} className="opacity-70 hover:opacity-100 transition-opacity">
+                {s.platform === 'instagram' ? <Instagram className="h-5 w-5" /> : <Facebook className="h-5 w-5" />}
+              </a>
+            ))}
+          </div>
+        )}
+
+        <div className="border-t mt-8 pt-8 text-center text-xs opacity-50" style={{ borderColor: `${f.textColor}1a` }}>
+          <div className="flex items-center justify-between">
+            <span>{copyright}</span>
+            {f.showBackToTop && (
+              <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="opacity-70 hover:opacity-100">
+                <ArrowUp className="h-4 w-4" />
+              </button>
+            )}
+          </div>
+          {f.bottomLinks && f.bottomLinks.length > 0 && (
+            <div className="flex justify-center gap-4 mt-2">
+              {f.bottomLinks.map((link, i) => (
+                <Link key={i} to={link.url} className="hover:opacity-100 opacity-70">{link.label}</Link>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </footer>
