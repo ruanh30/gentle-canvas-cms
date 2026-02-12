@@ -3,6 +3,7 @@ import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import {
   LayoutDashboard, Package, ShoppingCart, Users, Tag, Settings, LogOut, ChevronLeft, ChevronRight, Store, Paintbrush,
+  FolderTree, Menu, FileText, Image, Star, Newspaper, Award, HelpCircle,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
@@ -12,8 +13,16 @@ const navItems = [
   { label: 'Dashboard', icon: LayoutDashboard, path: '/admin' },
   { label: 'Pedidos', icon: ShoppingCart, path: '/admin/orders' },
   { label: 'Produtos', icon: Package, path: '/admin/products' },
+  { label: 'Categorias', icon: FolderTree, path: '/admin/categories' },
   { label: 'Clientes', icon: Users, path: '/admin/customers' },
   { label: 'Cupons', icon: Tag, path: '/admin/coupons' },
+  { label: 'Blog', icon: Newspaper, path: '/admin/blog' },
+  { label: 'Páginas', icon: FileText, path: '/admin/pages' },
+  { label: 'FAQ', icon: HelpCircle, path: '/admin/faq' },
+  { label: 'Depoimentos', icon: Star, path: '/admin/testimonials' },
+  { label: 'Marcas', icon: Award, path: '/admin/brands' },
+  { label: 'Menus', icon: Menu, path: '/admin/menus' },
+  { label: 'Mídia', icon: Image, path: '/admin/media' },
   { label: 'Configurações', icon: Settings, path: '/admin/settings' },
   { label: 'Personalização', icon: Paintbrush, path: '/admin/customization' },
 ];
