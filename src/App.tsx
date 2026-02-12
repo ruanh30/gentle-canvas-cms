@@ -21,10 +21,18 @@ import LoginPage from "@/pages/LoginPage";
 import AdminDashboard from "@/pages/admin/AdminDashboard";
 import AdminOrders from "@/pages/admin/AdminOrders";
 import AdminProducts from "@/pages/admin/AdminProducts";
+import AdminCategories from "@/pages/admin/AdminCategories";
 import AdminCustomers from "@/pages/admin/AdminCustomers";
 import AdminCoupons from "@/pages/admin/AdminCoupons";
 import AdminSettings from "@/pages/admin/AdminSettings";
 import AdminCustomization from "@/pages/admin/AdminCustomization";
+import AdminBlog from "@/pages/admin/AdminBlog";
+import AdminStaticPages from "@/pages/admin/AdminStaticPages";
+import AdminFAQ from "@/pages/admin/AdminFAQ";
+import AdminTestimonials from "@/pages/admin/AdminTestimonials";
+import AdminBrands from "@/pages/admin/AdminBrands";
+import AdminMenus from "@/pages/admin/AdminMenus";
+import AdminMedia from "@/pages/admin/AdminMedia";
 
 import NotFound from "./pages/NotFound";
 
@@ -56,8 +64,16 @@ const App = () => (
                 <Route index element={<AdminDashboard />} />
                 <Route path="orders" element={<AdminOrders />} />
                 <Route path="products" element={<AdminProducts />} />
+                <Route path="categories" element={<AdminCategories />} />
                 <Route path="customers" element={<AdminCustomers />} />
                 <Route path="coupons" element={<AdminCoupons />} />
+                <Route path="blog" element={<AdminBlog />} />
+                <Route path="pages" element={<AdminStaticPages />} />
+                <Route path="faq" element={<AdminFAQ />} />
+                <Route path="testimonials" element={<AdminTestimonials />} />
+                <Route path="brands" element={<AdminBrands />} />
+                <Route path="menus" element={<AdminMenus />} />
+                <Route path="media" element={<AdminMedia />} />
                 <Route path="settings" element={<AdminSettings />} />
                 <Route path="customization" element={<AdminCustomization />} />
               </Route>
