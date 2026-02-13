@@ -3,6 +3,22 @@ import { ThemeConfig, ThemeVersion } from '@/types/theme';
 import { defaultThemeConfig } from '@/data/theme-presets';
 
 // ============================================================
+// Provider Props — supports standalone (localStorage) and Inertia (server) modes
+// ============================================================
+
+export interface ThemeProviderProps {
+  children: ReactNode;
+  /** Initial draft config from server (Inertia mode) */
+  initialDraft?: ThemeConfig | Record<string, unknown>;
+  /** Initial published config from server (Inertia mode) */
+  initialPublished?: ThemeConfig | Record<string, unknown>;
+  /** Callback to persist draft to server (Inertia mode) */
+  onSaveDraft?: (config: ThemeConfig, label?: string) => void;
+  /** Callback to publish theme on server (Inertia mode) */
+  onPublish?: (label?: string) => void;
+}
+
+// ============================================================
 // Helpers
 // ============================================================
 
