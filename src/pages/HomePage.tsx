@@ -1,6 +1,6 @@
 import React, { useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { mockProducts, mockCategories } from '@/data/mock';
+import { mockProducts, mockCategories, mockCollections } from '@/data/mock';
 import { useTheme } from '@/contexts/ThemeContext';
 import { ProductCard } from '@/components/store/ProductCard';
 import { Button } from '@/components/ui/button';
@@ -48,6 +48,9 @@ const HomePage = () => {
   const { theme } = useTheme();
   const featured = mockProducts.filter(p => p.featured);
   const sections = theme.homepageSections;
+  const activeCollections = mockCollections
+    .filter(c => c.active)
+    .sort((a, b) => a.order - b.order);
 
   const slide = theme.hero.slides[0];
 
@@ -241,6 +244,29 @@ const HomePage = () => {
   return (
     <>
       {sections.filter(s => s.enabled).map(renderSection)}
+
+      {/* Collections */}
+      {activeCollections.map(collection => {
+        const collectionProducts = mockProducts.filter(p => collection.productIds.includes(p.id));
+        if (collectionProducts.length === 0) return null;
+        return (
+          <section key={collection.id} className="container mx-auto px-4 py-16">
+            <div className="flex items-center justify-between mb-8">
+              <h2 className="text-2xl font-display font-bold">{collection.name}</h2>
+              <Link to="/products" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1 ml-auto">
+                Ver todos <ArrowRight className="h-4 w-4" />
+              </Link>
+            </div>
+            <SectionCarousel speed={5}>
+              {collectionProducts.map(product => (
+                <div key={product.id} className="min-w-[260px] max-w-[280px] snap-start flex-shrink-0">
+                  <ProductCard product={product} />
+                </div>
+              ))}
+            </SectionCarousel>
+          </section>
+        );
+      })}
     </>
   );
 };

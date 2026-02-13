@@ -1,4 +1,4 @@
-import { Product, Category, Order, Customer, Coupon, StoreSettings, User } from '@/types';
+import { Product, Category, Order, Customer, Coupon, StoreSettings, User, ProductCollection } from '@/types';
 
 export const mockCategories: Category[] = [
   { id: 'cat-1', name: 'Camisetas', slug: 'camisetas', description: 'Camisetas masculinas e femininas' },
@@ -193,6 +193,27 @@ export const mockStoreSettings: StoreSettings = {
   contactPhone: '(11) 3000-0000',
   socialLinks: { instagram: '@modastore', whatsapp: '5511999990000' },
 };
+
+export const mockCollections: ProductCollection[] = [
+  {
+    id: 'col-1', name: 'Acabaram de Chegar', slug: 'acabaram-de-chegar',
+    description: 'Novidades fresquinhas na loja',
+    productIds: ['prod-1', 'prod-3', 'prod-5', 'prod-7'],
+    order: 1, active: true, createdAt: '2024-06-01',
+  },
+  {
+    id: 'col-2', name: 'Mais Vendidos', slug: 'mais-vendidos',
+    description: 'Os queridinhos dos nossos clientes',
+    productIds: ['prod-2', 'prod-4', 'prod-6', 'prod-8'],
+    order: 2, active: true, createdAt: '2024-06-01',
+  },
+  {
+    id: 'col-3', name: 'Looks Completos', slug: 'looks-completos',
+    description: 'Combinações perfeitas para você',
+    productIds: ['prod-1', 'prod-2', 'prod-6'],
+    order: 3, active: true, createdAt: '2024-06-10',
+  },
+];
 
 export const mockAdminUser: User = {
   id: 'admin-1', name: 'Admin', email: 'admin@modastore.com', role: 'admin', createdAt: '2024-01-01',

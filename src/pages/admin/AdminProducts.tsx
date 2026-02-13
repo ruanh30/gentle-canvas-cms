@@ -13,8 +13,9 @@ import { Product } from '@/types';
 import { cn } from '@/lib/utils';
 import {
   Search, Plus, Trash2, Package, ChevronLeft, Save, Image, Tag,
-  DollarSign, Box, FileText, ToggleLeft
+  DollarSign, Box, FileText, ToggleLeft, Layers
 } from 'lucide-react';
+import AdminCollections from '@/components/admin/AdminCollections';
 
 type PanelSection = 'info' | 'pricing' | 'inventory' | 'media' | 'status';
 
@@ -27,6 +28,7 @@ const panelSections: { id: PanelSection; label: string; icon: React.ElementType 
 ];
 
 const AdminProducts = () => {
+  const [activeTab, setActiveTab] = useState<'products' | 'collections'>('products');
   const [search, setSearch] = useState('');
   const [products, setProducts] = useState(mockProducts);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
@@ -250,8 +252,61 @@ const AdminProducts = () => {
     }
   };
 
+  if (activeTab === 'collections') {
+    return (
+      <div className="flex flex-col h-[calc(100vh-73px)] -m-6">
+        {/* Tab bar */}
+        <div className="flex items-center gap-0 border-b bg-background shrink-0">
+          <button
+            onClick={() => setActiveTab('products')}
+            className={cn(
+              'px-4 py-2.5 text-xs font-medium border-b-2 transition-colors',
+              'text-muted-foreground border-transparent hover:text-foreground'
+            )}
+          >
+            <Package className="h-3.5 w-3.5 inline mr-1.5" />Produtos
+          </button>
+          <button
+            onClick={() => setActiveTab('collections')}
+            className={cn(
+              'px-4 py-2.5 text-xs font-medium border-b-2 transition-colors',
+              'text-foreground border-foreground'
+            )}
+          >
+            <Layers className="h-3.5 w-3.5 inline mr-1.5" />Coleções
+          </button>
+        </div>
+        <div className="flex-1 min-h-0">
+          <AdminCollections />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col h-[calc(100vh-73px)] -m-6">
+      {/* Tab bar */}
+      <div className="flex items-center gap-0 border-b bg-background shrink-0">
+        <button
+          onClick={() => setActiveTab('products')}
+          className={cn(
+            'px-4 py-2.5 text-xs font-medium border-b-2 transition-colors',
+            'text-foreground border-foreground'
+          )}
+        >
+          <Package className="h-3.5 w-3.5 inline mr-1.5" />Produtos
+        </button>
+        <button
+          onClick={() => setActiveTab('collections')}
+          className={cn(
+            'px-4 py-2.5 text-xs font-medium border-b-2 transition-colors',
+            'text-muted-foreground border-transparent hover:text-foreground'
+          )}
+        >
+          <Layers className="h-3.5 w-3.5 inline mr-1.5" />Coleções
+        </button>
+      </div>
+
       {/* Top bar */}
       <div className="flex items-center justify-between px-4 py-2 bg-background border-b shrink-0">
         <div className="flex items-center gap-2">
