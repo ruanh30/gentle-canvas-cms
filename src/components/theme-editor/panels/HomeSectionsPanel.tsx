@@ -1,17 +1,19 @@
 import React, { useState } from 'react';
 import { useTheme } from '@/contexts/ThemeContext';
 import { EditorSection, ToggleRow, TextField, SectionDivider, HintTooltip, SelectField, NumberSlider } from '../EditorControls';
-import { Grid3X3, GripVertical, ChevronUp, ChevronDown, Plus, Trash2, Pencil, Check, X, Eye, EyeOff } from 'lucide-react';
+import { Grid3X3, GripVertical, ChevronUp, ChevronDown, Plus, Trash2, Pencil, Check, X, Eye, EyeOff, Link2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ThemeHomepageSection } from '@/types/theme';
+import { mockCollections } from '@/data/mock';
 
 const sectionTypes: { value: ThemeHomepageSection['type']; label: string }[] = [
   { value: 'hero', label: 'Hero Banner' },
   { value: 'categories', label: 'Categorias' },
   { value: 'featured-products', label: 'Produtos em Destaque' },
+  { value: 'collections', label: '📦 Coleção de Produtos' },
   { value: 'banner', label: 'Banner Promocional' },
   { value: 'benefits', label: 'Benefícios' },
   { value: 'testimonials', label: 'Depoimentos' },
@@ -58,6 +60,8 @@ export function HomeSectionsPanel() {
     });
   };
 
+  const [newCollectionId, setNewCollectionId] = useState<string>('');
+
   const addSection = () => {
     if (!newTitle.trim()) return;
     const newSection: ThemeHomepageSection = {
@@ -66,12 +70,13 @@ export function HomeSectionsPanel() {
       enabled: true,
       title: newTitle.trim(),
       showTitle: true,
-      settings: {},
+      settings: newType === 'collections' && newCollectionId ? { collectionId: newCollectionId } : {},
     };
     updateDraft({
       homepageSections: [...sections, newSection],
     });
     setNewTitle('');
+    setNewCollectionId('');
     setShowAdd(false);
   };
 
@@ -149,6 +154,39 @@ export function HomeSectionsPanel() {
                 className="rounded"
               />
             </div>
+        {/* Collection linking */}
+            {section.type === 'collections' && section.enabled && (
+              <div className="ml-6 mt-1 mb-2 p-2 bg-muted/30 rounded-md space-y-2">
+                <div className="flex items-center gap-2">
+                  <Link2 className="h-3 w-3 text-muted-foreground shrink-0" />
+                  <label className="text-[11px] text-muted-foreground">Coleção vinculada:</label>
+                </div>
+                <select
+                  value={(section.settings?.collectionId as string) || ''}
+                  onChange={e => setSetting(section.id, 'collectionId', e.target.value)}
+                  className="w-full h-7 text-[11px] rounded border border-border bg-background px-1.5"
+                >
+                  <option value="">Selecionar coleção...</option>
+                  {mockCollections.map(col => (
+                    <option key={col.id} value={col.id}>{col.name} ({col.productIds.length} produtos)</option>
+                  ))}
+                </select>
+                {!(section.settings?.collectionId) && (
+                  <p className="text-[10px] text-warning">⚠ Vincule uma coleção criada em Produtos &gt; Coleções</p>
+                )}
+                <div className="flex items-center gap-2">
+                  <label className="text-[11px] text-muted-foreground">Exibição:</label>
+                  <select
+                    value={(section.settings?.displayMode as string) || 'carousel'}
+                    onChange={e => setSetting(section.id, 'displayMode', e.target.value)}
+                    className="h-6 text-[11px] rounded border border-border bg-background px-1.5"
+                  >
+                    <option value="grid">Grade</option>
+                    <option value="carousel">Carrossel</option>
+                  </select>
+                </div>
+              </div>
+            )}
             {carouselSections.includes(section.type) && section.enabled && (
               <div className="ml-6 mt-1 mb-2 p-2 bg-muted/30 rounded-md space-y-2">
                 <div className="flex items-center gap-2">
@@ -191,8 +229,18 @@ export function HomeSectionsPanel() {
               {sectionTypes.map(t => <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>)}
             </SelectContent>
           </Select>
+          {newType === 'collections' && (
+            <Select value={newCollectionId} onValueChange={setNewCollectionId}>
+              <SelectTrigger className="h-8 text-xs"><SelectValue placeholder="Vincular coleção..." /></SelectTrigger>
+              <SelectContent>
+                {mockCollections.map(col => (
+                  <SelectItem key={col.id} value={col.id}>{col.name} ({col.productIds.length} produtos)</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
           <Input
-            placeholder="Nome da seção"
+            placeholder="Nome da seção na home"
             value={newTitle}
             onChange={e => setNewTitle(e.target.value)}
             className="h-8 text-xs"
