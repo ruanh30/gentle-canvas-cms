@@ -3,18 +3,18 @@ import { ThemeConfig, ThemeVersion } from '@/types/theme';
 import { defaultThemeConfig } from '@/data/theme-presets';
 
 // ============================================================
-// Provider Props — supports standalone (localStorage) and Inertia (server) modes
+// Provider Props — standalone (localStorage) + Inertia (server) modes
 // ============================================================
 
 export interface ThemeProviderProps {
   children: ReactNode;
-  /** Initial draft config from server (Inertia mode) */
-  initialDraft?: ThemeConfig | Record<string, unknown>;
-  /** Initial published config from server (Inertia mode) */
-  initialPublished?: ThemeConfig | Record<string, unknown>;
-  /** Callback to persist draft to server (Inertia mode) */
+  /** Initial draft from server (Inertia mode) */
+  initialDraft?: Partial<ThemeConfig> | Record<string, unknown>;
+  /** Initial published from server (Inertia mode) */
+  initialPublished?: Partial<ThemeConfig> | Record<string, unknown>;
+  /** Callback to persist draft to server */
   onSaveDraft?: (config: ThemeConfig, label?: string) => void;
-  /** Callback to publish theme on server (Inertia mode) */
+  /** Callback to publish theme on server */
   onPublish?: (label?: string) => void;
 }
 
@@ -53,6 +53,17 @@ function getRadiusValue(radius: string): string {
   }
 }
 
+function getRadiusPx(radius: string): string {
+  switch (radius) {
+    case 'none': return '0';
+    case 'small': return '4px';
+    case 'medium': return '8px';
+    case 'large': return '12px';
+    case 'full': return '9999px';
+    default: return '8px';
+  }
+}
+
 function deepMerge<T>(target: T, source: Partial<T>): T {
   const result = { ...target };
   for (const key of Object.keys(source) as Array<keyof T>) {
@@ -66,9 +77,14 @@ function deepMerge<T>(target: T, source: Partial<T>): T {
   return result;
 }
 
+/**
+ * Apply CSS variables for both Lovable standalone (--primary etc)
+ * AND Laravel/Blade premium storefront (--pm-* etc)
+ */
 function applyThemeCSS(t: ThemeConfig) {
   const root = document.documentElement;
-  // Colors
+
+  // === Lovable standalone vars (HSL for Tailwind) ===
   root.style.setProperty('--primary', hexToHSL(t.colors.primary));
   root.style.setProperty('--primary-foreground', hexToHSL(t.colors.primaryForeground));
   root.style.setProperty('--secondary', hexToHSL(t.colors.secondary));
@@ -82,9 +98,7 @@ function applyThemeCSS(t: ThemeConfig) {
   root.style.setProperty('--border', hexToHSL(t.colors.border));
   root.style.setProperty('--buy-now', hexToHSL(t.colors.buyNow));
   root.style.setProperty('--buy-now-hover', hexToHSL(t.colors.buyNowHover));
-  // Global
   root.style.setProperty('--radius', getRadiusValue(t.global.borderRadius));
-  // Typography
   root.style.setProperty('--font-heading', t.typography.headingFont);
   root.style.setProperty('--font-body', t.typography.bodyFont);
   root.style.setProperty('--font-size-base', `${t.typography.baseFontSize}px`);
@@ -92,12 +106,61 @@ function applyThemeCSS(t: ThemeConfig) {
   root.style.setProperty('--body-weight', `${t.typography.bodyWeight}`);
   root.style.setProperty('--line-height', `${t.typography.lineHeight}`);
   root.style.setProperty('--letter-spacing', `${t.typography.letterSpacing}em`);
-  // Set base font
+
+  // Set base font on root
   root.style.fontSize = `${t.typography.baseFontSize}px`;
   root.style.fontFamily = t.typography.bodyFont;
   root.style.fontWeight = `${t.typography.bodyWeight}`;
   root.style.lineHeight = `${t.typography.lineHeight}`;
   root.style.letterSpacing = `${t.typography.letterSpacing}em`;
+
+  // === Premium Blade storefront vars (--pm-* raw hex) ===
+  // These are consumed by layout.blade.php and premium Blade partials
+  root.style.setProperty('--pm-primary', t.colors.primary);
+  root.style.setProperty('--pm-primary-fg', t.colors.primaryForeground);
+  root.style.setProperty('--pm-secondary', t.colors.secondary);
+  root.style.setProperty('--pm-secondary-fg', t.colors.secondaryForeground);
+  root.style.setProperty('--pm-accent', t.colors.accent);
+  root.style.setProperty('--pm-accent-fg', t.colors.accentForeground);
+  root.style.setProperty('--pm-background', t.colors.background);
+  root.style.setProperty('--pm-foreground', t.colors.foreground);
+  root.style.setProperty('--pm-muted', t.colors.muted);
+  root.style.setProperty('--pm-muted-fg', t.colors.mutedForeground);
+  root.style.setProperty('--pm-border', t.colors.border);
+  root.style.setProperty('--pm-buy-now', t.colors.buyNow);
+  root.style.setProperty('--pm-buy-now-hover', t.colors.buyNowHover);
+  root.style.setProperty('--color-primary', t.colors.primary);
+
+  root.style.setProperty('--pm-font-heading', `'${t.typography.headingFont}', serif`);
+  root.style.setProperty('--pm-font-body', `'${t.typography.bodyFont}', sans-serif`);
+  root.style.setProperty('--pm-font-size-base', `${t.typography.baseFontSize}px`);
+  root.style.setProperty('--pm-heading-weight', `${t.typography.headingWeight}`);
+  root.style.setProperty('--pm-body-weight', `${t.typography.bodyWeight}`);
+  root.style.setProperty('--pm-line-height', `${t.typography.lineHeight}`);
+  root.style.setProperty('--pm-letter-spacing', `${t.typography.letterSpacing}px`);
+
+  root.style.setProperty('--pm-radius', getRadiusPx(t.global.borderRadius));
+  root.style.setProperty('--pm-container-width', t.global.containerMaxPx ? `${t.global.containerMaxPx}px` : '1280px');
+
+  // Header
+  root.style.setProperty('--pm-header-height', `${t.header?.height ?? 64}px`);
+  root.style.setProperty('--pm-icon-size', `${t.header?.iconSize ?? 20}px`);
+  root.style.setProperty('--pm-menu-font-size', `${t.header?.menuFontSize ?? 14}px`);
+  root.style.setProperty('--pm-menu-transform', t.header?.menuUppercase ? 'uppercase' : 'none');
+  root.style.setProperty('--pm-menu-letter-spacing', `${t.header?.menuLetterSpacing ?? 0.05}em`);
+
+  // Footer
+  root.style.setProperty('--pm-footer-bg', t.footer?.backgroundColor ?? '#0f172a');
+  root.style.setProperty('--pm-footer-text', t.footer?.textColor ?? '#94a3b8');
+
+  // Product card
+  if (t.productCard?.imageAspect) {
+    const parts = t.productCard.imageAspect.split(':');
+    if (parts.length === 2) root.style.setProperty('--pm-card-aspect', `${parts[0]}/${parts[1]}`);
+  }
+  root.style.setProperty('--pm-card-radius', getRadiusPx(t.productCard?.imageBorderRadius ?? 'medium'));
+  const priceSizeMap: Record<string, string> = { small: '14px', medium: '16px', large: '20px' };
+  root.style.setProperty('--pm-price-size', priceSizeMap[t.productCard?.priceSize ?? 'medium'] ?? '16px');
 }
 
 // ============================================================
@@ -110,7 +173,6 @@ const STORAGE_KEYS = {
   versions: 'theme-versions',
 };
 
-// Migrations: force-update fields that changed defaults across versions
 function migrateTheme(config: ThemeConfig): ThemeConfig {
   const c = { ...config };
   if (c.productCard) {
@@ -134,13 +196,11 @@ function loadFromStorage<T>(key: string, fallback: T): T {
     const data = localStorage.getItem(key);
     if (!data) return fallback;
     const parsed = JSON.parse(data);
-    // Deep merge with defaults to fill in any missing fields from schema updates
     if (typeof parsed === 'object' && parsed !== null && !Array.isArray(parsed) && typeof fallback === 'object' && fallback !== null && !Array.isArray(fallback)) {
       return deepMerge(fallback, parsed);
     }
     return parsed;
   } catch {
-    // If localStorage data is corrupted, clear it and return fallback
     try { localStorage.removeItem(key); } catch {}
     return fallback;
   }
@@ -149,11 +209,9 @@ function loadFromStorage<T>(key: string, fallback: T): T {
 function saveToStorage(key: string, value: unknown) {
   try {
     localStorage.setItem(key, JSON.stringify(value));
-  } catch { /* storage full — ignore */ }
+  } catch { /* storage full */ }
 }
 
-// Detect if running inside the theme editor iframe via URL parameter
-// This avoids the issue of Lovable's own preview iframe triggering preview mode
 function checkIsPreviewMode(): boolean {
   if (typeof window === 'undefined') return false;
   const params = new URLSearchParams(window.location.search);
@@ -185,23 +243,40 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 // ============================================================
-// Provider
+// Provider — dual mode: standalone (localStorage) + Inertia (server props)
 // ============================================================
 
-export function ThemeProvider({ children }: { children: ReactNode }) {
+export function ThemeProvider({
+  children,
+  initialDraft,
+  initialPublished,
+  onSaveDraft,
+  onPublish,
+}: ThemeProviderProps) {
+  const isInertiaMode = !!(initialDraft || initialPublished || onSaveDraft || onPublish);
   const [isPreviewMode] = useState(checkIsPreviewMode);
 
-  const [published, setPublished] = useState<ThemeConfig>(() =>
-    migrateTheme(loadFromStorage(STORAGE_KEYS.published, defaultThemeConfig))
-  );
-  const [draft, setDraft] = useState<ThemeConfig>(() =>
-    migrateTheme(loadFromStorage(STORAGE_KEYS.draft, loadFromStorage(STORAGE_KEYS.published, defaultThemeConfig)))
-  );
+  // Resolve initial values: Inertia props → localStorage → defaults
+  const resolveInitialPublished = (): ThemeConfig => {
+    if (initialPublished && typeof initialPublished === 'object') {
+      return migrateTheme(deepMerge(defaultThemeConfig, initialPublished as Partial<ThemeConfig>));
+    }
+    return migrateTheme(loadFromStorage(STORAGE_KEYS.published, defaultThemeConfig));
+  };
+
+  const resolveInitialDraft = (pub: ThemeConfig): ThemeConfig => {
+    if (initialDraft && typeof initialDraft === 'object') {
+      return migrateTheme(deepMerge(defaultThemeConfig, initialDraft as Partial<ThemeConfig>));
+    }
+    return migrateTheme(loadFromStorage(STORAGE_KEYS.draft, pub));
+  };
+
+  const [published, setPublished] = useState<ThemeConfig>(() => resolveInitialPublished());
+  const [draft, setDraft] = useState<ThemeConfig>(() => resolveInitialDraft(resolveInitialPublished()));
   const [versions, setVersions] = useState<ThemeVersion[]>(() =>
     loadFromStorage(STORAGE_KEYS.versions, [])
   );
 
-  // Preview mode: override theme with incoming postMessage data
   const [previewTheme, setPreviewTheme] = useState<ThemeConfig | null>(null);
 
   const isDirty = JSON.stringify(draft) !== JSON.stringify(published);
@@ -218,15 +293,28 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     return () => window.removeEventListener('message', handler);
   }, [isPreviewMode]);
 
-  // Persist (only in non-preview mode)
-  useEffect(() => { if (!isPreviewMode) saveToStorage(STORAGE_KEYS.draft, draft); }, [draft, isPreviewMode]);
-  useEffect(() => { if (!isPreviewMode) saveToStorage(STORAGE_KEYS.published, published); }, [published, isPreviewMode]);
-  useEffect(() => { if (!isPreviewMode) saveToStorage(STORAGE_KEYS.versions, versions); }, [versions, isPreviewMode]);
+  // Persist — only in standalone mode (not Inertia, not preview)
+  useEffect(() => {
+    if (!isPreviewMode && !isInertiaMode) saveToStorage(STORAGE_KEYS.draft, draft);
+  }, [draft, isPreviewMode, isInertiaMode]);
+  useEffect(() => {
+    if (!isPreviewMode && !isInertiaMode) saveToStorage(STORAGE_KEYS.published, published);
+  }, [published, isPreviewMode, isInertiaMode]);
+  useEffect(() => {
+    if (!isPreviewMode && !isInertiaMode) saveToStorage(STORAGE_KEYS.versions, versions);
+  }, [versions, isPreviewMode, isInertiaMode]);
 
-  // The active theme for the storefront: in preview mode use previewTheme, otherwise published
+  // Auto-save draft to server in Inertia mode (debounced)
+  useEffect(() => {
+    if (!isInertiaMode || !onSaveDraft) return;
+    const timer = setTimeout(() => {
+      onSaveDraft(draft);
+    }, 1000);
+    return () => clearTimeout(timer);
+  }, [draft, isInertiaMode, onSaveDraft]);
+
   const activeTheme = isPreviewMode && previewTheme ? previewTheme : published;
 
-  // Apply theme CSS variables
   useEffect(() => {
     applyThemeCSS(activeTheme);
   }, [activeTheme]);
@@ -259,6 +347,15 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const publish = useCallback((note = '') => {
+    // In Inertia mode, delegate to server callback
+    if (isInertiaMode && onPublish) {
+      onPublish(note);
+      // Optimistically update local state
+      setPublished({ ...draft });
+      return;
+    }
+
+    // Standalone mode: version locally
     const newVersion: ThemeVersion = {
       version: (versions[0]?.version || 0) + 1,
       config: { ...published },
@@ -270,7 +367,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     const publishedDraft = { ...draft, version: newVersion.version + 1, updatedAt: new Date().toISOString() };
     setPublished(publishedDraft);
     setDraft(publishedDraft);
-  }, [draft, published, versions]);
+  }, [draft, published, versions, isInertiaMode, onPublish]);
 
   const discardDraft = useCallback(() => {
     setDraft({ ...published });
