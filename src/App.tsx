@@ -17,7 +17,7 @@ import CartPage from "@/pages/CartPage";
 import CheckoutPage from "@/pages/CheckoutPage";
 import OrderSuccessPage from "@/pages/OrderSuccessPage";
 import LoginPage from "@/pages/LoginPage";
-import CollectionPage from "@/pages/CollectionPage";
+
 import AdminDashboard from "@/pages/admin/AdminDashboard";
 import AdminOrders from "@/pages/admin/AdminOrders";
 import AdminProducts from "@/pages/admin/AdminProducts";
@@ -57,7 +57,6 @@ const App = () => (
                 <Route path="/checkout" element={<CheckoutPage />} />
                 <Route path="/order-success" element={<OrderSuccessPage />} />
                 <Route path="/login" element={<LoginPage />} />
-                <Route path="/collections/:slug" element={<CollectionPage />} />
               </Route>
 
               {/* Admin */}
