@@ -94,7 +94,7 @@ function renderPanel(sectionId: string) {
 
 type DeviceSize = 'desktop' | 'tablet' | 'mobile';
 
-export function ThemeEditorLayout() {
+export function ThemeEditorLayout({ previewUrl }: { previewUrl?: string } = {}) {
   const { isDirty, publish, discardDraft, resetToDefault, versions, rollback, draft } = useTheme();
   const [activeSection, setActiveSection] = useState('presets');
   const [searchQuery, setSearchQuery] = useState('');
@@ -252,7 +252,7 @@ export function ThemeEditorLayout() {
             >
               <iframe
                 ref={iframeRef}
-                src="/?theme-preview=true"
+                src={previewUrl || '/?theme-preview=true'}
                 className="w-full h-full border-0"
                 title="Preview da Loja"
                 onLoad={handleIframeLoad}
