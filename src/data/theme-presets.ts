@@ -36,6 +36,9 @@ const defaultHomeSections = [
   { id: 'brands', type: 'brands' as const, enabled: false, title: 'Marcas', showTitle: true, settings: {} },
   { id: 'newsletter', type: 'newsletter' as const, enabled: false, title: 'Newsletter', showTitle: true, settings: {} },
   { id: 'trust-bar', type: 'trust-bar' as const, enabled: false, title: 'Selos de Confiança', showTitle: false, settings: {} },
+  { id: 'col-novidades', type: 'collections' as const, enabled: true, title: 'Acabaram de Chegar', showTitle: true, settings: { collectionId: 'col-1' } },
+  { id: 'col-vendidos', type: 'collections' as const, enabled: true, title: 'Mais Vendidos', showTitle: true, settings: { collectionId: 'col-2' } },
+  { id: 'col-looks', type: 'collections' as const, enabled: true, title: 'Looks Completos', showTitle: true, settings: { collectionId: 'col-3' } },
 ];
 
 export const defaultThemeConfig: ThemeConfig = {
