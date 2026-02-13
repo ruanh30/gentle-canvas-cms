@@ -11,10 +11,11 @@ const AccountPage = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 
-  if (!user) {
-    navigate('/login');
-    return null;
-  }
+  React.useEffect(() => {
+    if (!user) navigate('/login');
+  }, [user, navigate]);
+
+  if (!user) return null;
 
   const initials = user.name?.split(' ').map(n => n[0]).join('').toUpperCase() || 'U';
 
