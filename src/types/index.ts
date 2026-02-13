@@ -146,6 +146,17 @@ export interface StoreSettings {
   };
 }
 
+export interface ProductCollection {
+  id: string;
+  name: string;
+  slug: string;
+  description?: string;
+  productIds: string[];
+  order: number;
+  active: boolean;
+  createdAt: string;
+}
+
 export interface DashboardStats {
   totalRevenue: number;
   totalOrders: number;
