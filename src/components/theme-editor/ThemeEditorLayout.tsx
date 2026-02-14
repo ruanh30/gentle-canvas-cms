@@ -103,6 +103,15 @@ export function ThemeEditorLayout({ previewUrl, fullscreen = false }: { previewU
   const iframeRef = React.useRef<HTMLIFrameElement>(null);
   const [iframeReady, setIframeReady] = React.useState(false);
 
+  // Reset iframeReady when previewUrl changes
+  const prevUrlRef = React.useRef(previewUrl);
+  React.useEffect(() => {
+    if (prevUrlRef.current !== previewUrl) {
+      setIframeReady(false);
+      prevUrlRef.current = previewUrl;
+    }
+  }, [previewUrl]);
+
   // Send draft to iframe on every change (only after iframe is loaded)
   React.useEffect(() => {
     if (!iframeReady) return;
