@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useRef, ReactNode } from 'react';
 import { ThemeConfig, ThemeVersion } from '@/types/theme';
 import { defaultThemeConfig } from '@/data/theme-presets';
 
@@ -304,14 +304,20 @@ export function ThemeProvider({
     if (!isPreviewMode && !isInertiaMode) saveToStorage(STORAGE_KEYS.versions, versions);
   }, [versions, isPreviewMode, isInertiaMode]);
 
+  // Store callback in ref to avoid re-triggering effect when parent re-renders
+  const onSaveDraftRef = useRef(onSaveDraft);
+  onSaveDraftRef.current = onSaveDraft;
+  const onPublishRef = useRef(onPublish);
+  onPublishRef.current = onPublish;
+
   // Auto-save draft to server in Inertia mode (debounced)
   useEffect(() => {
-    if (!isInertiaMode || !onSaveDraft) return;
+    if (!isInertiaMode || !onSaveDraftRef.current) return;
     const timer = setTimeout(() => {
-      onSaveDraft(draft);
+      onSaveDraftRef.current?.(draft);
     }, 1000);
     return () => clearTimeout(timer);
-  }, [draft, isInertiaMode, onSaveDraft]);
+  }, [draft, isInertiaMode]);
 
   const activeTheme = isPreviewMode && previewTheme ? previewTheme : published;
 
@@ -338,6 +344,9 @@ export function ThemeProvider({
       const parts = path.split('.');
       let obj: any = next;
       for (let i = 0; i < parts.length - 1; i++) {
+        if (obj[parts[i]] === undefined || obj[parts[i]] === null) {
+          obj[parts[i]] = {};
+        }
         obj = obj[parts[i]];
       }
       obj[parts[parts.length - 1]] = value;
@@ -348,8 +357,8 @@ export function ThemeProvider({
 
   const publish = useCallback((note = '') => {
     // In Inertia mode, delegate to server callback
-    if (isInertiaMode && onPublish) {
-      onPublish(note);
+    if (isInertiaMode && onPublishRef.current) {
+      onPublishRef.current(note);
       // Optimistically update local state
       setPublished({ ...draft });
       return;
@@ -367,7 +376,7 @@ export function ThemeProvider({
     const publishedDraft = { ...draft, version: newVersion.version + 1, updatedAt: new Date().toISOString() };
     setPublished(publishedDraft);
     setDraft(publishedDraft);
-  }, [draft, published, versions, isInertiaMode, onPublish]);
+  }, [draft, published, versions, isInertiaMode]);
 
   const discardDraft = useCallback(() => {
     setDraft({ ...published });
