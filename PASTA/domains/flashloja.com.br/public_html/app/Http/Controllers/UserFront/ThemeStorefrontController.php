@@ -117,18 +117,12 @@ class ThemeStorefrontController extends Controller
             $q->where('user_item_contents.language_id', $langId);
         }
 
-        $perPage = (int) $request->query('per_page', 24);
-        $page = (int) $request->query('page', 1);
-        $total = (clone $q)->count();
-
         $items = $q
             ->select([
                 'user_items.id as item_id',
                 'user_items.current_price',
                 'user_items.previous_price',
                 'user_items.stock',
-                'user_items.thumbnail',
-                'user_items.thumbnail',
                 'user_items.thumbnail',
                 'user_items.sku',
                 'user_items.status',
@@ -188,8 +182,6 @@ class ThemeStorefrontController extends Controller
                 'user_items.previous_price',
                 'user_items.stock',
                 'user_items.thumbnail',
-                'user_items.thumbnail',
-                'user_items.thumbnail',
                 'user_items.sku',
                 'user_items.status',
                 'user_item_contents.title',
@@ -246,8 +238,6 @@ class ThemeStorefrontController extends Controller
                 'user_items.previous_price',
                 'user_items.stock',
                 'user_items.thumbnail',
-                'user_items.thumbnail',
-                'user_items.thumbnail',
                 'user_items.sku',
                 'user_items.status',
                 'user_item_contents.title',
@@ -278,9 +268,7 @@ class ThemeStorefrontController extends Controller
                     'user_items.current_price',
                     'user_items.previous_price',
                     'user_items.stock',
-                'user_items.thumbnail',
-                'user_items.thumbnail',
-                'user_items.thumbnail',
+                    'user_items.thumbnail',
                     'user_items.sku',
                     'user_items.status',
                     'user_item_contents.title',

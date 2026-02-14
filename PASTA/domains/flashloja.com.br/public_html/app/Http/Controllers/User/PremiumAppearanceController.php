@@ -101,7 +101,7 @@ class PremiumAppearanceController extends Controller
                 'showWishlist' => true,
                 'showCart' => true,
                 'cartBadgeStyle' => 'dot',
-                'announcementBar' => [
+                'announcement' => [
                     'enabled' => false,
                     'messages' => ['Frete grátis acima de R$ 299'],
                     'speed' => 30,
@@ -279,7 +279,7 @@ define você",
                 ],
                 'bottomLinks' => [],
             ],
-            'homeSections' => [
+            'homepageSections' => [
                 ['type' => 'hero', 'enabled' => true, 'title' => 'Banner Principal', 'showTitle' => false, 'settings' => []],
                 ['type' => 'benefits', 'enabled' => true, 'title' => 'Benefícios', 'showTitle' => false, 'settings' => []],
                 ['type' => 'categories', 'enabled' => true, 'title' => 'Categorias', 'showTitle' => true, 'settings' => ['displayMode' => 'carousel', 'carouselSpeed' => 3000]],
