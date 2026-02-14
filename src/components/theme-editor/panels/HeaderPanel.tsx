@@ -70,15 +70,23 @@ export function HeaderPanel() {
             ]} />
           )}
           <TextField label="Mensagem 1" value={a.messages[0] || ''} onChange={v => {
-            const msgs = [...a.messages]; msgs[0] = v; setAnn({ messages: msgs });
+            const msgs = [...a.messages];
+            msgs[0] = v;
+            setAnn({ messages: msgs });
           }} placeholder="Frete grátis acima de R$ 299" />
           {(a.style === 'carousel' || a.style === 'ticker') && (
             <>
               <TextField label="Mensagem 2" value={a.messages[1] || ''} onChange={v => {
-                const msgs = [...a.messages]; msgs[1] = v; setAnn({ messages: msgs.filter(Boolean) });
+                const msgs = [...a.messages];
+                while (msgs.length < 2) msgs.push('');
+                msgs[1] = v;
+                setAnn({ messages: msgs });
               }} placeholder="Parcele em até 12x" />
               <TextField label="Mensagem 3" value={a.messages[2] || ''} onChange={v => {
-                const msgs = [...a.messages]; msgs[2] = v; setAnn({ messages: msgs.filter(Boolean) });
+                const msgs = [...a.messages];
+                while (msgs.length < 3) msgs.push('');
+                msgs[2] = v;
+                setAnn({ messages: msgs });
               }} placeholder="Troca grátis em 30 dias" />
               <NumberSlider label="Velocidade" value={a.speed} onChange={v => setAnn({ speed: v })} min={2} max={10} suffix="s" />
             </>

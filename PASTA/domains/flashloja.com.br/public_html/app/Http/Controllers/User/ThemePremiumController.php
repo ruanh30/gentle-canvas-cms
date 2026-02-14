@@ -144,6 +144,7 @@ class ThemePremiumController extends Controller
         $v = UserThemeVersion::where('user_id', $user->id)
             ->where('theme', $theme)
             ->where('version', $payload['version'])
+            ->orderByDesc('id')
             ->first();
 
         if (!$v || !$v->config) {
