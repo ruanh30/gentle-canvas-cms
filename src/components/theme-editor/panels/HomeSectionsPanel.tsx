@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { useTheme } from '@/contexts/ThemeContext';
 import { EditorSection, ToggleRow, TextField, SectionDivider, HintTooltip, SelectField, NumberSlider } from '../EditorControls';
-import { Grid3X3, GripVertical, ChevronUp, ChevronDown, Plus, Trash2, Pencil, Check, X, Eye, EyeOff } from 'lucide-react';
+import { Grid3X3, GripVertical, ChevronUp, ChevronDown, Plus, Trash2, Pencil, Check, X, Eye, EyeOff, FolderTree } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Checkbox } from '@/components/ui/checkbox';
 import { ThemeHomepageSection } from '@/types/theme';
+import { mockCategories } from '@/data/mock';
 
 const sectionTypes: { value: ThemeHomepageSection['type']; label: string }[] = [
   { value: 'hero', label: 'Hero Banner' },
@@ -176,6 +178,42 @@ export function HomeSectionsPanel() {
                     />
                     <span className="text-[11px] text-muted-foreground w-6 text-right">{(section.settings?.carouselSpeed as number) || 4}s</span>
                   </div>
+                )}
+                {section.type === 'categories' && (
+                  <>
+                    <SectionDivider label="Categorias em destaque" />
+                    <p className="text-[10px] text-muted-foreground">Selecione quais categorias aparecem nesta seção da home:</p>
+                    <div className="space-y-1 max-h-40 overflow-y-auto">
+                      {mockCategories.map(cat => {
+                        const selectedIds = (section.settings?.selectedCategoryIds as string[]) || [];
+                        const isSelected = selectedIds.includes(cat.id);
+                        return (
+                          <label
+                            key={cat.id}
+                            className={cn(
+                              'flex items-center gap-2 px-2 py-1.5 rounded-md cursor-pointer transition-colors text-xs',
+                              isSelected ? 'bg-primary/10 text-foreground' : 'hover:bg-muted/50 text-muted-foreground'
+                            )}
+                          >
+                            <Checkbox
+                              checked={isSelected}
+                              onCheckedChange={(checked) => {
+                                const newIds = checked
+                                  ? [...selectedIds, cat.id]
+                                  : selectedIds.filter(id => id !== cat.id);
+                                setSetting(section.id, 'selectedCategoryIds', newIds);
+                              }}
+                            />
+                            <FolderTree className="h-3 w-3 shrink-0" />
+                            <span>{cat.name}</span>
+                          </label>
+                        );
+                      })}
+                    </div>
+                    {((section.settings?.selectedCategoryIds as string[]) || []).length === 0 && (
+                      <p className="text-[10px] text-amber-500">Nenhuma selecionada — todas serão exibidas por padrão.</p>
+                    )}
+                  </>
                 )}
               </div>
             )}
