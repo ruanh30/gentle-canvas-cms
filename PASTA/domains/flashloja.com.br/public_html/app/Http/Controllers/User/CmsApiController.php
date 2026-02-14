@@ -245,12 +245,15 @@ class CmsApiController extends Controller
             'updated_at' => now(),
         ]);
 
-        // Update content (single language row)
-        $content = DB::table('user_item_contents')->where('item_id', $data['id']);
-        if ($langId) $content->where('language_id', $langId);
-        $c = $content->first();
+        // Update content (single language row) — rebuild query to avoid stale cursor
+        $contentQuery = DB::table('user_item_contents')->where('item_id', $data['id']);
+        if ($langId) $contentQuery->where('language_id', $langId);
+        $c = $contentQuery->first();
         if ($c) {
-            $content->update([
+            // Rebuild the query for the update (->first() consumes the builder)
+            $updateQuery = DB::table('user_item_contents')->where('item_id', $data['id']);
+            if ($langId) $updateQuery->where('language_id', $langId);
+            $updateQuery->update([
                 'title' => $data['name'],
                 'slug' => Str::slug($data['name']),
                 'description' => $data['description'] ?? '',

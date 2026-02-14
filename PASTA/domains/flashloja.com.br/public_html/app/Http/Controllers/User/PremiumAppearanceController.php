@@ -462,7 +462,7 @@ class PremiumAppearanceController extends Controller
             return response()->json(['ok' => true, 'settings' => $settings]);
         }
 
-        return redirect()->route('user.appearance.premium')->with('success', 'Aparência atualizada com sucesso!');
+        return back()->with('success', 'Aparência atualizada com sucesso!');
     }
 
     public function preview(Request $request)
@@ -506,5 +506,74 @@ class PremiumAppearanceController extends Controller
         }
 
         return response()->json(['ok' => true, 'settings' => $defaults]);
+    }
+
+    public function versions(Request $request)
+    {
+        $ubs = $this->ensurePremium();
+
+        $appearance = UserAppearanceSetting::where('user_id', $ubs->user_id)
+            ->where('theme', 'premium')
+            ->first();
+
+        if (!$appearance || !is_array($appearance->settings)) {
+            return response()->json([]);
+        }
+
+        $versions = $appearance->settings['_versions'] ?? [];
+        if (!is_array($versions)) {
+            return response()->json([]);
+        }
+
+        $mapped = collect($versions)->reverse()->values()->map(function ($v, $i) {
+            return [
+                'version' => $i + 1,
+                'channel' => 'published',
+                'label' => $v['label'] ?? null,
+                'publishedAt' => $v['created_at'] ?? null,
+                'note' => $v['label'] ?? 'Versão ' . ($i + 1),
+                'config' => $v['config'] ?? $v,
+            ];
+        });
+
+        return response()->json($mapped);
+    }
+
+    public function rollback(Request $request)
+    {
+        $ubs = $this->ensurePremium();
+
+        $version = (int) $request->input('version', 0);
+
+        $appearance = UserAppearanceSetting::where('user_id', $ubs->user_id)
+            ->where('theme', 'premium')
+            ->first();
+
+        if (!$appearance || !is_array($appearance->settings)) {
+            return back()->with('error', 'Nenhuma versão encontrada');
+        }
+
+        $versions = $appearance->settings['_versions'] ?? [];
+        $reversed = array_reverse($versions);
+
+        $idx = $version - 1;
+        if (!isset($reversed[$idx])) {
+            return back()->with('error', 'Versão não encontrada');
+        }
+
+        $config = $reversed[$idx]['config'] ?? $reversed[$idx];
+        if (!is_array($config)) {
+            return back()->with('error', 'Configuração inválida');
+        }
+
+        $settings = array_replace_recursive(self::defaults(), $config);
+        $appearance->settings = $settings;
+        $appearance->save();
+
+        if ($request->expectsJson()) {
+            return response()->json(['ok' => true, 'settings' => $settings]);
+        }
+
+        return back()->with('success', 'Versão restaurada com sucesso');
     }
 }

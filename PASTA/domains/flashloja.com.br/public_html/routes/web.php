@@ -127,8 +127,7 @@ Route::domain($domain)->group(function () {
             Route::post('iyzico/success', 'Payment\IyzicoController@successPayment')->name('membership.iyzico.success');
             Route::get('toyyibpay/success', 'Payment\ToyyibpayController@successPayment')->name('membership.toyyibpay.success');
             Route::post('paytabs/success', 'Payment\PaytabsController@successPayment')->name('membership.paytabs.success');
-            Route::post('phonepe/success', 'Payment\PaytabsController@successPayment')->name('membership.phonepe.success');
-            Route::post('phonepe/success', 'Payment\PaytabsController@successPayment')->name('membership.phonepe.success');
+            Route::post('phonepe/success', 'Payment\PhonePeController@successPayment')->name('membership.phonepe.success');
 
 
             Route::get('/offline/success', 'Front\CheckoutController@offlineSuccess')->name('membership.offline.success');

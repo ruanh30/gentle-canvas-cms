@@ -141,7 +141,7 @@ Route::group(['domain' => $domain, 'prefix' => $prefix, 'middleware' => ['userVi
         Route::get('/logout',  'UserFront\CustomerController@logoutSubmit')->name('customer.logout');
     });
 
-    Route::post('/coupon', 'UserFront\ItemController@coupon')->name('front.coupon');
+    // Duplicate /coupon route removed — already registered at line 71
 
     Route::get('/checkout/guest', 'UserFront\ItemController@checkoutGuest')->name('front.user.checkout.guest');
 
