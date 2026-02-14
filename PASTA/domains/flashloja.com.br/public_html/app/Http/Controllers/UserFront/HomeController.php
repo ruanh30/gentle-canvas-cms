@@ -355,13 +355,6 @@ class HomeController extends Controller
             'tempDir' => storage_path('logs/')
         ])->loadView('pdf.item', $data);
         return $pdf->stream('membership.pdf');
-        
-        $output = $pdf->output();
-        $dir = public_path('assets/front/invoices/');
-        @mkdir($dir, '0775', true);
-        @file_put_contents($dir . $file_name, $output);
-        
-        return view('pdf.item', $data);
     }
 
 
@@ -430,11 +423,9 @@ class HomeController extends Controller
 
         if ($use_bs->is_recaptcha == 1 && in_array('Google Recaptcha', $features)) {
             $rules['g-recaptcha-response'] = 'required|captcha';
+            $messages['g-recaptcha-response.required'] = $keywords['Please verify that you are not a robot'] ?? __('Please verify that you are not a robot');
+            $messages['g-recaptcha-response.captcha'] = $keywords['Captcha error! try again later or contact site admin'] ?? __('Captcha error! try again later or contact site admin');
         }
-        $messages = [
-            'g-recaptcha-response.required' => $keywords['Please verify that you are not a robot'] ?? __('Please verify that you are not a robot'),
-            'g-recaptcha-response.captcha' => $keywords['Captcha error! try again later or contact site admin'] ?? __('Captcha error! try again later or contact site admin'),
-        ];
         $request->validate($rules, $messages);
 
         if (!is_null($user->email)) {
@@ -501,7 +492,7 @@ class HomeController extends Controller
         $user = app('user');
 
         $current_package = UserPermissionHelper::currentPackagePermission($user->id);
-        $features = json_decode($current_package->features);
+        $features = $current_package ? json_decode($current_package->features) : [];
         if (is_array($features) && !in_array('Blog', $features)) {
             return view('errors.404');
         }
@@ -629,6 +620,7 @@ class HomeController extends Controller
         foreach ($sections as $section) {
             $data["after_" . str_replace('_section', '', $section)] = AdditionalSection::where('possition', $section)
                 ->where('page_type', $pageType)
+                ->where('user_id', $user->id)
                 ->orderBy('serial_number', 'asc')
                 ->get();
         }
