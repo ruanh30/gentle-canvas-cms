@@ -44,7 +44,7 @@ export default function Editor() {
           );
         }}
       >
-        <ThemeEditorLayout previewUrl={p.previewUrl} />
+        <ThemeEditorLayout previewUrl={p.previewUrl} fullscreen={true} />
       </ThemeProvider>
     </>
   );

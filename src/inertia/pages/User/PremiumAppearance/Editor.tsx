@@ -52,7 +52,7 @@ import { ThemeEditorLayout } from '@/components/theme-editor/ThemeEditorLayout';
 export default function EditorStandalone() {
   return (
     <ThemeProvider>
-      <ThemeEditorLayout />
+      <ThemeEditorLayout fullscreen={true} />
     </ThemeProvider>
   );
 }

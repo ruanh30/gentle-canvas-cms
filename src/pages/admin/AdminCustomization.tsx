@@ -2,7 +2,7 @@ import React from 'react';
 import { ThemeEditorLayout } from '@/components/theme-editor/ThemeEditorLayout';
 
 const AdminCustomization = () => {
-  return <ThemeEditorLayout />;
+  return <ThemeEditorLayout fullscreen={false} />;
 };
 
 export default AdminCustomization;
