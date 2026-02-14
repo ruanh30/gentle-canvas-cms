@@ -58,20 +58,19 @@ Route::group(['prefix' => 'user', 'middleware' => ['auth', 'userstatus', 'Demo',
     // ═══════════════════ SITE SETTINGS ═══════════════════
     Route::prefix('site-settings')->middleware('checkpermission:Site Settings')->group(function () {
 
-        // Appearance - redirect old URL to premium
-        Route::get('/appearance', function() { return redirect()->route('user.appearance.premium'); })->name('user.appearance');
-        Route::post('/appearance', function() { return redirect()->route('user.appearance.premium'); })->name('user.appearance.update');
+        // Appearance - redirect old URL to premium (Inertia editor)
+        Route::get('/appearance', function() { return redirect('/user/site-settings/appearance-premium'); })->name('user.appearance');
+        Route::post('/appearance', function() { return redirect('/user/site-settings/appearance-premium'); })->name('user.appearance.update');
         
         // DEBUG ROUTE
         Route::get('/debug-test', function() { return 'DEBUG NESTED OK'; });
 
-        // Appearance Premium theme editor
-        Route::get('/appearance-premium', 'User\PremiumAppearanceController@index')->name('user.appearance.premium');
-        Route::post('/appearance-premium', 'User\PremiumAppearanceController@update')->name('user.appearance.premium.update');
-        Route::post('/appearance-premium/preview', 'User\PremiumAppearanceController@preview')->name('user.appearance.premium.preview');
-        Route::post('/appearance-premium/preset', 'User\PremiumAppearanceController@applyPreset')->name('user.appearance.premium.preset');
-        Route::get('/appearance-premium/versions', 'User\PremiumAppearanceController@versions')->name('user.appearance.premium.versions');
-        Route::post('/appearance-premium/rollback', 'User\PremiumAppearanceController@rollback')->name('user.appearance.premium.rollback');
+        // Legacy Blade appearance (kept for API compatibility)
+        Route::post('/appearance-premium-legacy', 'User\PremiumAppearanceController@update')->name('user.appearance.premium.legacy.update');
+        Route::post('/appearance-premium-legacy/preview', 'User\PremiumAppearanceController@preview')->name('user.appearance.premium.legacy.preview');
+        Route::post('/appearance-premium-legacy/preset', 'User\PremiumAppearanceController@applyPreset')->name('user.appearance.premium.legacy.preset');
+        Route::get('/appearance-premium-legacy/versions', 'User\PremiumAppearanceController@versions')->name('user.appearance.premium.legacy.versions');
+        Route::post('/appearance-premium-legacy/rollback', 'User\PremiumAppearanceController@rollback')->name('user.appearance.premium.legacy.rollback');
 
         // Plugins
         Route::get('/plugins', 'User\PluginController@plugins')->name('user.plugins');
@@ -267,9 +266,10 @@ Route::group(['prefix' => 'user', 'middleware' => ['auth', 'userstatus', 'Demo',
         Route::post('/api/media/delete', [App\Http\Controllers\User\CmsApiController::class, 'mediaDelete'])->name('user.cms.api.media.delete');
     });
 
-    // Premium Theme Editor (Inertia)
+    // Premium Theme Editor (Inertia) — primary editor
     Route::get('/site-settings/appearance-premium', [App\Http\Controllers\User\ThemePremiumController::class, 'index'])->name('user.appearance.premium');
     Route::post('/site-settings/appearance-premium/save', [App\Http\Controllers\User\ThemePremiumController::class, 'save'])->name('user.appearance.premium.save');
     Route::post('/site-settings/appearance-premium/publish', [App\Http\Controllers\User\ThemePremiumController::class, 'publish'])->name('user.appearance.premium.publish');
     Route::get('/site-settings/appearance-premium/versions', [App\Http\Controllers\User\ThemePremiumController::class, 'versions'])->name('user.appearance.premium.versions');
+    Route::post('/site-settings/appearance-premium/rollback', [App\Http\Controllers\User\ThemePremiumController::class, 'rollback'])->name('user.appearance.premium.rollback');
 });

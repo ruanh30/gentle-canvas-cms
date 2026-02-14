@@ -24,6 +24,18 @@ return new class extends Migration {
             $versions = $settings['_versions'] ?? [];
             unset($settings['_versions']);
 
+            // Normalize legacy keys to match React editor schema
+            // homeSections → homepageSections
+            if (isset($settings['homeSections']) && !isset($settings['homepageSections'])) {
+                $settings['homepageSections'] = $settings['homeSections'];
+                unset($settings['homeSections']);
+            }
+            // header.announcementBar → header.announcement
+            if (isset($settings['header']['announcementBar']) && !isset($settings['header']['announcement'])) {
+                $settings['header']['announcement'] = $settings['header']['announcementBar'];
+                unset($settings['header']['announcementBar']);
+            }
+
             $json = json_encode($settings, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
             $theme = $app->theme ?? 'premium';
 
