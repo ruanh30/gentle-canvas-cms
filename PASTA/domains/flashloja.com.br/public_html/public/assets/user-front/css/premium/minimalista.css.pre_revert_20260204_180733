@@ -1,0 +1,259 @@
+/* Minimalista (Openclaudinho rewrite)
+   Goal: clean fashion storefront vibe inspired by modern DTC layouts.
+   NOTE: do not copy third-party CSS verbatim.
+*/
+
+:root{
+  --mf-page-bg: #ffffff;
+  --mf-topbar-bg: #0b0b0c;
+  --mf-header-bg: rgba(11,11,12,.92);
+  --mf-header-border: rgba(255,255,255,.10);
+  --mf-text: #0b0b0c;
+  --mf-muted: rgba(11,11,12,.65);
+  --mf-white: #fff;
+  --mf-card: #ffffff;
+  --mf-card-border: rgba(11,11,12,.10);
+  --mf-shadow: 0 10px 30px rgba(0,0,0,.10);
+  --mf-radius: 16px;
+  --mf-radius-sm: 12px;
+  --mf-max: 1240px;
+
+  /* can be overridden from resources/views/user-front/styles.blade.php via inline :root */
+  --mf-font-base: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+  --mf-font-heading: var(--mf-font-base);
+}
+
+body{
+  background: var(--mf-page-bg);
+  font-family: var(--mf-font-base);
+}
+
+/* Ensure page-inner doesn't add huge padding in some theme combos */
+.page-inner{ padding: 0 !important; }
+
+/* Topbar */
+.mf-topbar{
+  background: var(--mf-topbar-bg);
+  color: var(--mf-white);
+  font-size: 13px;
+  padding: 10px 0;
+}
+.mf-topbar .container{ max-width: var(--mf-max); }
+.mf-topbar-icon{ color: var(--mf-white); text-decoration:none; opacity:.9; }
+.mf-topbar-icon:hover{ opacity:1; }
+
+/* Header */
+.mf-header{
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  backdrop-filter: blur(10px);
+  background: var(--mf-header-bg);
+  border-bottom: 1px solid var(--mf-header-border);
+}
+.mf-header .container{ max-width: var(--mf-max); }
+.mf-header-inner{
+  display:flex;
+  align-items:center;
+  gap: 18px;
+  padding: 16px 0;
+}
+.mf-brand{ display:flex; align-items:center; gap:10px; text-decoration:none; color:var(--mf-white); }
+.mf-brand-logo{ height: 40px; width:auto; border-radius: 999px; background:#fff; padding:4px; }
+.mf-brand-text{ font-weight: 700; letter-spacing: .5px; }
+
+.mf-search{ flex: 1; max-width: 680px; display:flex; align-items:center; gap:10px; }
+.mf-search-input{
+  width: 100%;
+  height: 44px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,.20);
+  background: rgba(255,255,255,.08);
+  color: var(--mf-white);
+  padding: 0 16px;
+  outline: none;
+}
+.mf-search-input::placeholder{ color: rgba(255,255,255,.70); }
+.mf-search-btn{
+  height: 44px;
+  width: 44px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,.20);
+  background: rgba(255,255,255,.10);
+  color: var(--mf-white);
+}
+.mf-search-btn:hover{ background: rgba(255,255,255,.16); }
+
+.mf-header-actions{ display:flex; gap: 14px; align-items:center; }
+.mf-action{ color: var(--mf-white); text-decoration:none; opacity:.95; display:flex; gap:8px; align-items:center; }
+.mf-action:hover{ opacity: 1; }
+
+/* Buttons */
+.mf-btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  height: 44px;
+  padding: 0 18px;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #0b0b0c;
+  text-decoration:none;
+  font-weight: 700;
+  border: 1px solid rgba(255,255,255,.25);
+}
+.mf-btn:hover{ filter: brightness(.95); }
+
+/* Hero */
+.mf-hero{
+  position: relative;
+  min-height: 520px;
+  background: #111;
+  background-size: cover;
+  background-position: center;
+  display:flex;
+  align-items:flex-end;
+  padding: 42px 0;
+}
+.mf-hero .container{ max-width: var(--mf-max); position:relative; z-index: 2; }
+.mf-hero-overlay{
+  position:absolute; inset:0;
+  background: linear-gradient(180deg, rgba(0,0,0,.30), rgba(0,0,0,.65));
+}
+.mf-hero-content{ color: var(--mf-white); max-width: 640px; }
+.mf-hero-badge{ display:inline-block; padding: 6px 12px; border-radius: 999px; border:1px solid rgba(255,255,255,.25); font-size: 12px; letter-spacing:.12em; text-transform: uppercase; margin-bottom: 14px; }
+.mf-hero-title{ font-family: var(--mf-font-heading); font-weight: 900; letter-spacing: .08em; text-transform: uppercase; font-size: clamp(32px, 5vw, 56px); line-height: 1.05; margin: 0 0 12px; }
+.mf-hero-subtitle{ color: rgba(255,255,255,.85); margin: 0 0 18px; }
+
+/* Sections */
+.mf-section{ padding: 42px 0; }
+.mf-section .container{ max-width: var(--mf-max); }
+.mf-section-head{ display:flex; align-items:end; justify-content:space-between; gap: 18px; margin-bottom: 18px; }
+.mf-section-title{ font-family: var(--mf-font-heading); font-weight: 800; letter-spacing:.04em; text-transform: uppercase; margin: 0; font-size: 18px; }
+.mf-section-link{ color: var(--mf-muted); text-decoration:none; font-weight: 600; }
+.mf-section-link:hover{ color: var(--mf-text); }
+
+/* Collections */
+.mf-collections{
+  display:grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+.mf-collection{
+  background: var(--mf-card);
+  border: 1px solid var(--mf-card-border);
+  border-radius: var(--mf-radius);
+  overflow:hidden;
+  text-decoration:none;
+  color: var(--mf-text);
+  box-shadow: 0 0 0 rgba(0,0,0,0);
+  transition: transform .15s ease, box-shadow .15s ease;
+}
+.mf-collection:hover{ transform: translateY(-2px); box-shadow: var(--mf-shadow); }
+.mf-collection-media{ aspect-ratio: 16/10; background: #f5f5f6; }
+.mf-collection-media img{ width:100%; height:100%; object-fit: cover; display:block; }
+.mf-collection-name{ padding: 14px 16px; font-weight: 800; letter-spacing:.02em; }
+
+/* Products */
+.mf-products{
+  display:grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+.mf-product{
+  text-decoration:none;
+  color: var(--mf-text);
+  border: 1px solid var(--mf-card-border);
+  border-radius: var(--mf-radius);
+  overflow:hidden;
+  background: var(--mf-card);
+  transition: transform .15s ease, box-shadow .15s ease;
+}
+.mf-product:hover{ transform: translateY(-2px); box-shadow: var(--mf-shadow); }
+.mf-product-media{ aspect-ratio: 1 / 1; background:#f5f5f6; }
+.mf-product-media img{ width:100%; height:100%; object-fit: cover; display:block; }
+.mf-product-body{ padding: 12px 12px 14px; }
+.mf-product-title{ font-weight: 700; font-size: 14px; line-height: 1.25; max-height: 2.5em; overflow:hidden; }
+.mf-product-price{ margin-top: 8px; }
+.mf-price{ font-weight: 800; }
+
+.mf-empty{ color: var(--mf-muted); margin: 0; }
+
+@media (max-width: 1199px){
+  .mf-products{ grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 991px){
+  .mf-search{ display:none; }
+  .mf-collections{ grid-template-columns: repeat(2, 1fr); }
+  .mf-products{ grid-template-columns: repeat(2, 1fr); }
+  .mf-hero{ min-height: 440px; }
+}
+@media (max-width: 575px){
+  .mf-collections{ grid-template-columns: 1fr; }
+  .mf-hero{ min-height: 380px; padding: 32px 0; }
+}
+
+/* Slider inside hero (uses slick from plugins.css) */
+.mf-hero-slider,
+.mf-hero-slide{ min-height: 520px; }
+.mf-hero-slide{
+  background-size: cover;
+  background-position: center;
+  display:flex !important;
+  align-items:flex-end;
+  padding: 42px 0;
+}
+.mf-hero-slide .container{ max-width: var(--mf-max); position:relative; z-index: 2; }
+
+.mf-hero .slick-dots{ bottom: 16px; }
+.mf-hero .slick-dots li button:before{ color: rgba(255,255,255,.75); font-size: 10px; }
+.mf-hero .slick-dots li.slick-active button:before{ color: #fff; }
+.mf-hero .slick-prev, .mf-hero .slick-next{ z-index: 3; }
+.mf-hero .slick-prev:before, .mf-hero .slick-next:before{ color: #fff; }
+
+@media (max-width: 991px){
+  .mf-hero-slider,
+  .mf-hero-slide{ min-height: 440px; }
+}
+@media (max-width: 575px){
+  .mf-hero-slider,
+  .mf-hero-slide{ min-height: 380px; padding: 32px 0; }
+}
+
+/* Contrast hardening */
+.mf-hero-content, .mf-hero-content *{ color:#fff; }
+.mf-hero-title{ color:#fff !important; }
+.mf-hero-subtitle{ color: rgba(255,255,255,.88) !important; }
+
+/* Hero background layer (avoid slick overwriting slide style attr) */
+.mf-hero-slide{ position: relative; }
+.mf-hero-slide-bg{
+  position:absolute; inset:0;
+  background-size: cover;
+  background-position: center;
+  filter: saturate(1.05) contrast(1.05);
+  z-index: 0;
+}
+
+/* Stronger contrast on hero text */
+.mf-hero-content, .mf-hero-content *{ color:#fff !important; }
+.mf-hero-title{
+  text-shadow: 0 8px 26px rgba(0,0,0,.65);
+}
+.mf-hero-badge{ background: rgba(0,0,0,.22); }
+
+/* Ensure buttons keep intended colors even with contrast overrides */
+.mf-btn{ color:#0b0b0c !important; background:#fff !important; }
+.mf-search-btn{ color:#fff !important; }
+
+/* Ensure fallback slide fills hero when there is only 1 slide */
+.mf-hero > .mf-hero-slide{
+  min-height: 520px;
+  display:flex;
+  align-items:flex-end;
+  padding: 42px 0;
+}
+
+/* Force slide to span full width */
+.mf-hero-slide{ width: 100%; }
+.mf-hero > .mf-hero-slide{ width: 100%; }

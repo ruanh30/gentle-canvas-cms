@@ -1,0 +1,1658 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+
+/*
+  FlashLoja Dashboard Theme
+  Goal: replicate https://ola-sweet-embrace.lovable.app/painel as close as possible,
+  while overriding Atlantis (atlantis.css).
+*/
+
+/* =====================
+   Reference variables (index.css)
+   ===================== */
+:root,
+.light {
+  --background: 220 20% 97%;
+  --foreground: 222 47% 11%;
+
+  --card: 0 0% 100%;
+  --card-foreground: 222 47% 11%;
+
+  --popover: 0 0% 100%;
+  --popover-foreground: 222 47% 11%;
+
+  --primary: 199 100% 42%;
+  --primary-foreground: 0 0% 100%;
+
+  --secondary: 220 16% 93%;
+  --secondary-foreground: 222 47% 11%;
+
+  --muted: 220 16% 93%;
+  --muted-foreground: 220 10% 46%;
+
+  --accent: 260 60% 55%;
+  --accent-foreground: 0 0% 100%;
+
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 0 0% 100%;
+
+  --border: 220 16% 88%;
+  --input: 220 16% 88%;
+  --ring: 199 100% 42%;
+
+  --radius: 0.75rem;
+
+  --sidebar-background: 0 0% 100%;
+  --sidebar-foreground: 222 47% 11%;
+  --sidebar-primary: 199 100% 42%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent: 220 16% 95%;
+  --sidebar-accent-foreground: 222 47% 11%;
+  --sidebar-border: 220 16% 90%;
+  --sidebar-ring: 199 100% 42%;
+
+  --glass-bg: hsl(0 0% 100% / 0.8);
+  --glass-border: hsl(222 47% 11% / 0.06);
+  --shadow-card: 0 8px 32px -8px hsl(220 20% 60% / 0.15);
+}
+
+/* Dark theme (cookie: body[data-background-color="dark"]) */
+body.fl-dashboard-body[data-background-color="dark"],
+body.fl-dashboard-body[data-background-color="dark"] .dark {
+  --background: 222 47% 6%;
+  --foreground: 210 40% 96%;
+
+  --card: 222 40% 10%;
+  --card-foreground: 210 40% 96%;
+
+  --popover: 222 40% 10%;
+  --popover-foreground: 210 40% 96%;
+
+  --primary: 199 100% 50%;
+  --primary-foreground: 222 47% 6%;
+
+  --secondary: 222 30% 16%;
+  --secondary-foreground: 210 40% 96%;
+
+  --muted: 222 30% 14%;
+  --muted-foreground: 215 20% 55%;
+
+  --accent: 260 80% 60%;
+  --accent-foreground: 210 40% 98%;
+
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 210 40% 98%;
+
+  --border: 222 30% 18%;
+  --input: 222 30% 18%;
+  --ring: 199 100% 50%;
+
+  --radius: 0.75rem;
+
+  --sidebar-background: 222 40% 8%;
+  --sidebar-foreground: 210 40% 96%;
+  --sidebar-primary: 199 100% 50%;
+  --sidebar-primary-foreground: 222 47% 6%;
+  --sidebar-accent: 222 30% 14%;
+  --sidebar-accent-foreground: 210 40% 96%;
+  --sidebar-border: 222 30% 18%;
+  --sidebar-ring: 199 100% 50%;
+
+  --glass-bg: hsl(222 40% 10% / 0.6);
+  --glass-border: hsl(210 40% 96% / 0.08);
+  --shadow-card: 0 8px 32px -8px hsl(222 47% 2% / 0.6);
+}
+
+/* =====================
+   Base
+   ===================== */
+body.fl-dashboard-body {
+  font-family: 'Inter', sans-serif !important;
+  background: hsl(var(--background)) !important;
+  color: hsl(var(--foreground)) !important;
+  margin: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+body.fl-dashboard-body h1,
+body.fl-dashboard-body h2,
+body.fl-dashboard-body h3,
+body.fl-dashboard-body h4,
+body.fl-dashboard-body h5,
+body.fl-dashboard-body h6 {
+  font-family: 'Space Grotesk', sans-serif !important;
+  color: hsl(var(--foreground)) !important;
+}
+
+/* Utilities from reference */
+.glass-card {
+  background: var(--glass-bg) !important;
+  border: 1px solid var(--glass-border) !important;
+  backdrop-filter: blur(16px);
+  box-shadow: var(--shadow-card) !important;
+}
+
+.gradient-text {
+  background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* =====================
+   Layout wrappers
+   ===================== */
+.fl-dashboard {
+  display: flex !important;
+  min-height: 100vh;
+  width: 100%;
+  background: hsl(var(--background)) !important;
+}
+
+.fl-main {
+  flex: 1 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  min-width: 0 !important;
+  overflow-x: hidden !important;
+  background: hsl(var(--background)) !important;
+}
+
+.fl-content {
+  flex: 1 !important;
+  padding: 24px !important;
+  overflow: auto !important;
+}
+
+.fl-footer {
+  border-top: 1px solid hsl(var(--border)) !important;
+  padding: 12px 24px !important;
+  text-align: center !important;
+  font-size: 12px !important;
+  color: hsl(var(--muted-foreground)) !important;
+  background: transparent !important;
+}
+.fl-footer p { margin: 0 !important; }
+
+/* =====================
+   Sidebar (Atlantis override)
+   ===================== */
+body.fl-dashboard-body .fl-dashboard .fl-sidebar.sidebar.sidebar-style-2 {
+  position: relative !important; /* override Atlantis fixed */
+}
+
+body.fl-dashboard-body .fl-dashboard .fl-sidebar.sidebar.sidebar-style-2,
+body.fl-dashboard-body .fl-sidebar.sidebar.sidebar-style-2,
+body.fl-dashboard-body .fl-sidebar.sidebar,
+body.fl-dashboard-body .fl-sidebar {
+  top: auto !important;
+  left: auto !important;
+  width: 220px !important;
+  min-width: 220px !important;
+  max-width: 220px !important;
+  height: 100vh !important;
+  flex-shrink: 0 !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  background: hsl(var(--sidebar-background)) !important;
+  border-right: 1px solid hsl(var(--sidebar-border)) !important;
+  padding: 0 !important;
+  z-index: 100 !important;
+  box-shadow: none !important;
+}
+
+body.fl-dashboard-body .fl-sidebar .sidebar-wrapper {
+  position: relative !important;
+  top: auto !important;
+  left: auto !important;
+  width: 100% !important;
+  height: auto !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  overflow: visible !important;
+}
+
+body.fl-dashboard-body .fl-sidebar .sidebar-content {
+  background: transparent !important;
+  box-shadow: none !important;
+  padding: 0 12px 24px !important;
+}
+
+/* Brand */
+.fl-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 20px;
+  text-decoration: none !important;
+  color: hsl(var(--foreground)) !important;
+  font-weight: 700;
+  font-size: 18px;
+  font-family: 'Space Grotesk', sans-serif;
+  border-bottom: 1px solid hsl(var(--sidebar-border));
+  margin-bottom: 8px;
+}
+.fl-brand:hover { text-decoration: none !important; color: hsl(var(--foreground)) !important; }
+
+.fl-brand-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.fl-brand-icon svg { width: 16px; height: 16px; }
+
+.fl-brand span b,
+.fl-brand span strong { color: hsl(var(--primary)) !important; }
+
+/* Hide default Atlantis user/search */
+body.fl-dashboard-body .fl-sidebar .user,
+body.fl-dashboard-body .fl-sidebar .sidebar-content > .nav > .row { display: none !important; }
+
+/* Sections */
+.fl-nav-section { margin-top: 4px; }
+
+.fl-section-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 12px 6px;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: hsl(var(--muted-foreground));
+  user-select: none;
+}
+
+.fl-section-label.fl-section-toggle {
+  cursor: pointer;
+  text-decoration: none !important;
+}
+
+.fl-section-label .fl-chevron {
+  width: 14px;
+  height: 14px;
+  opacity: 0.8;
+  transition: transform 0.2s ease;
+}
+
+.fl-section-label[aria-expanded="false"] .fl-chevron { transform: rotate(-90deg); }
+
+/* Nav items */
+body.fl-dashboard-body .fl-sidebar ul.nav.nav-primary,
+body.fl-dashboard-body .fl-sidebar ul.nav.nav-collapse {
+  list-style: none !important;
+}
+
+body.fl-dashboard-body .fl-sidebar .nav.nav-primary {
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+body.fl-dashboard-body .fl-sidebar .nav.nav-primary > .nav-item { margin: 1px 0 !important; }
+
+body.fl-dashboard-body .fl-sidebar .nav.nav-primary > .nav-item > a {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  padding: 8px 12px !important;
+  border-radius: 8px !important;
+  font-size: 13px !important;
+  font-weight: 400 !important;
+  color: hsl(var(--muted-foreground)) !important;
+  transition: all 0.15s ease !important;
+  text-decoration: none !important;
+  background: transparent !important;
+  margin: 0 !important;
+  min-height: auto !important;
+  line-height: 1.4 !important;
+}
+
+body.fl-dashboard-body .fl-sidebar .nav.nav-primary > .nav-item > a:hover {
+  background: hsl(var(--secondary) / 0.5) !important;
+  color: hsl(var(--foreground)) !important;
+}
+
+body.fl-dashboard-body .fl-sidebar .nav.nav-primary > .nav-item.active > a {
+  background: hsl(var(--primary) / 0.10) !important;
+  color: hsl(var(--primary)) !important;
+  font-weight: 500 !important;
+}
+
+/* Lucide icon slot */
+.fl-sidebar .fl-icon,
+.fl-sidebar .fl-icon svg {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+body.fl-dashboard-body .fl-sidebar .nav.nav-primary > .nav-item > a p {
+  margin: 0 !important;
+  font-size: 13px !important;
+  color: inherit !important;
+  flex: 1 !important;
+}
+
+/* Caret for Atlantis collapse items inside section */
+body.fl-dashboard-body .fl-sidebar .nav.nav-primary > .nav-item > a .caret {
+  margin-left: auto !important;
+  border: none !important;
+  display: inline-flex !important;
+}
+body.fl-dashboard-body .fl-sidebar .nav.nav-primary > .nav-item > a .caret::before { display: none !important; }
+body.fl-dashboard-body .fl-sidebar .nav.nav-primary > .nav-item > a .caret > svg,
+body.fl-dashboard-body .fl-sidebar .nav.nav-primary > .nav-item > a .caret svg {
+  width: 14px; height: 14px;
+}
+
+/* Collapse sub-items */
+body.fl-dashboard-body .fl-sidebar .nav.nav-collapse {
+  padding: 2px 0 2px 8px !important;
+  margin: 0 !important;
+}
+
+body.fl-dashboard-body .fl-sidebar .nav.nav-collapse > li > a {
+  display: flex !important;
+  align-items: center !important;
+  padding: 6px 12px 6px 28px !important;
+  font-size: 12.5px !important;
+  color: hsl(var(--muted-foreground)) !important;
+  border-radius: 6px !important;
+  transition: all 0.15s ease !important;
+  text-decoration: none !important;
+}
+
+body.fl-dashboard-body .fl-sidebar .nav.nav-collapse > li > a:hover {
+  background: hsl(var(--secondary) / 0.5) !important;
+  color: hsl(var(--foreground)) !important;
+}
+
+body.fl-dashboard-body .fl-sidebar .nav.nav-collapse > li.active > a {
+  background: hsl(var(--primary) / 0.10) !important;
+  color: hsl(var(--primary)) !important;
+  font-weight: 500 !important;
+}
+
+body.fl-dashboard-body .fl-sidebar .nav.nav-collapse .subnav { padding-left: 12px !important; }
+body.fl-dashboard-body .fl-sidebar .nav.nav-collapse .subnav > li > a { padding: 5px 12px 5px 20px !important; font-size: 12px !important; }
+
+/* =====================
+   Topbar
+   ===================== */
+.fl-topbar {
+  height: 56px !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  padding: 0 20px !important;
+  border-bottom: 1px solid hsl(var(--border)) !important;
+  background: var(--glass-bg) !important;
+  backdrop-filter: blur(16px) !important;
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 99 !important;
+  flex-shrink: 0 !important;
+}
+
+.fl-topbar .btn-toggle {
+  background: transparent !important;
+  border: none !important;
+  color: hsl(var(--foreground)) !important;
+  font-size: 18px !important;
+  padding: 6px !important;
+  cursor: pointer !important;
+  border-radius: 8px !important;
+}
+.fl-topbar .btn-toggle:hover { background: hsl(var(--secondary) / 0.5) !important; }
+
+.fl-topbar .fl-topbar-right {
+  margin-left: auto !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+}
+
+/* Theme toggle (icon style) */
+.fl-theme-toggle {
+  border: 1px solid hsl(var(--border)) !important;
+  background: transparent !important;
+  color: hsl(var(--muted-foreground)) !important;
+  border-radius: 10px !important;
+  padding: 6px 10px !important;
+  line-height: 1 !important;
+}
+.fl-theme-toggle:hover { background: hsl(var(--secondary) / 0.5) !important; color: hsl(var(--foreground)) !important; }
+.fl-theme-toggle svg { width: 16px; height: 16px; }
+
+/* Plan badge */
+.fl-plan-badge {
+  font-size: 11px !important;
+  padding: 6px 12px !important;
+  border-radius: 999px !important;
+  background: hsl(var(--primary) / 0.10) !important;
+  color: hsl(var(--primary)) !important;
+  font-weight: 500 !important;
+  white-space: nowrap;
+}
+
+/* Avatar */
+.fl-topbar .avatar-sm { width: 32px !important; height: 32px !important; }
+.fl-topbar .avatar-sm .avatar-img { width: 32px !important; height: 32px !important; border-radius: 50% !important; object-fit: cover !important; }
+.fl-topbar .profile-pic { text-decoration: none !important; }
+
+/* Dropdown */
+.fl-topbar .dropdown-menu {
+  background: hsl(var(--card)) !important;
+  border: 1px solid hsl(var(--border)) !important;
+  border-radius: 12px !important;
+  box-shadow: var(--shadow-card) !important;
+}
+.fl-topbar .dropdown-item { color: hsl(var(--foreground)) !important; font-size: 13px !important; }
+.fl-topbar .dropdown-item:hover { background: hsl(var(--secondary) / 0.5) !important; }
+
+/* =====================
+   Cards / KPI
+   ===================== */
+.fl-content .card {
+  background: var(--glass-bg) !important;
+  border: 1px solid var(--glass-border) !important;
+  backdrop-filter: blur(16px);
+  box-shadow: var(--shadow-card) !important;
+  border-radius: 12px !important;
+}
+
+.fl-content .card:hover { border-color: hsl(var(--primary) / 0.20) !important; }
+
+.fl-content .card-header {
+  background: transparent !important;
+  border-bottom: 1px solid hsl(var(--border)) !important;
+  font-family: 'Space Grotesk', sans-serif !important;
+  font-weight: 600 !important;
+  border-radius: 12px 12px 0 0 !important;
+  color: hsl(var(--foreground)) !important;
+}
+
+.fl-content .card-title { color: hsl(var(--foreground)) !important; font-family: 'Space Grotesk', sans-serif !important; }
+
+/* KPI cards: icon in top-right */
+.fl-kpi-card .card-body { position: relative !important; padding: 20px !important; }
+.fl-kpi-card .icon-big {
+  position: absolute !important;
+  top: 16px !important;
+  right: 16px !important;
+  margin: 0 !important;
+  opacity: 0.6 !important;
+}
+.fl-kpi-card:hover .icon-big { opacity: 1 !important; }
+.fl-kpi-card .icon-big svg { width: 16px; height: 16px; }
+.fl-kpi-card .card-category { color: hsl(var(--muted-foreground)) !important; font-size: 12px !important; margin-bottom: 4px !important; }
+.fl-kpi-card .card-title { font-size: 28px !important; font-weight: 700 !important; font-family: 'Space Grotesk', sans-serif !important; }
+
+/* Remove Atlantis colored backgrounds (force glass) */
+.fl-content .card-stats.card-primary,
+.fl-content .card-stats.card-secondary,
+.fl-content .card-stats.card-info,
+.fl-content .card-stats.card-warning,
+.fl-content .card-stats.card-success,
+.fl-content .card-stats.card-danger {
+  background: var(--glass-bg) !important;
+  border: 1px solid var(--glass-border) !important;
+  color: hsl(var(--foreground)) !important;
+}
+
+/* =====================
+   Tables / Badges
+   ===================== */
+.fl-content .table { color: hsl(var(--foreground)) !important; }
+.fl-content .table thead th {
+  background: hsl(var(--secondary) / 0.6) !important;
+  border-bottom: 1px solid hsl(var(--border)) !important;
+  color: hsl(var(--muted-foreground)) !important;
+  font-weight: 600 !important;
+  font-size: 12px !important;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.fl-content .table td,
+.fl-content .table th {
+  border-top: 1px solid hsl(var(--border)) !important;
+  vertical-align: middle !important;
+  padding: 12px !important;
+}
+
+.fl-content .table-striped tbody tr:nth-of-type(odd) { background-color: transparent !important; }
+.fl-content .table-striped tbody tr:hover { background-color: hsl(var(--secondary) / 0.5) !important; }
+
+.fl-content .badge {
+  border-radius: 999px !important;
+  padding: 4px 10px !important;
+  font-size: 11px !important;
+  font-weight: 500 !important;
+}
+
+/* Map Bootstrap badge colors into reference feel */
+.fl-content .badge-primary { background: hsl(var(--primary) / 0.10) !important; color: hsl(var(--primary)) !important; }
+.fl-content .badge-secondary { background: hsl(var(--secondary)) !important; color: hsl(var(--muted-foreground)) !important; }
+.fl-content .badge-success { background: rgba(34, 197, 94, 0.15) !important; color: #16a34a !important; }
+.fl-content .badge-warning { background: rgba(245, 158, 11, 0.15) !important; color: #d97706 !important; }
+.fl-content .badge-danger { background: rgba(239, 68, 68, 0.15) !important; color: #dc2626 !important; }
+
+/* =====================
+   Forms / Buttons
+   ===================== */
+.fl-content .btn { border-radius: 8px !important; font-size: 13px !important; transition: all 0.15s ease !important; }
+.fl-content .btn-primary,
+.fl-content .btn-info { background: hsl(var(--primary)) !important; border-color: hsl(var(--primary)) !important; color: hsl(var(--primary-foreground)) !important; }
+.fl-content .btn-primary:hover,
+.fl-content .btn-info:hover { opacity: 0.9 !important; }
+
+.fl-content .form-control {
+  border-radius: 8px !important;
+  border: 1px solid hsl(var(--border)) !important;
+  background: hsl(var(--card)) !important;
+  color: hsl(var(--foreground)) !important;
+  font-size: 13px !important;
+  padding: 8px 12px !important;
+  transition: border-color 0.15s ease !important;
+}
+.fl-content .form-control:focus {
+  border-color: hsl(var(--primary)) !important;
+  box-shadow: 0 0 0 3px hsl(var(--primary) / 0.18) !important;
+}
+
+/* Alerts */
+.fl-content .alert {
+  border-radius: 10px !important;
+  border: 1px solid hsl(var(--border)) !important;
+  font-size: 13px !important;
+  color: hsl(var(--foreground)) !important;
+  background: hsl(var(--card) / 0.8) !important;
+}
+
+/* =====================
+   Responsive
+   ===================== */
+@media (max-width: 991px) {
+  body.fl-dashboard-body .fl-sidebar {
+    position: fixed !important;
+    left: -220px !important;
+    top: 0 !important;
+    height: 100vh !important;
+    z-index: 1050 !important;
+    transition: left 0.3s ease !important;
+  }
+  body.fl-dashboard-body .fl-sidebar.toggled { left: 0 !important; }
+
+  .fl-sidebar-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.4);
+    z-index: 1040;
+  }
+  .fl-sidebar-overlay.active { display: block; }
+}
+
+
+/* Chevron / caret alignment (reference-like) */
+.fl-sidebar .fl-chevron{width:14px;height:14px;opacity:.7}
+.fl-sidebar .nav.nav-primary > .nav-item > a .fl-chevron{margin-left:auto}
+body.fl-dashboard-body .fl-sidebar .nav.nav-primary > .nav-item > a .fl-chevron{margin-left:auto}
+
+
+/* Theme toggle (reference-like pill + knob) */
+.fl-theme-toggle{
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  height:32px !important;
+  width:44px !important;
+  padding:4px !important;
+  border-radius:999px !important;
+  border:1px solid hsl(var(--border)) !important;
+  background: hsl(var(--secondary)) !important;
+  color: hsl(var(--muted-foreground)) !important;
+}
+.fl-theme-toggle:hover{
+  background: hsl(var(--secondary)) !important;
+  color: hsl(var(--foreground)) !important;
+}
+.fl-theme-toggle-knob{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:24px;
+  height:24px;
+  border-radius:999px;
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+}
+.fl-theme-toggle-knob svg{
+  width:14px;
+  height:14px;
+}
+
+/* FORCE theme toggle to match reference (high specificity override) */
+body.fl-dashboard-body .fl-topbar .fl-theme-toggle{
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:flex-start !important;
+  height:32px !important;
+  width:56px !important;
+  padding:4px !important;
+  border-radius:999px !important;
+  border:1px solid hsl(var(--border)) !important;
+  background: hsl(var(--secondary)) !important;
+  box-shadow: none !important;
+}
+body.fl-dashboard-body .fl-topbar .fl-theme-toggle .fl-theme-toggle-knob{
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  width:24px !important;
+  height:24px !important;
+  border-radius:999px !important;
+  background: hsl(var(--primary)) !important;
+  color: hsl(var(--primary-foreground)) !important;
+}
+body.fl-dashboard-body .fl-topbar .fl-theme-toggle .fl-theme-toggle-knob svg{
+  width:14px !important;
+  height:14px !important;
+}
+
+/* Fix: logo area spacing / missing icon */
+body.fl-dashboard-body .fl-sidebar .fl-brand{
+  padding: 14px 18px !important;
+  margin-bottom: 6px !important;
+}
+body.fl-dashboard-body .fl-sidebar .fl-brand-icon{
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+}
+body.fl-dashboard-body .fl-sidebar .fl-brand-icon svg{
+  width:16px !important;
+  height:16px !important;
+}
+
+/* Fix: remove unexpected top gap above sidebar (Atlantis adds margin-top:62px) */
+body.fl-dashboard-body .fl-dashboard .fl-sidebar.sidebar.sidebar-style-2,
+body.fl-dashboard-body .fl-sidebar.sidebar.sidebar-style-2,
+body.fl-dashboard-body .fl-sidebar {
+  margin-top: 0 !important;
+}
+
+/* Fix: double scrollbar in sidebar (Atlantis scrollbar plugin) */
+body.fl-dashboard-body .fl-dashboard .fl-sidebar{
+  overflow: hidden !important; /* only sidebar-wrapper should scroll */
+}
+body.fl-dashboard-body .fl-sidebar .sidebar-wrapper{
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  height: calc(100vh - 64px) !important; /* leave room for brand */
+}
+/* Hide jquery-scrollbar extra rails that create the second scrollbar */
+body.fl-dashboard-body .fl-sidebar .scroll-wrapper > .scroll-element,
+body.fl-dashboard-body .fl-sidebar .scroll-wrapper > .scroll-element.scroll-y,
+body.fl-dashboard-body .fl-sidebar .scroll-wrapper > .scroll-element.scroll-x{
+  display: none !important;
+}
+
+/* Active menu color to match reference (no heavy shadow, lighter blue) */
+body.fl-dashboard-body .fl-sidebar .nav.nav-primary > .nav-item.active > a{
+  background: hsl(var(--primary) / 0.10) !important;
+  color: hsl(var(--primary)) !important;
+  font-weight: 500 !important;
+  box-shadow: none !important;
+  border: 1px solid hsl(var(--primary) / 0.18) !important;
+}
+body.fl-dashboard-body .fl-sidebar .nav.nav-primary > .nav-item > a{
+  border: 1px solid transparent !important;
+}
+body.fl-dashboard-body .fl-sidebar .nav.nav-primary > .nav-item > a:hover{
+  box-shadow: none !important;
+}
+
+/* Ensure selected item label text turns blue like reference */
+body.fl-dashboard-body .fl-sidebar .nav.nav-primary > .nav-item.active > a p,
+body.fl-dashboard-body .fl-sidebar .nav.nav-primary > .nav-item.active > a span,
+body.fl-dashboard-body .fl-sidebar .nav.nav-primary > .nav-item.active > a{
+  color: hsl(var(--primary)) !important;
+}
+
+/* Sidebar spacing to match lovable (less  flat/more inset) */
+body.fl-dashboard-body .fl-sidebar .sidebar-content{
+  padding-left: 16px !important;
+  padding-right: 16px !important;
+}
+body.fl-dashboard-body .fl-sidebar .fl-section-label{
+  text-transform: none !important;
+  font-size: 12px !important;
+  letter-spacing: 0 !important;
+  padding: 18px 4px 8px !important;
+}
+body.fl-dashboard-body .fl-sidebar .nav.nav-primary > .nav-item > a{
+  padding-left: 10px !important;
+  padding-right: 10px !important;
+}
+
+/* Sidebar: match lovable spacing/compactness */
+body.fl-dashboard-body .fl-sidebar .sidebar-content{
+  padding: 0 14px 24px !important;
+}
+body.fl-dashboard-body .fl-sidebar .fl-section-label{
+  padding: 14px 6px 6px !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  color: hsl(var(--muted-foreground)) !important;
+}
+body.fl-dashboard-body .fl-sidebar .nav.nav-primary > .nav-item > a{
+  justify-content: flex-start !important;
+  text-align: left !important;
+  padding: 8px 10px !important;
+  border-radius: 10px !important;
+  font-weight: 400 !important;
+  box-shadow: none !important;
+}
+body.fl-dashboard-body .fl-sidebar .nav.nav-primary > .nav-item > a p{
+  font-size: 14px !important;
+}
+/* Active item in lovable has no border outline */
+body.fl-dashboard-body .fl-sidebar .nav.nav-primary > .nav-item.active > a{
+  border: none !important;
+  background: hsl(var(--primary) / 0.10) !important;
+  box-shadow: none !important;
+}
+/* reduce chevron prominence and align */
+body.fl-dashboard-body .fl-sidebar .nav.nav-primary > .nav-item > a .fl-chevron,
+body.fl-dashboard-body .fl-sidebar .nav.nav-primary > .nav-item > a .caret,
+body.fl-dashboard-body .fl-sidebar .nav.nav-primary > .nav-item > a .caret svg{
+  opacity: .65 !important;
+}
+
+/* Sidebar items: remove  button look (match lovable flat list) */
+body.fl-dashboard-body .fl-sidebar .nav.nav-primary > .nav-item > a{
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  padding: 8px 12px !important;
+  border-radius: 10px !important;
+  gap: 12px !important;
+}
+body.fl-dashboard-body .fl-sidebar .nav.nav-primary > .nav-item.active > a{
+  background: hsl(var(--primary) / 0.10) !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+body.fl-dashboard-body .fl-sidebar .nav.nav-primary > .nav-item > a:hover{
+  background: hsl(var(--secondary) / 0.50) !important;
+}
+/* ensure text is left-aligned like lovable */
+body.fl-dashboard-body .fl-sidebar .nav.nav-primary > .nav-item > a,
+body.fl-dashboard-body .fl-sidebar .nav.nav-primary > .nav-item > a p{
+  text-align: left !important;
+  justify-content: flex-start !important;
+}
+
+/* Sidebar alignment: make items start at same x as section titles (match lovable) */
+body.fl-dashboard-body .fl-sidebar .sidebar-content{
+  /* this is the global inset */
+  padding-left: 27px !important;
+  padding-right: 14px !important;
+}
+/* section title should NOT add extra left padding beyond sidebar-content */
+body.fl-dashboard-body .fl-sidebar .fl-section-label{
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+/* menu items should start at the same x as title (no extra left padding) */
+body.fl-dashboard-body .fl-sidebar .nav.nav-primary > .nav-item > a{
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+/* keep the pill hover/active look by applying inner padding via a pseudo wrapper */
+body.fl-dashboard-body .fl-sidebar .nav.nav-primary > .nav-item > a{
+  padding-top: 8px !important;
+  padding-bottom: 8px !important;
+}
+body.fl-dashboard-body .fl-sidebar .nav.nav-primary > .nav-item > a .fl-icon{
+  margin-left: 0 !important;
+}
+body.fl-dashboard-body .fl-sidebar .nav.nav-primary > .nav-item > a{
+  gap: 12px !important;
+}
+
+/* Match reference menu sizing (font/padding/row height) */
+body.fl-dashboard-body .fl-dashboard .fl-sidebar.sidebar.sidebar-style-2,
+body.fl-dashboard-body .fl-sidebar.sidebar.sidebar-style-2,
+body.fl-dashboard-body .fl-sidebar {
+  width: 260px !important;
+  min-width: 260px !important;
+  max-width: 260px !important;
+}
+
+body.fl-dashboard-body .fl-sidebar .nav.nav-primary > .nav-item > a{
+  font-size: 14px !important;
+  line-height: 20px !important;
+  padding: 8px 12px !important;
+  gap: 12px !important;
+}
+body.fl-dashboard-body .fl-sidebar .nav.nav-primary > .nav-item > a p{
+  font-size: 14px !important;
+  line-height: 20px !important;
+}
+
+/* Section label spacing like reference */
+body.fl-dashboard-body .fl-sidebar .fl-section-label{
+  font-size: 12px !important;
+  padding: 18px 12px 8px !important;
+}
+
+/* Align sidebar text start closer to left (match lovable) */
+body.fl-dashboard-body .fl-sidebar .sidebar-content{
+  padding-left: 12px !important;
+  padding-right: 12px !important;
+}
+
+/* Section titles (Principal/Loja/...) */
+body.fl-dashboard-body .fl-sidebar .fl-section-label{
+  padding-left: 12px !important;
+  padding-right: 12px !important;
+}
+
+/* Top-level items */
+body.fl-dashboard-body .fl-sidebar .nav.nav-primary > .nav-item > a{
+  padding-left: 12px !important;
+  padding-right: 12px !important;
+}
+
+/* Submenu container + items (bring text left) */
+body.fl-dashboard-body .fl-sidebar .nav.nav-collapse{
+  padding-left: 0 !important;
+}
+body.fl-dashboard-body .fl-sidebar .nav.nav-collapse > li > a{
+  padding-left: 40px !important; /* icon(16) + gap(12) + base(12) */
+  padding-right: 12px !important;
+}
+body.fl-dashboard-body .fl-sidebar .nav.nav-collapse .subnav > li > a{
+  padding-left: 52px !important;
+}
+
+/* Nudge sidebar content slightly left (reduce perceived indent) */
+body.fl-dashboard-body .fl-sidebar .sidebar-content{
+  padding-left: 8px !important;
+}
+body.fl-dashboard-body .fl-sidebar .fl-section-label{
+  padding-left: 8px !important;
+}
+body.fl-dashboard-body .fl-sidebar .nav.nav-primary > .nav-item > a{
+  padding-left: 8px !important;
+}
+/* Reduce submenu indent too */
+body.fl-dashboard-body .fl-sidebar .nav.nav-collapse > li > a{
+  padding-left: 36px !important;
+}
+body.fl-dashboard-body .fl-sidebar .nav.nav-collapse .subnav > li > a{
+  padding-left: 48px !important;
+}
+
+/* Match lovable pill feel: taller, rounder, wider padding, better centering */
+body.fl-dashboard-body .fl-sidebar .nav.nav-primary > .nav-item > a{
+  padding-top: 10px !important;
+  padding-bottom: 10px !important;
+  padding-left: 10px !important;
+  padding-right: 12px !important;
+  border-radius: 12px !important;
+  min-height: 40px !important;
+  align-items: center !important;
+}
+body.fl-dashboard-body .fl-sidebar .nav.nav-primary > .nav-item > a .fl-icon{
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+body.fl-dashboard-body .fl-sidebar .nav.nav-primary > .nav-item > a p{
+  display: inline-flex !important;
+  align-items: center !important;
+}
+
+/* Make active pill a bit  gordinho like lovable */
+body.fl-dashboard-body .fl-sidebar .nav.nav-primary > .nav-item > a{
+  padding-top: 12px !important;
+  padding-bottom: 12px !important;
+  min-height: 44px !important;
+}
+
+/* Fine-tune: reduce pill thickness (was too gordinho) */
+body.fl-dashboard-body .fl-sidebar .nav.nav-primary > .nav-item > a{
+  padding-top: 10px !important;
+  padding-bottom: 10px !important;
+  min-height: 40px !important;
+}
+
+/* Micro-tune active item thickness */
+body.fl-dashboard-body .fl-sidebar .nav.nav-primary > .nav-item > a{
+  padding-top: 9px !important;
+  padding-bottom: 9px !important;
+  min-height: 38px !important;
+}
+
+/* Test requested: 12px vertical padding */
+body.fl-dashboard-body .fl-sidebar .nav.nav-primary > .nav-item > a{
+  padding-top: 12px !important;
+  padding-bottom: 12px !important;
+  min-height: 44px !important;
+}
+
+/* FINAL: exact lovable menu sizing */
+body.fl-dashboard-body .fl-sidebar .nav.nav-primary > .nav-item > a{
+  font-family: 'Inter', sans-serif !important;
+  font-size: 14px !important;
+  line-height: 20px !important;
+  padding: 8px 12px !important; /* px-3 py-2 */
+  gap: 12px !important;         /* gap-3 */
+  min-height: 32px !important;
+  border-radius: 12px !important;
+}
+body.fl-dashboard-body .fl-sidebar .nav.nav-primary > .nav-item > a p{
+  font-family: 'Inter', sans-serif !important;
+  font-size: 14px !important;
+  line-height: 20px !important;
+}
+body.fl-dashboard-body .fl-sidebar .fl-section-label{
+  font-family: 'Inter', sans-serif !important;
+  font-size: 12px !important;   /* text-xs */
+  font-weight: 500 !important;  /* font-medium */
+  letter-spacing: 0 !important;
+  padding: 14px 12px 6px !important;
+}
+
+/* Requested: Loja option names 20px to the left */
+body.fl-dashboard-body .fl-sidebar .fl-loja-item > a p{
+  transform: translateX(-20px) !important;
+}
+
+/* Loja items: move icon + text together 20px left */
+body.fl-dashboard-body .fl-sidebar .fl-loja-item > a .fl-icon,
+body.fl-dashboard-body .fl-sidebar .fl-loja-item > a p{
+  transform: translateX(-20px) !important;
+}
+
+/* Apply same left shift to all top-level menu options (icon + text together) */
+body.fl-dashboard-body .fl-sidebar .nav.nav-primary > .nav-item > a .fl-icon,
+body.fl-dashboard-body .fl-sidebar .nav.nav-primary > .nav-item > a p{
+  transform: translateX(-20px) !important;
+}
+
+/* Expanded submenus: shift sub-item text 20px left too */
+body.fl-dashboard-body .fl-sidebar .nav.nav-collapse > li > a .sub-item,
+body.fl-dashboard-body .fl-sidebar .nav.nav-collapse > li > a,
+body.fl-dashboard-body .fl-sidebar .nav.nav-collapse .subnav > li > a .sub-item,
+body.fl-dashboard-body .fl-sidebar .nav.nav-collapse .subnav > li > a{
+  transform: translateX(-20px) !important;
+}
+
+/* Sidebar trigger style like lovable */
+body.fl-dashboard-body .fl-topbar .btn.btn-toggle.toggle-sidebar{
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  width:28px !important;
+  height:28px !important;
+  border-radius:6px !important;
+  border:0 !important;
+  background: transparent !important;
+  color: hsl(var(--foreground)) !important;
+  padding:0 !important;
+}
+body.fl-dashboard-body .fl-topbar .btn.btn-toggle.toggle-sidebar:hover{
+  background: hsl(var(--secondary)/.6) !important;
+}
+body.fl-dashboard-body .fl-topbar .btn.btn-toggle.toggle-sidebar .fl-icon{
+  width:16px !important; height:16px !important;
+}
+
+/* Collapsed sidebar mode (like lovable screenshot) */
+body.fl-dashboard-body.fl-sidebar-collapsed .fl-sidebar{
+  width:64px !important;
+  min-width:64px !important;
+  max-width:64px !important;
+}
+body.fl-dashboard-body.fl-sidebar-collapsed .fl-sidebar .fl-brand span:not(.fl-brand-icon){
+  display:none !important;
+}
+body.fl-dashboard-body.fl-sidebar-collapsed .fl-sidebar .fl-section-label span,
+body.fl-dashboard-body.fl-sidebar-collapsed .fl-sidebar .fl-section-label .fl-chevron,
+body.fl-dashboard-body.fl-sidebar-collapsed .fl-sidebar .nav.nav-primary > .nav-item > a p,
+body.fl-dashboard-body.fl-sidebar-collapsed .fl-sidebar .nav.nav-primary > .nav-item > a .caret,
+body.fl-dashboard-body.fl-sidebar-collapsed .fl-sidebar .nav.nav-primary > .nav-item > a .sub-item,
+body.fl-dashboard-body.fl-sidebar-collapsed .fl-sidebar .nav.nav-collapse{
+  display:none !important;
+}
+body.fl-dashboard-body.fl-sidebar-collapsed .fl-sidebar .nav.nav-primary > .nav-item > a{
+  justify-content:center !important;
+  padding:10px 0 !important;
+}
+body.fl-dashboard-body.fl-sidebar-collapsed .fl-sidebar .nav.nav-primary > .nav-item > a .fl-icon{
+  transform:none !important;
+  margin:0 !important;
+}
+
+/* trigger button class update */
+body.fl-dashboard-body .fl-topbar .btn.btn-toggle.fl-sidebar-trigger{
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  width:28px !important;
+  height:28px !important;
+  border-radius:6px !important;
+  border:0 !important;
+  background: transparent !important;
+  color: hsl(var(--foreground)) !important;
+  padding:0 !important;
+}
+
+/* collapsed mode should mimic lovable: only icon rail */
+body.fl-dashboard-body.fl-sidebar-collapsed .fl-sidebar .fl-section-label{
+  display:none !important;
+}
+body.fl-dashboard-body.fl-sidebar-collapsed .fl-sidebar .nav.nav-primary > .nav-item{
+  margin: 8px 0 !important;
+}
+body.fl-dashboard-body.fl-sidebar-collapsed .fl-sidebar .nav.nav-primary > .nav-item > a{
+  width:40px !important;
+  height:40px !important;
+  min-height:40px !important;
+  margin: 0 auto !important;
+  border-radius:10px !important;
+  padding:0 !important;
+  justify-content:center !important;
+  align-items:center !important;
+}
+body.fl-dashboard-body.fl-sidebar-collapsed .fl-sidebar .nav.nav-primary > .nav-item.active > a{
+  background: hsl(var(--primary) / 0.10) !important;
+}
+
+/* FORCE collapsed sidebar (last override) */
+body.fl-dashboard-body.fl-sidebar-collapsed .fl-dashboard .fl-sidebar,
+body.fl-dashboard-body.fl-sidebar-collapsed .fl-sidebar.sidebar.sidebar-style-2,
+body.fl-dashboard-body.fl-sidebar-collapsed .fl-sidebar{
+  width: 64px !important;
+  min-width: 64px !important;
+  max-width: 64px !important;
+}
+body.fl-dashboard-body.fl-sidebar-collapsed .fl-sidebar .fl-brand{
+  padding: 14px 0 !important;
+  justify-content: center !important;
+}
+body.fl-dashboard-body.fl-sidebar-collapsed .fl-sidebar .fl-brand span:not(.fl-brand-icon){
+  display:none !important;
+}
+body.fl-dashboard-body.fl-sidebar-collapsed .fl-sidebar .fl-section-label,
+body.fl-dashboard-body.fl-sidebar-collapsed .fl-sidebar .nav.nav-collapse,
+body.fl-dashboard-body.fl-sidebar-collapsed .fl-sidebar .nav.nav-primary > .nav-item > a p,
+body.fl-dashboard-body.fl-sidebar-collapsed .fl-sidebar .nav.nav-primary > .nav-item > a .caret,
+body.fl-dashboard-body.fl-sidebar-collapsed .fl-sidebar .nav.nav-primary > .nav-item > a .fl-chevron{
+  display:none !important;
+}
+body.fl-dashboard-body.fl-sidebar-collapsed .fl-sidebar .sidebar-content{
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+body.fl-dashboard-body.fl-sidebar-collapsed .fl-sidebar .nav.nav-primary > .nav-item{
+  margin: 8px 0 !important;
+}
+body.fl-dashboard-body.fl-sidebar-collapsed .fl-sidebar .nav.nav-primary > .nav-item > a{
+  width: 40px !important;
+  height: 40px !important;
+  min-height: 40px !important;
+  margin: 0 auto !important;
+  padding: 0 !important;
+  border-radius: 10px !important;
+  justify-content: center !important;
+  align-items: center !important;
+}
+body.fl-dashboard-body.fl-sidebar-collapsed .fl-sidebar .nav.nav-primary > .nav-item > a .fl-icon,
+body.fl-dashboard-body.fl-sidebar-collapsed .fl-sidebar .nav.nav-primary > .nav-item > a i{
+  transform: none !important;
+  margin: 0 !important;
+}
+
+/* FINAL OVERRIDE: collapsed width must win against any previous 260px rule */
+html body.fl-dashboard-body.fl-sidebar-collapsed .fl-dashboard aside.fl-sidebar.sidebar.sidebar-style-2,
+html body.fl-dashboard-body.fl-sidebar-collapsed .fl-sidebar.sidebar.sidebar-style-2,
+html body.fl-dashboard-body.fl-sidebar-collapsed .fl-sidebar{
+  width: 64px !important;
+  min-width: 64px !important;
+  max-width: 64px !important;
+  flex: 0 0 64px !important;
+}
+
+/* Collapsed rail cleanup: hide any text bleed */
+body.fl-dashboard-body.fl-sidebar-collapsed .fl-sidebar{
+  overflow: hidden !important;
+}
+body.fl-dashboard-body.fl-sidebar-collapsed .fl-sidebar *{
+  white-space: nowrap;
+}
+body.fl-dashboard-body.fl-sidebar-collapsed .fl-sidebar .sidebar-content,
+body.fl-dashboard-body.fl-sidebar-collapsed .fl-sidebar .sidebar-wrapper{
+  overflow: hidden !important;
+}
+body.fl-dashboard-body.fl-sidebar-collapsed .fl-sidebar .nav.nav-primary > .nav-item > a{
+  overflow: hidden !important;
+}
+
+/* Collapsed sidebar: hide vertical scrollbar (show only on expanded state) */
+body.fl-dashboard-body:not(.fl-sidebar-collapsed) .fl-sidebar .sidebar-content,
+body.fl-dashboard-body:not(.fl-sidebar-collapsed) .fl-sidebar .sidebar-wrapper {
+  overflow-y: auto !important;
+}
+
+body.fl-dashboard-body.fl-sidebar-collapsed .fl-sidebar .sidebar-content,
+body.fl-dashboard-body.fl-sidebar-collapsed .fl-sidebar .sidebar-wrapper {
+  overflow-y: hidden !important;
+  scrollbar-width: none !important; /* Firefox */
+  -ms-overflow-style: none !important; /* IE/Edge antigo */
+}
+
+body.fl-dashboard-body.fl-sidebar-collapsed .fl-sidebar .sidebar-content::-webkit-scrollbar,
+body.fl-dashboard-body.fl-sidebar-collapsed .fl-sidebar .sidebar-wrapper::-webkit-scrollbar {
+  width: 0 !important;
+  height: 0 !important;
+  display: none !important;
+}
+
+/* HARD KILL scrollbar in collapsed sidebar */
+body.fl-dashboard-body.fl-sidebar-collapsed .fl-sidebar,
+body.fl-dashboard-body.fl-sidebar-collapsed .fl-sidebar .sidebar-wrapper,
+body.fl-dashboard-body.fl-sidebar-collapsed .fl-sidebar .sidebar-content,
+body.fl-dashboard-body.fl-sidebar-collapsed .fl-sidebar .nav,
+body.fl-dashboard-body.fl-sidebar-collapsed .fl-sidebar .nav.nav-primary{
+  overflow-y: hidden !important;
+  overflow-x: hidden !important;
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+
+body.fl-dashboard-body.fl-sidebar-collapsed .fl-sidebar::-webkit-scrollbar,
+body.fl-dashboard-body.fl-sidebar-collapsed .fl-sidebar .sidebar-wrapper::-webkit-scrollbar,
+body.fl-dashboard-body.fl-sidebar-collapsed .fl-sidebar .sidebar-content::-webkit-scrollbar,
+body.fl-dashboard-body.fl-sidebar-collapsed .fl-sidebar .nav::-webkit-scrollbar,
+body.fl-dashboard-body.fl-sidebar-collapsed .fl-sidebar .nav.nav-primary::-webkit-scrollbar{
+  width: 0 !important;
+  height: 0 !important;
+  display: none !important;
+  background: transparent !important;
+}
+
+/* Sidebar trigger: ghost icon button (Lovable-like) */
+body.fl-dashboard-body .fl-topbar .fl-sidebar-trigger{
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:8px !important;
+  width:28px !important;
+  height:28px !important;
+  min-width:28px !important;
+  min-height:28px !important;
+  border:0 !important;
+  border-radius:6px !important;
+  background:transparent !important;
+  color:hsl(var(--foreground)) !important;
+  padding:0 !important;
+  line-height:1 !important;
+  transition: background-color .2s ease, color .2s ease, box-shadow .2s ease !important;
+}
+body.fl-dashboard-body .fl-topbar .fl-sidebar-trigger:hover{
+  background:hsl(var(--accent, 210 40% 96.1%)) !important;
+  color:hsl(var(--accent-foreground, 222.2 47.4% 11.2%)) !important;
+}
+body.fl-dashboard-body .fl-topbar .fl-sidebar-trigger:focus,
+body.fl-dashboard-body .fl-topbar .fl-sidebar-trigger:focus-visible{
+  outline:none !important;
+  box-shadow:0 0 0 2px hsl(var(--ring, 215 20.2% 65.1%)) !important;
+}
+body.fl-dashboard-body .fl-topbar .fl-sidebar-trigger svg{
+  width:16px !important;
+  height:16px !important;
+  display:block !important;
+  pointer-events:none !important;
+  flex-shrink:0 !important;
+}
+
+/* === FINAL: exact-like SidebarTrigger (shadcn ghost + h-7 w-7) === */
+body.fl-dashboard-body .fl-topbar .fl-trigger-shadcn{
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: .5rem !important;
+  white-space: nowrap !important;
+  width: 1.75rem !important;   /* h-7 w-7 */
+  height: 1.75rem !important;
+  min-width: 1.75rem !important;
+  min-height: 1.75rem !important;
+  border: 0 !important;
+  border-radius: 0.375rem !important; /* rounded-md */
+  background: transparent !important;
+  color: hsl(var(--foreground)) !important;
+  font-size: .875rem !important;
+  font-weight: 500 !important;
+  line-height: 1 !important;
+  padding: 0 !important;
+  box-shadow: none !important;
+  transition: color .2s ease, background-color .2s ease, box-shadow .2s ease !important;
+}
+body.fl-dashboard-body .fl-topbar .fl-trigger-shadcn:hover{
+  background: hsl(var(--secondary)) !important; /* hover:bg-accent-ish from template theme */
+  color: hsl(var(--foreground)) !important;
+}
+body.fl-dashboard-body .fl-topbar .fl-trigger-shadcn:focus-visible,
+body.fl-dashboard-body .fl-topbar .fl-trigger-shadcn:focus{
+  outline: none !important;
+  box-shadow: 0 0 0 2px hsl(var(--ring)), 0 0 0 4px hsl(var(--background)) !important;
+}
+body.fl-dashboard-body .fl-topbar .fl-trigger-shadcn svg{
+  width: 1rem !important;
+  height: 1rem !important;
+  pointer-events: none !important;
+  flex-shrink: 0 !important;
+  display: block !important;
+}
+
+/* === FINAL: lovable sidebar motion (200ms linear) === */
+body.fl-dashboard-body .fl-sidebar,
+body.fl-dashboard-body .fl-dashboard .fl-sidebar,
+body.fl-dashboard-body .fl-main,
+body.fl-dashboard-body .fl-content {
+  transition: width 200ms linear, min-width 200ms linear, max-width 200ms linear, flex-basis 200ms linear, margin-left 200ms linear, padding-left 200ms linear !important;
+}
+
+/* TRUE parity with shadcn SidebarTrigger */
+body.fl-dashboard-body .fl-topbar [data-sidebar='trigger']{
+  all: unset;
+  box-sizing: border-box;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: .5rem !important;
+  white-space: nowrap !important;
+  width: 1.75rem !important;
+  height: 1.75rem !important;
+  border-radius: .375rem !important;
+  color: hsl(var(--foreground)) !important;
+  cursor: pointer !important;
+  transition: color .2s, background-color .2s !important;
+}
+body.fl-dashboard-body .fl-topbar [data-sidebar='trigger']:hover{
+  background: hsl(var(--secondary)) !important;
+  color: hsl(var(--foreground)) !important;
+}
+body.fl-dashboard-body .fl-topbar [data-sidebar='trigger']:focus,
+body.fl-dashboard-body .fl-topbar [data-sidebar='trigger']:focus-visible,
+body.fl-dashboard-body .fl-topbar [data-sidebar='trigger']:active{
+  outline: none !important;
+  box-shadow: none !important;
+}
+body.fl-dashboard-body .fl-topbar [data-sidebar='trigger'] svg{
+  width: 1rem !important;
+  height: 1rem !important;
+  stroke-width: 2 !important;
+  display: block !important;
+  pointer-events: none !important;
+}
+
+/* Pixel-match tweak: trigger icon exactly like lovable */
+body.fl-dashboard-body .fl-topbar [data-sidebar='trigger']{
+  width: 28px !important;
+  height: 28px !important;
+  min-width: 28px !important;
+  min-height: 28px !important;
+  border-radius: 6px !important;
+  background: transparent !important;
+  border: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  color: #4b5563 !important; /* muted slate like lovable */
+}
+body.fl-dashboard-body .fl-topbar [data-sidebar='trigger'] svg,
+body.fl-dashboard-body .fl-topbar [data-sidebar='trigger'] .lucide{
+  width: 14px !important;
+  height: 14px !important;
+  stroke-width: 1.9 !important;
+  color: #4b5563 !important;
+}
+body.fl-dashboard-body .fl-topbar [data-sidebar='trigger']:hover{
+  background: #e5e7eb !important;
+  color: #374151 !important;
+}
+body.fl-dashboard-body .fl-topbar [data-sidebar='trigger']:hover svg,
+body.fl-dashboard-body .fl-topbar [data-sidebar='trigger']:hover .lucide{
+  color: #374151 !important;
+}
+
+/* Atlantis custom scrollbar: hide completely when sidebar is collapsed */
+body.fl-dashboard-body.fl-sidebar-collapsed .fl-sidebar,
+body.fl-dashboard-body.fl-sidebar-collapsed .fl-sidebar .sidebar-wrapper,
+body.fl-dashboard-body.fl-sidebar-collapsed .fl-sidebar .scroll-content,
+body.fl-dashboard-body.fl-sidebar-collapsed .fl-sidebar .scroll-wrapper {
+  overflow: hidden !important;
+}
+
+body.fl-dashboard-body.fl-sidebar-collapsed .fl-sidebar .scroll-element,
+body.fl-dashboard-body.fl-sidebar-collapsed .fl-sidebar .scroll-element_outer,
+body.fl-dashboard-body.fl-sidebar-collapsed .fl-sidebar .scroll-element_track,
+body.fl-dashboard-body.fl-sidebar-collapsed .fl-sidebar .scroll-bar {
+  display: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+}
+
+/* expanded sidebar keeps normal scrolling */
+body.fl-dashboard-body:not(.fl-sidebar-collapsed) .fl-sidebar,
+body.fl-dashboard-body:not(.fl-sidebar-collapsed) .fl-sidebar .sidebar-wrapper,
+body.fl-dashboard-body:not(.fl-sidebar-collapsed) .fl-sidebar .scroll-content,
+body.fl-dashboard-body:not(.fl-sidebar-collapsed) .fl-sidebar .scroll-wrapper {
+  overflow-y: auto !important;
+}
+
+/* FINAL icon parity: remove any button chrome and keep tiny panel-left glyph */
+body.fl-dashboard-body .fl-topbar .fl-sidebar-trigger,
+body.fl-dashboard-body .fl-topbar [data-sidebar='trigger']{
+  -webkit-appearance: none !important;
+  appearance: none !important;
+  border: 0 !important;
+  outline: 0 !important;
+  box-shadow: none !important;
+  background-image: none !important;
+  background-color: transparent !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  width: 28px !important;
+  height: 28px !important;
+  min-width: 28px !important;
+  min-height: 28px !important;
+  border-radius: 6px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+body.fl-dashboard-body .fl-topbar .fl-sidebar-trigger svg,
+body.fl-dashboard-body .fl-topbar [data-sidebar='trigger'] svg{
+  width: 16px !important;
+  height: 16px !important;
+  stroke-width: 2 !important;
+  color: #4b5563 !important;
+}
+
+body.fl-dashboard-body .fl-topbar .fl-sidebar-trigger:hover,
+body.fl-dashboard-body .fl-topbar [data-sidebar='trigger']:hover{
+  background: #e5e7eb !important;
+}
+
+/* Trigger final tune requested: bigger + purple hover/active */
+body.fl-dashboard-body .fl-topbar .fl-sidebar-trigger,
+body.fl-dashboard-body .fl-topbar [data-sidebar='trigger']{
+  width: 32px !important;
+  height: 32px !important;
+  min-width: 32px !important;
+  min-height: 32px !important;
+  border-radius: 10px !important;
+}
+
+body.fl-dashboard-body .fl-topbar .fl-sidebar-trigger svg,
+body.fl-dashboard-body .fl-topbar [data-sidebar='trigger'] svg{
+  width: 17px !important;
+  height: 17px !important;
+}
+
+body.fl-dashboard-body .fl-topbar .fl-sidebar-trigger:hover,
+body.fl-dashboard-body .fl-topbar .fl-sidebar-trigger:focus-visible,
+body.fl-dashboard-body .fl-topbar [data-sidebar='trigger']:hover,
+body.fl-dashboard-body .fl-topbar [data-sidebar='trigger']:focus-visible{
+  background: #8b5cf6 !important; /* roxo */
+  color: #ffffff !important;
+}
+
+body.fl-dashboard-body .fl-topbar .fl-sidebar-trigger:hover svg,
+body.fl-dashboard-body .fl-topbar .fl-sidebar-trigger:focus-visible svg,
+body.fl-dashboard-body .fl-topbar [data-sidebar='trigger']:hover svg,
+body.fl-dashboard-body .fl-topbar [data-sidebar='trigger']:focus-visible svg{
+  color: #ffffff !important;
+}
+
+/* Requested size: 42x42 */
+body.fl-dashboard-body .fl-topbar .fl-sidebar-trigger,
+body.fl-dashboard-body .fl-topbar [data-sidebar='trigger']{
+  width: 42px !important;
+  height: 42px !important;
+  min-width: 42px !important;
+  min-height: 42px !important;
+  border-radius: 12px !important;
+}
+body.fl-dashboard-body .fl-topbar .fl-sidebar-trigger svg,
+body.fl-dashboard-body .fl-topbar [data-sidebar='trigger'] svg{
+  width: 20px !important;
+  height: 20px !important;
+}
+
+/* Hard force 42x42 above any Atlantis rule */
+header.fl-topbar > .fl-sidebar-trigger.fl-trigger-shadcn,
+header.fl-topbar > button.fl-sidebar-trigger.fl-trigger-shadcn,
+.fl-topbar .fl-sidebar-trigger.fl-trigger-shadcn{
+  display: inline-flex !important;
+  width: 42px !important;
+  height: 42px !important;
+  min-width: 42px !important;
+  min-height: 42px !important;
+  padding: 0 !important;
+  line-height: 1 !important;
+  border: 0 !important;
+  border-radius: 12px !important;
+}
+.fl-topbar .fl-sidebar-trigger.fl-trigger-shadcn svg{
+  width: 20px !important;
+  height: 20px !important;
+}
+
+/* Package banner (Current Package / Expire Date) - blue tone like lovable */
+body.fl-dashboard-body .fl-package-banner{
+  background: #dbeafe !important;      /* azul claro */
+  border: 1px solid #93c5fd !important;
+  border-left: 1px solid #93c5fd !important;
+  color: #0f172a !important;
+  border-radius: 12px !important;
+  box-shadow: none !important;
+}
+body.fl-dashboard-body .fl-package-banner strong{
+  color: #0f172a !important;
+}
+body.fl-dashboard-body .fl-package-banner .badge.badge-secondary{
+  background: #bae6fd !important;
+  color: #0369a1 !important;
+  border: 0 !important;
+}
+
+/* Package banner force (without depending on body class) */
+.fl-package-banner,
+.alert.fl-package-banner{
+  background: #dbeafe !important;
+  border: 1px solid #93c5fd !important;
+  border-left: 1px solid #93c5fd !important;
+  color: #0f172a !important;
+  border-radius: 12px !important;
+  box-shadow: none !important;
+}
+.alert.fl-package-banner .badge.badge-secondary{
+  background: #bae6fd !important;
+  color: #0369a1 !important;
+  border: 0 !important;
+}
+
+/* User requested exact package banner tone */
+.fl-package-banner,
+.alert.fl-package-banner{
+  background: #E9F1F7 !important;
+  border-color: #c6ddef !important;
+  border-left-color: #c6ddef !important;
+}
+
+/* Absolute force: package banner exact color */
+.alert.border-left.border-primary.text-dark.fl-package-banner,
+.alert.border-left.border-primary.text-dark.fl-package-banner *{
+  color: #0f172a !important;
+}
+.alert.border-left.border-primary.text-dark.fl-package-banner{
+  background-color: #E9F1F7 !important;
+  background: #E9F1F7 !important;
+  border: 1px solid #c6ddef !important;
+  border-left: 1px solid #c6ddef !important;
+  box-shadow: none !important;
+}
+
+/* Tailwind-like utility compatibility for inline KPI SVGs */
+body.fl-dashboard-body .fl-kpi-card .w-4{ width:16px !important; }
+body.fl-dashboard-body .fl-kpi-card .h-4{ height:16px !important; }
+body.fl-dashboard-body .fl-kpi-card .text-primary{ color:#0ea5e9 !important; }
+body.fl-dashboard-body .fl-kpi-card .text-accent{ color:#8b5cf6 !important; }
+body.fl-dashboard-body .fl-kpi-card .opacity-60{ opacity:.6 !important; }
+body.fl-dashboard-body .fl-kpi-card .transition-opacity{ transition:opacity .2s ease !important; }
+body.fl-dashboard-body .fl-kpi-card:hover svg.opacity-60,
+body.fl-dashboard-body .fl-kpi-card:hover .group-hover\\:opacity-100{ opacity:1 !important; }
+
+/* Ensure KPI icon container doesn't upscale inline SVG unexpectedly */
+body.fl-dashboard-body .fl-kpi-card .icon-big svg{
+  display:inline-block !important;
+  vertical-align:middle !important;
+}
+
+/* Empty orders title: not bold + slightly smaller */
+body.fl-dashboard-body h3.fl-empty-orders{
+  font-size: 22px !important;
+  font-weight: 400 !important;
+  line-height: 1.35 !important;
+  color: hsl(var(--foreground)) !important;
+}
+
+/* MENU_ZOOM_ONLY_START */
+/* Apply 90% scale ONLY to sidebar menu content (not whole page) */
+body.fl-dashboard-body .fl-sidebar .sidebar-content {
+  zoom: 0.9;
+}
+
+/* Firefox fallback: scale only menu content */
+@-moz-document url-prefix() {
+  body.fl-dashboard-body .fl-sidebar .sidebar-content {
+    transform: scale(0.9);
+    transform-origin: top left;
+    width: 111.1111%;
+  }
+}
+/* MENU_ZOOM_ONLY_END */
+
+/* ICON_BIG_150_START */
+/* Increase KPI icon-big by 50% */
+.fl-kpi-card .icon-big {
+  top: 12px !important;
+  right: 12px !important;
+}
+.fl-kpi-card .icon-big svg,
+.fl-kpi-card .icon-big .fl-icon,
+.fl-kpi-card .icon-big .fl-icon svg {
+  width: 36px !important;
+  height: 36px !important;
+}
+/* ICON_BIG_150_END */
+
+/* ICON_BIG_TEXTCENTER_150_START */
+/* Enlarge any .icon-big.text-center icons */
+body.fl-dashboard-body .icon-big.text-center svg,
+body.fl-dashboard-body .icon-big.text-center .fl-icon,
+body.fl-dashboard-body .icon-big.text-center .fl-icon svg,
+body.fl-dashboard-body .icon-big.text-center i {
+  width: 36px !important;
+  height: 36px !important;
+  font-size: 36px !important;
+}
+/* ICON_BIG_TEXTCENTER_150_END */
+
+/* ACTIVE_STRIPE_LEFT_OFFSET_START */
+/* Extend active menu highlight further left (without clipping) */
+body.fl-dashboard-body .fl-sidebar .nav.nav-primary > .nav-item {
+  overflow: visible !important;
+}
+body.fl-dashboard-body .fl-sidebar .nav.nav-primary > .nav-item.active > a {
+  margin-left: -22px !important;
+  width: calc(100% + 22px) !important;
+  padding-left: 34px !important;
+}
+/* ACTIVE_STRIPE_LEFT_OFFSET_END */
+
+/* THEME_TOGGLE_REACT_ADAPT_START */
+/* React-like theme toggle adaptation for Blade/Bootstrap */
+body.fl-dashboard-body .fl-topbar .fl-theme-toggle{
+  position: relative !important;
+  width: 56px !important;
+  height: 28px !important;
+  padding: 2px !important;
+  border-radius: 999px !important;
+  border: 1px solid hsl(var(--border)) !important;
+  background: hsl(var(--secondary)) !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  cursor: pointer !important;
+  transition: border-color .2s ease, background-color .2s ease !important;
+}
+body.fl-dashboard-body .fl-topbar .fl-theme-toggle:hover{
+  border-color: hsl(var(--primary) / 0.35) !important;
+}
+body.fl-dashboard-body .fl-topbar .fl-theme-toggle .fl-theme-toggle-knob{
+  width: 24px !important;
+  height: 24px !important;
+  border-radius: 999px !important;
+  background: hsl(var(--primary)) !important;
+  color: hsl(var(--primary-foreground)) !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transform: translateX(26px);
+  transition: transform .28s cubic-bezier(.22,.8,.32,1.1) !important;
+  box-shadow: 0 4px 10px hsl(var(--primary) / 0.35) !important;
+  position: relative;
+}
+body.fl-dashboard-body .fl-topbar .fl-theme-toggle[data-theme="dark"] .fl-theme-toggle-knob{
+  transform: translateX(0);
+}
+body.fl-dashboard-body .fl-topbar .fl-theme-toggle .fl-theme-icon{
+  position: absolute;
+  width: 14px !important;
+  height: 14px !important;
+  transition: opacity .18s ease;
+}
+body.fl-dashboard-body .fl-topbar .fl-theme-toggle .fl-theme-icon-sun{ opacity: 1; }
+body.fl-dashboard-body .fl-topbar .fl-theme-toggle .fl-theme-icon-moon{ opacity: 0; }
+body.fl-dashboard-body .fl-topbar .fl-theme-toggle[data-theme="dark"] .fl-theme-icon-sun{ opacity: 0; }
+body.fl-dashboard-body .fl-topbar .fl-theme-toggle[data-theme="dark"] .fl-theme-icon-moon{ opacity: 1; }
+/* THEME_TOGGLE_REACT_ADAPT_END */
+
+
+
+/* EMPTY_TEXT_CLASS_START */
+.empty-text{
+  font-size: 13px;
+  color: #94A3B8;
+  font-weight: 400;
+  margin: 0;
+}
+/* EMPTY_TEXT_CLASS_END */
