@@ -18,6 +18,8 @@ class UserThemeState extends Model
     ];
 
     protected $casts = [
+        'draft' => 'array',
+        'published' => 'array',
         'draft_version' => 'integer',
         'published_version' => 'integer',
     ];

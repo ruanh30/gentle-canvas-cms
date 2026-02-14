@@ -19,5 +19,6 @@ class UserThemeVersion extends Model
 
     protected $casts = [
         'version' => 'integer',
+        'config' => 'array',
     ];
 }
