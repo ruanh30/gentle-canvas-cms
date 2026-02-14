@@ -178,7 +178,7 @@ Route::group(['domain' => $domain, 'prefix' => $prefix, 'middleware' => ['userVi
 
         Route::get('/yoco/success', 'User\Payment\YocoController@successPayment')->name('customer.itemcheckout.yoco.success');
 
-        Route::get('/xendit/success', 'User\Payment\YocoController@successPayment')->name('customer.itemcheckout.xendit.success');
+        Route::get('/xendit/success', 'User\Payment\XenditController@successPayment')->name('customer.itemcheckout.xendit.success');
         Route::get('/perfect-money/success', 'User\Payment\PerfectMoneyController@successPayment')->name('customer.itemcheckout.perfect_money.success');
 
         Route::get('/myfatoorah/success', 'User\Payment\MyfatoorahController@successPayment')->name('customer.itemcheckout.myfatoorah.success');

@@ -35,6 +35,62 @@ return new class extends Migration {
                 $settings['header']['announcement'] = $settings['header']['announcementBar'];
                 unset($settings['header']['announcementBar']);
             }
+            // Fix legacy numeric/string type mismatches
+            if (isset($settings['global']['borderRadius']) && is_numeric($settings['global']['borderRadius'])) {
+                $r = (int) $settings['global']['borderRadius'];
+                $map = [0 => 'none', 4 => 'small', 8 => 'medium', 12 => 'large'];
+                $settings['global']['borderRadius'] = $map[$r] ?? 'medium';
+            }
+            if (isset($settings['global']['borderStyle']) && $settings['global']['borderStyle'] === 'solid') {
+                $settings['global']['borderStyle'] = 'thin';
+            }
+            if (isset($settings['hero']['height']) && is_numeric($settings['hero']['height'])) {
+                $h = (int) $settings['hero']['height'];
+                $settings['hero']['height'] = $h <= 300 ? 'small' : ($h <= 450 ? 'medium' : ($h <= 600 ? 'large' : 'fullscreen'));
+            }
+            if (isset($settings['hero']['autoplaySpeed']) && $settings['hero']['autoplaySpeed'] > 100) {
+                $settings['hero']['autoplaySpeed'] = round($settings['hero']['autoplaySpeed'] / 1000);
+            }
+            if (isset($settings['productCard']['imageBorderRadius']) && is_numeric($settings['productCard']['imageBorderRadius'])) {
+                $r = (int) $settings['productCard']['imageBorderRadius'];
+                $settings['productCard']['imageBorderRadius'] = $r <= 0 ? 'none' : ($r <= 4 ? 'small' : ($r <= 8 ? 'medium' : 'large'));
+            }
+            if (isset($settings['productCard']['shadow']) && $settings['productCard']['shadow'] === 'small') {
+                $settings['productCard']['shadow'] = 'subtle';
+            }
+            if (isset($settings['productCard']['hoverShadow']) && is_string($settings['productCard']['hoverShadow'])) {
+                $settings['productCard']['hoverShadow'] = $settings['productCard']['hoverShadow'] !== 'none';
+            }
+            if (isset($settings['productPage']['galleryLayout']) && $settings['productPage']['galleryLayout'] === 'thumbnails-left') {
+                $settings['productPage']['galleryLayout'] = 'side-by-side';
+            }
+            if (isset($settings['category']['layout']) && $settings['category']['layout'] === 'sidebar') {
+                $settings['category']['layout'] = 'sidebar-left';
+            }
+            if (isset($settings['category']['filterStyle']) && $settings['category']['filterStyle'] === 'sidebar') {
+                $settings['category']['filterStyle'] = 'accordion';
+            }
+            if (isset($settings['category']['pagination']) && $settings['category']['pagination'] === 'numbered') {
+                $settings['category']['pagination'] = 'classic';
+            }
+            if (isset($settings['category']['carouselSpeed']) && $settings['category']['carouselSpeed'] > 100) {
+                $settings['category']['carouselSpeed'] = round($settings['category']['carouselSpeed'] / 1000);
+            }
+            if (isset($settings['category']['carouselDirection']) && $settings['category']['carouselDirection'] === 'horizontal') {
+                $settings['category']['carouselDirection'] = 'ltr';
+            }
+            if (isset($settings['checkout']['layout']) && $settings['checkout']['layout'] === 'two-column') {
+                $settings['checkout']['layout'] = 'two-columns';
+            }
+            if (isset($settings['checkout']['stepsStyle']) && $settings['checkout']['stepsStyle'] === 'progress') {
+                $settings['checkout']['stepsStyle'] = 'progress-bar';
+            }
+            if (isset($settings['productCard']['buttonVisibility']) && $settings['productCard']['buttonVisibility'] === 'hover') {
+                $settings['productCard']['buttonVisibility'] = 'both';
+            }
+            if (isset($settings['productCard']['buttonLayout']) && $settings['productCard']['buttonLayout'] === 'full') {
+                $settings['productCard']['buttonLayout'] = 'stacked';
+            }
 
             $json = json_encode($settings, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
             $theme = $app->theme ?? 'premium';

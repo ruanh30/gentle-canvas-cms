@@ -108,10 +108,10 @@ export function HeaderPanel() {
           {bb.carousel && (
             <>
               <TextField label="Imagem 2" value={bb.images[0] || ''} onChange={v => {
-                const imgs = [...(bb.images || [])]; imgs[0] = v; setBanner({ images: imgs.filter(Boolean) });
+                const imgs = [...(bb.images || [])]; while (imgs.length < 1) imgs.push(''); imgs[0] = v; setBanner({ images: imgs });
               }} placeholder="https://..." />
               <TextField label="Imagem 3" value={bb.images[1] || ''} onChange={v => {
-                const imgs = [...(bb.images || [])]; imgs[1] = v; setBanner({ images: imgs.filter(Boolean) });
+                const imgs = [...(bb.images || [])]; while (imgs.length < 2) imgs.push(''); imgs[1] = v; setBanner({ images: imgs });
               }} placeholder="https://..." />
               <NumberSlider label="Velocidade do carrossel" value={bb.carouselSpeed} onChange={v => setBanner({ carouselSpeed: v })} min={2} max={10} suffix="s" />
             </>
