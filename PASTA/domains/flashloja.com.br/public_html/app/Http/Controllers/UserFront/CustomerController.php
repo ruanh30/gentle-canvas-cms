@@ -218,7 +218,7 @@ class CustomerController extends Controller
         $rootUser = getUser();
         $keywords = Common::get_keywords();
         $basic_settings = BasicSetting::where('user_id', $rootUser->id)->select('is_recaptcha')->first();
-        if (is_null($rootUser->first_name && $rootUser->last_name)) {
+        if (is_null($rootUser->first_name) && is_null($rootUser->last_name)) {
             $website_title = $rootUser->username;
         } else {
             $website_title =  $rootUser->first_name . ' ' . $rootUser->last_name;
@@ -402,7 +402,7 @@ class CustomerController extends Controller
         $customer->save();
 
         // send a mail to user for verify his/her email address
-        if (is_null($user->first_name && $user->last_name)) {
+        if (is_null($user->first_name) && is_null($user->last_name)) {
             $website_title = $user->username;
         } else {
             $website_title =  $user->first_name . ' ' . $user->last_name;

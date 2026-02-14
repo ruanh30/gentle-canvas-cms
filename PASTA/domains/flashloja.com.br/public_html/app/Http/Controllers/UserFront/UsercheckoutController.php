@@ -336,7 +336,7 @@ class UsercheckoutController extends Controller
                 return redirect()->back()->withInput($request->all());
             }
             $amount = $total;
-            $success_url = route('customer.itemcheckout.paytabs.success', getParam());
+            $success_url = route('customer.itemcheckout.phonepe.success', getParam());
             $cancel_url = route('customer.itemcheckout.cancel', getParam());
             $paymentData = new PhonePeController();
             return $paymentData->paymentProcess($request, $amount, $success_url, $cancel_url);

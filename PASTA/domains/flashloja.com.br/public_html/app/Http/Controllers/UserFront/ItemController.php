@@ -66,8 +66,11 @@ class ItemController extends Controller
         }
 
         $data = explode(',,,', $id);
+        if (count($data) < 4) {
+            return response()->json(['error' => $keywords['Invalid request'] ?? __('Invalid request')]);
+        }
         $id = (int)$data[0];
-        $qty = (int)$data[1];
+        $qty = max(1, (int)$data[1]);
         $total = (float)$data[2];
         $variant = json_decode($data[3], true);
 
@@ -188,7 +191,13 @@ class ItemController extends Controller
         if (env('DEMO_MODE') == 'active') {
             return response()->json(['message' => 'This is Demo version. You can not change anything.']);
         }
-        $data['wishlist'] = CustomerWishList::where('item_id', $id)->delete();
+        // Only delete wishlist entries belonging to the authenticated customer
+        if (!Auth::guard('customer')->check()) {
+            return response()->json(['error' => $keywords['Customer Login required'] ?? __('Customer Login required')]);
+        }
+        CustomerWishList::where('item_id', $id)
+            ->where('customer_id', Auth::guard('customer')->user()->id)
+            ->delete();
         return response()->json(['status' => 'remove_from_wishlist', 'message' => $keywords['Item removed successfully'] ?? __('Item removed successfully')]);
     }
     public function cartitemremove($doamin, $uid)
