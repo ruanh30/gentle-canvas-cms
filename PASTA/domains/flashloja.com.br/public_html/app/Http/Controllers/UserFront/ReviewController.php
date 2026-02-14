@@ -22,15 +22,37 @@ class ReviewController extends Controller
     {
         $user_id = getUser()->id;
         $keywords = Common::get_keywords($user_id);
+
+        // Ensure customer is authenticated
+        if (!Auth::guard('customer')->check()) {
+            Session::flash('error', $keywords['Customer Login required'] ?? __('Customer Login required'));
+            return back();
+        }
+
+        $request->validate([
+            'item_id' => ['required', 'integer'],
+            'review' => ['nullable', 'integer', 'min:1', 'max:5'],
+            'comment' => ['nullable', 'string', 'max:5000'],
+        ]);
+
         if ($request->review || $request->comment) {
-            if (UserItemReview::where('customer_id', Auth::guard('customer')->user()->id)->where('item_id', $request->item_id)->exists()) {
-                $exists =  UserItemReview::where('customer_id', Auth::guard('customer')->user()->id)->where('item_id', $request->item_id)->first();
+            $customerId = Auth::guard('customer')->user()->id;
+
+            // Verify the item belongs to this store owner
+            $item = \App\Models\User\UserItem::where('id', $request->item_id)->where('user_id', $user_id)->first();
+            if (!$item) {
+                Session::flash('error', $keywords['Item not found'] ?? __('Item not found'));
+                return back();
+            }
+
+            if (UserItemReview::where('customer_id', $customerId)->where('item_id', $request->item_id)->exists()) {
+                $exists = UserItemReview::where('customer_id', $customerId)->where('item_id', $request->item_id)->first();
                 if ($request->review) {
                     $exists->update([
-                        'review' => Purifier::clean($request->review),
+                        'review' => (int) $request->review,
                     ]);
                     $avgreview = UserItemReview::where('item_id', $request->item_id)->avg('review');
-                    UserItem::find($request->item_id)->update([
+                    \App\Models\User\UserItem::find($request->item_id)->update([
                         'rating' => $avgreview
                     ]);
                 }
@@ -42,13 +64,15 @@ class ReviewController extends Controller
                 Session::flash('success', $keywords['Updated successfully'] ?? __('Updated successfully'));
                 return back();
             } else {
-                $input = $request->all();
-                $input['comment'] = Purifier::clean($request->comment);
-                $input['customer_id'] = Auth::guard('customer')->user()->id;
                 $data = new UserItemReview();
-                $data->create($input);
+                $data->create([
+                    'item_id' => $request->item_id,
+                    'customer_id' => $customerId,
+                    'review' => $request->review ? (int) $request->review : null,
+                    'comment' => $request->comment ? Purifier::clean($request->comment) : null,
+                ]);
                 $avgreview = UserItemReview::where('item_id', $request->item_id)->avg('review');
-                UserItem::find($request->item_id)->update([
+                \App\Models\User\UserItem::find($request->item_id)->update([
                     'rating' => $avgreview
                 ]);
                 Session::flash('success', $keywords['Your review has been submitted successfully'] ?? __('Your review has been submitted successfully'));
