@@ -496,10 +496,14 @@ class ShopController extends Controller
             ->where('language_id', $uLang)
             ->where('slug', $slug)
             ->first();
+
+        if (is_null($data['product'])) {
+            abort(404);
+        }
+
         $data['item_id'] = $data['product']->item_id;
 
         $data['product_variations'] = ProductVariation::where('item_id', $data['product']->item_id)->get();
-        $data['item_id'] = $data['product']->item_id;
 
         return view('user-front.partials.quick-view-modal', $data);
     }
