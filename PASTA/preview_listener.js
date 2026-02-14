@@ -190,7 +190,7 @@ window.addEventListener('message', function (e) {
         }
         // Shadow
         if (pc.shadow !== undefined) {
-            var shadows = { none: 'none', small: '0 1px 3px rgba(0,0,0,.08)', medium: '0 4px 12px rgba(0,0,0,.1)', large: '0 8px 24px rgba(0,0,0,.12)' };
+            var shadows = { none: 'none', subtle: '0 1px 3px rgba(0,0,0,.08)', small: '0 1px 3px rgba(0,0,0,.08)', medium: '0 4px 12px rgba(0,0,0,.1)', strong: '0 8px 24px rgba(0,0,0,.12)', large: '0 8px 24px rgba(0,0,0,.12)' };
             card.style.boxShadow = shadows[pc.shadow] || 'none';
         }
     });

@@ -402,7 +402,7 @@ class CmsApiController extends Controller
             'id' => (string) $m->id,
             'name' => $m->name ?? '',
             'url' => $m->url ? asset(ltrim($m->url, '/')) : '',
-            'addedAt' => $m->created_at ? $m->created_at->format('Y-m-d') : '',
+            'addedAt' => $m->created_at ? date('Y-m-d', strtotime($m->created_at)) : '',
         ]);
 
         return response()->json($out->values());
