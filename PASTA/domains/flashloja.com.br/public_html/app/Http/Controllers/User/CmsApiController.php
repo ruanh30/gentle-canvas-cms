@@ -267,9 +267,13 @@ class CmsApiController extends Controller
         $userId = (int) Auth::id();
         $data = $request->validate(['id' => ['required', 'integer']]);
 
+        // Verify ownership BEFORE deleting related rows
+        $item = DB::table('user_items')->where('id', $data['id'])->where('user_id', $userId)->first();
+        if (!$item) abort(404);
+
         DB::table('user_item_images')->where('item_id', $data['id'])->delete();
         DB::table('user_item_contents')->where('item_id', $data['id'])->delete();
-        DB::table('user_items')->where('id', $data['id'])->where('user_id', $userId)->delete();
+        DB::table('user_items')->where('id', $data['id'])->delete();
 
         return response()->json(['ok' => true]);
     }
@@ -412,7 +416,7 @@ class CmsApiController extends Controller
     {
         $userId = (int) Auth::id();
         $request->validate([
-            'file' => ['required', 'file', 'max:5120'],
+            'file' => ['required', 'file', 'max:5120', 'mimes:jpg,jpeg,png,gif,webp,svg,mp4,webm,pdf'],
             'name' => ['nullable', 'string', 'max:255'],
         ]);
 
