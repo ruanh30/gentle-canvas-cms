@@ -54,6 +54,8 @@
     --flash-brand-deep: 217 91% 60%;
     --flash-brand-darker: 220 70% 45%;
     --flash-surface: 213 60% 97%;
+    --flash-glow: 213 100% 88%;
+    --flash-midnight: 222 47% 11%;
   }
 
   .dark {
