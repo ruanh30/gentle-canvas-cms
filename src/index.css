@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -49,6 +49,11 @@
     --buy-now-hover: 0 72% 42%;
     --success: 142 72% 42%;
     --warning: 38 92% 50%;
+
+    --flash-brand: 213 93% 78%;
+    --flash-brand-deep: 217 91% 60%;
+    --flash-brand-darker: 220 70% 45%;
+    --flash-surface: 213 60% 97%;
   }
 
   .dark {
@@ -117,6 +122,9 @@
   }
   .font-body {
     font-family: 'Inter', system-ui, sans-serif;
+  }
+  .font-grotesk {
+    font-family: 'Space Grotesk', sans-serif;
   }
 }
 
