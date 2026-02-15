@@ -62,6 +62,8 @@ export default {
           deep: "hsl(var(--flash-brand-deep))",
           darker: "hsl(var(--flash-brand-darker))",
           surface: "hsl(var(--flash-surface))",
+          glow: "hsl(var(--flash-glow))",
+          midnight: "hsl(var(--flash-midnight))",
         },
       },
       borderRadius: {

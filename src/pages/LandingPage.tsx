@@ -1,58 +1,103 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
+import { motion, useScroll, useTransform, useInView, useMotionValue, useSpring, AnimatePresence } from 'framer-motion';
 import {
-  Zap, ShoppingBag, Palette, BarChart3, Shield, Globe,
-  CreditCard, Truck, MessageCircle, ArrowRight, Check,
-  Smartphone, ArrowUpRight, Play, ChevronRight, Sparkles,
-  Package, Users, TrendingUp, MousePointerClick
+  Zap, ShoppingBag, Palette, BarChart3, Shield,
+  CreditCard, Truck, ArrowRight, Check,
+  ArrowUpRight, Play, ChevronRight, Sparkles,
+  Package, Users, TrendingUp, MousePointerClick,
+  Globe, Eye, Layers, Lock
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
-/* ------------------------------------------------------------------ */
-/*  Intersection Observer hook                                         */
-/* ------------------------------------------------------------------ */
-function useInView(threshold = 0.15) {
-  const ref = useRef<HTMLDivElement>(null);
-  const [inView, setInView] = useState(false);
+/* ================================================================== */
+/*  ANIMATED COUNTER                                                   */
+/* ================================================================== */
+function Counter({ value, suffix = '' }: { value: number; suffix?: string }) {
+  const ref = useRef<HTMLSpanElement>(null);
+  const isInView = useInView(ref, { once: true });
+  const motionVal = useMotionValue(0);
+  const spring = useSpring(motionVal, { damping: 40, stiffness: 100 });
+
   useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const obs = new IntersectionObserver(
-      ([e]) => { if (e.isIntersecting) { setInView(true); obs.disconnect(); } },
-      { threshold }
-    );
-    obs.observe(el);
-    return () => obs.disconnect();
-  }, [threshold]);
-  return { ref, inView };
+    if (isInView) motionVal.set(value);
+  }, [isInView, value, motionVal]);
+
+  useEffect(() => {
+    const unsub = spring.on('change', (v) => {
+      if (ref.current) {
+        ref.current.textContent = Math.round(v).toLocaleString('pt-BR') + suffix;
+      }
+    });
+    return unsub;
+  }, [spring, suffix]);
+
+  return <span ref={ref}>0{suffix}</span>;
 }
 
-/* ------------------------------------------------------------------ */
-/*  Data                                                               */
-/* ------------------------------------------------------------------ */
+/* ================================================================== */
+/*  AURORA BACKGROUND                                                  */
+/* ================================================================== */
+function AuroraBackground({ className }: { className?: string }) {
+  return (
+    <div className={cn('absolute inset-0 overflow-hidden -z-10', className)}>
+      <div className="absolute w-[800px] h-[800px] top-[-200px] left-[-200px] rounded-full opacity-30 blur-[120px] animate-[aurora1_15s_ease-in-out_infinite]"
+        style={{ background: 'radial-gradient(circle, hsl(var(--flash-glow)), transparent 70%)' }} />
+      <div className="absolute w-[600px] h-[600px] top-[20%] right-[-100px] rounded-full opacity-20 blur-[100px] animate-[aurora2_20s_ease-in-out_infinite]"
+        style={{ background: 'radial-gradient(circle, hsl(var(--flash-brand)), transparent 70%)' }} />
+      <div className="absolute w-[500px] h-[500px] bottom-[-100px] left-[30%] rounded-full opacity-15 blur-[100px] animate-[aurora3_18s_ease-in-out_infinite]"
+        style={{ background: 'radial-gradient(circle, hsl(var(--flash-brand-deep)), transparent 70%)' }} />
+      <style>{`
+        @keyframes aurora1 { 0%,100%{transform:translate(0,0) scale(1)} 33%{transform:translate(80px,40px) scale(1.1)} 66%{transform:translate(-40px,80px) scale(0.95)} }
+        @keyframes aurora2 { 0%,100%{transform:translate(0,0) scale(1)} 50%{transform:translate(-120px,60px) scale(1.15)} }
+        @keyframes aurora3 { 0%,100%{transform:translate(0,0) scale(1)} 33%{transform:translate(60px,-40px) scale(1.08)} 66%{transform:translate(-80px,-20px) scale(0.92)} }
+      `}</style>
+    </div>
+  );
+}
+
+/* ================================================================== */
+/*  GRID PATTERN                                                       */
+/* ================================================================== */
+function GridPattern({ className }: { className?: string }) {
+  return (
+    <div
+      className={cn('absolute inset-0 -z-10 opacity-[0.035]', className)}
+      style={{
+        backgroundImage: `linear-gradient(hsl(var(--flash-brand-deep)) 1px, transparent 1px),
+                          linear-gradient(90deg, hsl(var(--flash-brand-deep)) 1px, transparent 1px)`,
+        backgroundSize: '60px 60px',
+      }}
+    />
+  );
+}
+
+/* ================================================================== */
+/*  DATA                                                               */
+/* ================================================================== */
 
 const features = [
-  { icon: Palette, title: 'Editor Visual', desc: 'Arraste, solte e publique. Sem escrever uma linha de código.' },
-  { icon: ShoppingBag, title: 'Catálogo Inteligente', desc: 'Variações, estoque, imagens e SEO em um só painel.' },
-  { icon: CreditCard, title: 'Checkout Otimizado', desc: 'PIX, cartão, boleto. Taxa de conversão 3x maior.' },
-  { icon: Truck, title: 'Logística Integrada', desc: 'Cálculo de frete automático com rastreamento em tempo real.' },
-  { icon: BarChart3, title: 'Analytics Profundo', desc: 'Dashboards de vendas, clientes e produtos mais vendidos.' },
-  { icon: Shield, title: 'Infraestrutura Sólida', desc: 'SSL, CDN global, backups automáticos e 99.9% uptime.' },
+  { icon: Palette, tag: '01', title: 'Editor Visual Premium', desc: 'Interface drag-and-drop com preview em tempo real. Customize cores, tipografia, layout e animações sem escrever código.' },
+  { icon: ShoppingBag, tag: '02', title: 'Catálogo Inteligente', desc: 'Variações infinitas, controle de estoque, imagens otimizadas e SEO automático para cada produto.' },
+  { icon: CreditCard, tag: '03', title: 'Checkout de Alta Conversão', desc: 'PIX com confirmação instantânea, parcelamento inteligente e one-click buy. Taxa de conversão 3x maior.' },
+  { icon: Truck, tag: '04', title: 'Logística Automatizada', desc: 'Integração nativa com Correios, Jadlog e transportadoras. Rastreamento em tempo real para seus clientes.' },
+  { icon: BarChart3, tag: '05', title: 'Analytics em Tempo Real', desc: 'Dashboards de vendas, funil de conversão, LTV do cliente e relatórios exportáveis.' },
+  { icon: Shield, tag: '06', title: 'Segurança Enterprise', desc: 'SSL incluso, PCI-DSS compliance, backups automáticos e infraestrutura com 99.9% de uptime.' },
 ];
 
 const plans = [
   {
     name: 'Starter',
-    price: '0',
+    price: 0,
     desc: 'Para validar sua ideia',
-    features: ['30 produtos', 'Tema padrão', 'Checkout integrado', 'Suporte por email'],
+    features: ['30 produtos', 'Tema padrão', 'Checkout integrado', 'Suporte email'],
     cta: 'Começar Grátis',
     highlight: false,
   },
   {
     name: 'Pro',
-    price: '49',
+    price: 49,
     desc: 'Para escalar vendas',
     features: ['Produtos ilimitados', 'Editor Premium', 'Domínio próprio', 'Analytics avançado', 'Cupons & promoções', 'Suporte prioritário'],
     cta: 'Começar com Pro',
@@ -60,7 +105,7 @@ const plans = [
   },
   {
     name: 'Scale',
-    price: '149',
+    price: 149,
     desc: 'Para operações robustas',
     features: ['Tudo do Pro', 'Multi-loja', 'API completa', 'Integrações custom', 'Account manager', 'SLA garantido'],
     cta: 'Falar com Vendas',
@@ -68,34 +113,9 @@ const plans = [
   },
 ];
 
-const metrics = [
-  { icon: Users, value: '10.000+', label: 'lojistas' },
-  { icon: Package, value: '2M+', label: 'pedidos' },
-  { icon: TrendingUp, value: '99.9%', label: 'uptime' },
-];
-
-/* ------------------------------------------------------------------ */
-/*  Marquee (infinite scroll ticker)                                   */
-/* ------------------------------------------------------------------ */
-
-function Marquee() {
-  const words = ['E-commerce', 'Design', 'Conversão', 'Performance', 'Pagamentos', 'Frete', 'Analytics', 'Mobile', 'SEO', 'Segurança'];
-  return (
-    <div className="overflow-hidden py-5 border-y border-flash-brand/15 bg-flash-surface/50">
-      <div className="flex animate-ticker whitespace-nowrap" style={{ animationDuration: '40s' }}>
-        {[...words, ...words].map((w, i) => (
-          <span key={i} className="mx-6 text-sm font-grotesk font-medium tracking-widest uppercase text-flash-darker/50 select-none">
-            {w} <span className="text-flash-brand mx-4">✦</span>
-          </span>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-/* ------------------------------------------------------------------ */
-/*  Navbar                                                             */
-/* ------------------------------------------------------------------ */
+/* ================================================================== */
+/*  NAVBAR                                                             */
+/* ================================================================== */
 
 function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -106,23 +126,29 @@ function Navbar() {
   }, []);
 
   return (
-    <nav
+    <motion.nav
+      initial={{ y: -20, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
       className={cn(
-        'fixed top-0 inset-x-0 z-50 transition-all duration-500',
-        scrolled ? 'bg-background/90 backdrop-blur-2xl shadow-[0_1px_0_0_hsl(var(--flash-brand)/0.08)]' : 'bg-transparent'
+        'fixed top-0 inset-x-0 z-50 transition-all duration-700',
+        scrolled
+          ? 'bg-background/70 backdrop-blur-2xl shadow-[0_0_40px_-12px_hsl(var(--flash-brand)/0.12)]'
+          : 'bg-transparent'
       )}
     >
-      <div className="max-w-[1320px] mx-auto flex items-center justify-between px-6 lg:px-10 h-[72px]">
-        <Link to="/" className="flex items-center gap-2.5 group">
-          <div className="h-9 w-9 rounded-xl bg-flash-deep flex items-center justify-center shadow-lg shadow-flash-deep/30 group-hover:shadow-flash-deep/50 transition-shadow">
+      <div className="max-w-[1360px] mx-auto flex items-center justify-between px-6 lg:px-10 h-[76px]">
+        <Link to="/" className="flex items-center gap-3 group">
+          <div className="relative h-10 w-10 rounded-2xl bg-gradient-to-br from-flash-deep to-flash-darker flex items-center justify-center shadow-lg shadow-flash-deep/30 group-hover:shadow-flash-deep/50 transition-all duration-500 group-hover:scale-105">
             <Zap className="h-5 w-5 text-white" />
+            <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-flash-brand/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
           </div>
           <span className="font-grotesk text-[22px] font-bold tracking-tight">
             Flash<span className="text-flash-deep">Loja</span>
           </span>
         </Link>
 
-        <div className="hidden md:flex items-center gap-1">
+        <div className="hidden md:flex items-center gap-1 bg-flash-surface/60 backdrop-blur-sm rounded-2xl px-2 py-1.5 border border-flash-brand/8">
           {[
             { href: '#features', label: 'Recursos' },
             { href: '#pricing', label: 'Planos' },
@@ -131,7 +157,7 @@ function Navbar() {
             <a
               key={l.href}
               href={l.href}
-              className="px-4 py-2 text-[13px] font-medium text-foreground/60 hover:text-foreground rounded-lg hover:bg-flash-surface transition-all duration-200"
+              className="px-5 py-2 text-[13px] font-medium text-foreground/50 hover:text-foreground hover:bg-background rounded-xl transition-all duration-300"
             >
               {l.label}
             </a>
@@ -139,293 +165,411 @@ function Navbar() {
         </div>
 
         <div className="flex items-center gap-3">
-          <Button variant="ghost" size="sm" className="text-[13px] font-medium hidden sm:inline-flex" asChild>
+          <Button variant="ghost" size="sm" className="text-[13px] font-medium hidden sm:inline-flex rounded-xl" asChild>
             <Link to="/login">Entrar</Link>
           </Button>
           <Button
             size="sm"
-            className="bg-flash-deep hover:bg-flash-darker text-white rounded-xl px-5 text-[13px] font-semibold shadow-lg shadow-flash-deep/20 hover:shadow-flash-deep/40 transition-all duration-300"
+            className="relative overflow-hidden bg-flash-deep hover:bg-flash-darker text-white rounded-2xl px-6 text-[13px] font-semibold shadow-lg shadow-flash-deep/25 hover:shadow-flash-deep/40 transition-all duration-500 group"
             asChild
           >
             <Link to="/login">
-              Criar Loja
-              <ArrowUpRight className="ml-1.5 h-3.5 w-3.5" />
+              <span className="relative z-10 flex items-center">
+                Criar Loja
+                <ArrowUpRight className="ml-1.5 h-3.5 w-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-300" />
+              </span>
             </Link>
           </Button>
         </div>
       </div>
-    </nav>
+    </motion.nav>
   );
 }
 
-/* ------------------------------------------------------------------ */
-/*  Hero                                                               */
-/* ------------------------------------------------------------------ */
+/* ================================================================== */
+/*  HERO                                                               */
+/* ================================================================== */
 
-function Hero() {
+function HeroBento() {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({ target: containerRef, offset: ['start start', 'end start'] });
+  const y1 = useTransform(scrollYProgress, [0, 1], [0, -80]);
+  const y2 = useTransform(scrollYProgress, [0, 1], [0, -40]);
+  const opacity = useTransform(scrollYProgress, [0, 0.6], [1, 0]);
+
   return (
-    <section className="relative min-h-screen flex items-center pt-[72px] overflow-hidden bg-background">
-      {/* Organic blob shapes */}
-      <div className="absolute top-0 right-0 w-[60%] h-full bg-flash-surface rounded-bl-[120px] -z-10" />
-      <div className="absolute top-[15%] right-[8%] w-[420px] h-[420px] rounded-full bg-flash-brand/12 blur-[100px] -z-10" />
-      <div className="absolute bottom-[10%] left-[5%] w-[300px] h-[300px] rounded-full bg-flash-deep/8 blur-[80px] -z-10" />
+    <section ref={containerRef} className="relative min-h-screen flex items-center pt-[76px] overflow-hidden bg-background">
+      <AuroraBackground />
+      <GridPattern />
 
-      {/* Decorative grid dots */}
-      <div
-        className="absolute top-24 left-12 w-40 h-40 -z-10 opacity-[0.07]"
-        style={{
-          backgroundImage: 'radial-gradient(circle, hsl(var(--flash-brand-deep)) 1.5px, transparent 1.5px)',
-          backgroundSize: '20px 20px'
-        }}
-      />
-
-      <div className="max-w-[1320px] mx-auto px-6 lg:px-10 py-20 lg:py-0">
-        <div className="grid lg:grid-cols-[1fr_1.1fr] gap-16 lg:gap-24 items-center">
+      <motion.div style={{ opacity }} className="max-w-[1360px] mx-auto px-6 lg:px-10 py-20 lg:py-0 w-full">
+        <div className="grid lg:grid-cols-[1.1fr_1fr] gap-16 lg:gap-20 items-center min-h-[calc(100vh-76px)]">
 
           {/* Left — Copy */}
-          <div className="space-y-10 max-w-xl">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-flash-brand/25 bg-flash-brand/8 backdrop-blur-sm">
-              <Sparkles className="h-3.5 w-3.5 text-flash-deep" />
-              <span className="text-[12px] font-grotesk font-semibold tracking-wide uppercase text-flash-darker">
-                Nova era do e-commerce
-              </span>
-            </div>
-
-            <div className="space-y-5">
-              <h1 className="font-grotesk text-[clamp(2.8rem,6vw,4.5rem)] font-extrabold leading-[1.05] tracking-[-0.03em]">
-                Crie sua loja.
-                <br />
-                <span className="relative">
-                  <span className="relative z-10 text-flash-deep">Venda mais.</span>
-                  <span className="absolute bottom-2 left-0 right-0 h-3 bg-flash-brand/25 -z-0 rounded-sm" />
+          <div className="space-y-10 max-w-[560px]">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+            >
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-2xl border border-flash-brand/20 bg-flash-brand/5 backdrop-blur-sm mb-8">
+                <div className="h-2 w-2 rounded-full bg-flash-deep animate-pulse" />
+                <span className="text-[11px] font-grotesk font-bold tracking-[0.15em] uppercase text-flash-darker">
+                  E-commerce reimaginado
                 </span>
-              </h1>
-              <p className="text-[17px] leading-[1.7] text-foreground/55 font-light max-w-md">
-                A plataforma que transforma sua ideia em uma loja online profissional — sem código, sem atrito, sem limites.
-              </p>
-            </div>
+              </div>
 
-            <div className="flex flex-col sm:flex-row gap-3.5">
+              <h1 className="font-grotesk text-[clamp(3rem,7vw,5.5rem)] font-black leading-[0.95] tracking-[-0.04em]">
+                <span className="block">Sua loja</span>
+                <span className="block mt-2">
+                  <span className="relative inline-block">
+                    <span className="relative z-10 bg-gradient-to-r from-flash-deep via-flash-brand to-flash-deep bg-clip-text text-transparent bg-[length:200%_100%] animate-[shimmer_3s_ease-in-out_infinite]">
+                      premium
+                    </span>
+                  </span>
+                </span>
+                <span className="block text-foreground/15 mt-1 text-[clamp(2rem,5vw,3.8rem)]">em minutos.</span>
+              </h1>
+            </motion.div>
+
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
+              className="text-[17px] leading-[1.85] text-foreground/45 font-light"
+            >
+              A plataforma que combina design excepcional com performance.
+              Crie, personalize e escale — sem código, sem limites.
+            </motion.p>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.7, ease: [0.22, 1, 0.36, 1] }}
+              className="flex flex-col sm:flex-row gap-4"
+            >
               <Button
                 size="lg"
-                className="bg-flash-deep hover:bg-flash-darker text-white rounded-2xl px-8 h-14 text-[15px] font-semibold shadow-xl shadow-flash-deep/25 hover:shadow-flash-deep/40 hover:-translate-y-0.5 transition-all duration-300 group"
+                className="relative overflow-hidden bg-flash-midnight text-white rounded-2xl px-9 h-[58px] text-[15px] font-semibold shadow-2xl shadow-flash-midnight/40 hover:shadow-flash-midnight/60 hover:-translate-y-1 transition-all duration-500 group"
                 asChild
               >
                 <Link to="/login">
-                  Começar Agora
-                  <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                  <span className="relative z-10 flex items-center gap-2">
+                    Criar Loja Grátis
+                    <ArrowRight className="h-4 w-4 group-hover:translate-x-1.5 transition-transform duration-500" />
+                  </span>
+                  <div className="absolute inset-0 bg-gradient-to-r from-flash-deep to-flash-darker opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                 </Link>
               </Button>
               <Button
                 size="lg"
                 variant="ghost"
-                className="rounded-2xl h-14 px-6 text-[15px] font-medium text-foreground/60 hover:text-foreground hover:bg-flash-surface gap-2.5 group"
+                className="rounded-2xl h-[58px] px-7 text-[15px] font-medium text-foreground/50 hover:text-foreground gap-3 group border border-transparent hover:border-flash-brand/15 hover:bg-flash-surface/50"
                 asChild
               >
                 <a href="#features">
-                  <div className="h-10 w-10 rounded-xl bg-flash-brand/15 flex items-center justify-center group-hover:bg-flash-brand/25 transition-colors">
+                  <div className="h-11 w-11 rounded-xl bg-flash-brand/10 flex items-center justify-center group-hover:bg-flash-brand/20 transition-all duration-300 group-hover:scale-110">
                     <Play className="h-4 w-4 text-flash-deep ml-0.5" />
                   </div>
-                  Ver como funciona
+                  Ver demo
                 </a>
               </Button>
-            </div>
+            </motion.div>
 
-            {/* Social proof micro-bar */}
-            <div className="flex items-center gap-5 pt-4">
-              <div className="flex -space-x-2.5">
-                {['A', 'B', 'C', 'D'].map((l, i) => (
-                  <div
-                    key={l}
-                    className="h-9 w-9 rounded-full border-2 border-background flex items-center justify-center text-[11px] font-bold font-grotesk text-white"
-                    style={{
-                      background: `hsl(${213 + i * 15}, ${70 + i * 5}%, ${55 + i * 5}%)`,
-                      zIndex: 4 - i,
-                    }}
-                  >
-                    {l}
-                  </div>
-                ))}
-              </div>
-              <div className="text-[13px]">
-                <span className="font-semibold text-foreground">+10.000</span>{' '}
-                <span className="text-foreground/45">lojistas já vendem conosco</span>
-              </div>
-            </div>
+            {/* Micro proof */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 1, delay: 1 }}
+              className="flex items-center gap-6 pt-4"
+            >
+              {[
+                { icon: Check, text: 'Sem cartão de crédito' },
+                { icon: Zap, text: 'Setup em 2 minutos' },
+                { icon: Lock, text: 'SSL incluso' },
+              ].map((item, i) => (
+                <span key={i} className="flex items-center gap-1.5 text-[12px] text-foreground/35">
+                  <item.icon className="h-3.5 w-3.5 text-flash-deep/60" />
+                  {item.text}
+                </span>
+              ))}
+            </motion.div>
           </div>
 
-          {/* Right — Visual composition */}
-          <div className="relative hidden lg:block">
-            {/* Main card — "store preview" */}
-            <div className="relative rounded-[28px] bg-card border border-border/40 shadow-2xl shadow-flash-deep/8 overflow-hidden">
-              {/* Top bar */}
-              <div className="flex items-center justify-between px-5 py-3.5 border-b border-border/40">
-                <div className="flex gap-2">
-                  <span className="w-3 h-3 rounded-full bg-flash-brand/40" />
-                  <span className="w-3 h-3 rounded-full bg-flash-brand/25" />
-                  <span className="w-3 h-3 rounded-full bg-flash-brand/15" />
-                </div>
-                <div className="flex-1 mx-8 h-8 rounded-xl bg-flash-surface flex items-center px-4">
-                  <span className="text-[11px] font-grotesk text-foreground/30 tracking-wide">minhaloja.flashloja.com.br</span>
-                </div>
-                <MousePointerClick className="h-4 w-4 text-flash-brand/40" />
-              </div>
-
-              {/* Store content mockup */}
-              <div className="p-7 space-y-6">
-                {/* Hero banner */}
-                <div className="h-44 rounded-2xl bg-gradient-to-br from-flash-brand/20 via-flash-deep/10 to-flash-surface overflow-hidden relative">
-                  <div className="absolute inset-0 flex flex-col items-start justify-center pl-8">
-                    <div className="h-3 w-24 rounded bg-flash-deep/30 mb-3" />
-                    <div className="h-5 w-48 rounded bg-flash-deep/20 mb-2" />
-                    <div className="h-3 w-36 rounded bg-flash-brand/30" />
-                    <div className="h-8 w-28 rounded-lg bg-flash-deep/40 mt-5" />
+          {/* Right — Bento grid visual */}
+          <motion.div
+            style={{ y: y1 }}
+            className="relative hidden lg:block"
+          >
+            <motion.div
+              initial={{ opacity: 0, y: 60, rotateX: 8 }}
+              animate={{ opacity: 1, y: 0, rotateX: 0 }}
+              transition={{ duration: 1.2, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
+              className="grid grid-cols-2 gap-4"
+              style={{ perspective: '1200px' }}
+            >
+              {/* Card 1 — Main store preview */}
+              <div className="col-span-2 rounded-3xl bg-gradient-to-br from-card to-flash-surface border border-flash-brand/10 p-6 shadow-xl shadow-flash-deep/5 overflow-hidden relative group hover:border-flash-brand/20 transition-all duration-500">
+                <div className="flex items-center gap-3 mb-5">
+                  <div className="flex gap-1.5">
+                    <span className="w-2.5 h-2.5 rounded-full bg-flash-deep/20" />
+                    <span className="w-2.5 h-2.5 rounded-full bg-flash-brand/20" />
+                    <span className="w-2.5 h-2.5 rounded-full bg-flash-brand/10" />
                   </div>
-                  {/* Abstract shape */}
-                  <div className="absolute -right-8 -bottom-8 w-48 h-48 rounded-full bg-flash-brand/15" />
-                  <div className="absolute -right-4 -top-4 w-24 h-24 rounded-full bg-flash-deep/10" />
+                  <div className="flex-1 h-7 rounded-lg bg-flash-brand/5 flex items-center px-3">
+                    <Globe className="h-3 w-3 text-flash-brand/30 mr-2" />
+                    <span className="text-[10px] font-grotesk text-foreground/25 tracking-wide">minhaloja.flashloja.com.br</span>
+                  </div>
                 </div>
-
-                {/* Product grid */}
-                <div className="grid grid-cols-3 gap-4">
-                  {[1, 2, 3].map(i => (
-                    <div key={i} className="group cursor-pointer">
-                      <div className="aspect-[3/4] rounded-xl bg-flash-surface mb-3 relative overflow-hidden">
-                        <div className="absolute inset-0 bg-gradient-to-t from-flash-brand/8 to-transparent" />
-                        {i === 1 && (
-                          <div className="absolute top-2 left-2 px-2 py-0.5 rounded-md bg-flash-deep/80 text-[9px] font-bold text-white tracking-wide">
-                            NOVO
-                          </div>
-                        )}
+                <div className="h-36 rounded-2xl bg-gradient-to-br from-flash-brand/15 via-flash-deep/8 to-transparent relative overflow-hidden mb-4">
+                  <div className="absolute inset-0 flex flex-col justify-center pl-6 gap-2">
+                    <div className="h-2 w-20 rounded-full bg-flash-deep/20" />
+                    <div className="h-4 w-44 rounded-full bg-flash-deep/15" />
+                    <div className="h-2 w-32 rounded-full bg-flash-brand/20" />
+                    <div className="h-7 w-24 rounded-lg bg-flash-deep/25 mt-2" />
+                  </div>
+                  <div className="absolute -right-6 -bottom-6 w-40 h-40 rounded-full bg-flash-brand/10 group-hover:scale-110 transition-transform duration-700" />
+                </div>
+                <div className="grid grid-cols-4 gap-3">
+                  {[1, 2, 3, 4].map(i => (
+                    <div key={i} className="space-y-2">
+                      <div className="aspect-square rounded-xl bg-flash-surface group-hover:bg-flash-brand/8 transition-colors duration-500 relative overflow-hidden">
+                        <div className="absolute inset-0 bg-gradient-to-t from-flash-brand/5 to-transparent" />
                       </div>
-                      <div className="h-2.5 w-4/5 rounded bg-foreground/8 mb-1.5" />
-                      <div className="h-2.5 w-1/2 rounded bg-flash-brand/30" />
+                      <div className="h-1.5 w-3/4 rounded bg-foreground/5" />
+                      <div className="h-1.5 w-1/2 rounded bg-flash-brand/15" />
                     </div>
                   ))}
                 </div>
               </div>
-            </div>
 
-            {/* Floating card — Sales */}
-            <div className="absolute -bottom-6 -left-8 bg-card border border-border/40 rounded-2xl p-4 shadow-xl shadow-flash-deep/8 flex items-center gap-4 backdrop-blur-xl">
-              <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-flash-brand/30 to-flash-deep/20 flex items-center justify-center">
-                <TrendingUp className="h-5 w-5 text-flash-deep" />
+              {/* Card 2 — Revenue */}
+              <div className="rounded-3xl bg-flash-midnight p-6 shadow-xl shadow-flash-midnight/20 text-white relative overflow-hidden group hover:scale-[1.02] transition-transform duration-500">
+                <div className="absolute top-0 right-0 w-32 h-32 rounded-full bg-flash-deep/15 blur-[40px]" />
+                <div className="relative">
+                  <div className="flex items-center gap-2 mb-4">
+                    <TrendingUp className="h-4 w-4 text-flash-brand" />
+                    <span className="text-[10px] font-grotesk uppercase tracking-[0.2em] text-white/40">Receita mensal</span>
+                  </div>
+                  <p className="font-grotesk text-3xl font-extrabold tracking-tight mb-1">
+                    R$ <Counter value={48250} />
+                  </p>
+                  <div className="flex items-center gap-1.5 mt-3">
+                    <div className="px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-400 text-[10px] font-bold">+27%</div>
+                    <span className="text-[10px] text-white/30">vs mês anterior</span>
+                  </div>
+                  {/* Mini chart */}
+                  <svg className="w-full h-12 mt-4" viewBox="0 0 200 40" fill="none">
+                    <path d="M0 35 Q20 30 40 28 T80 20 T120 15 T160 8 T200 5" stroke="hsl(var(--flash-brand))" strokeWidth="2" strokeLinecap="round" fill="none" opacity="0.6" />
+                    <path d="M0 35 Q20 30 40 28 T80 20 T120 15 T160 8 T200 5 V40 H0Z" fill="url(#chartGrad)" opacity="0.15" />
+                    <defs>
+                      <linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="hsl(var(--flash-brand))" />
+                        <stop offset="100%" stopColor="transparent" />
+                      </linearGradient>
+                    </defs>
+                  </svg>
+                </div>
               </div>
-              <div>
-                <p className="text-[10px] font-grotesk uppercase tracking-wider text-foreground/40">Vendas hoje</p>
-                <p className="text-lg font-grotesk font-bold tracking-tight">R$ 12.480</p>
-              </div>
-            </div>
 
-            {/* Floating card — Conversion */}
-            <div className="absolute -top-5 -right-5 bg-card border border-border/40 rounded-2xl p-4 shadow-xl shadow-flash-deep/8 backdrop-blur-xl">
-              <div className="flex items-center gap-2 mb-2">
-                <div className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
-                <span className="text-[10px] font-grotesk uppercase tracking-wider text-foreground/40">Conversão</span>
+              {/* Card 3 — Live stats */}
+              <div className="rounded-3xl bg-card border border-flash-brand/10 p-6 shadow-xl shadow-flash-deep/5 relative overflow-hidden group hover:scale-[1.02] hover:border-flash-brand/20 transition-all duration-500">
+                <div className="flex items-center gap-2 mb-5">
+                  <div className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+                  <span className="text-[10px] font-grotesk uppercase tracking-[0.2em] text-foreground/30">Ao vivo agora</span>
+                </div>
+                <div className="space-y-4">
+                  <div>
+                    <p className="text-[10px] text-foreground/30 mb-0.5">Visitantes</p>
+                    <p className="font-grotesk text-2xl font-extrabold tracking-tight text-flash-deep">
+                      <Counter value={342} />
+                    </p>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="p-3 rounded-xl bg-flash-surface/80">
+                      <p className="text-[9px] text-foreground/25 uppercase tracking-wider mb-1">Conversão</p>
+                      <p className="font-grotesk text-sm font-bold">4.8%</p>
+                    </div>
+                    <div className="p-3 rounded-xl bg-flash-surface/80">
+                      <p className="text-[9px] text-foreground/25 uppercase tracking-wider mb-1">Pedidos</p>
+                      <p className="font-grotesk text-sm font-bold">
+                        <Counter value={18} />
+                      </p>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <p className="text-2xl font-grotesk font-bold text-flash-deep">4.8%</p>
-              <p className="text-[10px] text-emerald-500 font-semibold mt-0.5">↑ 23% vs ontem</p>
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
         </div>
-      </div>
+      </motion.div>
+
+      {/* Shimmer keyframe */}
+      <style>{`
+        @keyframes shimmer { 0%{background-position:200% 0} 50%{background-position:0% 0} 100%{background-position:200% 0} }
+      `}</style>
     </section>
   );
 }
 
-/* ------------------------------------------------------------------ */
-/*  Proof bar                                                          */
-/* ------------------------------------------------------------------ */
+/* ================================================================== */
+/*  MARQUEE                                                            */
+/* ================================================================== */
+
+function Marquee() {
+  const words = ['E-commerce', 'Performance', 'Design', 'Conversão', 'Analytics', 'Mobile-First', 'SEO', 'Pagamentos', 'Logística', 'Segurança'];
+  return (
+    <div className="overflow-hidden py-6 border-y border-flash-brand/8 bg-flash-surface/30 backdrop-blur-sm">
+      <div className="flex animate-ticker whitespace-nowrap" style={{ animationDuration: '45s' }}>
+        {[...words, ...words].map((w, i) => (
+          <span key={i} className="mx-8 text-[13px] font-grotesk font-semibold tracking-[0.15em] uppercase text-flash-darker/30 select-none flex items-center gap-4">
+            {w}
+            <span className="h-1.5 w-1.5 rounded-full bg-flash-brand/40" />
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* ================================================================== */
+/*  PROOF BAR                                                          */
+/* ================================================================== */
 
 function ProofBar() {
-  const { ref, inView } = useInView();
+  const metrics = [
+    { value: 10000, suffix: '+', label: 'Lojistas Ativos', icon: Users },
+    { value: 2, suffix: 'M+', label: 'Pedidos Processados', icon: Package },
+    { value: 99, suffix: '.9%', label: 'Uptime Garantido', icon: Shield },
+    { value: 4, suffix: '.9★', label: 'Avaliação Média', icon: Sparkles },
+  ];
+
   return (
-    <section id="proof" ref={ref} className="py-20 bg-flash-deep relative overflow-hidden">
-      {/* Subtle pattern */}
+    <section id="proof" className="py-24 bg-flash-midnight relative overflow-hidden">
       <div
-        className="absolute inset-0 opacity-[0.04]"
+        className="absolute inset-0 opacity-[0.03]"
         style={{
           backgroundImage: 'radial-gradient(circle, white 1px, transparent 1px)',
-          backgroundSize: '32px 32px'
+          backgroundSize: '40px 40px'
         }}
       />
-      <div className="max-w-[1320px] mx-auto px-6 lg:px-10 flex flex-col md:flex-row items-center justify-between gap-10 relative">
+
+      <div className="max-w-[1360px] mx-auto px-6 lg:px-10 grid grid-cols-2 md:grid-cols-4 gap-8 relative">
         {metrics.map((m, i) => (
-          <div
+          <motion.div
             key={i}
-            className={cn(
-              'text-center md:text-left flex-1 transition-all duration-700',
-              inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-            )}
-            style={{ transitionDelay: `${i * 150}ms` }}
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: i * 0.1, ease: [0.22, 1, 0.36, 1] }}
+            className="text-center group"
           >
-            <div className="flex items-center gap-3 justify-center md:justify-start mb-2">
-              <m.icon className="h-5 w-5 text-white/40" />
-              <span className="font-grotesk text-[clamp(2rem,4vw,3.2rem)] font-extrabold text-white tracking-tight">
-                {m.value}
-              </span>
+            <div className="inline-flex items-center justify-center h-12 w-12 rounded-2xl bg-white/5 mb-4 group-hover:bg-flash-deep/20 transition-colors duration-500">
+              <m.icon className="h-5 w-5 text-flash-brand/60" />
             </div>
-            <span className="text-[13px] text-white/50 font-medium uppercase tracking-widest font-grotesk">{m.label}</span>
-          </div>
+            <p className="font-grotesk text-[clamp(1.8rem,3vw,2.8rem)] font-extrabold text-white tracking-tight">
+              <Counter value={m.value} suffix={m.suffix} />
+            </p>
+            <p className="text-[11px] font-grotesk uppercase tracking-[0.2em] text-white/25 mt-1">{m.label}</p>
+          </motion.div>
         ))}
       </div>
     </section>
   );
 }
 
-/* ------------------------------------------------------------------ */
-/*  Features                                                           */
-/* ------------------------------------------------------------------ */
+/* ================================================================== */
+/*  FEATURES                                                           */
+/* ================================================================== */
 
 function Features() {
-  const { ref, inView } = useInView();
+  const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
+
   return (
-    <section id="features" className="py-28 md:py-36 bg-background relative overflow-hidden">
-      {/* Corner deco */}
-      <div className="absolute top-0 right-0 w-72 h-72 rounded-full bg-flash-brand/6 blur-[80px]" />
+    <section id="features" className="py-32 md:py-40 bg-background relative overflow-hidden">
+      <AuroraBackground className="opacity-50" />
 
-      <div className="max-w-[1320px] mx-auto px-6 lg:px-10" ref={ref}>
-        {/* Header — left-aligned, editorial */}
-        <div className="grid lg:grid-cols-2 gap-6 mb-20">
-          <div>
-            <span className="text-[12px] font-grotesk font-bold uppercase tracking-[0.2em] text-flash-deep mb-4 block">
-              Recursos
-            </span>
-            <h2 className="font-grotesk text-[clamp(2rem,4vw,3rem)] font-extrabold leading-[1.1] tracking-[-0.02em]">
-              Ferramentas que fazem
-              <br />
-              a diferença
-            </h2>
-          </div>
-          <div className="flex items-end lg:justify-end">
-            <p className="text-[16px] leading-[1.8] text-foreground/45 max-w-sm">
-              Cada detalhe pensado para simplificar sua operação e maximizar vendas.
-            </p>
-          </div>
-        </div>
+      <div className="max-w-[1360px] mx-auto px-6 lg:px-10 relative">
+        {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+          className="max-w-xl mb-24"
+        >
+          <span className="text-[11px] font-grotesk font-bold uppercase tracking-[0.25em] text-flash-deep mb-5 block">
+            Recursos
+          </span>
+          <h2 className="font-grotesk text-[clamp(2.2rem,5vw,3.5rem)] font-black leading-[1] tracking-[-0.03em]">
+            Ferramentas que
+            <br />
+            <span className="text-foreground/15">transformam resultados</span>
+          </h2>
+        </motion.div>
 
-        {/* Grid — 3x2 with staggered reveal */}
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        {/* Feature list — editorial alternating */}
+        <div className="space-y-2">
           {features.map((f, i) => (
-            <div
+            <motion.div
               key={i}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-50px' }}
+              transition={{ duration: 0.6, delay: i * 0.05, ease: [0.22, 1, 0.36, 1] }}
               className={cn(
-                'group relative p-7 rounded-3xl border border-transparent bg-flash-surface/50 hover:bg-card hover:border-flash-brand/15 hover:shadow-xl hover:shadow-flash-brand/5 transition-all duration-500 cursor-default',
-                inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+                'group relative rounded-3xl p-8 lg:p-10 border transition-all duration-700 cursor-default',
+                hoveredIdx === i
+                  ? 'bg-card border-flash-brand/20 shadow-2xl shadow-flash-brand/8'
+                  : 'bg-transparent border-transparent hover:bg-flash-surface/40'
               )}
-              style={{ transitionDelay: `${i * 80}ms` }}
+              onMouseEnter={() => setHoveredIdx(i)}
+              onMouseLeave={() => setHoveredIdx(null)}
             >
-              <div className="h-14 w-14 rounded-2xl bg-flash-brand/12 flex items-center justify-center mb-5 group-hover:bg-flash-brand/20 group-hover:scale-110 transition-all duration-500">
-                <f.icon className="h-6 w-6 text-flash-deep" />
-              </div>
-              <h3 className="font-grotesk text-[17px] font-bold mb-2 tracking-tight">{f.title}</h3>
-              <p className="text-[14px] leading-[1.7] text-foreground/45">{f.desc}</p>
+              <div className="flex items-start gap-8 lg:gap-12">
+                {/* Number */}
+                <span className={cn(
+                  'font-grotesk text-[48px] font-black tracking-tighter leading-none transition-colors duration-500 shrink-0 hidden md:block',
+                  hoveredIdx === i ? 'text-flash-deep' : 'text-foreground/[0.04]'
+                )}>
+                  {f.tag}
+                </span>
 
-              {/* Hover arrow */}
-              <div className="absolute top-7 right-7 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                <ArrowUpRight className="h-4 w-4 text-flash-deep/40" />
+                {/* Icon */}
+                <div className={cn(
+                  'h-16 w-16 rounded-2xl flex items-center justify-center shrink-0 transition-all duration-500',
+                  hoveredIdx === i
+                    ? 'bg-flash-deep shadow-lg shadow-flash-deep/30 scale-110'
+                    : 'bg-flash-brand/10'
+                )}>
+                  <f.icon className={cn(
+                    'h-7 w-7 transition-colors duration-500',
+                    hoveredIdx === i ? 'text-white' : 'text-flash-deep'
+                  )} />
+                </div>
+
+                {/* Content */}
+                <div className="flex-1 min-w-0">
+                  <h3 className="font-grotesk text-[20px] font-bold tracking-tight mb-2">{f.title}</h3>
+                  <p className={cn(
+                    'text-[14px] leading-[1.8] max-w-lg transition-colors duration-500',
+                    hoveredIdx === i ? 'text-foreground/60' : 'text-foreground/35'
+                  )}>
+                    {f.desc}
+                  </p>
+                </div>
+
+                {/* Arrow */}
+                <div className={cn(
+                  'hidden lg:flex items-center justify-center h-10 w-10 rounded-xl border transition-all duration-500 shrink-0 self-center',
+                  hoveredIdx === i
+                    ? 'border-flash-brand/30 bg-flash-brand/10 scale-100 opacity-100'
+                    : 'border-transparent opacity-0 scale-75'
+                )}>
+                  <ArrowUpRight className="h-4 w-4 text-flash-deep" />
+                </div>
               </div>
-            </div>
+            </motion.div>
           ))}
         </div>
       </div>
@@ -433,89 +577,102 @@ function Features() {
   );
 }
 
-/* ------------------------------------------------------------------ */
-/*  Pricing                                                            */
-/* ------------------------------------------------------------------ */
+/* ================================================================== */
+/*  PRICING                                                            */
+/* ================================================================== */
 
 function Pricing() {
-  const { ref, inView } = useInView();
   return (
-    <section id="pricing" className="py-28 md:py-36 relative overflow-hidden">
-      {/* Split background */}
-      <div className="absolute inset-0 bg-flash-surface/40 -z-10" />
-      <div className="absolute top-0 left-0 w-1/3 h-full bg-background -z-10 hidden lg:block rounded-r-[80px]" />
+    <section id="pricing" className="py-32 md:py-40 relative overflow-hidden">
+      <div className="absolute inset-0 bg-flash-surface/30 -z-10" />
+      <GridPattern className="opacity-[0.02]" />
 
-      <div className="max-w-[1320px] mx-auto px-6 lg:px-10" ref={ref}>
-        <div className="text-center max-w-lg mx-auto mb-20">
-          <span className="text-[12px] font-grotesk font-bold uppercase tracking-[0.2em] text-flash-deep mb-4 block">
+      <div className="max-w-[1360px] mx-auto px-6 lg:px-10">
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+          className="text-center max-w-lg mx-auto mb-20"
+        >
+          <span className="text-[11px] font-grotesk font-bold uppercase tracking-[0.25em] text-flash-deep mb-5 block">
             Planos
           </span>
-          <h2 className="font-grotesk text-[clamp(2rem,4vw,3rem)] font-extrabold leading-[1.1] tracking-[-0.02em] mb-4">
-            Investimento que se paga
+          <h2 className="font-grotesk text-[clamp(2.2rem,5vw,3.5rem)] font-black leading-[1] tracking-[-0.03em] mb-5">
+            Investimento que
+            <br />
+            <span className="text-foreground/15">se paga sozinho</span>
           </h2>
-          <p className="text-[15px] text-foreground/45 leading-[1.7]">
-            Comece grátis. Escale quando quiser. Sem surpresas.
+          <p className="text-[15px] text-foreground/40 leading-[1.8]">
+            Comece grátis. Escale quando quiser. Cancele quando quiser.
           </p>
-        </div>
+        </motion.div>
 
-        <div className="grid md:grid-cols-3 gap-5 max-w-[1060px] mx-auto">
+        <div className="grid md:grid-cols-3 gap-5 lg:gap-6 max-w-[1080px] mx-auto">
           {plans.map((plan, i) => (
-            <div
+            <motion.div
               key={i}
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.7, delay: i * 0.1, ease: [0.22, 1, 0.36, 1] }}
               className={cn(
-                'relative flex flex-col rounded-3xl p-8 transition-all duration-700',
+                'relative flex flex-col rounded-[28px] p-9 transition-all duration-700 group',
                 plan.highlight
-                  ? 'bg-flash-deep text-white shadow-2xl shadow-flash-deep/30 scale-[1.03] z-10'
-                  : 'bg-card border border-border/40 hover:border-flash-brand/20 hover:shadow-lg hover:shadow-flash-brand/5',
-                inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+                  ? 'bg-flash-midnight text-white shadow-2xl shadow-flash-midnight/40 scale-[1.04] z-10'
+                  : 'bg-card border border-border/40 hover:border-flash-brand/15 hover:shadow-xl hover:shadow-flash-brand/5'
               )}
-              style={{ transitionDelay: `${i * 120}ms` }}
             >
               {plan.highlight && (
-                <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-5 py-1 rounded-full bg-white text-flash-deep text-[11px] font-grotesk font-bold tracking-wide shadow-lg">
-                  POPULAR
+                <div className="absolute -top-3.5 left-1/2 -translate-x-1/2">
+                  <div className="px-5 py-1.5 rounded-full bg-flash-deep text-white text-[10px] font-grotesk font-bold tracking-[0.15em] uppercase shadow-lg shadow-flash-deep/40 flex items-center gap-1.5">
+                    <Sparkles className="h-3 w-3" />
+                    Mais Popular
+                  </div>
                 </div>
               )}
 
               <div className="mb-8">
-                <h3 className={cn('font-grotesk text-[15px] font-bold tracking-wide uppercase mb-1', !plan.highlight && 'text-flash-deep')}>
+                <h3 className={cn('font-grotesk text-[13px] font-bold tracking-[0.15em] uppercase mb-1.5', !plan.highlight && 'text-flash-deep')}>
                   {plan.name}
                 </h3>
-                <p className={cn('text-[13px]', plan.highlight ? 'text-white/60' : 'text-foreground/40')}>
+                <p className={cn('text-[13px]', plan.highlight ? 'text-white/40' : 'text-foreground/35')}>
                   {plan.desc}
                 </p>
               </div>
 
-              <div className="mb-8">
+              <div className="mb-9">
                 <div className="flex items-baseline gap-1">
-                  <span className={cn('text-[11px] font-medium', plan.highlight ? 'text-white/50' : 'text-foreground/30')}>R$</span>
-                  <span className="font-grotesk text-5xl font-extrabold tracking-tighter">{plan.price}</span>
-                  {plan.price !== '0' && (
-                    <span className={cn('text-[13px]', plan.highlight ? 'text-white/50' : 'text-foreground/30')}>/mês</span>
+                  <span className={cn('text-[12px] font-medium', plan.highlight ? 'text-white/30' : 'text-foreground/25')}>R$</span>
+                  <span className="font-grotesk text-[52px] font-black tracking-[-0.04em] leading-none">{plan.price}</span>
+                  {plan.price > 0 && (
+                    <span className={cn('text-[13px] ml-1', plan.highlight ? 'text-white/30' : 'text-foreground/25')}>/mês</span>
                   )}
                 </div>
               </div>
 
-              <ul className="space-y-3.5 mb-10 flex-1">
+              <div className="h-px bg-gradient-to-r from-transparent via-flash-brand/15 to-transparent mb-8" />
+
+              <ul className="space-y-4 mb-10 flex-1">
                 {plan.features.map((feat, j) => (
                   <li key={j} className="flex items-center gap-3 text-[13px]">
                     <div className={cn(
                       'h-5 w-5 rounded-lg flex items-center justify-center shrink-0',
-                      plan.highlight ? 'bg-white/15' : 'bg-flash-brand/12'
+                      plan.highlight ? 'bg-flash-deep/30' : 'bg-flash-brand/10'
                     )}>
-                      <Check className={cn('h-3 w-3', plan.highlight ? 'text-white' : 'text-flash-deep')} />
+                      <Check className={cn('h-3 w-3', plan.highlight ? 'text-flash-brand' : 'text-flash-deep')} />
                     </div>
-                    <span className={plan.highlight ? 'text-white/80' : 'text-foreground/60'}>{feat}</span>
+                    <span className={plan.highlight ? 'text-white/70' : 'text-foreground/50'}>{feat}</span>
                   </li>
                 ))}
               </ul>
 
               <Button
                 className={cn(
-                  'w-full h-13 rounded-2xl text-[14px] font-semibold transition-all duration-300',
+                  'w-full h-[52px] rounded-2xl text-[14px] font-semibold transition-all duration-500',
                   plan.highlight
-                    ? 'bg-white text-flash-deep hover:bg-white/90 shadow-lg'
-                    : 'bg-flash-surface text-flash-deeper hover:bg-flash-brand/15 border border-flash-brand/20'
+                    ? 'bg-white text-flash-midnight hover:bg-flash-brand shadow-xl shadow-white/10 hover:shadow-flash-brand/30'
+                    : 'bg-flash-surface text-flash-darker hover:bg-flash-brand/15 border border-flash-brand/15 hover:border-flash-brand/30'
                 )}
                 asChild
               >
@@ -524,7 +681,7 @@ function Pricing() {
                   <ChevronRight className="ml-1 h-4 w-4" />
                 </Link>
               </Button>
-            </div>
+            </motion.div>
           ))}
         </div>
       </div>
@@ -532,108 +689,111 @@ function Pricing() {
   );
 }
 
-/* ------------------------------------------------------------------ */
-/*  CTA final                                                          */
-/* ------------------------------------------------------------------ */
+/* ================================================================== */
+/*  CTA                                                                */
+/* ================================================================== */
 
 function FinalCTA() {
-  const { ref, inView } = useInView();
   return (
-    <section ref={ref} className="py-28 bg-background">
-      <div className="max-w-[1320px] mx-auto px-6 lg:px-10">
-        <div
-          className={cn(
-            'relative rounded-[32px] bg-flash-deep overflow-hidden px-10 py-20 md:py-24 text-center transition-all duration-700',
-            inView ? 'opacity-100 scale-100' : 'opacity-0 scale-95'
-          )}
+    <section className="py-28 bg-background relative">
+      <div className="max-w-[1360px] mx-auto px-6 lg:px-10">
+        <motion.div
+          initial={{ opacity: 0, y: 40, scale: 0.96 }}
+          whileInView={{ opacity: 1, y: 0, scale: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+          className="relative rounded-[36px] bg-gradient-to-br from-flash-midnight via-flash-darker to-flash-deep overflow-hidden px-10 py-24 md:py-28 text-center"
         >
           {/* Decorations */}
-          <div className="absolute top-0 left-0 w-80 h-80 rounded-full bg-white/5 -translate-x-1/2 -translate-y-1/2" />
-          <div className="absolute bottom-0 right-0 w-64 h-64 rounded-full bg-flash-brand/15 translate-x-1/3 translate-y-1/3" />
+          <div className="absolute top-0 left-0 w-[400px] h-[400px] rounded-full bg-flash-brand/10 blur-[120px] -translate-x-1/2 -translate-y-1/2" />
+          <div className="absolute bottom-0 right-0 w-[300px] h-[300px] rounded-full bg-flash-glow/10 blur-[100px] translate-x-1/3 translate-y-1/3" />
           <div
-            className="absolute inset-0 opacity-[0.03]"
+            className="absolute inset-0 opacity-[0.025]"
             style={{
               backgroundImage: 'radial-gradient(circle, white 1px, transparent 1px)',
-              backgroundSize: '24px 24px'
+              backgroundSize: '28px 28px'
             }}
           />
 
           <div className="relative space-y-8 max-w-2xl mx-auto">
-            <h2 className="font-grotesk text-[clamp(1.8rem,4vw,3rem)] font-extrabold text-white leading-[1.1] tracking-[-0.02em]">
+            <h2 className="font-grotesk text-[clamp(2rem,5vw,3.5rem)] font-black text-white leading-[1.05] tracking-[-0.03em]">
               Pronto para transformar
               <br />
-              seu negócio?
+              <span className="text-flash-brand">seu negócio?</span>
             </h2>
-            <p className="text-white/50 text-[16px] max-w-md mx-auto leading-relaxed">
-              Junte-se a milhares de empreendedores que já vendem online com a FlashLoja.
+            <p className="text-white/35 text-[16px] max-w-md mx-auto leading-relaxed">
+              Milhares de empreendedores já escolheram a FlashLoja. Sua vez.
             </p>
-            <Button
-              size="lg"
-              className="bg-white text-flash-deep hover:bg-white/90 rounded-2xl px-10 h-14 text-[15px] font-semibold shadow-xl hover:-translate-y-0.5 transition-all duration-300 group"
-              asChild
-            >
-              <Link to="/login">
-                Criar Minha Loja
-                <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-              </Link>
-            </Button>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Button
+                size="lg"
+                className="bg-white text-flash-midnight hover:bg-flash-brand hover:text-white rounded-2xl px-10 h-[58px] text-[15px] font-semibold shadow-2xl shadow-white/10 hover:shadow-flash-brand/30 hover:-translate-y-1 transition-all duration-500 group"
+                asChild
+              >
+                <Link to="/login">
+                  Criar Minha Loja
+                  <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                </Link>
+              </Button>
+            </div>
           </div>
-        </div>
+        </motion.div>
       </div>
     </section>
   );
 }
 
-/* ------------------------------------------------------------------ */
-/*  Footer                                                             */
-/* ------------------------------------------------------------------ */
+/* ================================================================== */
+/*  FOOTER                                                             */
+/* ================================================================== */
 
 function Footer() {
   return (
-    <footer className="border-t border-border/40 bg-card/50">
-      <div className="max-w-[1320px] mx-auto px-6 lg:px-10 py-16">
-        <div className="grid md:grid-cols-[2fr_1fr_1fr] gap-12 mb-16">
+    <footer className="border-t border-flash-brand/8 bg-flash-surface/20">
+      <div className="max-w-[1360px] mx-auto px-6 lg:px-10 py-16">
+        <div className="grid md:grid-cols-[2.5fr_1fr_1fr] gap-12 mb-16">
           <div className="space-y-5">
-            <div className="flex items-center gap-2.5">
-              <div className="h-8 w-8 rounded-lg bg-flash-deep flex items-center justify-center">
-                <Zap className="h-4 w-4 text-white" />
+            <div className="flex items-center gap-3">
+              <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-flash-deep to-flash-darker flex items-center justify-center shadow-lg shadow-flash-deep/20">
+                <Zap className="h-4.5 w-4.5 text-white" />
               </div>
-              <span className="font-grotesk text-lg font-bold">
+              <span className="font-grotesk text-[20px] font-bold">
                 Flash<span className="text-flash-deep">Loja</span>
               </span>
             </div>
-            <p className="text-[14px] text-foreground/40 max-w-xs leading-[1.8]">
-              A plataforma mais rápida para criar sua loja online profissional.
+            <p className="text-[14px] text-foreground/35 max-w-sm leading-[1.9]">
+              A plataforma de e-commerce mais rápida do Brasil.
+              Design premium, performance excepcional.
             </p>
           </div>
           <div>
-            <h4 className="font-grotesk text-[12px] font-bold uppercase tracking-[0.15em] text-foreground/30 mb-5">Produto</h4>
-            <ul className="space-y-3">
+            <h4 className="font-grotesk text-[11px] font-bold uppercase tracking-[0.2em] text-foreground/20 mb-5">Produto</h4>
+            <ul className="space-y-3.5">
               {['Recursos', 'Planos', 'Temas', 'API'].map(l => (
                 <li key={l}>
-                  <a href="#" className="text-[14px] text-foreground/50 hover:text-foreground transition-colors">{l}</a>
+                  <a href="#" className="text-[13px] text-foreground/40 hover:text-foreground transition-colors duration-300">{l}</a>
                 </li>
               ))}
             </ul>
           </div>
           <div>
-            <h4 className="font-grotesk text-[12px] font-bold uppercase tracking-[0.15em] text-foreground/30 mb-5">Suporte</h4>
-            <ul className="space-y-3">
+            <h4 className="font-grotesk text-[11px] font-bold uppercase tracking-[0.2em] text-foreground/20 mb-5">Suporte</h4>
+            <ul className="space-y-3.5">
               {['Central de Ajuda', 'Contato', 'Status', 'Docs'].map(l => (
                 <li key={l}>
-                  <a href="#" className="text-[14px] text-foreground/50 hover:text-foreground transition-colors">{l}</a>
+                  <a href="#" className="text-[13px] text-foreground/40 hover:text-foreground transition-colors duration-300">{l}</a>
                 </li>
               ))}
             </ul>
           </div>
         </div>
-        <div className="border-t border-border/40 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
-          <span className="text-[12px] text-foreground/30 font-grotesk">
+        <div className="border-t border-flash-brand/8 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+          <span className="text-[11px] text-foreground/20 font-grotesk tracking-wide">
             © {new Date().getFullYear()} FlashLoja. Todos os direitos reservados.
           </span>
           <div className="flex gap-6">
-            <a href="#" className="text-[12px] text-foreground/30 hover:text-foreground/60 transition-colors">Termos</a>
-            <a href="#" className="text-[12px] text-foreground/30 hover:text-foreground/60 transition-colors">Privacidade</a>
+            <a href="#" className="text-[11px] text-foreground/20 hover:text-foreground/50 transition-colors">Termos</a>
+            <a href="#" className="text-[11px] text-foreground/20 hover:text-foreground/50 transition-colors">Privacidade</a>
           </div>
         </div>
       </div>
@@ -641,15 +801,15 @@ function Footer() {
   );
 }
 
-/* ------------------------------------------------------------------ */
-/*  Page                                                               */
-/* ------------------------------------------------------------------ */
+/* ================================================================== */
+/*  PAGE                                                               */
+/* ================================================================== */
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-background text-foreground selection:bg-flash-brand/30">
+    <div className="min-h-screen bg-background text-foreground selection:bg-flash-brand/30 selection:text-flash-midnight">
       <Navbar />
-      <Hero />
+      <HeroBento />
       <Marquee />
       <ProofBar />
       <Features />
