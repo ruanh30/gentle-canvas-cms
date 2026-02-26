@@ -155,7 +155,7 @@ function applyThemeCSS(t: ThemeConfig) {
   root.style.setProperty('--pm-letter-spacing', `${t.typography.letterSpacing}px`);
 
   root.style.setProperty('--pm-radius', getRadiusPx(t.global.borderRadius));
-  root.style.setProperty('--pm-container-width', t.global.containerMaxPx ? `${t.global.containerMaxPx}px` : '1280px');
+  root.style.setProperty('--pm-container-width', t.global.containerWidth === 'full' ? '100%' : (t.global.containerMaxPx ? `${t.global.containerMaxPx}px` : '1280px'));
 
   // Header
   root.style.setProperty('--pm-header-height', `${t.header?.height ?? 64}px`);

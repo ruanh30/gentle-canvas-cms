@@ -10,7 +10,10 @@ export function GlobalPanel() {
 
   return (
     <EditorSection icon={Layout} title="Layout Global" description="Container, espaçamento, bordas e efeitos">
-      <SelectField label="Largura do container" value={g.containerWidth} onChange={v => set({ containerWidth: v })} options={[
+      <SelectField label="Largura do container" value={g.containerWidth} onChange={v => {
+        const pxMap = { narrow: 1200, default: 1400, wide: 1600, full: 1920 } as const;
+        set({ containerWidth: v, containerMaxPx: pxMap[v] });
+      }} options={[
         { value: 'narrow', label: 'Estreito (1200px)' }, { value: 'default', label: 'Padrão (1400px)' },
         { value: 'wide', label: 'Largo (1600px)' }, { value: 'full', label: 'Tela cheia' },
       ]} />
