@@ -9,7 +9,7 @@ export function ButtonsPanel() {
   const set = (u: Partial<typeof b>) => updateDraftSection('buttons', u);
 
   return (
-    <EditorSection icon={MousePointer} title="Botões" description="Estilo global dos botões">
+    <EditorSection icon={MousePointer} title="Botões" description="Aparência e comportamento dos botões em toda a loja">
       <OptionPicker label="Estilo" value={b.style} onChange={v => set({ style: v })} options={[
         { value: 'filled', label: 'Sólido', description: 'Fundo preenchido' },
         { value: 'outline', label: 'Contorno', description: 'Apenas borda' },
@@ -21,15 +21,15 @@ export function ButtonsPanel() {
         { value: 'minimal', label: 'Minimal', description: 'Apenas texto sublinhado' },
       ]} />
       <OptionPicker label="Arredondamento" value={b.radius} onChange={v => set({ radius: v })} options={[
-        { value: 'none', label: 'Nenhum' }, { value: 'small', label: 'Pequeno' },
-        { value: 'medium', label: 'Médio' }, { value: 'large', label: 'Grande' }, { value: 'full', label: 'Pílula' },
+        { value: 'none', label: 'Reto', description: 'Sem curva' }, { value: 'small', label: 'Pequeno', description: '4px' },
+        { value: 'medium', label: 'Médio', description: '8px' }, { value: 'large', label: 'Grande', description: '16px' }, { value: 'full', label: 'Pílula', description: 'Totalmente arredondado' },
       ]} />
       <OptionPicker label="Tamanho" value={b.size} onChange={v => set({ size: v })} options={[
-        { value: 'small', label: 'Pequeno' }, { value: 'medium', label: 'Médio' }, { value: 'large', label: 'Grande' },
+        { value: 'small', label: 'Pequeno', description: 'Compacto' }, { value: 'medium', label: 'Médio', description: 'Padrão' }, { value: 'large', label: 'Grande', description: 'Destaque' },
       ]} />
-      <NumberSlider label="Peso da fonte" value={b.fontWeight} onChange={v => set({ fontWeight: v })} min={400} max={800} step={100} />
-      <ToggleRow label="Texto maiúsculo" checked={b.uppercase} onChange={v => set({ uppercase: v })} />
-      <ToggleRow label="Sombra" checked={b.shadow} onChange={v => set({ shadow: v })} />
+      <NumberSlider label="Peso da fonte" value={b.fontWeight} onChange={v => set({ fontWeight: v })} min={400} max={800} step={100} suffix="" />
+      <ToggleRow label="Texto maiúsculo" hint="Transforma todo o texto dos botões em CAIXA ALTA" checked={b.uppercase} onChange={v => set({ uppercase: v })} />
+      <ToggleRow label="Sombra" hint="Adiciona uma sombra sutil abaixo dos botões para dar profundidade" checked={b.shadow} onChange={v => set({ shadow: v })} />
       <SectionDivider label="Preview" />
       <div className="flex gap-2 flex-wrap p-3 bg-secondary rounded-lg">
         <ButtonPreview style={b.style} label="Primário" />
