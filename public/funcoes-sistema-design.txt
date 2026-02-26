@@ -1,0 +1,690 @@
+================================================================================
+  DOCUMENTO COMPLETO DE FUNÇÕES — PAINÉIS DO SISTEMA DE DESIGN
+  (Temas Prontos, Cores, Tipografia, Layout Global, Botões, Formulários)
+  
+  Descrição de cada função, como funciona, para que serve,
+  estrutura do código, tipos TypeScript e comunicação entre componentes.
+  
+  Gerado em: 2026-02-26
+================================================================================
+
+
+================================================================================
+ ARQUITETURA GERAL — COMO TUDO SE COMUNICA
+================================================================================
+
+FLUXO DE DADOS:
+
+  ┌──────────────┐     updateDraftSection()     ┌──────────────────┐
+  │  Painel UI   │ ──────────────────────────▶  │   ThemeContext    │
+  │  (ex: Cores) │                               │   (draft state)  │
+  └──────────────┘                               └────────┬─────────┘
+                                                          │
+                        ┌─────────────────────────────────┤
+                        │                                 │
+                        ▼                                 ▼
+              ┌──────────────────┐              ┌──────────────────┐
+              │  localStorage    │              │  applyThemeCSS() │
+              │  (modo standalone│              │  (CSS Variables)  │
+              │   auto-save)     │              └──────────┬───────┘
+              └──────────────────┘                         │
+                                                          ▼
+              ┌──────────────────┐              ┌──────────────────┐
+              │  router.post()   │              │  <html> root     │
+              │  (modo Inertia   │              │  --primary: ...  │
+              │   debounce 1s)   │              │  --pm-primary:.. │
+              └──────────────────┘              └──────────────────┘
+                                                          │
+                                                          ▼
+                                                ┌──────────────────┐
+                                                │  iframe preview  │
+                                                │  postMessage()   │
+                                                │  theme-preview-  │
+                                                │  update          │
+                                                └──────────────────┘
+
+MODOS DE OPERAÇÃO:
+
+  1. STANDALONE (Lovable preview / localhost):
+     - Dados em localStorage (keys: theme-draft, theme-published, theme-versions)
+     - Auto-save no localStorage a cada mudança no draft
+     - Publish cria versão local e sincroniza draft = published
+
+  2. INERTIA (Laravel/Blade admin):
+     - Dados vêm via props do servidor (initialDraft, initialPublished)
+     - Auto-save para o servidor com debounce de 1 segundo:
+       router.post('/user/site-settings/appearance-premium/save', { config, label })
+     - Publish envia para o servidor:
+       router.post('/user/site-settings/appearance-premium/publish', { label })
+
+  3. PREVIEW MODE (?theme-preview=true):
+     - Listener de postMessage recebe { type: 'theme-preview-update', theme }
+     - Aplica o tema recebido via CSS variables sem salvar
+
+FUNÇÕES DO CONTEXT:
+
+  updateDraft(updates: Partial<ThemeConfig>)
+    → Merge parcial no nível raiz do draft
+    → Usado para mudanças que afetam múltiplas seções de uma vez
+
+  updateDraftSection(section: K, updates: Partial<ThemeConfig[K]>)
+    → Merge parcial DENTRO de uma seção específica
+    → Usado por todos os painéis (ex: updateDraftSection('colors', { primary: '#ff0000' }))
+    → É a função PRINCIPAL usada pelos painéis
+
+  setDraftDeep(path: string, value: unknown)
+    → Acesso por caminho com ponto (ex: 'hero.slides')
+    → Usado para acessar arrays/objetos aninhados dentro de seções
+
+  applyPreset(preset: Partial<ThemeConfig>)
+    → Deep merge do preset no draft atual
+    → Preserva configurações não incluídas no preset
+
+  publish(note?: string)
+    → Cria versão no histórico (standalone) ou chama onPublish (Inertia)
+    → Sincroniza: published = draft
+
+  discardDraft()
+    → Reverte: draft = published (descarta todas as alterações)
+
+  resetToDefault()
+    → draft = defaultThemeConfig (volta tudo ao padrão de fábrica)
+
+  rollback(version: number)
+    → Restaura um snapshot do histórico como novo rascunho
+
+MIGRAÇÃO DE TEMAS (migrateTheme):
+
+  Função que roda ao carregar qualquer tema para garantir compatibilidade:
+  - Se buttonVisibility === 'add-only' e showBuyNow === false → corrige para 'both'
+  - Garante que buyNowText, addToCartText, buttonLayout, buttonStyle tenham valores
+
+DEEP MERGE:
+
+  Função recursiva que faz merge de objetos:
+  - Preserva propriedades existentes que não estão no source
+  - Sobrescreve apenas propriedades presentes no source
+  - Lida com objetos aninhados recursivamente
+  - Arrays são sobrescritos (não concatenados)
+
+CSS DUAL OUTPUT (applyThemeCSS):
+
+  Gera DOIS conjuntos de variáveis CSS:
+  
+  1. Padrão Tailwind (HSL sem função):
+     --primary: 0 0% 8%        ← usado como hsl(var(--primary))
+     --font-heading: Playfair Display
+     --radius: 0.5rem
+
+  2. Padrão Blade/Premium (--pm-*, hex raw):
+     --pm-primary: #1a1a1a     ← usado diretamente no Blade
+     --pm-font-heading: 'Playfair Display', serif
+     --pm-radius: 8px
+
+  Helpers:
+    hexToHSL(hex) → converte #RRGGBB para "H S% L%" (sem função hsl())
+    getRadiusValue(radius) → converte nome para rem (para Tailwind)
+    getRadiusPx(radius) → converte nome para px (para Blade)
+
+
+================================================================================
+ 1. TEMAS PRONTOS (PresetsPanel)
+================================================================================
+
+ARQUIVO: src/components/theme-editor/panels/PresetsPanel.tsx
+ÍCONE: Sparkles (lucide-react)
+DADOS: src/data/theme-presets.ts → array themePresets[]
+
+PARA QUE SERVE:
+  Permite ao lojista começar com um visual completo pré-configurado
+  e depois personalizar. Funciona como "ponto de partida rápido".
+
+COMO FUNCIONA:
+  1. Renderiza lista de presets disponíveis
+  2. Ao clicar, chama applyPreset(preset.config)
+  3. applyPreset faz DEEP MERGE do preset no draft atual
+     → Isso significa que o preset NÃO apaga configurações que ele não define
+     → Ex: se o preset só define cores e fontes, o header/footer mantêm o estado atual
+  4. Exibe toast de confirmação via sonner
+
+INTERFACE ThemePreset:
+  {
+    id: string;           // Identificador único (ex: 'minimal', 'neon')
+    name: string;         // Nome exibido (ex: 'Minimalista')
+    description: string;  // Texto de 1 linha descrevendo o visual
+    thumbnail: string;    // Emoji representativo (ex: '⬜', '🌊')
+    config: Partial<ThemeConfig>;  // Configuração parcial a ser aplicada
+  }
+
+PRESETS DISPONÍVEIS (14 no total):
+
+  ID          │ Nome         │ Emoji │ O que configura
+  ────────────┼──────────────┼───────┼─────────────────────────────────────
+  minimal     │ Minimalista  │ ⬜    │ cores, fontes (Inter/Inter), card minimal, radius none
+  modern      │ Moderno      │ 🔵    │ cores, fontes (Poppins/DM Sans), radius large, botões pill
+  elegant     │ Elegante     │ 🟤    │ cores quentes, Cormorant Garamond/Lato, radius small
+  fashion     │ Fashion      │ 🖤    │ preto/branco, Oswald/Work Sans, cards magazine, uppercase
+  luxury      │ Luxo         │ ✨    │ dourado, DM Serif Display/Lato, letterSpacing 0.05
+  ocean       │ Oceano       │ 🌊    │ azuis, Raleway/Nunito, radius large
+  rose        │ Rosé         │ 🌸    │ rosas, Lora/Nunito, radius large
+  nature      │ Natureza     │ 🌿    │ verdes, Merriweather/Open Sans
+  dark        │ Dark Mode    │ 🌙    │ fundo escuro, Montserrat/Inter, cores invertidas
+  brutalist   │ Brutalist    │ 🟥    │ bordas grossas, sem radius, Oswald/Roboto, amarelo accent
+  candy       │ Candy Pop    │ 🍬    │ roxo, Poppins/Nunito, radius full, botões gradiente
+  vintage     │ Vintage      │ 📜    │ sépia, Libre Baskerville/Lato
+  neon        │ Neon Night   │ 💜    │ fundo ultra escuro, roxo neon, botões neon
+  earth       │ Terra        │ 🏔️   │ terrosos, Merriweather/Source Sans 3
+
+CADA PRESET NO UI:
+  - Botão full-width com: emoji (text-2xl) + nome (text-sm font-medium)
+    + descrição (text-[11px]) + 3 swatches circulares de cor (w-4 h-4)
+  - Ao hover: border muda de border-border para border-foreground/30
+
+
+================================================================================
+ 2. CORES (ColorsPanel)
+================================================================================
+
+ARQUIVO: src/components/theme-editor/panels/ColorsPanel.tsx
+ÍCONE: Palette (lucide-react)
+SEÇÃO DO DRAFT: draft.colors (tipo ThemeColors)
+
+PARA QUE SERVE:
+  Define TODAS as cores da loja: paleta principal, superfícies, status e CTA.
+
+COMO FUNCIONA:
+  1. Lê draft.colors via useTheme()
+  2. Cada ColorInput chama updateDraftSection('colors', { propriedade: novoValor })
+  3. O ThemeContext atualiza o draft e dispara applyThemeCSS()
+  4. applyThemeCSS converte HEX → HSL e seta variáveis CSS no <html>
+
+INTERFACE ThemeColors:
+  {
+    primary: string;             // HEX — Cor principal (botões, links, destaques)
+    primaryForeground: string;   // HEX — Texto sobre primary
+    secondary: string;           // HEX — Cor secundária (fundos alternados, hover)
+    secondaryForeground: string; // HEX — Texto sobre secondary
+    accent: string;              // HEX — Cor de destaque (badges, tags)
+    accentForeground: string;    // HEX — Texto sobre accent
+    background: string;          // HEX — Fundo geral da página
+    foreground: string;          // HEX — Texto principal
+    muted: string;               // HEX — Fundo suave (áreas secundárias)
+    mutedForeground: string;     // HEX — Texto suave (labels, descrições)
+    border: string;              // HEX — Cor de todas as bordas
+    success: string;             // HEX — Indicadores de sucesso (em estoque, confirmação)
+    warning: string;             // HEX — Alertas (estoque baixo)
+    error: string;               // HEX — Erros (formulários, validação)
+    buyNow: string;              // HEX — Cor do botão "Comprar Agora" (CTA principal)
+    buyNowHover: string;         // HEX — Hover do botão "Comprar Agora"
+  }
+
+VALORES PADRÃO:
+  primary:             #1a1a1a (preto)
+  primaryForeground:   #fafafa (branco)
+  secondary:           #f5f5f5 (cinza claro)
+  secondaryForeground: #1a1a1a
+  accent:              #f5f5f5
+  accentForeground:    #1a1a1a
+  background:          #ffffff
+  foreground:          #1a1a1a
+  muted:               #f5f5f5
+  mutedForeground:     #737373
+  border:              #e5e5e5
+  success:             #16a34a
+  warning:             #eab308
+  error:               #dc2626
+  buyNow:              #dc2626 (vermelho)
+  buyNowHover:         #b91c1c (vermelho escuro)
+
+ORGANIZAÇÃO NO UI (4 grupos com SectionDivider):
+
+  ┌─ PRINCIPAIS ──────────────────────────────────────────┐
+  │  grid-cols-2 gap-3                                    │
+  │  [Primária]        [Texto sobre primária]             │
+  │  [Secundária]      [Texto sobre secundária]           │
+  └───────────────────────────────────────────────────────┘
+
+  ┌─ SUPERFÍCIES ─────────────────────────────────────────┐
+  │  grid-cols-2 gap-3                                    │
+  │  [Fundo]           [Texto]                            │
+  │  [Destaque]        [Texto destaque]                   │
+  │  [Suave (muted)]   [Texto suave]                      │
+  │  [Bordas]                                             │
+  └───────────────────────────────────────────────────────┘
+
+  ┌─ STATUS ──────────────────────────────────────────────┐
+  │  grid-cols-2 gap-3                                    │
+  │  [Sucesso]         [Alerta]                           │
+  │  [Erro]                                               │
+  └───────────────────────────────────────────────────────┘
+
+  ┌─ AÇÃO DE COMPRA ──────────────────────────────────────┐
+  │  grid-cols-2 gap-3                                    │
+  │  [Botão Comprar]   [Hover Comprar]                    │
+  └───────────────────────────────────────────────────────┘
+
+VARIÁVEIS CSS GERADAS (por cor, dupla saída):
+  --primary: H S% L%     (Tailwind, HSL sem função)
+  --pm-primary: #RRGGBB  (Blade, hex direto)
+  --color-primary: #RRGGBB (alias extra para Blade)
+
+
+================================================================================
+ 3. TIPOGRAFIA (TypographyPanel)
+================================================================================
+
+ARQUIVO: src/components/theme-editor/panels/TypographyPanel.tsx
+ÍCONE: Type (lucide-react)
+SEÇÃO DO DRAFT: draft.typography (tipo ThemeTypography)
+
+PARA QUE SERVE:
+  Controla todas as fontes e ajustes tipográficos da loja:
+  fontes de título e corpo, tamanhos, pesos, espaçamentos.
+
+COMO FUNCIONA:
+  1. Lê draft.typography via useTheme()
+  2. FontPicker renderiza lista de fontes com preview visual (style={{ fontFamily }})
+  3. NumberSlider controla valores numéricos com feedback visual
+  4. updateDraftSection('typography', { propriedade: valor })
+  5. applyThemeCSS seta variáveis + aplica diretamente no root:
+     document.documentElement.style.fontSize = baseFontSize
+     document.documentElement.style.fontFamily = bodyFont
+     document.documentElement.style.fontWeight = bodyWeight
+     document.documentElement.style.lineHeight = lineHeight
+     document.documentElement.style.letterSpacing = letterSpacing
+
+INTERFACE ThemeTypography:
+  {
+    headingFont: string;     // Nome da fonte para h1, h2, h3
+    bodyFont: string;        // Nome da fonte para parágrafos e textos
+    baseFontSize: number;    // Tamanho base em px (aplicado no <html>)
+    headingWeight: number;   // Peso dos títulos (300-900)
+    bodyWeight: number;      // Peso do corpo (300-700)
+    lineHeight: number;      // Altura da linha (ratio, ex: 1.6)
+    letterSpacing: number;   // Espaço entre letras em em (ex: 0, 0.05)
+  }
+
+VALORES PADRÃO:
+  headingFont:   'Playfair Display'
+  bodyFont:      'Inter'
+  baseFontSize:  16
+  headingWeight: 700
+  bodyWeight:    400
+  lineHeight:    1.6
+  letterSpacing: 0
+
+FONTES DISPONÍVEIS:
+
+  TÍTULOS (headingFonts):
+    Playfair Display, Poppins, Montserrat, Lora, Merriweather,
+    Raleway, Oswald, Cormorant Garamond, DM Serif Display, Libre Baskerville
+
+  CORPO (bodyFonts):
+    Inter, Roboto, Open Sans, Lato, Nunito, Work Sans,
+    DM Sans, Source Sans 3, Rubik, Manrope
+
+CONTROLES NO UI:
+
+  1. FontPicker "Fonte dos títulos" (type="heading")
+     → Select com items renderizados na própria fonte
+     → Altera headingFont
+
+  2. FontPicker "Fonte do corpo" (type="body")
+     → Select com items renderizados na própria fonte
+     → Altera bodyFont
+
+  ── SectionDivider "Ajustes" ──
+
+  3. NumberSlider "Tamanho base" → baseFontSize
+     min: 12, max: 20, suffix: "px"
+
+  4. NumberSlider "Peso dos títulos" → headingWeight
+     min: 300, max: 900, step: 100
+
+  5. NumberSlider "Peso do corpo" → bodyWeight
+     min: 300, max: 700, step: 100
+
+  6. NumberSlider "Altura da linha" → lineHeight
+     min: 1, max: 2, step: 0.05
+
+  7. NumberSlider "Espaço entre letras" → letterSpacing
+     min: -0.05, max: 0.2, step: 0.01, suffix: "em"
+
+  ── SectionDivider "Preview" ──
+
+  8. Preview box (p-3 bg-secondary rounded-lg):
+     - Título: text-xl font-bold, com fontFamily e fontWeight dinâmicos
+     - Corpo: text-sm, com fontFamily, fontWeight, lineHeight, letterSpacing dinâmicos
+     - Atualiza em tempo real conforme o lojista muda os valores
+
+VARIÁVEIS CSS GERADAS:
+  --font-heading: Playfair Display
+  --font-body: Inter
+  --font-size-base: 16px
+  --heading-weight: 700
+  --body-weight: 400
+  --line-height: 1.6
+  --letter-spacing: 0em
+
+  --pm-font-heading: 'Playfair Display', serif
+  --pm-font-body: 'Inter', sans-serif
+  --pm-font-size-base: 16px
+  --pm-heading-weight: 700
+  --pm-body-weight: 400
+  --pm-line-height: 1.6
+  --pm-letter-spacing: 0px
+
+  + root style direto: fontSize, fontFamily, fontWeight, lineHeight, letterSpacing
+
+
+================================================================================
+ 4. LAYOUT GLOBAL (GlobalPanel)
+================================================================================
+
+ARQUIVO: src/components/theme-editor/panels/GlobalPanel.tsx
+ÍCONE: Layout (lucide-react)
+SEÇÃO DO DRAFT: draft.global (tipo ThemeGlobal)
+
+PARA QUE SERVE:
+  Controla aspectos visuais globais que afetam TODA a loja:
+  largura do container, espaçamento entre seções, arredondamento de bordas,
+  sombras, estilo de bordas e animações.
+
+COMO FUNCIONA:
+  1. Lê draft.global via useTheme()
+  2. Cada controle chama updateDraftSection('global', { propriedade: valor })
+  3. applyThemeCSS aplica:
+     --radius: getRadiusValue(borderRadius) → rem (para Tailwind)
+     --pm-radius: getRadiusPx(borderRadius) → px (para Blade)
+     --pm-container-width: containerMaxPx + 'px'
+
+INTERFACE ThemeGlobal:
+  {
+    containerWidth: 'narrow' | 'default' | 'wide' | 'full';
+    containerMaxPx: number;       // px (960-1920, step 20)
+    sectionSpacing: 'compact' | 'normal' | 'spacious';
+    borderRadius: 'none' | 'small' | 'medium' | 'large' | 'full';
+    shadowLevel: 'none' | 'subtle' | 'medium' | 'strong';
+    borderStyle: 'none' | 'thin' | 'medium' | 'thick';
+    animationsEnabled: boolean;
+    animationSpeed: 'slow' | 'normal' | 'fast';
+    scrollBehavior: 'smooth' | 'auto';  // (não exposto no UI, valor padrão)
+  }
+
+VALORES PADRÃO:
+  containerWidth:   'default'
+  containerMaxPx:   1400
+  sectionSpacing:   'normal'
+  borderRadius:     'medium'
+  shadowLevel:      'subtle'
+  borderStyle:      'thin'
+  animationsEnabled: true
+  animationSpeed:   'normal'
+  scrollBehavior:   'smooth'
+
+MAPEAMENTO DE RADIUS:
+  'none'   → 0rem / 0px
+  'small'  → 0.25rem / 4px
+  'medium' → 0.5rem / 8px
+  'large'  → 0.75rem / 12px
+  'full'   → 9999px / 9999px
+
+CONTROLES NO UI:
+
+  1. SelectField "Largura do container" → containerWidth
+     Opções:
+       'narrow'  → Estreito (1200px)
+       'default' → Padrão (1400px)
+       'wide'    → Largo (1600px)
+       'full'    → Tela cheia
+
+  2. NumberSlider "Largura máx." → containerMaxPx
+     Só aparece se containerWidth !== 'full'
+     min: 960, max: 1920, step: 20, suffix: "px"
+
+  ── SectionDivider "Espaçamento" ──
+
+  3. OptionPicker "Espaço entre seções" → sectionSpacing
+     'compact' → Compacto
+     'normal'  → Normal
+     'spacious' → Espaçoso
+
+  ── SectionDivider "Bordas e Sombras" ──
+
+  4. OptionPicker "Arredondamento" → borderRadius
+     'none' → Nenhum | 'small' → Pequeno | 'medium' → Médio
+     'large' → Grande | 'full' → Máximo
+     (5 opções → flex-wrap com flex-1)
+
+  5. OptionPicker "Sombras" → shadowLevel
+     'none' → Nenhuma | 'subtle' → Suave
+     'medium' → Média | 'strong' → Forte
+
+  6. OptionPicker "Bordas" → borderStyle
+     'none' → Nenhuma | 'thin' → Fina
+     'medium' → Média | 'thick' → Grossa
+
+  ── SectionDivider "Animações" ──
+
+  7. ToggleRow "Animações habilitadas" → animationsEnabled
+     Switch on/off
+
+  8. OptionPicker "Velocidade" → animationSpeed
+     Só aparece se animationsEnabled === true
+     'slow' → Lenta | 'normal' → Normal | 'fast' → Rápida
+
+VARIÁVEIS CSS GERADAS:
+  --radius: 0.5rem (Tailwind)
+  --pm-radius: 8px (Blade)
+  --pm-container-width: 1400px
+
+
+================================================================================
+ 5. BOTÕES (ButtonsPanel)
+================================================================================
+
+ARQUIVO: src/components/theme-editor/panels/ButtonsPanel.tsx
+ÍCONE: MousePointer (lucide-react)
+SEÇÃO DO DRAFT: draft.buttons (tipo ThemeButtons)
+
+PARA QUE SERVE:
+  Define o estilo visual GLOBAL de todos os botões da loja.
+  Afeta botões de CTA, navegação, formulários, etc.
+
+COMO FUNCIONA:
+  1. Lê draft.buttons via useTheme()
+  2. Cada controle chama updateDraftSection('buttons', { propriedade: valor })
+  3. O tema é consumido pela vitrine para renderizar botões
+  4. Inclui preview interativo com 3 botões de exemplo
+
+INTERFACE ThemeButtons:
+  {
+    style: 'filled' | 'outline' | 'ghost' | 'soft' | 'gradient' | '3d' | 'neon' | 'minimal';
+    radius: 'none' | 'small' | 'medium' | 'large' | 'full';
+    size: 'small' | 'medium' | 'large';
+    uppercase: boolean;
+    fontWeight: number;    // 400-800, step 100
+    shadow: boolean;
+  }
+
+VALORES PADRÃO:
+  style:      'filled'
+  radius:     'medium'
+  size:       'medium'
+  uppercase:  false
+  fontWeight:  500
+  shadow:     false
+
+CONTROLES NO UI:
+
+  1. OptionPicker "Estilo" → style (8 opções, com descrições!)
+     'filled'   → Sólido      (Fundo preenchido)
+     'outline'  → Contorno    (Apenas borda)
+     'ghost'    → Fantasma    (Sem fundo/borda)
+     'soft'     → Suave       (Fundo translúcido)
+     'gradient' → Gradiente   (Fundo degradê)
+     '3d'       → 3D          (Com profundidade)
+     'neon'     → Neon        (Brilho luminoso)
+     'minimal'  → Minimal     (Apenas texto sublinhado)
+
+  2. OptionPicker "Arredondamento" → radius (5 opções)
+     'none' → Nenhum | 'small' → Pequeno | 'medium' → Médio
+     'large' → Grande | 'full' → Pílula
+
+  3. OptionPicker "Tamanho" → size (3 opções)
+     'small' → Pequeno | 'medium' → Médio | 'large' → Grande
+
+  4. NumberSlider "Peso da fonte" → fontWeight
+     min: 400, max: 800, step: 100
+
+  5. ToggleRow "Texto maiúsculo" → uppercase
+  6. ToggleRow "Sombra" → shadow
+
+  ── SectionDivider "Preview" ──
+
+  7. Preview box (flex gap-2 flex-wrap p-3 bg-secondary rounded-lg):
+     3 botões de exemplo renderizados com ButtonPreview:
+     - "Primário" com o estilo selecionado
+     - "Contorno" sempre outline
+     - "Fantasma" sempre ghost
+
+COMPONENTE ButtonPreview:
+  Renderiza botão com classes CSS baseadas no estilo:
+
+  styleMap = {
+    filled:   'bg-foreground text-background'
+    outline:  'border-2 border-foreground text-foreground'
+    ghost:    'text-foreground hover:bg-secondary'
+    soft:     'bg-foreground/10 text-foreground'
+    gradient: 'bg-gradient-to-r from-foreground to-foreground/70 text-background'
+    3d:       'bg-foreground text-background shadow-[0_4px_0_0] shadow-foreground/50 translate-y-[-2px]'
+    neon:     'border-2 border-foreground text-foreground shadow-[0_0_10px] shadow-foreground/50'
+    minimal:  'text-foreground underline underline-offset-4'
+  }
+
+  Todos os botões de preview: px-4 py-2 text-sm rounded-md transition-all
+
+
+================================================================================
+ 6. FORMULÁRIOS (InputsPanel)
+================================================================================
+
+ARQUIVO: src/components/theme-editor/panels/InputsPanel.tsx
+ÍCONE: FormInput (lucide-react)
+SEÇÃO DO DRAFT: draft.inputs (tipo ThemeInputs)
+
+PARA QUE SERVE:
+  Define o estilo visual dos campos de entrada (inputs, selects, textareas)
+  em toda a loja: formulário de contato, busca, checkout, login, etc.
+
+COMO FUNCIONA:
+  1. Lê draft.inputs via useTheme()
+  2. Cada controle chama updateDraftSection('inputs', { propriedade: valor })
+  3. O tema é consumido pela vitrine para estilizar campos
+
+INTERFACE ThemeInputs:
+  {
+    style: 'default' | 'filled' | 'underline';
+    radius: 'none' | 'small' | 'medium' | 'large';
+    borderWidth: 1 | 2;           // (não exposto no UI atualmente)
+    focusRing: boolean;
+  }
+
+VALORES PADRÃO:
+  style:       'default'
+  radius:      'medium'
+  borderWidth:  1
+  focusRing:    true
+
+CONTROLES NO UI:
+
+  1. OptionPicker "Estilo" → style (3 opções)
+     'default'   → Padrão      (borda completa ao redor)
+     'filled'    → Preenchido  (fundo colorido, sem borda visível)
+     'underline' → Sublinhado  (apenas linha inferior)
+
+  2. OptionPicker "Arredondamento" → radius (4 opções)
+     'none'   → Nenhum (0px)
+     'small'  → Pequeno (4px)
+     'medium' → Médio (8px)
+     'large'  → Grande (12px)
+
+  3. ToggleRow "Anel de foco" → focusRing
+     Descrição: "Mostrar anel ao focar no campo"
+     Controla se campos exibem ring-2 no foco (acessibilidade)
+
+NOTA: borderWidth (1 ou 2px) está no tipo mas NÃO é exposto no UI.
+  Valor padrão 1 é usado internamente.
+
+
+================================================================================
+ 7. VALORES PADRÃO COMPLETOS (defaultThemeConfig)
+================================================================================
+
+Arquivo: src/data/theme-presets.ts → export const defaultThemeConfig
+
+Todos os painéis do "Sistema de Design" com seus valores padrão:
+
+  colors:
+    primary: '#1a1a1a', primaryForeground: '#fafafa'
+    secondary: '#f5f5f5', secondaryForeground: '#1a1a1a'
+    accent: '#f5f5f5', accentForeground: '#1a1a1a'
+    background: '#ffffff', foreground: '#1a1a1a'
+    muted: '#f5f5f5', mutedForeground: '#737373'
+    border: '#e5e5e5'
+    success: '#16a34a', warning: '#eab308', error: '#dc2626'
+    buyNow: '#dc2626', buyNowHover: '#b91c1c'
+
+  typography:
+    headingFont: 'Playfair Display', bodyFont: 'Inter'
+    baseFontSize: 16, headingWeight: 700, bodyWeight: 400
+    lineHeight: 1.6, letterSpacing: 0
+
+  buttons:
+    style: 'filled', radius: 'medium', size: 'medium'
+    uppercase: false, fontWeight: 500, shadow: false
+
+  inputs:
+    style: 'default', radius: 'medium'
+    borderWidth: 1, focusRing: true
+
+  global:
+    containerWidth: 'default', containerMaxPx: 1400
+    sectionSpacing: 'normal', borderRadius: 'medium'
+    shadowLevel: 'subtle', borderStyle: 'thin'
+    animationsEnabled: true, animationSpeed: 'normal'
+    scrollBehavior: 'smooth'
+
+
+================================================================================
+ 8. COMO OS PAINÉIS SE INTEGRAM COM O PREVIEW EM TEMPO REAL
+================================================================================
+
+FLUXO COMPLETO (ex: lojista muda a cor primária):
+
+  1. Lojista clica no ColorInput "Primária" e escolhe #3B82F6
+  2. ColorsPanel chama: updateDraftSection('colors', { primary: '#3B82F6' })
+  3. ThemeContext atualiza o state draft via setDraft()
+  4. React re-renderiza com novo draft
+  5. useEffect detecta mudança no draft:
+     a. localStorage.setItem('theme-draft', JSON.stringify(draft))  [standalone]
+     b. OU debounce 1s → router.post('/save', { config: draft })   [Inertia]
+  6. useEffect do iframe: se iframeReady, envia postMessage:
+     iframe.contentWindow.postMessage({ type: 'theme-preview-update', theme: draft }, '*')
+  7. Iframe (vitrine) recebe a mensagem:
+     - Listener: window.addEventListener('message', handler)
+     - setPreviewTheme(event.data.theme)
+  8. Vitrine aplica: applyThemeCSS(previewTheme)
+     - Seta --primary: (HSL de #3B82F6)
+     - Seta --pm-primary: #3B82F6
+  9. Todos os elementos que usam hsl(var(--primary)) atualizam visualmente
+
+LATÊNCIA:
+  - Preview local: instantâneo (postMessage é síncrono)
+  - Salvar no servidor: 1 segundo de debounce
+  - Publicar: imediato (clique manual)
+
+
+================================================================================
+ FIM DO DOCUMENTO
+================================================================================
