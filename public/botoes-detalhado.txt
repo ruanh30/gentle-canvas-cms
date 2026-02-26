@@ -1,0 +1,444 @@
+============================================================
+  DOCUMENTAÇÃO TÉCNICA — BOTÕES (ButtonsPanel)
+  Sistema de Personalização Premium — FlashLoja
+  Gerado em: 2026-02-26
+============================================================
+
+╔══════════════════════════════════════════════════════════╗
+║  VISÃO GERAL                                            ║
+╚══════════════════════════════════════════════════════════╝
+
+O painel "Botões" controla a aparência GLOBAL de todos os
+botões da loja: botão de compra, adicionar ao carrinho,
+navegação, formulários, etc. Qualquer botão no site herda
+esses estilos como base.
+
+ARQUIVO DO PAINEL: src/components/theme-editor/panels/ButtonsPanel.tsx
+INTERFACE DE TIPO: src/types/theme.ts → interface ThemeButtons
+ONDE É APLICADO:  Componentes React consomem draft.buttons diretamente
+
+Fluxo de dados:
+  ButtonsPanel.tsx
+    → updateDraftSection('buttons', { propriedade: valor })
+      → ThemeContext faz deep merge no draft.buttons
+        → Componentes React leem o valor e aplicam classes/estilos
+          → Preview (iframe Blade) recebe via postMessage
+
+INTERFACE COMPLETA (ThemeButtons):
+  {
+    style:      'filled' | 'outline' | 'ghost' | 'soft' | 'gradient' | '3d' | 'neon' | 'minimal'
+    radius:     'none' | 'small' | 'medium' | 'large' | 'full'
+    size:       'small' | 'medium' | 'large'
+    uppercase:  boolean
+    fontWeight: number     (400 a 800, passo de 100)
+    shadow:     boolean
+  }
+
+
+╔══════════════════════════════════════════════════════════╗
+║  PROPRIEDADE 1: style (Estilo Visual)                   ║
+╚══════════════════════════════════════════════════════════╝
+
+TIPO:    'filled' | 'outline' | 'ghost' | 'soft' | 'gradient' | '3d' | 'neon' | 'minimal'
+PADRÃO:  'filled'
+LABEL:   "Estilo"
+
+VALORES E SIGNIFICADO:
+  ┌───────────┬────────────────────────────────────────────────┐
+  │ filled    │ Sólido — fundo preenchido com cor primária.    │
+  │           │ O mais clássico e universal.                   │
+  ├───────────┼────────────────────────────────────────────────┤
+  │ outline   │ Contorno — apenas borda, sem fundo.            │
+  │           │ Visual clean e elegante.                       │
+  ├───────────┼────────────────────────────────────────────────┤
+  │ ghost     │ Fantasma — sem fundo nem borda, só texto.      │
+  │           │ Aparece o fundo apenas no hover.               │
+  ├───────────┼────────────────────────────────────────────────┤
+  │ soft      │ Suave — fundo translúcido (10% de opacidade).  │
+  │           │ Visual delicado, bom para lojas femininas.     │
+  ├───────────┼────────────────────────────────────────────────┤
+  │ gradient  │ Gradiente — fundo degradê da cor primária para │
+  │           │ uma variação mais clara. Visual moderno.       │
+  ├───────────┼────────────────────────────────────────────────┤
+  │ 3d        │ 3D — fundo com sombra inferior que simula      │
+  │           │ profundidade. O botão parece "elevado".        │
+  ├───────────┼────────────────────────────────────────────────┤
+  │ neon      │ Neon — borda brilhante com glow luminoso.      │
+  │           │ Ideal para lojas de games/tech/streetwear.     │
+  ├───────────┼────────────────────────────────────────────────┤
+  │ minimal   │ Minimal — apenas texto sublinhado, sem fundo   │
+  │           │ nem borda. Visual ultra-limpo e editorial.     │
+  └───────────┴────────────────────────────────────────────────┘
+
+ONDE É ALTERADO NO CÓDIGO:
+  ButtonsPanel.tsx, linha ~13:
+    <OptionPicker
+      label="Estilo"
+      value={b.style}
+      onChange={v => set({ style: v })}
+      options={[
+        { value: 'filled',   label: 'Sólido',    description: 'Fundo preenchido' },
+        { value: 'outline',  label: 'Contorno',   description: 'Apenas borda' },
+        { value: 'ghost',    label: 'Fantasma',   description: 'Sem fundo/borda' },
+        { value: 'soft',     label: 'Suave',      description: 'Fundo translúcido' },
+        { value: 'gradient', label: 'Gradiente',  description: 'Fundo degradê' },
+        { value: '3d',       label: '3D',         description: 'Com profundidade' },
+        { value: 'neon',     label: 'Neon',       description: 'Brilho luminoso' },
+        { value: 'minimal',  label: 'Minimal',    description: 'Apenas texto sublinhado' },
+      ]}
+    />
+
+CLASSES CSS CORRESPONDENTES (ButtonPreview):
+  ┌───────────┬──────────────────────────────────────────────────┐
+  │ filled    │ bg-foreground text-background                    │
+  │ outline   │ border-2 border-foreground text-foreground       │
+  │ ghost     │ text-foreground hover:bg-secondary               │
+  │ soft      │ bg-foreground/10 text-foreground                 │
+  │ gradient  │ bg-gradient-to-r from-foreground                 │
+  │           │ to-foreground/70 text-background                 │
+  │ 3d        │ bg-foreground text-background shadow-[0_4px_0_0] │
+  │           │ shadow-foreground/50 translate-y-[-2px]          │
+  │ neon      │ border-2 border-foreground text-foreground       │
+  │           │ shadow-[0_0_10px] shadow-foreground/50           │
+  │ minimal   │ text-foreground underline underline-offset-4     │
+  └───────────┴──────────────────────────────────────────────────┘
+
+PRESETS QUE ALTERAM ESTA PROPRIEDADE:
+  • Padrão (default)   → 'filled'
+  • Neon               → 'neon'
+  • Infantil/Colorido  → 'gradient'
+  • Demais presets     → herdam 'filled'
+
+
+╔══════════════════════════════════════════════════════════╗
+║  PROPRIEDADE 2: radius (Arredondamento dos Botões)      ║
+╚══════════════════════════════════════════════════════════╝
+
+TIPO:    'none' | 'small' | 'medium' | 'large' | 'full'
+PADRÃO:  'medium'
+LABEL:   "Arredondamento"
+
+VALORES E SIGNIFICADO:
+  ┌──────────┬─────────────────────────────────────────┐
+  │ none     │ Reto — cantos a 90°, visual quadrado    │
+  │ small    │ Pequeno — ~4px, arredondamento discreto  │
+  │ medium   │ Médio — ~8px, padrão universal           │
+  │ large    │ Grande — ~16px, cantos bem arredondados   │
+  │ full     │ Pílula — totalmente arredondado (9999px) │
+  └──────────┴─────────────────────────────────────────┘
+
+PARA QUE SERVE:
+  Define o arredondamento APENAS dos botões, independente do
+  arredondamento global (que afeta cards, inputs, etc.).
+  Permite ter cards quadrados mas botões arredondados, por exemplo.
+
+DIFERENÇA DO GLOBAL:
+  • global.borderRadius → afeta cards, inputs, modais, imagens
+  • buttons.radius      → afeta APENAS botões
+
+ONDE É ALTERADO NO CÓDIGO:
+  ButtonsPanel.tsx, linha ~23:
+    <OptionPicker
+      label="Arredondamento"
+      value={b.radius}
+      onChange={v => set({ radius: v })}
+      options={[
+        { value: 'none',   label: 'Reto',     description: 'Sem curva' },
+        { value: 'small',  label: 'Pequeno',  description: '4px' },
+        { value: 'medium', label: 'Médio',    description: '8px' },
+        { value: 'large',  label: 'Grande',   description: '16px' },
+        { value: 'full',   label: 'Pílula',   description: 'Totalmente arredondado' },
+      ]}
+    />
+
+PRESETS QUE ALTERAM ESTA PROPRIEDADE:
+  • Moderno/Fashion → 'full'  (botões pílula)
+  • Brutalist       → 'none'  (cantos retos)
+  • Streetwear      → 'none'  (visual agressivo)
+  • Infantil        → 'full'  (visual suave)
+  • Padrão          → 'medium'
+
+
+╔══════════════════════════════════════════════════════════╗
+║  PROPRIEDADE 3: size (Tamanho dos Botões)               ║
+╚══════════════════════════════════════════════════════════╝
+
+TIPO:    'small' | 'medium' | 'large'
+PADRÃO:  'medium'
+LABEL:   "Tamanho"
+
+VALORES E SIGNIFICADO:
+  ┌──────────┬────────────────────────────────────────────┐
+  │ small    │ Compacto — padding menor, texto menor.     │
+  │          │ Bom para lojas com muitos botões na tela.  │
+  ├──────────┼────────────────────────────────────────────┤
+  │ medium   │ Padrão — tamanho universal, equilibrado.   │
+  │          │ Funciona na maioria dos cenários.          │
+  ├──────────┼────────────────────────────────────────────┤
+  │ large    │ Destaque — botões maiores e mais visíveis. │
+  │          │ Bom para CTAs e lojas com poucos produtos. │
+  └──────────┴────────────────────────────────────────────┘
+
+PARA QUE SERVE:
+  Controla o padding e tamanho da fonte de TODOS os botões
+  da loja. Afeta a presença visual e a facilidade de clique,
+  especialmente em mobile.
+
+ONDE É ALTERADO NO CÓDIGO:
+  ButtonsPanel.tsx, linha ~27:
+    <OptionPicker
+      label="Tamanho"
+      value={b.size}
+      onChange={v => set({ size: v })}
+      options={[
+        { value: 'small',  label: 'Pequeno',  description: 'Compacto' },
+        { value: 'medium', label: 'Médio',    description: 'Padrão' },
+        { value: 'large',  label: 'Grande',   description: 'Destaque' },
+      ]}
+    />
+
+
+╔══════════════════════════════════════════════════════════╗
+║  PROPRIEDADE 4: fontWeight (Peso da Fonte)              ║
+╚══════════════════════════════════════════════════════════╝
+
+TIPO:    number
+PADRÃO:  600
+LABEL:   "Peso da fonte"
+
+FAIXA DE VALORES:
+  ┌──────────┬────────────┬──────────┐
+  │ Mínimo   │ Máximo     │ Passo    │
+  │ 400      │ 800        │ 100      │
+  └──────────┴────────────┴──────────┘
+
+VALORES COMUNS:
+  ┌──────┬────────────────────────────────────────┐
+  │ 400  │ Normal — texto leve, discreto          │
+  │ 500  │ Medium — um pouco mais visível         │
+  │ 600  │ Semi-bold — padrão, boa legibilidade   │
+  │ 700  │ Bold — negrito, destaque forte         │
+  │ 800  │ Extra-bold — máximo impacto visual     │
+  └──────┴────────────────────────────────────────┘
+
+PARA QUE SERVE:
+  Define quão "grosso" o texto dos botões aparece. Valores
+  mais altos tornam o texto mais impactante e fácil de ler,
+  especialmente em botões de ação (Comprar Agora).
+
+ONDE É ALTERADO NO CÓDIGO:
+  ButtonsPanel.tsx, linha ~30:
+    <NumberSlider
+      label="Peso da fonte"
+      value={b.fontWeight}
+      onChange={v => set({ fontWeight: v })}
+      min={400} max={800} step={100}
+    />
+
+
+╔══════════════════════════════════════════════════════════╗
+║  PROPRIEDADE 5: uppercase (Texto Maiúsculo)             ║
+╚══════════════════════════════════════════════════════════╝
+
+TIPO:    boolean
+PADRÃO:  false
+LABEL:   "Texto maiúsculo"
+
+PARA QUE SERVE:
+  Quando ATIVADO (true):
+    - Todo texto dentro de botões é transformado em CAIXA ALTA
+    - Ex: "Comprar Agora" → "COMPRAR AGORA"
+    - Dá um visual mais forte e autoritativo
+    - Combina bem com estilos brutalist e streetwear
+
+  Quando DESATIVADO (false):
+    - O texto mantém a capitalização original
+    - Visual mais amigável e natural
+
+ONDE É ALTERADO NO CÓDIGO:
+  ButtonsPanel.tsx, linha ~31:
+    <ToggleRow
+      label="Texto maiúsculo"
+      hint="Transforma todo o texto dos botões em CAIXA ALTA"
+      checked={b.uppercase}
+      onChange={v => set({ uppercase: v })}
+    />
+
+CSS EQUIVALENTE:
+  text-transform: uppercase;     (quando true)
+  text-transform: none;          (quando false)
+
+PRESETS QUE ALTERAM ESTA PROPRIEDADE:
+  • Brutalist   → true  (caixa alta é marca do estilo)
+  • Streetwear  → true  (visual agressivo)
+  • Demais      → false
+
+
+╔══════════════════════════════════════════════════════════╗
+║  PROPRIEDADE 6: shadow (Sombra nos Botões)              ║
+╚══════════════════════════════════════════════════════════╝
+
+TIPO:    boolean
+PADRÃO:  false
+LABEL:   "Sombra"
+
+PARA QUE SERVE:
+  Quando ATIVADO (true):
+    - Adiciona uma sombra sutil abaixo dos botões
+    - Cria sensação de profundidade e elevação
+    - O botão parece "flutuar" sobre o fundo
+    - Funciona bem com estilos 'filled' e 'gradient'
+
+  Quando DESATIVADO (false):
+    - Botões ficam planos, sem profundidade
+    - Visual mais clean e flat
+    - Funciona bem com estilos 'outline', 'ghost' e 'minimal'
+
+ONDE É ALTERADO NO CÓDIGO:
+  ButtonsPanel.tsx, linha ~32:
+    <ToggleRow
+      label="Sombra"
+      hint="Adiciona uma sombra sutil abaixo dos botões para dar profundidade"
+      checked={b.shadow}
+      onChange={v => set({ shadow: v })}
+    />
+
+PRESETS QUE ALTERAM ESTA PROPRIEDADE:
+  • Moderno/Fashion → true  (sombras dão profundidade)
+  • Demais          → false
+
+
+╔══════════════════════════════════════════════════════════╗
+║  PREVIEW DE BOTÕES (Seção Visual)                       ║
+╚══════════════════════════════════════════════════════════╝
+
+O painel inclui uma seção "Preview" que exibe 3 botões de
+exemplo em tempo real, permitindo ao lojista ver como as
+configurações afetam a aparência:
+
+  ┌──────────────────────────────────────────┐
+  │  [ Primário ]  [ Contorno ]  [ Fantasma] │
+  └──────────────────────────────────────────┘
+
+  • Primário  → usa o estilo selecionado (b.style)
+  • Contorno  → sempre estilo 'outline' para comparação
+  • Fantasma  → sempre estilo 'ghost' para comparação
+
+CÓDIGO DO PREVIEW:
+  ButtonsPanel.tsx, linhas ~34-38:
+    <div className="flex gap-2 flex-wrap p-3 bg-secondary rounded-lg">
+      <ButtonPreview style={b.style} label="Primário" />
+      <ButtonPreview style="outline" label="Contorno" />
+      <ButtonPreview style="ghost" label="Fantasma" />
+    </div>
+
+NOTA: O preview NÃO aplica radius, size, fontWeight, uppercase
+e shadow — ele mostra apenas o estilo de cor/fundo. Os demais
+atributos são aplicados nos botões reais da vitrine.
+
+
+╔══════════════════════════════════════════════════════════╗
+║  RELAÇÃO COM BOTÕES DO CARD DE PRODUTO                  ║
+╚══════════════════════════════════════════════════════════╝
+
+Os botões dos cards de produto (Comprar Agora / Adicionar ao
+Carrinho) possuem configurações ADICIONAIS no painel
+ProductCardPanel, que se SOBREPÕEM ao estilo global:
+
+  ┌─────────────────────┬──────────────────────────────────┐
+  │ buttonVisibility    │ Quais botões mostrar             │
+  │                     │ (ambos / só comprar / só add)    │
+  ├─────────────────────┼──────────────────────────────────┤
+  │ buttonLayout        │ Empilhado ou lado a lado         │
+  ├─────────────────────┼──────────────────────────────────┤
+  │ buttonStyle         │ Estilo visual específico do card  │
+  │                     │ (solid/outline/pill/rounded/      │
+  │                     │  sharp/gradient/underline)        │
+  ├─────────────────────┼──────────────────────────────────┤
+  │ buyNowText          │ Texto do botão comprar           │
+  ├─────────────────────┼──────────────────────────────────┤
+  │ addToCartText       │ Texto do botão adicionar         │
+  └─────────────────────┴──────────────────────────────────┘
+
+HIERARQUIA DE PRIORIDADE:
+  1. ProductCardPanel.buttonStyle → mais específico, prevalece
+  2. ButtonsPanel.style          → estilo global de fallback
+
+Isso permite que o lojista tenha botões globais "filled" mas
+botões no card de produto "gradient", por exemplo.
+
+
+╔══════════════════════════════════════════════════════════╗
+║  COMO CONSUMIR NO BLADE / VITRINE                       ║
+╚══════════════════════════════════════════════════════════╝
+
+No Blade, os valores dos botões são recebidos via postMessage
+ou lidos do JSON salvo em user_theme_states. Exemplo de
+implementação CSS:
+
+  /* Mapeamento de estilos */
+  .pm-btn--filled   { background: var(--pm-primary); color: var(--pm-primary-fg); }
+  .pm-btn--outline  { border: 2px solid var(--pm-primary); color: var(--pm-primary); background: transparent; }
+  .pm-btn--ghost    { background: transparent; color: var(--pm-primary); }
+  .pm-btn--soft     { background: rgba(var(--pm-primary-rgb), 0.1); color: var(--pm-primary); }
+  .pm-btn--gradient { background: linear-gradient(135deg, var(--pm-primary), var(--pm-accent)); color: var(--pm-primary-fg); }
+  .pm-btn--3d       { background: var(--pm-primary); color: var(--pm-primary-fg); box-shadow: 0 4px 0 0 rgba(0,0,0,0.3); transform: translateY(-2px); }
+  .pm-btn--neon     { border: 2px solid var(--pm-primary); color: var(--pm-primary); box-shadow: 0 0 10px rgba(var(--pm-primary-rgb), 0.5); }
+  .pm-btn--minimal  { background: transparent; color: var(--pm-primary); text-decoration: underline; text-underline-offset: 4px; }
+
+  /* Arredondamento */
+  .pm-btn-radius--none   { border-radius: 0; }
+  .pm-btn-radius--small  { border-radius: 4px; }
+  .pm-btn-radius--medium { border-radius: 8px; }
+  .pm-btn-radius--large  { border-radius: 16px; }
+  .pm-btn-radius--full   { border-radius: 9999px; }
+
+  /* Tamanho */
+  .pm-btn-size--small  { padding: 6px 12px; font-size: 12px; }
+  .pm-btn-size--medium { padding: 10px 20px; font-size: 14px; }
+  .pm-btn-size--large  { padding: 14px 28px; font-size: 16px; }
+
+  /* Modificadores booleanos */
+  .pm-btn--uppercase { text-transform: uppercase; }
+  .pm-btn--shadow    { box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
+
+
+╔══════════════════════════════════════════════════════════╗
+║  COMBINAÇÕES RECOMENDADAS POR NICHO                     ║
+╚══════════════════════════════════════════════════════════╝
+
+  ┌──────────────┬──────────┬─────────┬────────┬───────┬──────────┬────────┐
+  │ Nicho        │ style    │ radius  │ size   │ weight│ uppercase│ shadow │
+  ├──────────────┼──────────┼─────────┼────────┼───────┼──────────┼────────┤
+  │ Moda/Fashion │ filled   │ full    │ medium │ 600   │ false    │ true   │
+  │ Tech/Games   │ neon     │ medium  │ medium │ 700   │ true     │ false  │
+  │ Luxo         │ outline  │ none    │ large  │ 400   │ true     │ false  │
+  │ Infantil     │ gradient │ full    │ large  │ 700   │ false    │ true   │
+  │ Brutalist    │ filled   │ none    │ large  │ 700   │ true     │ false  │
+  │ Minimalista  │ minimal  │ none    │ medium │ 400   │ false    │ false  │
+  │ Streetwear   │ filled   │ none    │ medium │ 700   │ true     │ false  │
+  │ Natural/Eco  │ soft     │ large   │ medium │ 500   │ false    │ false  │
+  └──────────────┴──────────┴─────────┴────────┴───────┴──────────┴────────┘
+
+
+╔══════════════════════════════════════════════════════════╗
+║  RESUMO DAS VARIÁVEIS CSS                               ║
+╚══════════════════════════════════════════════════════════╝
+
+NOTA: Diferente do Layout Global, as propriedades de botões
+atualmente NÃO são injetadas como variáveis CSS no ThemeContext.
+Elas são lidas diretamente pelos componentes React via
+draft.buttons.{propriedade}.
+
+Para a vitrine Blade, os valores devem ser lidos do JSON
+salvo em user_theme_states e mapeados para classes CSS
+(conforme exemplos acima) via JavaScript no layout.blade.php
+ou via o listener de postMessage.
+
+SUGESTÃO DE VARIÁVEIS CSS (para implementação futura):
+  --pm-btn-style:       filled
+  --pm-btn-radius:      8px
+  --pm-btn-size:        medium
+  --pm-btn-font-weight: 600
+  --pm-btn-uppercase:   none | uppercase
+  --pm-btn-shadow:      none | 0 2px 8px rgba(0,0,0,0.15)
