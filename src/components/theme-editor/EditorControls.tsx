@@ -123,20 +123,35 @@ export function NumberSlider({ label, value, onChange, min, max, step = 1, suffi
 }
 
 // Font picker
-const headingFonts = ['Playfair Display', 'Poppins', 'Montserrat', 'Lora', 'Merriweather', 'Raleway', 'Oswald', 'Cormorant Garamond', 'DM Serif Display', 'Libre Baskerville'];
-const bodyFonts = ['Inter', 'Roboto', 'Open Sans', 'Lato', 'Nunito', 'Work Sans', 'DM Sans', 'Source Sans 3', 'Rubik', 'Manrope'];
+const headingFonts = ['Playfair Display', 'Poppins', 'Montserrat', 'Lora', 'Merriweather', 'Raleway', 'Oswald', 'Cormorant Garamond', 'DM Serif Display', 'Libre Baskerville', 'Bebas Neue', 'Archivo Black', 'Quicksand', 'Josefin Sans', 'Cinzel', 'Abril Fatface', 'Righteous', 'Alfa Slab One', 'Bitter', 'Crimson Text'];
+const bodyFonts = ['Inter', 'Roboto', 'Open Sans', 'Lato', 'Nunito', 'Work Sans', 'DM Sans', 'Source Sans 3', 'Rubik', 'Manrope', 'Poppins', 'Outfit', 'Plus Jakarta Sans', 'Mulish', 'Karla', 'Figtree', 'Albert Sans', 'Lexend', 'Urbanist', 'Sora'];
 
 export function FontPicker({ label, value, onChange, type = 'heading' }: {
   label: string; value: string; onChange: (v: string) => void; type?: 'heading' | 'body';
 }) {
   const fonts = type === 'heading' ? headingFonts : bodyFonts;
+
+  // Pre-load all fonts so names render in their own typeface
+  React.useEffect(() => {
+    fonts.forEach(f => {
+      const id = `gfont-${f.replace(/\s+/g, '-').toLowerCase()}`;
+      if (!document.getElementById(id)) {
+        const link = document.createElement('link');
+        link.id = id;
+        link.rel = 'stylesheet';
+        link.href = `https://fonts.googleapis.com/css2?family=${encodeURIComponent(f)}:wght@400;700&display=swap`;
+        document.head.appendChild(link);
+      }
+    });
+  }, [fonts]);
+
   return (
     <div className="space-y-1">
       <Label className="text-xs text-muted-foreground">{label}</Label>
       <Select value={value} onValueChange={onChange}>
         <SelectTrigger className="h-9 text-sm"><SelectValue /></SelectTrigger>
         <SelectContent>
-          {fonts.map(f => <SelectItem key={f} value={f}><span style={{ fontFamily: f }}>{f}</span></SelectItem>)}
+          {fonts.map(f => <SelectItem key={f} value={f}><span style={{ fontFamily: `'${f}', sans-serif` }}>{f}</span></SelectItem>)}
         </SelectContent>
       </Select>
     </div>
