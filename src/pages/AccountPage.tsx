@@ -36,18 +36,18 @@ const AccountPage = () => {
             <Heart className="h-4 w-4 text-muted-foreground" />
             Meus Favoritos
           </NavLink>
-          <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-secondary transition-colors font-body text-sm cursor-pointer">
+          <NavLink to="/orders" className="flex items-center gap-3 p-3 rounded-lg hover:bg-secondary transition-colors font-body text-sm">
             <Package className="h-4 w-4 text-muted-foreground" />
             Meus Pedidos
-          </div>
-          <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-secondary transition-colors font-body text-sm cursor-pointer">
+          </NavLink>
+          <NavLink to="/addresses" className="flex items-center gap-3 p-3 rounded-lg hover:bg-secondary transition-colors font-body text-sm">
             <MapPin className="h-4 w-4 text-muted-foreground" />
             Endereços
-          </div>
-          <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-secondary transition-colors font-body text-sm cursor-pointer">
+          </NavLink>
+          <NavLink to="/personal-data" className="flex items-center gap-3 p-3 rounded-lg hover:bg-secondary transition-colors font-body text-sm">
             <User className="h-4 w-4 text-muted-foreground" />
             Dados Pessoais
-          </div>
+          </NavLink>
           <div className="pt-3 border-t">
             <Button
               variant="ghost"

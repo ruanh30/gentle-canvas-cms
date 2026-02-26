@@ -19,6 +19,9 @@ import CheckoutPage from "@/pages/CheckoutPage";
 import OrderSuccessPage from "@/pages/OrderSuccessPage";
 import LoginPage from "@/pages/LoginPage";
 import AccountPage from "@/pages/AccountPage";
+import OrdersPage from "@/pages/OrdersPage";
+import AddressesPage from "@/pages/AddressesPage";
+import PersonalDataPage from "@/pages/PersonalDataPage";
 import WishlistPage from "@/pages/WishlistPage";
 
 import AdminDashboard from "@/pages/admin/AdminDashboard";
@@ -64,6 +67,9 @@ const App = () => (
                 <Route path="/order-success" element={<OrderSuccessPage />} />
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/account" element={<AccountPage />} />
+                <Route path="/orders" element={<OrdersPage />} />
+                <Route path="/addresses" element={<AddressesPage />} />
+                <Route path="/personal-data" element={<PersonalDataPage />} />
                 <Route path="/wishlist" element={<WishlistPage />} />
               </Route>
 
