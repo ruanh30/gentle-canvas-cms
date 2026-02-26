@@ -177,7 +177,7 @@ function applyThemeCSS(t: ThemeConfig) {
   };
   const btnSize = btnSizeMap[t.buttons?.size ?? 'medium'] ?? btnSizeMap.medium;
   root.style.setProperty('--pm-btn-style', t.buttons?.style ?? 'filled');
-  root.style.setProperty('--pm-btn-radius', btnRadiusMap[t.buttons?.radius ?? 'medium'] ?? '8px');
+  root.setAttribute('data-pm-btn-style', t.buttons?.style ?? 'filled');
   root.style.setProperty('--pm-btn-px', btnSize.px);
   root.style.setProperty('--pm-btn-py', btnSize.py);
   root.style.setProperty('--pm-btn-font-size', btnSize.fontSize);
