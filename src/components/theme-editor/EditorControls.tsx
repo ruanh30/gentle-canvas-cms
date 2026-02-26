@@ -87,19 +87,19 @@ export function OptionPicker<T extends string>({ label, options, value, onChange
   return (
     <div className="space-y-2">
       <Label className="text-xs text-muted-foreground">{label}</Label>
-      <div className={cn('grid gap-2', options.length <= 3 ? 'grid-cols-3' : options.length <= 5 ? 'grid-cols-5' : 'grid-cols-3')}>
+      <div className="flex flex-wrap gap-1.5">
         {options.map(opt => (
           <button
             key={opt.value}
             onClick={() => onChange(opt.value)}
             className={cn(
-              'p-2.5 rounded-lg border-2 transition-all text-center',
+              'px-3 py-2 rounded-lg border-2 transition-all text-center min-w-[60px] flex-1',
               value === opt.value ? 'border-foreground bg-secondary' : 'border-border hover:border-foreground/30'
             )}
           >
             {opt.icon && <opt.icon className="h-4 w-4 mx-auto mb-1" />}
-            <p className="text-[11px] font-medium">{opt.label}</p>
-            {opt.description && <p className="text-[9px] text-muted-foreground">{opt.description}</p>}
+            <p className="text-[11px] font-medium truncate">{opt.label}</p>
+            {opt.description && <p className="text-[9px] text-muted-foreground truncate">{opt.description}</p>}
           </button>
         ))}
       </div>
