@@ -1,7 +1,62 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useTheme } from '@/contexts/ThemeContext';
-import { EditorSection, OptionPicker, ToggleRow } from '../EditorControls';
+import { EditorSection, OptionPicker, ToggleRow, SectionDivider } from '../EditorControls';
 import { FormInput } from 'lucide-react';
+
+function InputPreview({ style, radius, focusRing }: { style: string; radius: string; focusRing: boolean }) {
+  const [focused, setFocused] = useState(false);
+
+  const radiusMap: Record<string, string> = { none: '0px', small: '4px', medium: '8px', large: '12px' };
+  const r = radiusMap[radius] || '8px';
+
+  const base: React.CSSProperties = {
+    width: '100%',
+    padding: '8px 12px',
+    fontSize: '13px',
+    outline: 'none',
+    transition: 'all 0.2s ease',
+    borderRadius: r,
+    fontFamily: 'inherit',
+  };
+
+  const styleMap: Record<string, React.CSSProperties> = {
+    default: {
+      border: '1px solid hsl(var(--border))',
+      background: 'transparent',
+    },
+    filled: {
+      border: '1px solid transparent',
+      background: 'hsl(var(--muted))',
+    },
+    underline: {
+      border: 'none',
+      borderBottom: '2px solid hsl(var(--border))',
+      borderRadius: '0px',
+      background: 'transparent',
+    },
+  };
+
+  const focusStyle: React.CSSProperties = focused ? {
+    ...(style === 'underline'
+      ? { borderBottomColor: 'hsl(var(--primary))' }
+      : { borderColor: 'hsl(var(--primary))' }),
+    ...(focusRing ? { boxShadow: '0 0 0 2px hsl(var(--ring) / 0.3)' } : {}),
+  } : {};
+
+  return (
+    <div className="space-y-2 rounded-lg border border-border bg-background p-3">
+      <span className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">Preview</span>
+      <input
+        type="text"
+        placeholder="Digite seu email..."
+        style={{ ...base, ...styleMap[style], ...focusStyle }}
+        className="text-foreground placeholder:text-muted-foreground"
+        onFocus={() => setFocused(true)}
+        onBlur={() => setFocused(false)}
+      />
+    </div>
+  );
+}
 
 export function InputsPanel() {
   const { draft, updateDraftSection } = useTheme();
@@ -10,6 +65,8 @@ export function InputsPanel() {
 
   return (
     <EditorSection icon={FormInput} title="Formulários" description="Estilo dos campos de entrada">
+      <InputPreview style={i.style} radius={i.radius} focusRing={i.focusRing} />
+      <SectionDivider label="Configurações" />
       <OptionPicker label="Estilo" value={i.style} onChange={v => set({ style: v })} options={[
         { value: 'default', label: 'Padrão' }, { value: 'filled', label: 'Preenchido' }, { value: 'underline', label: 'Sublinhado' },
       ]} />
