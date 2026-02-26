@@ -1,0 +1,507 @@
+============================================================
+  DOCUMENTAÇÃO TÉCNICA — LAYOUT GLOBAL (GlobalPanel)
+  Sistema de Personalização Premium — FlashLoja
+  Gerado em: 2026-02-26
+============================================================
+
+╔══════════════════════════════════════════════════════════╗
+║  VISÃO GERAL                                            ║
+╚══════════════════════════════════════════════════════════╝
+
+O painel "Layout Global" controla propriedades estruturais que
+afetam TODO o site da loja de uma só vez: largura do container,
+espaçamento entre seções, arredondamento de bordas, sombras,
+espessura de bordas e animações.
+
+ARQUIVO DO PAINEL: src/components/theme-editor/panels/GlobalPanel.tsx
+INTERFACE DE TIPO: src/types/theme.ts → interface ThemeGlobal
+ONDE É APLICADO:  src/contexts/ThemeContext.tsx → função applyThemeCSS()
+
+Fluxo de dados:
+  GlobalPanel.tsx
+    → updateDraftSection('global', { propriedade: valor })
+      → ThemeContext faz deep merge no draft.global
+        → applyThemeCSS() injeta variáveis CSS no <html>
+          → Preview (iframe Blade) recebe via postMessage
+
+
+╔══════════════════════════════════════════════════════════╗
+║  PROPRIEDADE 1: containerWidth (Largura do Container)   ║
+╚══════════════════════════════════════════════════════════╝
+
+TIPO:    'narrow' | 'default' | 'wide' | 'full'
+PADRÃO:  'default'
+LABEL:   "Largura do container"
+
+VALORES E SIGNIFICADO:
+  ┌──────────┬──────────────────────────────────┐
+  │ narrow   │ Estreito — max-width ~1200px     │
+  │ default  │ Padrão  — max-width ~1400px      │
+  │ wide     │ Largo   — max-width ~1600px      │
+  │ full     │ Tela cheia — sem max-width        │
+  └──────────┴──────────────────────────────────┘
+
+PARA QUE SERVE:
+  Define quão largo o conteúdo principal da loja será.
+  Lojas com poucos produtos podem usar "narrow" para um visual
+  mais compacto. Lojas com muitas categorias podem usar "wide"
+  ou "full" para aproveitar telas grandes.
+
+ONDE É ALTERADO NO CÓDIGO:
+  GlobalPanel.tsx, linha ~13:
+    <SelectField
+      label="Largura do container"
+      value={g.containerWidth}
+      onChange={v => set({ containerWidth: v })}
+      options={[
+        { value: 'narrow', label: 'Estreito (1200px)' },
+        { value: 'default', label: 'Padrão (1400px)' },
+        { value: 'wide', label: 'Largo (1600px)' },
+        { value: 'full', label: 'Tela cheia' },
+      ]}
+    />
+
+COMPORTAMENTO ESPECIAL:
+  Quando containerWidth é 'full', o slider de containerMaxPx
+  fica OCULTO (não faz sentido definir largura máxima em tela
+  cheia). Verificação no código:
+    {g.containerWidth !== 'full' && ( <NumberSlider ... /> )}
+
+VARIÁVEL CSS GERADA:
+  ThemeContext.tsx, linha 143:
+    --pm-container-width: {containerMaxPx}px    (ex: "1400px")
+    Fallback: '1280px' se containerMaxPx for 0/undefined.
+
+COMO É CONSUMIDO NO BLADE:
+  .container-principal {
+    max-width: var(--pm-container-width);
+    margin: 0 auto;
+  }
+
+
+╔══════════════════════════════════════════════════════════╗
+║  PROPRIEDADE 2: containerMaxPx (Largura Máxima em px)   ║
+╚══════════════════════════════════════════════════════════╝
+
+TIPO:    number
+PADRÃO:  1400
+LABEL:   "Largura máx."
+
+FAIXA DE VALORES:
+  ┌──────────┬────────────┬──────────┐
+  │ Mínimo   │ Máximo     │ Passo    │
+  │ 960px    │ 1920px     │ 20px     │
+  └──────────┴────────────┴──────────┘
+
+PARA QUE SERVE:
+  Controle FINO da largura exata do container em pixels.
+  O containerWidth define uma faixa pré-definida, mas o
+  containerMaxPx permite ajuste preciso dentro dessa faixa.
+  Ex: o lojista pode escolher "default" mas ajustar para
+  exatamente 1350px.
+
+ONDE É ALTERADO NO CÓDIGO:
+  GlobalPanel.tsx, linha ~18:
+    <NumberSlider
+      label="Largura máx."
+      value={g.containerMaxPx}
+      onChange={v => set({ containerMaxPx: v })}
+      min={960} max={1920} step={20} suffix="px"
+    />
+
+VISIBILIDADE CONDICIONAL:
+  SÓ aparece quando containerWidth !== 'full'.
+
+VARIÁVEL CSS GERADA:
+  --pm-container-width: {valor}px
+  Exemplo: --pm-container-width: 1400px
+
+
+╔══════════════════════════════════════════════════════════╗
+║  PROPRIEDADE 3: sectionSpacing (Espaço entre Seções)    ║
+╚══════════════════════════════════════════════════════════╝
+
+TIPO:    'compact' | 'normal' | 'spacious'
+PADRÃO:  'normal'
+LABEL:   "Espaço entre seções"
+
+VALORES E SIGNIFICADO:
+  ┌──────────┬──────────────────────────────────────────┐
+  │ compact  │ Compacto — seções grudadas (~16-24px)    │
+  │ normal   │ Normal   — espaçamento padrão (~32-48px) │
+  │ spacious │ Espaçoso — bastante espaço (~64-80px)    │
+  └──────────┴──────────────────────────────────────────┘
+
+PARA QUE SERVE:
+  Define a "respiração" vertical entre as seções da home
+  (hero, categorias, produtos em destaque, banner, etc.).
+  "Compact" deixa tudo mais junto (bom para lojas com muita
+  informação). "Spacious" dá um visual mais editorial e limpo.
+
+ONDE É ALTERADO NO CÓDIGO:
+  GlobalPanel.tsx, linha ~21:
+    <OptionPicker
+      label="Espaço entre seções"
+      value={g.sectionSpacing}
+      onChange={v => set({ sectionSpacing: v })}
+      options={[
+        { value: 'compact', label: 'Compacto' },
+        { value: 'normal', label: 'Normal' },
+        { value: 'spacious', label: 'Espaçoso' },
+      ]}
+    />
+
+ONDE É CONSUMIDO:
+  Essa propriedade é lida pelos componentes de seção da home
+  para definir padding/margin vertical. Também pode ser
+  consumida via variável CSS no Blade.
+
+
+╔══════════════════════════════════════════════════════════╗
+║  PROPRIEDADE 4: borderRadius (Arredondamento)           ║
+╚══════════════════════════════════════════════════════════╝
+
+TIPO:    'none' | 'small' | 'medium' | 'large' | 'full'
+PADRÃO:  'medium'
+LABEL:   "Arredondamento"
+
+VALORES E MAPEAMENTO CSS:
+  ┌──────────┬──────────────────┬──────────────────┐
+  │ Valor    │ Tailwind (--radius) │ Blade (--pm-radius) │
+  ├──────────┼──────────────────┼──────────────────┤
+  │ none     │ 0rem             │ 0                │
+  │ small    │ 0.25rem          │ 4px              │
+  │ medium   │ 0.5rem           │ 8px              │
+  │ large    │ 0.75rem          │ 12px             │
+  │ full     │ 9999px           │ 9999px           │
+  └──────────┴──────────────────┴──────────────────┘
+
+PARA QUE SERVE:
+  Define o arredondamento GLOBAL de todos os elementos da loja:
+  botões, cards, inputs, imagens, modais, etc.
+  "none" = visual quadrado/brutalist.
+  "full" = visual super arredondado (tipo pílula).
+
+ONDE É ALTERADO NO CÓDIGO:
+  GlobalPanel.tsx, linha ~25:
+    <OptionPicker
+      label="Arredondamento"
+      value={g.borderRadius}
+      onChange={v => set({ borderRadius: v })}
+      options={[
+        { value: 'none', label: 'Nenhum' },
+        { value: 'small', label: 'Pequeno' },
+        { value: 'medium', label: 'Médio' },
+        { value: 'large', label: 'Grande' },
+        { value: 'full', label: 'Máximo' },
+      ]}
+    />
+
+FUNÇÕES DE CONVERSÃO (ThemeContext.tsx):
+  São DUAS funções diferentes para o mesmo valor:
+
+  1) getRadiusValue() → para o Tailwind (usa rem)
+     Linha 45-54:
+     switch (radius) {
+       case 'none':   return '0rem';
+       case 'small':  return '0.25rem';
+       case 'medium': return '0.5rem';
+       case 'large':  return '0.75rem';
+       case 'full':   return '9999px';
+     }
+
+  2) getRadiusPx() → para o Blade (usa px)
+     Linha 56-65:
+     switch (radius) {
+       case 'none':   return '0';
+       case 'small':  return '4px';
+       case 'medium': return '8px';
+       case 'large':  return '12px';
+       case 'full':   return '9999px';
+     }
+
+VARIÁVEIS CSS GERADAS:
+  --radius: 0.5rem        ← Tailwind (linha 101)
+  --pm-radius: 8px        ← Blade (linha 142)
+
+COMO É CONSUMIDO NO TAILWIND:
+  Componentes shadcn/ui usam rounded-[var(--radius)] que
+  herda automaticamente o valor global.
+
+COMO É CONSUMIDO NO BLADE:
+  .card, .btn, .input {
+    border-radius: var(--pm-radius);
+  }
+
+PRESETS QUE ALTERAM ESTA PROPRIEDADE:
+  • Minimalista → 'none'  (sem arredondamento)
+  • Fashion     → 'large' (mais arredondado)
+  • Streetwear  → 'none'  (visual agressivo)
+  • Brutalist   → 'none'  (visual quadrado)
+  • Elegante    → 'small' (discreto)
+  • Infantil    → 'large' (suave)
+  • Moderno     → 'large' (contemporâneo)
+
+
+╔══════════════════════════════════════════════════════════╗
+║  PROPRIEDADE 5: shadowLevel (Nível de Sombras)          ║
+╚══════════════════════════════════════════════════════════╝
+
+TIPO:    'none' | 'subtle' | 'medium' | 'strong'
+PADRÃO:  'subtle'
+LABEL:   "Sombras"
+
+VALORES E SIGNIFICADO:
+  ┌──────────┬───────────────────────────────────────┐
+  │ none     │ Nenhuma — visual flat/brutalist        │
+  │ subtle   │ Suave  — sombra leve, quase invisível │
+  │ medium   │ Média  — sombra moderada, dá profundidade │
+  │ strong   │ Forte  — sombra dramática, alto contraste │
+  └──────────┴───────────────────────────────────────┘
+
+PARA QUE SERVE:
+  Controla a intensidade das sombras em cards de produto,
+  botões, modais, dropdowns e outros elementos elevados.
+  "none" + borderRadius "none" = visual brutalist.
+  "strong" + borderRadius "large" = visual 3D moderno.
+
+ONDE É ALTERADO NO CÓDIGO:
+  GlobalPanel.tsx, linha ~29:
+    <OptionPicker
+      label="Sombras"
+      value={g.shadowLevel}
+      onChange={v => set({ shadowLevel: v })}
+      options={[
+        { value: 'none', label: 'Nenhuma' },
+        { value: 'subtle', label: 'Suave' },
+        { value: 'medium', label: 'Média' },
+        { value: 'strong', label: 'Forte' },
+      ]}
+    />
+
+COMO É CONSUMIDO:
+  Componentes React leem draft.global.shadowLevel para
+  aplicar classes de sombra condicionais (shadow-none,
+  shadow-sm, shadow-md, shadow-lg). No Blade é consumido
+  via classes CSS mapeadas.
+
+PRESETS QUE ALTERAM ESTA PROPRIEDADE:
+  • Minimalista → 'none'
+  • Brutalist   → 'none'
+  • Fashion     → 'medium'
+  • Elegante    → 'subtle'
+
+
+╔══════════════════════════════════════════════════════════╗
+║  PROPRIEDADE 6: borderStyle (Estilo de Bordas)          ║
+╚══════════════════════════════════════════════════════════╝
+
+TIPO:    'none' | 'thin' | 'medium' | 'thick'
+PADRÃO:  'thin'
+LABEL:   "Bordas"
+
+VALORES E SIGNIFICADO:
+  ┌──────────┬───────────────────────────────────────┐
+  │ none     │ Nenhuma — sem borda visível            │
+  │ thin     │ Fina   — 1px, sutil                   │
+  │ medium   │ Média  — 2px, visível                 │
+  │ thick    │ Grossa — 3-4px, destaque forte        │
+  └──────────┴───────────────────────────────────────┘
+
+PARA QUE SERVE:
+  Define a espessura das bordas em cards, inputs, botões e
+  divisores. "none" com sombras = visual flutuante.
+  "thick" sem sombras = visual brutalist/editorial.
+
+ONDE É ALTERADO NO CÓDIGO:
+  GlobalPanel.tsx, linha ~33:
+    <OptionPicker
+      label="Bordas"
+      value={g.borderStyle}
+      onChange={v => set({ borderStyle: v })}
+      options={[
+        { value: 'none', label: 'Nenhuma' },
+        { value: 'thin', label: 'Fina' },
+        { value: 'medium', label: 'Média' },
+        { value: 'thick', label: 'Grossa' },
+      ]}
+    />
+
+PRESETS QUE ALTERAM ESTA PROPRIEDADE:
+  • Brutalist → 'thick' (bordas grossas são marca do estilo)
+  • Padrão    → 'thin'
+
+
+╔══════════════════════════════════════════════════════════╗
+║  PROPRIEDADE 7: animationsEnabled (Animações On/Off)    ║
+╚══════════════════════════════════════════════════════════╝
+
+TIPO:    boolean
+PADRÃO:  true
+LABEL:   "Animações habilitadas"
+
+PARA QUE SERVE:
+  Liga ou desliga TODAS as animações do site:
+  - Efeitos de entrada ao scrollar (fade-in, slide-up)
+  - Transições de hover em botões e cards
+  - Animações de carrossel
+  - Efeitos de ticker/marquee
+
+  Quando DESLIGADO (false):
+  - O slider de velocidade desaparece
+  - Todos os elementos aparecem instantaneamente
+  - Melhora performance em dispositivos lentos
+  - Respeita preferências de acessibilidade (reduced-motion)
+
+ONDE É ALTERADO NO CÓDIGO:
+  GlobalPanel.tsx, linha ~38:
+    <ToggleRow
+      label="Animações habilitadas"
+      checked={g.animationsEnabled}
+      onChange={v => set({ animationsEnabled: v })}
+    />
+
+VISIBILIDADE CONDICIONAL:
+  Quando animationsEnabled é false, o controle de velocidade
+  fica OCULTO:
+    {g.animationsEnabled && ( <OptionPicker ... /> )}
+
+
+╔══════════════════════════════════════════════════════════╗
+║  PROPRIEDADE 8: animationSpeed (Velocidade de Animação) ║
+╚══════════════════════════════════════════════════════════╝
+
+TIPO:    'slow' | 'normal' | 'fast'
+PADRÃO:  'normal'
+LABEL:   "Velocidade"
+
+VALORES E SIGNIFICADO:
+  ┌──────────┬─────────────────────────────────────┐
+  │ slow     │ Lenta  — transições mais suaves      │
+  │ normal   │ Normal — velocidade padrão            │
+  │ fast     │ Rápida — transições quase instantâneas│
+  └──────────┴─────────────────────────────────────┘
+
+VISIBILIDADE: Só aparece quando animationsEnabled = true.
+
+ONDE É ALTERADO NO CÓDIGO:
+  GlobalPanel.tsx, linha ~40:
+    <OptionPicker
+      label="Velocidade"
+      value={g.animationSpeed}
+      onChange={v => set({ animationSpeed: v })}
+      options={[
+        { value: 'slow', label: 'Lenta' },
+        { value: 'normal', label: 'Normal' },
+        { value: 'fast', label: 'Rápida' },
+      ]}
+    />
+
+
+╔══════════════════════════════════════════════════════════╗
+║  PROPRIEDADE 9: scrollBehavior (Comportamento do Scroll)║
+╚══════════════════════════════════════════════════════════╝
+
+TIPO:    'smooth' | 'auto'
+PADRÃO:  'smooth'
+
+PARA QUE SERVE:
+  Define se a rolagem da página é suave (smooth scroll) ou
+  instantânea (auto). Definido no tipo ThemeGlobal mas não
+  possui controle visual no painel atual — é configurado
+  apenas via presets ou manipulação direta do draft.
+
+ONDE ESTÁ DEFINIDO:
+  src/types/theme.ts, linha 303:
+    scrollBehavior: 'smooth' | 'auto';
+
+
+╔══════════════════════════════════════════════════════════╗
+║  RESUMO: TODAS AS VARIÁVEIS CSS GERADAS                ║
+╚══════════════════════════════════════════════════════════╝
+
+┌─────────────────────────┬───────────────────────────────────┐
+│ Variável CSS            │ Origem                            │
+├─────────────────────────┼───────────────────────────────────┤
+│ --radius                │ borderRadius → getRadiusValue()   │
+│ --pm-radius             │ borderRadius → getRadiusPx()      │
+│ --pm-container-width    │ containerMaxPx + 'px'             │
+└─────────────────────────┴───────────────────────────────────┘
+
+NOTA: sectionSpacing, shadowLevel, borderStyle, animationsEnabled
+e animationSpeed NÃO geram variáveis CSS diretamente no
+applyThemeCSS(). Elas são lidas pelos componentes React via
+draft.global.* e aplicadas como classes Tailwind ou lógica
+condicional em tempo de renderização.
+
+
+╔══════════════════════════════════════════════════════════╗
+║  COMO OS PRESETS AFETAM O LAYOUT GLOBAL                 ║
+╚══════════════════════════════════════════════════════════╝
+
+Cada preset pode sobrescrever qualquer propriedade global.
+Exemplos reais do código (src/data/theme-presets.ts):
+
+  MINIMALISTA:
+    global: { borderRadius: 'none', shadowLevel: 'none' }
+
+  FASHION:
+    global: { borderRadius: 'large', shadowLevel: 'medium' }
+
+  ELEGANTE:
+    global: { borderRadius: 'small' }
+
+  STREETWEAR:
+    global: { borderRadius: 'none' }
+
+  BRUTALIST:
+    global: { borderRadius: 'none', borderStyle: 'thick', shadowLevel: 'none' }
+
+  ARTESANAL:
+    global: { borderRadius: 'small', shadowLevel: 'subtle' }
+
+  INFANTIL:
+    global: { borderRadius: 'large' }
+
+  MODERNO:
+    global: { borderRadius: 'large' }
+
+Propriedades NÃO mencionadas no preset herdam do
+defaultThemeConfig.global (spread operator: ...defaultThemeConfig.global).
+
+
+╔══════════════════════════════════════════════════════════╗
+║  FLUXO COMPLETO DE UMA ALTERAÇÃO                       ║
+╚══════════════════════════════════════════════════════════╝
+
+Exemplo: lojista muda "Arredondamento" de "Médio" para "Grande"
+
+1. CLIQUE no OptionPicker → dispara onChange('large')
+
+2. GlobalPanel chama:
+   set({ borderRadius: 'large' })
+   que é:
+   updateDraftSection('global', { borderRadius: 'large' })
+
+3. ThemeContext faz deep merge:
+   draft.global = { ...draft.global, borderRadius: 'large' }
+
+4. useEffect detecta mudança no draft → chama applyThemeCSS(draft)
+
+5. applyThemeCSS() executa:
+   root.style.setProperty('--radius', '0.75rem');     // Tailwind
+   root.style.setProperty('--pm-radius', '12px');      // Blade
+
+6. Todos os componentes que usam var(--radius) atualizam
+   INSTANTANEAMENTE no preview.
+
+7. Draft é salvo no localStorage (debounce 1s) OU enviado
+   via Inertia POST para o servidor (modo produção).
+
+8. Preview iframe recebe postMessage com o novo draft e
+   aplica as mesmas variáveis CSS no Blade.
+
+
+============================================================
+  FIM DA DOCUMENTAÇÃO — LAYOUT GLOBAL
+============================================================
