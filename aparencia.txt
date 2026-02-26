@@ -1,0 +1,767 @@
+================================================================================
+  DOCUMENTO COMPLETO DE APARÊNCIA — EDITOR DE TEMAS FLASHLOJA
+  Guia 1:1 para migração de front-end
+  Gerado em: 2026-02-26
+================================================================================
+
+================================================================================
+ 1. FONTES (Google Fonts)
+================================================================================
+
+Import URL:
+  https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap
+
+FONTE DO CORPO (body, labels, textos gerais):
+  font-family: 'Inter', system-ui, sans-serif;
+  Pesos usados: 300, 400, 500, 600, 700, 800, 900
+  Aplicado em: body { font-family: 'Inter', system-ui, sans-serif; }
+
+FONTE DE TÍTULOS (h1, h2, h3):
+  font-family: 'Playfair Display', serif;
+  Pesos usados: 400, 500, 600, 700, 800, 900
+  Aplicado em: h1, h2, h3 { font-family: 'Playfair Display', serif; }
+
+FONTE AUXILIAR (Landing Page, badges):
+  font-family: 'Space Grotesk', sans-serif;
+  Pesos usados: 300, 400, 500, 600, 700
+  Classe utilitária: .font-grotesk
+
+Classes utilitárias:
+  .font-display  → 'Playfair Display', serif
+  .font-body     → 'Inter', system-ui, sans-serif
+  .font-grotesk  → 'Space Grotesk', sans-serif
+
+FONTES DISPONÍVEIS NO FONT PICKER (para o lojista escolher):
+  Títulos: Playfair Display, Poppins, Montserrat, Lora, Merriweather, Raleway,
+           Oswald, Cormorant Garamond, DM Serif Display, Libre Baskerville
+  Corpo:   Inter, Roboto, Open Sans, Lato, Nunito, Work Sans, DM Sans,
+           Source Sans 3, Rubik, Manrope
+
+================================================================================
+ 2. PALETA DE CORES (Design Tokens — HSL)
+================================================================================
+
+Todas as cores usam variáveis CSS em formato HSL (sem função hsl()):
+  Definição: --nome: H S% L%;
+  Uso:       hsl(var(--nome))
+
+--- MODO CLARO (:root) ---
+
+Token                       HSL               HEX Aprox.    Uso
+─────────────────────────────────────────────────────────────────────
+--background                0 0% 100%         #FFFFFF       Fundo geral
+--foreground                0 0% 8%           #141414       Texto principal
+--card                      0 0% 100%         #FFFFFF       Fundo de cards
+--card-foreground            0 0% 8%           #141414       Texto em cards
+--popover                   0 0% 100%         #FFFFFF       Fundo de popovers
+--popover-foreground         0 0% 8%           #141414       Texto em popovers
+--primary                   0 0% 8%           #141414       Botões primários (bg)
+--primary-foreground         0 0% 98%          #FAFAFA       Texto sobre primary
+--secondary                 0 0% 96%          #F5F5F5       Fundo de itens ativos
+--secondary-foreground       0 0% 8%           #141414       Texto sobre secondary
+--muted                     0 0% 96%          #F5F5F5       Fundo suave
+--muted-foreground           0 0% 45%          #737373       Texto suave (labels)
+--accent                    0 0% 96%          #F5F5F5       Fundo de hover
+--accent-foreground          0 0% 8%           #141414       Texto sobre accent
+--destructive               0 72% 51%         #E11D48       Cor de erro/delete
+--destructive-foreground     0 0% 98%          #FAFAFA       Texto sobre destructive
+--border                    0 0% 90%          #E5E5E5       Bordas gerais
+--input                     0 0% 90%          #E5E5E5       Borda de inputs
+--ring                      0 0% 8%           #141414       Anel de foco
+--radius                    0.5rem            8px           Border-radius base
+
+--- CORES CUSTOMIZADAS FLASHLOJA ---
+
+--buy-now                   0 72% 51%         #E11D48       Botão Comprar Agora
+--buy-now-hover              0 72% 42%         #BE123C       Hover do botão Comprar
+--success                   142 72% 42%       #16A34A       Cor de sucesso
+--warning                   38 92% 50%        #F59E0B       Cor de alerta/warning
+--flash-brand               213 93% 78%       #93C5FD       Azul principal da marca
+--flash-brand-deep           217 91% 60%       #3B82F6       Azul mais profundo
+--flash-brand-darker          220 70% 45%       #2563EB       Azul escuro
+--flash-surface              213 60% 97%       #EFF6FF       Superfície azulada clara
+--flash-glow                 213 100% 88%      #BFDBFE       Brilho azul
+--flash-midnight             222 47% 11%       #0F172A       Azul quase preto (navy)
+
+--- SIDEBAR (menu lateral admin) ---
+
+--sidebar-background        0 0% 98%          #FAFAFA
+--sidebar-foreground         0 0% 25%          #404040
+--sidebar-primary            0 0% 8%           #141414
+--sidebar-primary-foreground 0 0% 98%          #FAFAFA
+--sidebar-accent             0 0% 94%          #F0F0F0
+--sidebar-accent-foreground  0 0% 8%           #141414
+--sidebar-border             0 0% 90%          #E5E5E5
+--sidebar-ring               0 0% 8%           #141414
+
+--- MODO ESCURO (.dark) ---
+
+Token                       HSL               HEX Aprox.
+─────────────────────────────────────────────────────────
+--background                0 0% 4%           #0A0A0A
+--foreground                0 0% 95%          #F2F2F2
+--card                      0 0% 7%           #121212
+--card-foreground            0 0% 95%          #F2F2F2
+--popover                   0 0% 7%           #121212
+--popover-foreground         0 0% 95%          #F2F2F2
+--primary                   0 0% 95%          #F2F2F2
+--primary-foreground         0 0% 8%           #141414
+--secondary                 0 0% 14%          #242424
+--secondary-foreground       0 0% 95%          #F2F2F2
+--muted                     0 0% 14%          #242424
+--muted-foreground           0 0% 60%          #999999
+--accent                    0 0% 14%          #242424
+--accent-foreground          0 0% 95%          #F2F2F2
+--destructive               0 62% 30%         #7F1D1D
+--destructive-foreground     0 0% 95%          #F2F2F2
+--border                    0 0% 18%          #2E2E2E
+--input                     0 0% 18%          #2E2E2E
+--ring                      0 0% 83%          #D4D4D4
+--sidebar-background        0 0% 6%           #0F0F0F
+--sidebar-foreground         0 0% 85%          #D9D9D9
+--sidebar-primary            0 0% 95%          #F2F2F2
+--sidebar-primary-foreground 0 0% 8%           #141414
+--sidebar-accent             0 0% 12%          #1F1F1F
+--sidebar-accent-foreground  0 0% 95%          #F2F2F2
+--sidebar-border             0 0% 18%          #2E2E2E
+--sidebar-ring               0 0% 83%          #D4D4D4
+--buy-now                   0 72% 51%         #E11D48
+--buy-now-hover              0 72% 58%         #F43F5E
+--success                   142 72% 50%       #22C55E
+--warning                   38 92% 56%        #FBBF24
+
+================================================================================
+ 3. BORDER RADIUS (Tailwind)
+================================================================================
+
+--radius: 0.5rem (8px)
+
+Classes Tailwind derivadas:
+  rounded-lg  = var(--radius)          = 8px
+  rounded-md  = calc(var(--radius) - 2px) = 6px
+  rounded-sm  = calc(var(--radius) - 4px) = 4px
+
+================================================================================
+ 4. ESTRUTURA DO LAYOUT — EDITOR DE TEMAS
+================================================================================
+
+┌─────────────────────────────────────────────────────────────────────┐
+│                          TOP BAR                                    │
+│  h: auto (py-2 = 8px topo + 8px baixo)                             │
+│  px-4 (16px lateral)                                                │
+│  bg-background, border-b (1px --border)                             │
+│  flex items-center justify-between                                  │
+│                                                                     │
+│  [ESQ] "Editor de Tema" text-sm font-bold                           │
+│        + Badge rascunho (se isDirty)                                │
+│  [DIR] Botões: Versões | Restaurar | Descartar | Publicar          │
+│        gap-1.5 (6px)                                                │
+└─────────────────────────────────────────────────────────────────────┘
+┌──────────┬──────────────┬──────────────────────────────────────────┐
+│ COLUNA 1 │   COLUNA 2   │              COLUNA 3                   │
+│ Menu     │   Props      │              Preview                    │
+│ w-56     │   w-80       │              flex-1                     │
+│ (224px)  │   (320px)    │              (restante)                 │
+│ border-r │   border-r   │              bg-muted/50                │
+│ bg-bkg   │   bg-bkg     │                                        │
+│          │              │   ┌────────────────────────────┐        │
+│ ┌──────┐ │ ┌──────────┐ │   │  Device toggle bar         │        │
+│ │Search│ │ │ Título   │ │   │  py-2 border-b bg-bkg/50   │        │
+│ │ p-2  │ │ │ px-3 py-2│ │   │  [Desktop|Tablet|Mobile]   │        │
+│ │ bdr-b│ │ │ border-b │ │   └────────────────────────────┘        │
+│ └──────┘ │ └──────────┘ │   │                                     │
+│          │              │   │  ┌────────────────────────┐         │
+│ Grupos:  │ Panel scroll │   │  │ iframe preview          │         │
+│ p-1      │ p-3          │   │  │ rounded-lg shadow-xl    │         │
+│ overflow │ overflow-y   │   │  │ bg-background           │         │
+│ -y-auto  │ -auto        │   │  │ h: calc(100vh - 160px)  │         │
+│          │              │   │  └────────────────────────┘         │
+│ ...itens │ ...controls  │   │  p-4                                │
+└──────────┴──────────────┴──────────────────────────────────────────┘
+
+Altura total:
+  - Fullscreen: h-screen
+  - Dentro do admin: h-[calc(100vh-73px)] com -m-6
+
+================================================================================
+ 5. COLUNA 1 — MENU LATERAL (Navegação por Seções)
+================================================================================
+
+5.1 BUSCA (Search)
+  Container: p-2 border-b
+  Ícone: <Search> (lucide) h-3.5 w-3.5 (14px) text-muted-foreground
+  Posição do ícone: absolute left-2 top-1/2 -translate-y-1/2
+  Input: pl-7 h-8 text-xs
+    - h-8 = 32px de altura
+    - pl-7 = 28px padding left (para não sobrepor o ícone)
+    - text-xs = 12px
+    - placeholder: "Buscar..."
+
+5.2 GRUPOS
+  Container: mb-1
+  Label do grupo: text-[10px] uppercase tracking-wider text-muted-foreground font-semibold px-2 py-1.5
+    - Tamanho: 10px
+    - Caixa: MAIÚSCULAS
+    - Tracking: tracking-wider (0.05em)
+    - Cor: --muted-foreground (#737373)
+    - Padding: px-2 (8px) py-1.5 (6px)
+
+  Grupos existentes e suas seções:
+
+  ┌─ SISTEMA ─────────────────────────────────────────┐
+  │  Temas Prontos   Sparkles                         │
+  │  Cores           Palette                          │
+  │  Tipografia      Type                             │
+  │  Layout Global   Layout                           │
+  │  Botões          MousePointer                     │
+  │  Formulários     FormInput                        │
+  └───────────────────────────────────────────────────┘
+
+  ┌─ COMPONENTES ─────────────────────────────────────┐
+  │  Logo            Image                            │
+  │  Cabeçalho       PanelTop                         │
+  │  Hero / Banner   Layers                           │
+  │  Seções da Home  Grid3X3                          │
+  │  Card de Produto Package                          │
+  │  Pág. de Produto ShoppingBag                      │
+  │  Categoria/Busca Grid3X3                          │
+  │  Carrinho        ShoppingBag                      │
+  │  Checkout        CreditCard                       │
+  │  Rodapé          PanelBottom                      │
+  └───────────────────────────────────────────────────┘
+
+  ┌─ EXTRAS ──────────────────────────────────────────┐
+  │  WhatsApp        MessageCircle                    │
+  │  SEO             Globe                            │
+  │  Código Custom   Code                             │
+  └───────────────────────────────────────────────────┘
+
+5.3 ITEM DO MENU (botão de seção)
+  Layout: w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-xs transition-colors
+  Ícone: h-3.5 w-3.5 shrink-0 (14×14px)
+  Texto: <span className="truncate">
+
+  Estado ATIVO:
+    bg-foreground text-background font-medium
+    (#141414 fundo, #FAFAFA texto)
+
+  Estado INATIVO:
+    text-muted-foreground hover:bg-secondary hover:text-foreground
+    (#737373 texto, hover: #F5F5F5 fundo, #141414 texto)
+
+================================================================================
+ 6. COLUNA 2 — PAINEL DE PROPRIEDADES
+================================================================================
+
+6.1 CABEÇALHO DO PAINEL
+  Container: px-3 py-2 border-b flex items-center gap-2
+  Título: <h2 className="text-sm font-semibold">
+    - 14px, peso 600
+
+6.2 ÁREA DE SCROLL
+  Container: flex-1 overflow-y-auto p-3 (12px padding)
+
+6.3 COMPONENTE: EditorSection (wrapper de cada painel)
+  Layout: space-y-4 (16px entre blocos)
+
+  Cabeçalho da seção:
+    Container: flex items-center gap-2
+    Ícone:
+      Wrapper: p-1.5 rounded-md bg-secondary
+        (6px padding, 6px border-radius, fundo #F5F5F5)
+      Ícone: h-3.5 w-3.5 text-muted-foreground (14px, cor #737373)
+    Título: <h3> text-sm font-semibold (14px, peso 600)
+    Descrição: <p> text-[11px] text-muted-foreground (11px, #737373)
+
+  Corpo: space-y-4 (16px gap entre controles)
+
+================================================================================
+ 7. CONTROLES DO EDITOR (EditorControls.tsx)
+================================================================================
+
+7.1 LABEL (em todos os controles)
+  Componente: <Label className="text-xs text-muted-foreground">
+  Tamanho: 12px (text-xs)
+  Cor: --muted-foreground (#737373)
+  Peso: 500 (font-medium, herdado do Label)
+
+7.2 COLOR INPUT
+  Layout: space-y-1 (4px gap)
+  Swatch (quadrado de cor):
+    <input type="color"> w-8 h-8 rounded border border-input
+    Tamanho: 32×32px
+    Borda: 1px --input (#E5E5E5)
+    Remove estilo nativo: [&::-webkit-color-swatch-wrapper]:p-0
+                          [&::-webkit-color-swatch]:rounded
+                          [&::-webkit-color-swatch]:border-none
+  Campo hex:
+    font-mono text-xs h-8 w-24 uppercase maxLength=7
+    Tamanho: 32px altura, 96px largura
+    Fonte: monospace, 12px, caixa alta
+
+7.3 OPTION PICKER (botões de seleção visual)
+  Layout: flex flex-wrap gap-1.5 (6px gap)
+  Cada botão:
+    Classes: px-3 py-2 rounded-lg border-2 transition-all text-center min-w-[60px] flex-1
+    Padding: 12px horizontal, 8px vertical
+    Border-radius: 8px (rounded-lg)
+    Min-width: 60px
+    flex-1 (cresce para preencher)
+
+    Estado ATIVO:
+      border-foreground bg-secondary
+      Borda: 2px solid #141414
+      Fundo: #F5F5F5
+
+    Estado INATIVO:
+      border-border hover:border-foreground/30
+      Borda: 2px solid #E5E5E5
+      Hover: 2px solid rgba(20,20,20,0.3)
+
+    Ícone (opcional): h-4 w-4 mx-auto mb-1 (16px, centralizado)
+    Texto: text-[11px] font-medium truncate (11px, peso 500)
+    Descrição (opcional): text-[9px] text-muted-foreground truncate (9px)
+
+7.4 TOGGLE ROW (linha com switch)
+  Layout: flex items-center justify-between py-2 (8px vertical)
+  Lado esquerdo:
+    Label: <p> text-sm font-medium (14px, peso 500)
+    Descrição: <p> text-[11px] text-muted-foreground (11px)
+    Hint: ícone HelpCircle h-3 w-3 inline-block ml-1
+  Lado direito:
+    <Switch> (Radix)
+
+7.5 NUMBER SLIDER
+  Layout: space-y-2 (8px gap)
+  Header: flex justify-between items-center
+    Label: text-xs text-muted-foreground (12px)
+    Valor: text-xs font-mono text-muted-foreground (12px, monospace)
+  Slider: <Slider> (Radix) — ocupa toda a largura
+
+7.6 FONT PICKER
+  Layout: space-y-1 (4px gap)
+  Trigger: h-9 text-sm (36px altura, 14px texto)
+  Items: renderizados com style={{ fontFamily: f }}
+
+7.7 SELECT FIELD
+  Layout: space-y-1 (4px gap)
+  Trigger: h-9 text-sm (36px altura, 14px texto)
+  Ícone seta: <ChevronDown> h-4 w-4 opacity-50
+
+7.8 TEXT FIELD
+  Layout: space-y-1 (4px gap)
+  Input normal: h-9 text-sm (36px altura, 14px texto)
+  Textarea: text-sm rows=3 (14px)
+
+7.9 SECTION DIVIDER
+  Com label:
+    Layout: flex items-center gap-2 pt-2 (8px top padding)
+    Linhas: h-px bg-border flex-1 (1px, #E5E5E5)
+    Label: text-[10px] uppercase tracking-wider text-muted-foreground font-medium
+      (10px, MAIÚSCULA, tracking 0.05em, #737373, peso 500)
+  Sem label:
+    Linha: h-px bg-border (1px, #E5E5E5)
+
+7.10 HINT TOOLTIP
+  Trigger: <HelpCircle> h-3 w-3 text-muted-foreground/60 hover:text-muted-foreground inline-block ml-1
+    (12px, cor #737373 a 60% opacidade, hover 100%)
+  Conteúdo: max-w-[200px] text-xs (200px max, 12px)
+  Delay: 200ms
+  Posição: side="top"
+
+================================================================================
+ 8. COMPONENTES UI BASE (shadcn/ui + Radix)
+================================================================================
+
+8.1 BUTTON
+  Base: inline-flex items-center justify-center gap-2 whitespace-nowrap
+        rounded-md text-sm font-medium ring-offset-background
+        transition-colors [&_svg]:size-4 [&_svg]:shrink-0
+
+  Variantes:
+    default:     bg-primary text-primary-foreground hover:bg-primary/90
+                 (#141414 fundo, #FAFAFA texto, hover: 90% opacidade)
+    destructive: bg-destructive text-destructive-foreground hover:bg-destructive/90
+    outline:     border border-input bg-background hover:bg-accent hover:text-accent-foreground
+    secondary:   bg-secondary text-secondary-foreground hover:bg-secondary/80
+    ghost:       hover:bg-accent hover:text-accent-foreground (sem fundo)
+    link:        text-primary underline-offset-4 hover:underline
+
+  Tamanhos:
+    default: h-10 px-4 py-2              (40px altura)
+    sm:      h-9 rounded-md px-3          (36px altura)
+    lg:      h-11 rounded-md px-8         (44px altura)
+    icon:    h-10 w-10                    (40×40px)
+
+  NO EDITOR, os botões da top bar usam:
+    size="sm" className="h-8 text-xs"     (32px altura, 12px texto)
+
+8.2 INPUT
+  Classes: flex h-10 w-full rounded-md border border-input bg-background
+           px-3 py-2 text-base md:text-sm
+           placeholder:text-muted-foreground
+           focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2
+
+  Padrão: 40px altura, borda #E5E5E5, foco: anel 2px #141414
+  No editor: h-8 text-xs (32px, 12px) ou h-9 text-sm (36px, 14px)
+
+8.3 SWITCH (toggle on/off)
+  Root: h-6 w-11 (24×44px) rounded-full
+        checked: bg-primary (#141414)
+        unchecked: bg-input (#E5E5E5)
+        foco: ring-2 ring-ring
+  Thumb: h-5 w-5 (20×20px) rounded-full bg-background shadow-lg
+         checked: translate-x-5 (20px)
+         unchecked: translate-x-0
+
+8.4 SLIDER
+  Track: h-2 w-full rounded-full bg-secondary (#F5F5F5)
+  Range (preenchido): h-full bg-primary (#141414)
+  Thumb: h-5 w-5 (20×20px) rounded-full border-2 border-primary bg-background
+         foco: ring-2 ring-ring
+
+8.5 SELECT
+  Trigger: h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm
+           foco: ring-2 ring-ring
+  Ícone: <ChevronDown> h-4 w-4 opacity-50
+  Content: rounded-md border bg-popover shadow-md z-50
+           animações: fade-in, zoom-in-95, slide-in
+  Item: py-1.5 pl-8 pr-2 text-sm
+        hover: bg-accent text-accent-foreground
+        Check ícone: <Check> h-4 w-4 (posição absolute left-2)
+
+  No editor: h-9 text-sm (36px, 14px)
+
+8.6 TEXTAREA
+  Classes: min-h-[80px] w-full rounded-md border border-input bg-background
+           px-3 py-2 text-sm
+  No editor CustomCode: font-mono text-xs min-h-[120px]
+
+8.7 DIALOG (modal de Versões)
+  Overlay: fixed inset-0 bg-black/80 z-50
+  Content: fixed center z-50 max-w-lg w-full border bg-background p-6 shadow-lg rounded-lg
+  Close: absolute right-4 top-4 <X> h-4 w-4
+  Title: text-lg font-semibold leading-none tracking-tight (18px)
+  Description: text-sm text-muted-foreground (14px)
+
+  Item de versão: flex items-center justify-between p-3 bg-secondary rounded-lg
+    Versão: text-sm font-medium
+    Data: text-xs text-muted-foreground
+    Botão: variant="outline" size="sm" h-7 text-xs
+
+8.8 TOOLTIP
+  Content: z-50 rounded-md border bg-popover px-3 py-1.5 text-sm shadow-md
+  Animações: fade-in, zoom-in-95, slide-in
+
+8.9 CARD
+  Base: rounded-lg border bg-card text-card-foreground shadow-sm
+  Header: p-6 space-y-1.5
+  Title: text-2xl font-semibold
+  Description: text-sm text-muted-foreground
+  Content: p-6 pt-0
+  Footer: p-6 pt-0 flex items-center
+
+8.10 CHECKBOX
+  Base: h-4 w-4 (16×16px) rounded-sm border border-primary
+  Checked: bg-primary text-primary-foreground
+  Indicator: <Check> h-4 w-4
+
+8.11 LABEL
+  Base: text-sm font-medium leading-none
+
+================================================================================
+ 9. ÍCONES SVG (Lucide React)
+================================================================================
+
+Biblioteca: lucide-react
+Todos os ícones são SVG inline via componentes React.
+Cor padrão: currentColor (herda do texto)
+StrokeWidth padrão: 2
+
+9.1 TOP BAR
+  Search         — Ícone de busca (lupa)
+  Monitor        — Desktop preview
+  Tablet         — Tablet preview
+  Smartphone     — Mobile preview
+  Undo2          — Descartar alterações
+  Send           — Publicar
+  RotateCcw      — Restaurar padrão
+  History        — Histórico de versões
+  X              — Fechar dialog
+
+9.2 MENU LATERAL (seções do editor)
+  Sparkles       — Temas Prontos
+  Palette        — Cores
+  Type           — Tipografia
+  Layout         — Layout Global
+  MousePointer   — Botões
+  FormInput      — Formulários
+  Image          — Logo
+  PanelTop       — Cabeçalho
+  Layers         — Hero / Banner
+  Grid3X3        — Seções da Home / Categoria
+  Package        — Card de Produto
+  ShoppingBag    — Página de Produto / Carrinho
+  CreditCard     — Checkout
+  PanelBottom    — Rodapé
+  MessageCircle  — WhatsApp
+  Globe          — SEO
+  Code           — Código Custom
+
+9.3 CONTROLES INTERNOS
+  HelpCircle     — Tooltip de ajuda (h-3 w-3, 12px)
+  ChevronDown    — Seta do Select
+  ChevronUp      — Scroll up do Select / Reordenar
+  Check          — Checkbox checked / Select item
+  GripVertical   — Drag handle (seções da home)
+  Plus           — Adicionar seção
+  Trash2         — Remover seção
+  Pencil         — Editar nome da seção
+  Eye / EyeOff   — Visibilidade do título
+  FolderTree     — Ícone de categoria
+
+9.4 DEVICE TOGGLE (preview)
+  Tamanho: h-4 w-4 (16px)
+  Container: p-1.5 rounded-md
+  Ativo: bg-foreground text-background (#141414 fundo, #FAFAFA ícone)
+  Inativo: text-muted-foreground hover:bg-secondary
+
+9.5 TAMANHOS DE ÍCONES POR CONTEXTO
+  Menu lateral items:        h-3.5 w-3.5 (14px)
+  EditorSection header:      h-3.5 w-3.5 (14px)
+  Device toggles:            h-4 w-4 (16px)
+  Botões da top bar:         h-3.5 w-3.5 (14px) com mr-1
+  OptionPicker (opcional):   h-4 w-4 (16px)
+  HelpCircle tooltip:        h-3 w-3 (12px)
+  Seções da home (actions):  h-3 w-3 ou h-3.5 w-3.5
+  GripVertical:              h-3.5 w-3.5 (14px)
+
+================================================================================
+ 10. BOTÕES ESPECÍFICOS DO EDITOR
+================================================================================
+
+10.1 TOP BAR BUTTONS
+  Todos: size="sm" className="h-8 text-xs"
+  → 32px de altura, 12px de texto, px-3 (12px padding lateral)
+
+  Versões:   variant="ghost"   → sem fundo, hover: #F5F5F5
+  Restaurar: variant="ghost"   → sem fundo, hover: #F5F5F5
+  Descartar: variant="outline" → borda #E5E5E5, fundo branco, hover: #F5F5F5
+  Publicar:  variant="default" → fundo #141414, texto #FAFAFA, hover: 90%
+
+  Cada botão tem ícone + texto:
+    <Icon className="h-3.5 w-3.5 mr-1" /> Texto
+
+10.2 BADGE "RASCUNHO NÃO PUBLICADO"
+  Classes: text-[10px] bg-warning/20 text-warning px-2 py-0.5 rounded-full font-medium
+  Tamanho: 10px
+  Fundo: --warning com 20% opacidade (rgba(245,158,11,0.2))
+  Texto: --warning (#F59E0B)
+  Padding: 8px horizontal, 2px vertical
+  Border-radius: 9999px (pill)
+
+10.3 BOTÃO "ADICIONAR SEÇÃO" (HomeSectionsPanel)
+  size="sm" variant="outline" className="w-full h-8 text-xs"
+  Ícone: <Plus> h-3.5 w-3.5 mr-1
+  → Largura total, 32px altura, borda
+
+10.4 BOTÃO "RESTAURAR VERSÃO" (dialog)
+  variant="outline" size="sm" className="h-7 text-xs"
+  → 28px altura, borda
+
+================================================================================
+ 11. PREVIEW IFRAME
+================================================================================
+
+Container externo:
+  flex-1 flex items-start justify-center p-4 overflow-auto min-h-0
+
+Container do iframe:
+  bg-background rounded-lg shadow-xl overflow-hidden transition-all duration-300
+  Border-radius: 8px
+  Shadow: shadow-xl (0 20px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.1))
+
+Larguras por device:
+  Desktop: 100%
+  Tablet:  768px
+  Mobile:  390px
+
+Altura: calc(100vh - 160px)
+Max-width: 100%
+
+Iframe: w-full h-full border-0
+
+================================================================================
+ 12. SEÇÃO "SEÇÕES DA HOME" (HomeSectionsPanel) — UI COMPLEXA
+================================================================================
+
+12.1 ITEM DE SEÇÃO
+  Container: flex items-center gap-2 px-3 py-2 rounded-lg border transition-colors
+  Ativo:   bg-secondary border-border (#F5F5F5, borda #E5E5E5)
+  Inativo: bg-muted/30 border-transparent opacity-60
+
+  Elementos (da esquerda para direita):
+  1. GripVertical h-3.5 w-3.5 text-muted-foreground cursor-grab
+  2. Título: text-sm font-medium flex-1
+     ou Input de edição: h-7 text-xs flex-1
+  3. Pencil h-3 w-3 (editar) opacity-60 hover:opacity-100
+  4. ChevronUp h-3.5 w-3.5 (mover para cima)
+  5. ChevronDown h-3.5 w-3.5 (mover para baixo)
+  6. Eye/EyeOff h-3 w-3 (toggle título)
+  7. Trash2 h-3 w-3 text-destructive (remover)
+  8. <input type="checkbox"> rounded (toggle ativar/desativar)
+
+12.2 PAINEL DE CONFIGURAÇÕES DO ITEM (carousel/grade)
+  Container: ml-6 mt-1 mb-2 p-2 bg-muted/30 rounded-md space-y-2
+  Labels internos: text-[11px] text-muted-foreground
+  Select nativo: h-6 text-[11px] rounded border border-border bg-background px-1.5
+  Range nativo: flex-1 h-1
+
+12.3 FORMULÁRIO "ADICIONAR SEÇÃO"
+  Container: border border-border rounded-lg p-3 space-y-2
+  Select: h-8 text-xs
+  Input: h-8 text-xs
+  Botões: h-7 text-xs
+    Adicionar: size="sm" flex-1 (variant default)
+    Cancelar: size="sm" variant="outline"
+
+================================================================================
+ 13. PRESETS PANEL (Temas Prontos)
+================================================================================
+
+Cada preset é um botão:
+  Layout: w-full flex items-center gap-3 p-3 rounded-lg border border-border
+          hover:border-foreground/30 transition-all text-left group
+  Emoji/thumbnail: text-2xl (32px)
+  Nome: text-sm font-medium group-hover:text-foreground
+  Descrição: text-[11px] text-muted-foreground truncate
+  Swatches de cor: flex gap-0.5
+    Cada swatch: w-4 h-4 rounded-full border (16px, circular)
+
+================================================================================
+ 14. PAINÉIS DE PREVIEW INTERNOS
+================================================================================
+
+14.1 PREVIEW DE TIPOGRAFIA (TypographyPanel)
+  Container: p-3 bg-secondary rounded-lg space-y-2
+  Título: text-xl font-bold (20px) com fontFamily e fontWeight dinâmicos
+  Corpo: text-sm (14px) com fontFamily, fontWeight, lineHeight, letterSpacing dinâmicos
+
+14.2 PREVIEW DE BOTÕES (ButtonsPanel)
+  Container: flex gap-2 flex-wrap p-3 bg-secondary rounded-lg
+  Cada botão:
+    px-4 py-2 text-sm rounded-md transition-all
+    Estilos variam conforme tipo (filled, outline, ghost, etc.)
+
+14.3 PREVIEW DO LOGO (LogoPanel)
+  Container: p-4 bg-secondary rounded-lg flex items-center gap-2
+  Imagem: maxHeight dinâmico, object-contain
+  Texto: text-lg font-bold com fontFamily do tema
+
+================================================================================
+ 15. ESPAÇAMENTOS GERAIS (resumo)
+================================================================================
+
+Padding:
+  Top bar:              px-4 py-2              (16px, 8px)
+  Busca:                p-2                    (8px)
+  Menu lateral (scroll): p-1                    (4px)
+  Props header:          px-3 py-2             (12px, 8px)
+  Props scroll:          p-3                   (12px)
+  Preview container:     p-4                   (16px)
+
+Gap:
+  Top bar botões:        gap-1.5               (6px)
+  Menu item:             gap-2                 (8px)
+  EditorSection header:  gap-2                 (8px)
+  OptionPicker:          gap-1.5               (6px)
+  Color grid:            gap-3                 (12px)
+  Seção/controles:       space-y-4             (16px)
+  Dentro de controles:   space-y-1 ou space-y-2 (4px ou 8px)
+
+Margens entre grupos:    mb-1                  (4px)
+
+================================================================================
+ 16. ANIMAÇÕES E TRANSIÇÕES
+================================================================================
+
+Tailwind Animate (plugin: tailwindcss-animate):
+  Accordion:
+    accordion-down: height 0 → var(--radix-accordion-content-height), 0.2s ease-out
+    accordion-up:   inverso, 0.2s ease-out
+
+  Dialog/Select/Popover (Radix):
+    fade-in-0, fade-out-0
+    zoom-in-95, zoom-out-95
+    slide-in-from-top-2, slide-in-from-bottom-2
+    slide-in-from-left-2, slide-in-from-right-2
+
+  Landing Page ticker:
+    @keyframes ticker     { 0%: translateX(0); 100%: translateX(-50%) }
+    @keyframes ticker-ltr { 0%: translateX(-50%); 100%: translateX(0) }
+    .animate-ticker       { animation: ticker linear infinite }
+    .animate-ticker-ltr   { animation: ticker-ltr linear infinite }
+
+Transições gerais:
+  transition-colors    → cor (150ms por padrão)
+  transition-all       → todas as propriedades
+  duration-300         → 300ms (usado no iframe resize)
+
+================================================================================
+ 17. CSS BASE E RESETS
+================================================================================
+
+@layer base:
+  * { @apply border-border; }
+    → Todas as bordas usam --border por padrão
+
+  body { @apply bg-background text-foreground font-sans antialiased; }
+    → Fundo branco, texto #141414, anti-aliasing
+
+Darkmode: class-based → <html class="dark">
+
+================================================================================
+ 18. TAILWIND CONFIG — MAPEAMENTO COMPLETO
+================================================================================
+
+Container:
+  center: true
+  padding: "2rem" (32px)
+  max-width 2xl: 1400px
+
+Cores (todas via hsl(var(--token))):
+  border, input, ring, background, foreground
+  primary { DEFAULT, foreground }
+  secondary { DEFAULT, foreground }
+  destructive { DEFAULT, foreground }
+  muted { DEFAULT, foreground }
+  accent { DEFAULT, foreground }
+  popover { DEFAULT, foreground }
+  card { DEFAULT, foreground }
+  sidebar { DEFAULT, foreground, primary, primary-foreground,
+            accent, accent-foreground, border, ring }
+  flash { brand, deep, darker, surface, glow, midnight }
+
+Plugins: tailwindcss-animate
+
+================================================================================
+ 19. DEPENDÊNCIAS RELEVANTES
+================================================================================
+
+UI Framework:
+  - @radix-ui/react-* (dialog, select, switch, slider, checkbox, tabs,
+    tooltip, popover, toggle, toggle-group, accordion, etc.)
+  - class-variance-authority (CVA) para variantes de componentes
+  - clsx + tailwind-merge para merge de classes
+  - lucide-react para ícones SVG
+
+Animações:
+  - framer-motion (landing page)
+  - tailwindcss-animate (UI components)
+
+Notificações:
+  - sonner (toasts)
+
+================================================================================
+ FIM DO DOCUMENTO
+================================================================================
