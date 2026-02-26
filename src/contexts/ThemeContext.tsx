@@ -168,6 +168,23 @@ function applyThemeCSS(t: ThemeConfig) {
   root.style.setProperty('--pm-footer-bg', t.footer?.backgroundColor ?? '#0f172a');
   root.style.setProperty('--pm-footer-text', t.footer?.textColor ?? '#94a3b8');
 
+  // Buttons
+  const btnRadiusMap: Record<string, string> = { none: '0px', small: '4px', medium: '8px', large: '16px', full: '9999px' };
+  const btnSizeMap: Record<string, { px: string; py: string; fontSize: string }> = {
+    small: { px: '12px', py: '6px', fontSize: '13px' },
+    medium: { px: '16px', py: '10px', fontSize: '14px' },
+    large: { px: '24px', py: '14px', fontSize: '16px' },
+  };
+  const btnSize = btnSizeMap[t.buttons?.size ?? 'medium'] ?? btnSizeMap.medium;
+  root.style.setProperty('--pm-btn-style', t.buttons?.style ?? 'filled');
+  root.style.setProperty('--pm-btn-radius', btnRadiusMap[t.buttons?.radius ?? 'medium'] ?? '8px');
+  root.style.setProperty('--pm-btn-px', btnSize.px);
+  root.style.setProperty('--pm-btn-py', btnSize.py);
+  root.style.setProperty('--pm-btn-font-size', btnSize.fontSize);
+  root.style.setProperty('--pm-btn-font-weight', `${t.buttons?.fontWeight ?? 600}`);
+  root.style.setProperty('--pm-btn-transform', t.buttons?.uppercase ? 'uppercase' : 'none');
+  root.style.setProperty('--pm-btn-shadow', t.buttons?.shadow ? '0 2px 8px rgba(0,0,0,0.15)' : 'none');
+
   // Product card
   if (t.productCard?.imageAspect) {
     const parts = t.productCard.imageAspect.split(':');
