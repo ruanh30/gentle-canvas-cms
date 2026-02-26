@@ -64,6 +64,17 @@ function getRadiusPx(radius: string): string {
   }
 }
 
+/** Dynamically load a Google Font if not already loaded */
+function loadGoogleFont(fontName: string) {
+  const id = `gfont-${fontName.replace(/\s+/g, '-').toLowerCase()}`;
+  if (document.getElementById(id)) return;
+  const link = document.createElement('link');
+  link.id = id;
+  link.rel = 'stylesheet';
+  link.href = `https://fonts.googleapis.com/css2?family=${encodeURIComponent(fontName)}:wght@300;400;500;600;700;800;900&display=swap`;
+  document.head.appendChild(link);
+}
+
 function deepMerge<T>(target: T, source: Partial<T>): T {
   const result = { ...target };
   for (const key of Object.keys(source) as Array<keyof T>) {
@@ -99,6 +110,10 @@ function applyThemeCSS(t: ThemeConfig) {
   root.style.setProperty('--buy-now', hexToHSL(t.colors.buyNow));
   root.style.setProperty('--buy-now-hover', hexToHSL(t.colors.buyNowHover));
   root.style.setProperty('--radius', getRadiusValue(t.global.borderRadius));
+  // Load Google Fonts dynamically
+  loadGoogleFont(t.typography.headingFont);
+  loadGoogleFont(t.typography.bodyFont);
+
   root.style.setProperty('--font-heading', t.typography.headingFont);
   root.style.setProperty('--font-body', t.typography.bodyFont);
   root.style.setProperty('--font-size-base', `${t.typography.baseFontSize}px`);
