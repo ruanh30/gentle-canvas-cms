@@ -43,6 +43,8 @@ Route::post('/cart/update', [CartController::class, 'update'])->name('store.cart
 Route::post('/cart/remove', [CartController::class, 'remove'])->name('store.cart.remove');
 Route::get('/checkout', [CheckoutController::class, 'index'])->name('store.checkout');
 Route::post('/checkout', [CheckoutController::class, 'process'])->name('store.checkout.process');
+Route::post('/checkout/apply-coupon', [CheckoutController::class, 'applyCoupon'])->name('store.checkout.apply-coupon');
+Route::post('/checkout/remove-coupon', [CheckoutController::class, 'removeCoupon'])->name('store.checkout.remove-coupon');
 Route::get('/order-success/{order}', [CheckoutController::class, 'success'])->name('store.order.success');
 
 Route::middleware('auth')->group(function () {
