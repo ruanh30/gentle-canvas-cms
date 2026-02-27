@@ -47,7 +47,7 @@
         {{-- Sidebar - identical to AdminLayout.tsx --}}
         <aside id="sidebar" class="bg-background border-r flex flex-col transition-all duration-200 sticky top-0 h-screen w-60">
             <div class="p-4 border-b flex items-center justify-between">
-                <a href="{{ route('dashboard') }}" class="font-display font-bold text-lg truncate" id="sidebar-title">Admin</a>
+                <a href="{{ route('admin.dashboard') }}" class="font-display font-bold text-lg truncate" id="sidebar-title">Admin</a>
                 <button onclick="toggleSidebar()" class="p-1 hover:bg-secondary rounded-md transition-colors ml-auto">
                     <svg id="collapse-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
                 </button>
@@ -56,7 +56,7 @@
             <nav class="flex-1 p-2 space-y-1 overflow-y-auto">
                 @php
                     $navItems = [
-                        ['label' => 'Dashboard', 'route' => 'dashboard', 'icon' => '<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>'],
+                        ['label' => 'Dashboard', 'route' => 'admin.dashboard', 'icon' => '<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>'],
                         ['label' => 'Pedidos', 'route' => 'admin.orders.index', 'icon' => '<circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/>'],
                         ['label' => 'Produtos', 'route' => 'admin.products.index', 'icon' => '<path d="m7.5 4.27 9 5.15"/><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/>'],
                         ['label' => 'Categorias', 'route' => 'admin.categories.index', 'icon' => '<path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/><path d="M2 10h20"/>'],
@@ -77,7 +77,7 @@
                 @foreach($navItems as $item)
                     @php
                         $active = request()->routeIs($item['route']) || request()->routeIs($item['route'] . '.*');
-                        if ($item['route'] === 'dashboard') $active = request()->routeIs('dashboard');
+                        if ($item['route'] === 'admin.dashboard') $active = request()->routeIs('admin.dashboard');
                     @endphp
                     <a href="{{ route($item['route']) }}"
                        class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors sidebar-link {{ $active ? 'bg-foreground text-[hsl(0,0%,98%)]' : 'text-muted-foreground hover:bg-secondary hover:text-foreground' }}">
