@@ -3,6 +3,7 @@
 @section('content')
 <form action="{{ route('admin.customization.update') }}" method="POST" id="themeForm">
 @csrf
+<input type="hidden" name="active_section" id="activeSectionInput" value="colors">
 
 {{-- ============ TOP BAR (identical to React) ============ --}}
 <div class="flex items-center justify-between px-4 py-2 bg-white border-b -mx-6 -mt-6 mb-0">
@@ -125,19 +126,19 @@
     {{-- COL 3: Preview area --}}
     <div class="flex-1 bg-gray-50 flex flex-col min-w-0">
         <div class="flex items-center justify-center gap-2 py-2 border-b bg-white/50">
-            <button type="button" onclick="setDevice('100%')" class="device-btn active p-1.5 rounded-md transition-colors">
+            <button type="button" onclick="setDevice('100%', this)" class="device-btn active p-1.5 rounded-md transition-colors">
                 <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
             </button>
-            <button type="button" onclick="setDevice('768px')" class="device-btn p-1.5 rounded-md transition-colors">
+            <button type="button" onclick="setDevice('768px', this)" class="device-btn p-1.5 rounded-md transition-colors">
                 <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M12 18h.01"/></svg>
             </button>
-            <button type="button" onclick="setDevice('390px')" class="device-btn p-1.5 rounded-md transition-colors">
+            <button type="button" onclick="setDevice('390px', this)" class="device-btn p-1.5 rounded-md transition-colors">
                 <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M12 18h.01"/></svg>
             </button>
         </div>
         <div class="flex-1 flex items-start justify-center p-4 overflow-auto">
             <div id="previewFrame" class="bg-white rounded-lg shadow-xl overflow-hidden transition-all duration-300" style="width:100%; max-width:100%; height:calc(100vh - 200px);">
-                <iframe src="{{ route('store.home') }}" class="w-full h-full border-0" title="Preview da Loja"></iframe>
+                <iframe id="storePreviewIframe" src="{{ route('store.home', ['theme-preview' => '1']) }}" class="w-full h-full border-0" title="Preview da Loja"></iframe>
             </div>
         </div>
     </div>
@@ -203,20 +204,28 @@ const panelLabels = {
     'whatsapp': 'WhatsApp', 'seo': 'SEO', 'custom-code': 'Código Custom',
 };
 
+const formEl = document.getElementById('themeForm');
+const panelContentEl = document.getElementById('panelContent');
+const activeSectionInputEl = document.getElementById('activeSectionInput');
+const previewIframeEl = document.getElementById('storePreviewIframe');
+let autoSaveTimer = null;
+
 function showPanel(id) {
     document.querySelectorAll('.section-btn').forEach(b => b.classList.remove('active'));
     document.querySelector(`[data-section="${id}"]`)?.classList.add('active');
     document.getElementById('panelTitle').textContent = panelLabels[id] || id;
+    activeSectionInputEl.value = id;
+
     const tpl = document.getElementById('panel-' + id);
     if (tpl) {
-        document.getElementById('panelContent').innerHTML = tpl.innerHTML;
+        panelContentEl.innerHTML = tpl.innerHTML;
     }
 }
 
-function setDevice(w) {
+function setDevice(w, btn) {
     document.getElementById('previewFrame').style.width = w;
     document.querySelectorAll('.device-btn').forEach(b => b.classList.remove('active'));
-    event.currentTarget.classList.add('active');
+    btn?.classList.add('active');
 }
 
 function filterSections(q) {
@@ -233,6 +242,64 @@ function selectOption(groupName, value) {
     document.querySelectorAll(`[data-option-group="${groupName}"] .option-btn`).forEach(btn => {
         btn.classList.toggle('active', btn.dataset.value === value);
     });
+    queueAutoSave();
 }
+
+function buildFormData() {
+    const formData = new FormData(formEl);
+
+    // Ensure unchecked checkboxes from active panel are persisted as 0/false
+    panelContentEl.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+        if (!cb.checked && cb.name) {
+            formData.append(cb.name, '0');
+        }
+    });
+
+    return formData;
+}
+
+async function saveDraftAndRefreshPreview() {
+    const formData = buildFormData();
+
+    try {
+        const response = await fetch(formEl.action, {
+            method: 'POST',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'Accept': 'application/json',
+            },
+            body: formData,
+        });
+
+        if (!response.ok) return;
+
+        const previewUrl = new URL(previewIframeEl.src, window.location.origin);
+        previewUrl.searchParams.set('theme-preview', '1');
+        previewUrl.searchParams.set('_t', String(Date.now()));
+        previewIframeEl.src = previewUrl.toString();
+    } catch (_) {
+        // noop: fallback remains manual save
+    }
+}
+
+function queueAutoSave() {
+    clearTimeout(autoSaveTimer);
+    autoSaveTimer = setTimeout(saveDraftAndRefreshPreview, 450);
+}
+
+panelContentEl.addEventListener('input', (event) => {
+    const target = event.target;
+    if (target instanceof HTMLInputElement || target instanceof HTMLSelectElement || target instanceof HTMLTextAreaElement) {
+        queueAutoSave();
+    }
+});
+
+panelContentEl.addEventListener('change', queueAutoSave);
+
+formEl.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    await saveDraftAndRefreshPreview();
+    window.location.reload();
+});
 </script>
 @endsection

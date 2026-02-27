@@ -7,14 +7,26 @@ use App\Models\Product;
 use App\Models\Category;
 use App\Models\Collection;
 use App\Models\Setting;
+use Illuminate\Http\Request;
 
 class HomeController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        // Theme config from settings (JSON blob, mirrors defaultThemeConfig from React)
-        $themeJson = Setting::get('theme_published', '{}');
+        // Preview iframe must read draft; storefront route / reads published
+        $isThemePreview = $request->boolean('theme-preview');
+        $themeKey = $isThemePreview ? 'theme_draft' : 'theme_published';
+
+        $themeJson = Setting::get($themeKey, '{}');
         $theme = json_decode($themeJson, true) ?: [];
+
+        // Backward compatibility: if a legacy flat payload was saved, fallback to published nested
+        if (isset($theme['colors_primary']) || isset($theme['hero_title'])) {
+            $fallback = json_decode(Setting::get('theme_published', '{}'), true) ?: [];
+            if (!empty($fallback) && !isset($fallback['colors_primary'])) {
+                $theme = $fallback;
+            }
+        }
 
         // Merge with defaults (mirrors theme-presets.ts defaultThemeConfig)
         $defaults = $this->getDefaults();
