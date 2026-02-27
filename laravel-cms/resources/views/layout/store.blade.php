@@ -4,8 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     @php
-        // Load published theme from settings — mirrors ThemeContext.tsx
-        $__themeJson = \App\Models\Setting::get('theme_published', '{}');
+        // Load draft in editor preview, published in storefront
+        $__themeKey = request()->boolean('theme-preview') ? 'theme_draft' : 'theme_published';
+        $__themeJson = \App\Models\Setting::get($__themeKey, '{}');
         $__t = json_decode($__themeJson, true) ?: [];
 
         // Defaults (mirrors theme-presets.ts defaultThemeConfig)
