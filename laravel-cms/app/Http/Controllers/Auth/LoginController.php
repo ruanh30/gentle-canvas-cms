@@ -12,7 +12,9 @@ class LoginController extends Controller
 {
     public function showLoginForm()
     {
-        if (auth()->check()) return redirect('/dashboard');
+        if (auth()->check()) {
+            return auth()->user()->is_admin ? redirect('/admin') : redirect('/account');
+        }
         return view('auth.login');
     }
 
@@ -25,7 +27,8 @@ class LoginController extends Controller
 
         if (Auth::attempt($credentials, $request->boolean('remember'))) {
             $request->session()->regenerate();
-            return redirect()->intended('/dashboard');
+            $user = Auth::user();
+            return redirect()->intended($user->is_admin ? '/admin' : '/account');
         }
 
         return back()->withErrors(['email' => 'Credenciais inválidas.'])->onlyInput('email');
@@ -59,6 +62,6 @@ class LoginController extends Controller
         ]);
 
         Auth::login($user);
-        return redirect('/dashboard');
+        return redirect('/account');
     }
 }
