@@ -261,7 +261,7 @@ export function ThemeEditorLayout({ previewUrl, fullscreen = false }: { previewU
             >
               <iframe
                 ref={iframeRef}
-                src={previewUrl || '/store?theme-preview=true'}
+                src={previewUrl || '/?theme-preview=true'}
                 className="w-full h-full border-0"
                 title="Preview da Loja"
                 onLoad={handleIframeLoad}
