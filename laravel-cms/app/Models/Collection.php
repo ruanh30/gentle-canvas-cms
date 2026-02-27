@@ -7,7 +7,7 @@ use Illuminate\Support\Str;
 
 class Collection extends Model
 {
-    protected $fillable = ['name', 'slug', 'description', 'image', 'is_active'];
+    protected $fillable = ['name', 'slug', 'description', 'image', 'is_active', 'order'];
     protected $casts = ['is_active' => 'boolean'];
 
     public function products() { return $this->belongsToMany(Product::class); }
