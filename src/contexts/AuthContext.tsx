@@ -14,7 +14,10 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(() => {
     const saved = localStorage.getItem('auth_user');
-    return saved ? JSON.parse(saved) : null;
+    if (saved) return JSON.parse(saved);
+    // Auto-login as admin for demo purposes
+    localStorage.setItem('auth_user', JSON.stringify(mockAdminUser));
+    return mockAdminUser;
   });
 
   const login = (email: string, _password: string) => {
