@@ -10,7 +10,6 @@ import { ThemeProvider } from "@/contexts/ThemeContext";
 import { StoreLayout } from "@/components/store/StoreLayout";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 
-import LandingPage from "@/pages/LandingPage";
 import HomePage from "@/pages/HomePage";
 import ProductsPage from "@/pages/ProductsPage";
 import ProductDetailPage from "@/pages/ProductDetailPage";
@@ -54,12 +53,9 @@ const App = () => (
           <Sonner />
           <BrowserRouter>
             <Routes>
-              {/* Landing Page institucional */}
-              <Route path="/" element={<LandingPage />} />
-
-              {/* Storefront (loja do lojista) */}
+              {/* Storefront */}
               <Route element={<StoreLayout />}>
-                <Route path="/store" element={<HomePage />} />
+                <Route path="/" element={<HomePage />} />
                 <Route path="/products" element={<ProductsPage />} />
                 <Route path="/product/:slug" element={<ProductDetailPage />} />
                 <Route path="/cart" element={<CartPage />} />
