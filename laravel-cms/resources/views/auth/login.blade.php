@@ -1,35 +1,43 @@
-@extends('layout.auth')
-@section('title', 'Login')
+{{-- ═══ LoginPage — exact mirror of src/pages/LoginPage.tsx ═══ --}}
+{{-- Uses store layout like React (StoreLayout wraps LoginPage) --}}
+@extends('layout.store')
+@section('title', 'Entrar')
 @section('content')
-<div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
-    <div class="text-center mb-6">
-        <h1 class="text-2xl font-bold text-gray-800">Entrar</h1>
-        <p class="text-sm text-gray-500 mt-1">Acesse sua conta para continuar</p>
+<div class="container mx-auto px-4 py-20 flex justify-center">
+    <div class="w-full max-w-md rounded-lg border bg-background shadow-sm">
+        <div class="flex flex-col space-y-1.5 p-6 text-center">
+            <h1 class="text-2xl font-display font-semibold leading-none tracking-tight" id="form-title">Entrar</h1>
+            <p class="text-sm text-muted-foreground font-body" id="form-desc">Entre com seu e-mail e senha</p>
+        </div>
+        <div class="p-6 pt-0">
+            <form action="{{ route('login') }}" method="POST" class="space-y-4">
+                @csrf
+                <div id="name-field" style="display:none">
+                    <label class="text-sm font-medium leading-none">Nome</label>
+                    <input type="text" name="name" placeholder="Seu nome" class="mt-1 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
+                </div>
+                <div>
+                    <label class="text-sm font-medium leading-none">E-mail</label>
+                    <input type="email" name="email" required value="{{ old('email') }}" placeholder="email@exemplo.com" class="mt-1 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
+                </div>
+                <div>
+                    <label class="text-sm font-medium leading-none">Senha</label>
+                    <input type="password" name="password" required placeholder="••••••••" class="mt-1 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
+                </div>
+                <button type="submit" class="w-full inline-flex items-center justify-center rounded-lg h-10 px-4 py-2 bg-foreground text-background text-sm font-medium font-body hover:opacity-90 transition" id="submit-btn">Entrar</button>
+            </form>
+            @if($errors->any())
+                <div class="mt-4 p-3 bg-red-100 text-red-800 rounded-lg text-xs">{{ $errors->first() }}</div>
+            @endif
+            <div class="mt-4 text-center">
+                <a href="{{ route('register') }}" class="text-sm text-muted-foreground hover:text-foreground transition-colors font-body">
+                    Não tem conta? Cadastrar
+                </a>
+            </div>
+            <div class="mt-4 p-3 bg-secondary rounded-lg text-xs text-muted-foreground font-body text-center">
+                Admin: admin@modastore.com (qualquer senha)
+            </div>
+        </div>
     </div>
-    <form action="{{ route('login') }}" method="POST" class="space-y-4">
-        @csrf
-        <div>
-            <label for="email" class="block text-sm font-medium text-gray-700 mb-1">E-mail</label>
-            <input type="email" name="email" id="email" value="{{ old('email') }}" required autofocus
-                class="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition">
-        </div>
-        <div>
-            <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Senha</label>
-            <input type="password" name="password" id="password" required
-                class="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition">
-        </div>
-        <div class="flex items-center justify-between">
-            <label class="flex items-center gap-2 text-sm text-gray-600">
-                <input type="checkbox" name="remember" class="rounded border-gray-300">
-                Lembrar-me
-            </label>
-        </div>
-        <button type="submit" class="w-full bg-primary text-white py-2.5 rounded-lg text-sm font-medium hover:bg-blue-700 transition">
-            Entrar
-        </button>
-    </form>
-    <p class="text-center text-sm text-gray-500 mt-6">
-        Não tem conta? <a href="{{ route('register') }}" class="text-primary hover:underline">Criar conta</a>
-    </p>
 </div>
 @endsection

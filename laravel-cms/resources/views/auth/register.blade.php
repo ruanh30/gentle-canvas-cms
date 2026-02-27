@@ -1,39 +1,25 @@
-@extends('layout.auth')
-@section('title', 'Criar Conta')
+{{-- ═══ RegisterPage — mirrors LoginPage.tsx register mode ═══ --}}
+@extends('layout.store')
+@section('title', 'Criar conta')
 @section('content')
-<div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
-    <div class="text-center mb-6">
-        <h1 class="text-2xl font-bold text-gray-800">Criar Conta</h1>
-        <p class="text-sm text-gray-500 mt-1">Preencha seus dados para começar</p>
+<div class="container mx-auto px-4 py-20 flex justify-center">
+    <div class="w-full max-w-md rounded-lg border bg-background shadow-sm">
+        <div class="flex flex-col space-y-1.5 p-6 text-center">
+            <h1 class="text-2xl font-display font-semibold leading-none tracking-tight">Criar conta</h1>
+            <p class="text-sm text-muted-foreground font-body">Preencha os dados para se cadastrar</p>
+        </div>
+        <div class="p-6 pt-0">
+            <form action="{{ route('register') }}" method="POST" class="space-y-4">
+                @csrf
+                <div><label class="text-sm font-medium leading-none">Nome</label><input type="text" name="name" required value="{{ old('name') }}" placeholder="Seu nome" class="mt-1 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"></div>
+                <div><label class="text-sm font-medium leading-none">E-mail</label><input type="email" name="email" required value="{{ old('email') }}" placeholder="email@exemplo.com" class="mt-1 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"></div>
+                <div><label class="text-sm font-medium leading-none">Senha</label><input type="password" name="password" required placeholder="••••••••" class="mt-1 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"></div>
+                <div><label class="text-sm font-medium leading-none">Confirmar senha</label><input type="password" name="password_confirmation" required placeholder="••••••••" class="mt-1 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"></div>
+                <button type="submit" class="w-full inline-flex items-center justify-center rounded-lg h-10 px-4 py-2 bg-foreground text-background text-sm font-medium font-body hover:opacity-90 transition">Cadastrar</button>
+            </form>
+            @if($errors->any())<div class="mt-4 p-3 bg-red-100 text-red-800 rounded-lg text-xs">{{ $errors->first() }}</div>@endif
+            <div class="mt-4 text-center"><a href="{{ route('login') }}" class="text-sm text-muted-foreground hover:text-foreground transition-colors font-body">Já tem conta? Entrar</a></div>
+        </div>
     </div>
-    <form action="{{ route('register') }}" method="POST" class="space-y-4">
-        @csrf
-        <div>
-            <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Nome completo</label>
-            <input type="text" name="name" id="name" value="{{ old('name') }}" required
-                class="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition">
-        </div>
-        <div>
-            <label for="email" class="block text-sm font-medium text-gray-700 mb-1">E-mail</label>
-            <input type="email" name="email" id="email" value="{{ old('email') }}" required
-                class="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition">
-        </div>
-        <div>
-            <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Senha</label>
-            <input type="password" name="password" id="password" required
-                class="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition">
-        </div>
-        <div>
-            <label for="password_confirmation" class="block text-sm font-medium text-gray-700 mb-1">Confirmar Senha</label>
-            <input type="password" name="password_confirmation" id="password_confirmation" required
-                class="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition">
-        </div>
-        <button type="submit" class="w-full bg-primary text-white py-2.5 rounded-lg text-sm font-medium hover:bg-blue-700 transition">
-            Criar Conta
-        </button>
-    </form>
-    <p class="text-center text-sm text-gray-500 mt-6">
-        Já tem conta? <a href="{{ route('login') }}" class="text-primary hover:underline">Entrar</a>
-    </p>
 </div>
 @endsection
