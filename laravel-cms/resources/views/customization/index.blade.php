@@ -247,20 +247,96 @@ function selectOption(groupName, value) {
 
 function buildFormData() {
     const formData = new FormData(formEl);
-
-    // Ensure unchecked checkboxes from active panel are persisted as 0/false
     panelContentEl.querySelectorAll('input[type="checkbox"]').forEach(cb => {
         if (!cb.checked && cb.name) {
             formData.append(cb.name, '0');
         }
     });
-
     return formData;
 }
 
-async function saveDraftAndRefreshPreview() {
-    const formData = buildFormData();
+/**
+ * Build a nested theme object from the current form state.
+ * This mirrors flatToNested() in PHP but runs client-side for instant preview.
+ */
+function buildNestedThemeFromForm() {
+    const fd = buildFormData();
+    const flat = {};
+    for (const [key, value] of fd.entries()) {
+        if (key === '_token' || key === 'action' || key === 'active_section') continue;
+        flat[key] = value;
+    }
 
+    // Build nested theme object matching ThemeConfig structure
+    const theme = {
+        colors: {
+            primary: flat.colors_primary || '#1a1a1a',
+            primaryForeground: flat.colors_primaryForeground || '#fafafa',
+            secondary: flat.colors_secondary || '#f5f5f5',
+            secondaryForeground: flat.colors_secondaryForeground || '#1a1a1a',
+            accent: flat.colors_accent || '#f5f5f5',
+            accentForeground: flat.colors_accentForeground || '#1a1a1a',
+            background: flat.colors_background || '#ffffff',
+            foreground: flat.colors_foreground || '#1a1a1a',
+            muted: flat.colors_muted || '#f5f5f5',
+            mutedForeground: flat.colors_mutedForeground || '#737373',
+            border: flat.colors_border || '#e5e5e5',
+            buyNow: flat.colors_buyNow || '#dc2626',
+            buyNowHover: flat.colors_buyNowHover || '#b91c1c',
+        },
+        typography: {
+            headingFont: flat.typo_headingFont || 'Playfair Display',
+            bodyFont: flat.typo_bodyFont || 'Inter',
+            baseFontSize: parseInt(flat.typo_baseFontSize) || 16,
+            headingWeight: parseInt(flat.typo_headingWeight) || 700,
+            bodyWeight: parseInt(flat.typo_bodyWeight) || 400,
+            lineHeight: parseFloat(flat.typo_lineHeight) || 1.6,
+            letterSpacing: parseFloat(flat.typo_letterSpacing) || 0,
+        },
+        global: {
+            borderRadius: flat.global_borderRadius || 'medium',
+            containerWidth: flat.global_containerWidth || 'default',
+            containerMaxPx: parseInt(flat.global_containerMaxPx) || 1400,
+        },
+        buttons: {
+            style: flat.btn_style || 'filled',
+            radius: flat.btn_radius || 'medium',
+            size: flat.btn_size || 'medium',
+            fontWeight: parseInt(flat.btn_fontWeight) || 500,
+            uppercase: flat.btn_uppercase === '1' || flat.btn_uppercase === 'on',
+            shadow: flat.btn_shadow === '1' || flat.btn_shadow === 'on',
+        },
+        header: {
+            height: parseInt(flat.header_height) || 64,
+            iconSize: parseInt(flat.header_iconSize) || 20,
+            menuFontSize: parseInt(flat.header_menuFontSize) || 13,
+            menuUppercase: flat.header_menuUppercase === '1' || flat.header_menuUppercase === 'on',
+            menuLetterSpacing: parseFloat(flat.header_menuLetterSpacing) || 0.1,
+        },
+        footer: {
+            backgroundColor: flat.footer_backgroundColor || '#1a1a1a',
+            textColor: flat.footer_textColor || '#fafafa',
+        },
+    };
+    return theme;
+}
+
+/**
+ * Send theme to iframe via postMessage for INSTANT preview.
+ * Then save to DB in background via AJAX (no iframe reload needed).
+ */
+function sendThemeToPreview() {
+    const theme = buildNestedThemeFromForm();
+    try {
+        previewIframeEl.contentWindow.postMessage({
+            type: 'theme-preview-update',
+            theme: theme,
+        }, '*');
+    } catch (_) {}
+}
+
+async function saveDraftToServer() {
+    const formData = buildFormData();
     try {
         const response = await fetch(formEl.action, {
             method: 'POST',
@@ -270,26 +346,29 @@ async function saveDraftAndRefreshPreview() {
             },
             body: formData,
         });
-
-        if (!response.ok) return;
-
-        const previewUrl = new URL(previewIframeEl.src, window.location.origin);
-        previewUrl.searchParams.set('theme-preview', '1');
-        previewUrl.searchParams.set('_t', String(Date.now()));
-        previewIframeEl.src = previewUrl.toString();
-    } catch (_) {
-        // noop: fallback remains manual save
-    }
+        if (!response.ok) console.warn('Save failed:', response.status);
+    } catch (_) {}
 }
 
 function queueAutoSave() {
+    // Instant visual feedback via postMessage
+    sendThemeToPreview();
+
+    // Debounced save to server
     clearTimeout(autoSaveTimer);
-    autoSaveTimer = setTimeout(saveDraftAndRefreshPreview, 450);
+    autoSaveTimer = setTimeout(saveDraftToServer, 600);
 }
 
 panelContentEl.addEventListener('input', (event) => {
     const target = event.target;
     if (target instanceof HTMLInputElement || target instanceof HTMLSelectElement || target instanceof HTMLTextAreaElement) {
+        // Sync color inputs: color swatch ↔ hex text
+        if (target.type === 'color' && target.nextElementSibling?.classList.contains('color-hex')) {
+            target.nextElementSibling.value = target.value;
+        }
+        if (target.classList.contains('color-hex') && target.previousElementSibling?.type === 'color') {
+            target.previousElementSibling.value = target.value;
+        }
         queueAutoSave();
     }
 });
@@ -298,8 +377,12 @@ panelContentEl.addEventListener('change', queueAutoSave);
 
 formEl.addEventListener('submit', async (event) => {
     event.preventDefault();
-    await saveDraftAndRefreshPreview();
-    window.location.reload();
+    await saveDraftToServer();
+    // Reload iframe to pick up structural changes (sections, hero content, etc.)
+    const previewUrl = new URL(previewIframeEl.src, window.location.origin);
+    previewUrl.searchParams.set('theme-preview', '1');
+    previewUrl.searchParams.set('_t', String(Date.now()));
+    previewIframeEl.src = previewUrl.toString();
 });
 </script>
 @endsection

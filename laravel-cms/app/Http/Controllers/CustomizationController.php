@@ -7,29 +7,30 @@ use Illuminate\Http\Request;
 
 class CustomizationController extends Controller
 {
-    /**
-     * All flat theme keys used by Blade panels.
-     */
+    // ================================================================
+    // SINGLE SOURCE OF TRUTH — mirrors theme-presets.ts defaultThemeConfig
+    // ================================================================
+
     private function defaults(): array
     {
         return [
-            // Colors
-            'colors_primary' => '#0f172a',
-            'colors_primaryForeground' => '#ffffff',
-            'colors_secondary' => '#f1f5f9',
-            'colors_secondaryForeground' => '#0f172a',
+            // Colors (theme-presets.ts → colors)
+            'colors_primary' => '#1a1a1a',
+            'colors_primaryForeground' => '#fafafa',
+            'colors_secondary' => '#f5f5f5',
+            'colors_secondaryForeground' => '#1a1a1a',
             'colors_background' => '#ffffff',
-            'colors_foreground' => '#0f172a',
-            'colors_accent' => '#93c5fd',
-            'colors_accentForeground' => '#0f172a',
-            'colors_muted' => '#f1f5f9',
-            'colors_mutedForeground' => '#64748b',
-            'colors_border' => '#e2e8f0',
-            'colors_success' => '#22c55e',
+            'colors_foreground' => '#1a1a1a',
+            'colors_accent' => '#f5f5f5',
+            'colors_accentForeground' => '#1a1a1a',
+            'colors_muted' => '#f5f5f5',
+            'colors_mutedForeground' => '#737373',
+            'colors_border' => '#e5e5e5',
+            'colors_success' => '#16a34a',
             'colors_warning' => '#eab308',
-            'colors_error' => '#ef4444',
-            'colors_buyNow' => '#0f172a',
-            'colors_buyNowHover' => '#1e293b',
+            'colors_error' => '#dc2626',
+            'colors_buyNow' => '#dc2626',
+            'colors_buyNowHover' => '#b91c1c',
 
             // Typography
             'typo_headingFont' => 'Playfair Display',
@@ -37,7 +38,7 @@ class CustomizationController extends Controller
             'typo_baseFontSize' => '16',
             'typo_headingWeight' => '700',
             'typo_bodyWeight' => '400',
-            'typo_lineHeight' => '1.5',
+            'typo_lineHeight' => '1.6',
             'typo_letterSpacing' => '0',
 
             // Global
@@ -55,7 +56,7 @@ class CustomizationController extends Controller
             'btn_style' => 'filled',
             'btn_radius' => 'medium',
             'btn_size' => 'medium',
-            'btn_fontWeight' => '600',
+            'btn_fontWeight' => '500',
             'btn_uppercase' => false,
             'btn_shadow' => false,
 
@@ -66,7 +67,7 @@ class CustomizationController extends Controller
             'input_borderWidth' => '1',
 
             // Logo
-            'logo_text' => 'Gentle Canvas',
+            'logo_text' => 'MODA STORE',
             'logo_imageUrl' => '',
             'logo_showText' => true,
             'logo_maxHeight' => '40',
@@ -80,30 +81,30 @@ class CustomizationController extends Controller
             'header_borderBottom' => true,
             'header_height' => '64',
             'header_menuStyle' => 'horizontal',
-            'header_menuFontSize' => '14',
-            'header_menuUppercase' => false,
-            'header_menuLetterSpacing' => '0',
+            'header_menuFontSize' => '13',
+            'header_menuUppercase' => true,
+            'header_menuLetterSpacing' => '0.1',
             'header_iconSize' => '20',
             'header_showSearch' => true,
-            'header_searchStyle' => 'inline',
+            'header_searchStyle' => 'modal',
             'header_showAccount' => true,
-            'header_showWishlist' => true,
+            'header_showWishlist' => false,
             'header_showCart' => true,
             'header_cartBadgeStyle' => 'count',
 
-            'ann_enabled' => false,
+            'ann_enabled' => true,
             'ann_style' => 'static',
             'ann_msg1' => 'Frete grátis acima de R$ 299',
-            'ann_msg2' => 'Parcele em até 12x',
-            'ann_msg3' => 'Troca grátis em 30 dias',
+            'ann_msg2' => '',
+            'ann_msg3' => '',
             'ann_speed' => '5',
-            'ann_backgroundColor' => '#0f172a',
-            'ann_textColor' => '#ffffff',
+            'ann_backgroundColor' => '#1a1a1a',
+            'ann_textColor' => '#fafafa',
             'ann_showIcon' => false,
-            'ann_icon' => 'sparkles',
+            'ann_icon' => 'truck',
             'ann_link' => '',
             'ann_pauseOnHover' => true,
-            'ann_direction' => 'ltr',
+            'ann_direction' => 'rtl',
 
             'bannerBelow_enabled' => false,
             'bannerBelow_imageUrl' => '',
@@ -112,42 +113,42 @@ class CustomizationController extends Controller
             'bannerBelow_img3' => '',
             'bannerBelow_carouselSpeed' => '5',
             'bannerBelow_link' => '',
-            'bannerBelow_height' => '80',
+            'bannerBelow_height' => '60',
             'bannerBelow_fullWidth' => true,
 
             // Hero
             'hero_enabled' => true,
-            'hero_height' => 'medium',
+            'hero_height' => 'large',
             'hero_transition' => 'fade',
-            'hero_autoplay' => true,
+            'hero_autoplay' => false,
             'hero_autoplaySpeed' => '5',
             'hero_showDots' => true,
             'hero_showArrows' => true,
-            'hero_subtitle' => '',
-            'hero_title' => 'Bem-vindo à Gentle Canvas',
-            'hero_description' => 'Encontre produtos incríveis com os melhores preços',
-            'hero_ctaText' => 'Ver Produtos',
+            'hero_subtitle' => 'Nova Coleção',
+            'hero_title' => "Estilo que\ndefine você",
+            'hero_description' => 'Descubra peças únicas com design atemporal e qualidade premium.',
+            'hero_ctaText' => 'Ver coleção',
             'hero_ctaLink' => '/products',
-            'hero_contentAlign' => 'center',
+            'hero_contentAlign' => 'left',
             'hero_backgroundImage' => '',
             'hero_overlayColor' => '#000000',
-            'hero_overlayOpacity' => '0.4',
+            'hero_overlayOpacity' => '0',
 
             // Product Card
             'card_layout' => 'standard',
             'card_imageAspect' => '3:4',
             'card_imageHover' => 'zoom',
             'card_imageBorderRadius' => 'medium',
-            'card_showCategory' => false,
+            'card_showCategory' => true,
             'card_showBrand' => false,
-            'card_showRating' => true,
+            'card_showRating' => false,
             'card_titleLines' => '2',
             'card_contentAlign' => 'left',
             'card_priceSize' => 'medium',
             'card_showComparePrice' => true,
             'card_showDiscount' => true,
             'card_discountStyle' => 'percentage',
-            'card_showInstallments' => true,
+            'card_showInstallments' => false,
             'card_showBuyNow' => true,
             'card_buyNowText' => 'Comprar Agora',
             'card_showAddToCart' => true,
@@ -158,14 +159,14 @@ class CustomizationController extends Controller
             'card_addToCartStyle' => 'full-width',
             'card_showQuickView' => false,
             'card_quickViewStyle' => 'modal',
-            'card_showWishlist' => true,
+            'card_showWishlist' => false,
             'card_clickBehavior' => 'navigate',
             'card_badgePosition' => 'top-left',
             'card_badgeStyle' => 'rounded',
             'card_spacing' => 'normal',
-            'card_shadow' => 'subtle',
-            'card_hoverShadow' => true,
-            'card_border' => true,
+            'card_shadow' => 'none',
+            'card_hoverShadow' => false,
+            'card_border' => false,
 
             // Product Page
             'pdp_galleryLayout' => 'side-by-side',
@@ -174,10 +175,10 @@ class CustomizationController extends Controller
             'pdp_stickyGallery' => true,
             'pdp_showBreadcrumb' => true,
             'pdp_showSKU' => false,
-            'pdp_showBrand' => true,
-            'pdp_showRating' => true,
+            'pdp_showBrand' => false,
+            'pdp_showRating' => false,
             'pdp_showStock' => true,
-            'pdp_showShareButtons' => true,
+            'pdp_showShareButtons' => false,
             'pdp_variantStyle' => 'buttons',
             'pdp_quantityStyle' => 'stepper',
             'pdp_ctaLayout' => 'stacked',
@@ -187,7 +188,7 @@ class CustomizationController extends Controller
             'pdp_shippingEstimate' => true,
             'pdp_tabsStyle' => 'tabs',
             'pdp_showRelated' => true,
-            'pdp_relatedTitle' => 'Produtos Relacionados',
+            'pdp_relatedTitle' => 'Você também pode gostar',
             'pdp_showRecentlyViewed' => false,
 
             // Category
@@ -196,21 +197,21 @@ class CustomizationController extends Controller
             'cat_columnsDesktop' => '4',
             'cat_columnsMobile' => '2',
             'cat_productsPerPage' => '24',
-            'cat_filterStyle' => 'checkbox',
+            'cat_filterStyle' => 'accordion',
             'cat_sortStyle' => 'dropdown',
             'cat_showFilterCount' => true,
             'cat_showAddToCartOnListing' => true,
-            'cat_pagination' => 'classic',
+            'cat_pagination' => 'load-more',
             'cat_showBanner' => false,
-            'cat_bannerHeight' => '220',
+            'cat_bannerHeight' => '200',
             'cat_showBreadcrumb' => true,
             'cat_showProductCount' => true,
-            'cat_carouselAutoplay' => false,
+            'cat_carouselAutoplay' => true,
             'cat_carouselSpeed' => '4',
             'cat_carouselDirection' => 'ltr',
 
             // Cart
-            'cart_style' => 'page',
+            'cart_style' => 'drawer',
             'cart_showThumbnails' => true,
             'cart_showQuantity' => true,
             'cart_showCoupon' => true,
@@ -218,11 +219,11 @@ class CustomizationController extends Controller
             'cart_showContinueShopping' => true,
             'cart_showFreeShippingBar' => true,
             'cart_freeShippingThreshold' => '299',
-            'cart_freeShippingMessage' => 'Frete grátis acima de R$ 299!',
-            'cart_showRecommendations' => false,
-            'cart_recommendationsTitle' => 'Você também pode gostar',
+            'cart_freeShippingMessage' => 'Frete grátis acima de R$ {value}',
+            'cart_showRecommendations' => true,
+            'cart_recommendationsTitle' => 'Aproveite e leve também',
             'cart_emptyCartMessage' => 'Seu carrinho está vazio',
-            'cart_emptyCartCta' => 'Continuar Comprando',
+            'cart_emptyCartCta' => 'Continuar comprando',
 
             // Checkout
             'checkout_layout' => 'two-columns',
@@ -231,37 +232,37 @@ class CustomizationController extends Controller
             'checkout_showCouponField' => true,
             'checkout_showTrustBadges' => true,
             'checkout_termsRequired' => false,
-            'checkout_termsText' => '',
-            'checkout_successTitle' => 'Pedido Confirmado!',
-            'checkout_successMessage' => 'Obrigado pela sua compra. Você receberá um e-mail com os detalhes do pedido.',
+            'checkout_termsText' => 'Li e aceito os termos de uso',
+            'checkout_successTitle' => 'Pedido realizado com sucesso!',
+            'checkout_successMessage' => 'Você receberá um e-mail com os detalhes do pedido.',
             'checkout_showConfetti' => true,
 
             // Footer
             'footer_layout' => '4-columns',
-            'footer_backgroundColor' => '#0f172a',
-            'footer_textColor' => '#94a3b8',
-            'footer_showNewsletter' => true,
-            'footer_newsletterTitle' => 'Fique por dentro',
-            'footer_newsletterDescription' => 'Receba novidades e ofertas exclusivas',
+            'footer_backgroundColor' => '#1a1a1a',
+            'footer_textColor' => '#fafafa',
+            'footer_showNewsletter' => false,
+            'footer_newsletterTitle' => 'Receba novidades',
+            'footer_newsletterDescription' => 'Cadastre-se e fique por dentro das promoções.',
             'footer_showSocial' => true,
             'footer_showPaymentIcons' => true,
             'footer_showTrustSeals' => false,
             'footer_showBackToTop' => true,
-            'footer_copyrightText' => '© 2024 Gentle Canvas. Todos os direitos reservados.',
+            'footer_copyrightText' => '© 2024 {storeName}. Todos os direitos reservados.',
 
             // WhatsApp
             'wa_enabled' => false,
             'wa_number' => '',
-            'wa_message' => 'Olá! Gostaria de mais informações.',
+            'wa_message' => 'Olá! Gostaria de saber mais sobre os produtos.',
             'wa_position' => 'bottom-right',
             'wa_backgroundColor' => '#25d366',
             'wa_showLabel' => false,
-            'wa_label' => 'Fale conosco',
+            'wa_label' => 'Precisa de ajuda?',
             'wa_delay' => '3',
 
             // SEO
             'seo_titleTemplate' => '{page} | {storeName}',
-            'seo_defaultDescription' => '',
+            'seo_defaultDescription' => 'Loja online com os melhores produtos.',
             'seo_ogImage' => '',
             'seo_showBreadcrumbs' => true,
 
@@ -284,6 +285,17 @@ class CustomizationController extends Controller
             ['id' => 'newsletter', 'type' => 'newsletter', 'enabled' => false, 'title' => 'Newsletter', 'showTitle' => true, 'settings' => []],
             ['id' => 'trust-bar', 'type' => 'trust-bar', 'enabled' => false, 'title' => 'Selos de Confiança', 'showTitle' => false, 'settings' => []],
         ];
+    }
+
+    /**
+     * Build the full nested defaults (used by store layout too).
+     * This is the SAME as theme-presets.ts defaultThemeConfig.
+     */
+    public static function nestedDefaults(): array
+    {
+        $ctrl = new self();
+        $flat = $ctrl->defaults();
+        return $ctrl->flatToNested($flat);
     }
 
     private function isFlatTheme(array $theme): bool
@@ -607,7 +619,7 @@ class CustomizationController extends Controller
             'showRecentlyViewed' => $this->boolValue($flat['pdp_showRecentlyViewed']),
             'sizeGuideEnabled' => $this->boolValue($flat['pdp_sizeGuideEnabled']),
             'shippingEstimate' => $this->boolValue($flat['pdp_shippingEstimate']),
-            'trustBadges' => $theme['productPage']['trustBadges'] ?? ['Compra 100% segura'],
+            'trustBadges' => $theme['productPage']['trustBadges'] ?? ['Compra Segura', 'Troca Grátis', 'Frete Rápido'],
         ];
 
         $theme['category'] = [
@@ -673,6 +685,21 @@ class CustomizationController extends Controller
             'showBackToTop' => $this->boolValue($flat['footer_showBackToTop']),
         ]);
 
+        // Preserve complex footer arrays from base or set defaults
+        if (!isset($theme['footer']['columns'])) {
+            $theme['footer']['columns'] = [
+                ['title' => 'Institucional', 'links' => [['label' => 'Sobre nós', 'url' => '/about'], ['label' => 'Contato', 'url' => '/contact'], ['label' => 'FAQ', 'url' => '/faq']], 'enabled' => true],
+                ['title' => 'Ajuda', 'links' => [['label' => 'Entregas', 'url' => '/shipping'], ['label' => 'Trocas', 'url' => '/returns'], ['label' => 'Privacidade', 'url' => '/privacy']], 'enabled' => true],
+                ['title' => 'Contato', 'links' => [['label' => 'contato@loja.com', 'url' => 'mailto:contato@loja.com'], ['label' => '(11) 99999-0000', 'url' => 'tel:+5511999990000']], 'enabled' => true],
+            ];
+        }
+        if (!isset($theme['footer']['socialLinks'])) {
+            $theme['footer']['socialLinks'] = [['platform' => 'instagram', 'url' => '#'], ['platform' => 'facebook', 'url' => '#']];
+        }
+        if (!isset($theme['footer']['bottomLinks'])) {
+            $theme['footer']['bottomLinks'] = [['label' => 'Termos de Uso', 'url' => '/terms'], ['label' => 'Política de Privacidade', 'url' => '/privacy']];
+        }
+
         $theme['whatsapp'] = [
             'enabled' => $this->boolValue($flat['wa_enabled']),
             'number' => $flat['wa_number'],
@@ -697,7 +724,7 @@ class CustomizationController extends Controller
         ];
 
         if (!isset($theme['homepageSections']) || !is_array($theme['homepageSections'])) {
-            $theme['homepageSections'] = $this->defaultHomepageSections();
+            $theme['homepageSections'] = (new self())->defaultHomepageSections();
         }
 
         return $theme;
@@ -816,12 +843,10 @@ class CustomizationController extends Controller
         }
 
         Setting::set('theme_draft', json_encode($nestedTheme), 'theme');
-
-        // Sem botão de publicar no Blade atual: salvar já precisa refletir em /
         Setting::set('theme_published', json_encode($nestedTheme), 'theme');
 
         if ($request->ajax() || $request->wantsJson()) {
-            return response()->json(['success' => true]);
+            return response()->json(['success' => true, 'theme' => $nestedTheme]);
         }
 
         return redirect()->route('admin.customization.index')
