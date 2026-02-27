@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Store;
 
 use App\Http\Controllers\Controller;
+use App\Models\Coupon;
 use App\Models\Order;
-use App\Models\OrderItem;
 use App\Models\Product;
 use Illuminate\Http\Request;
 
@@ -16,32 +16,74 @@ class CheckoutController extends Controller
         if (empty($cart)) return redirect()->route('store.cart');
 
         $items = [];
-        $total = 0;
+        $subtotal = 0;
         foreach ($cart as $id => $qty) {
             $product = Product::find($id);
             if ($product) {
-                $items[] = ['product' => $product, 'quantity' => $qty, 'subtotal' => $product->price * $qty];
-                $total += $product->price * $qty;
+                $lineTotal = $product->price * $qty;
+                $items[] = ['product' => $product, 'quantity' => $qty, 'subtotal' => $lineTotal];
+                $subtotal += $lineTotal;
             }
         }
 
-        return view('store.checkout', compact('items', 'total'));
+        // Shipping: free if >= 299
+        $shipping = $subtotal >= 299 ? 0 : 15.90;
+
+        // Coupon discount
+        $discount = 0;
+        $coupon = session('applied_coupon');
+        if ($coupon) {
+            $discount = $coupon['type'] === 'percentage'
+                ? $subtotal * ($coupon['value'] / 100)
+                : $coupon['value'];
+        }
+
+        $total = $subtotal + $shipping - $discount;
+
+        return view('store.checkout', compact('items', 'subtotal', 'shipping', 'discount', 'total'));
+    }
+
+    public function applyCoupon(Request $request)
+    {
+        $code = $request->input('coupon_code');
+        $coupon = Coupon::where('code', $code)->where('active', true)->first();
+
+        if (!$coupon) {
+            return redirect()->route('store.checkout')->with('error', 'Cupom inválido');
+        }
+
+        // Calculate subtotal for min order check
+        $cart = session('cart', []);
+        $subtotal = 0;
+        foreach ($cart as $id => $qty) {
+            $product = Product::find($id);
+            if ($product) $subtotal += $product->price * $qty;
+        }
+
+        if ($coupon->min_order_value && $subtotal < $coupon->min_order_value) {
+            return redirect()->route('store.checkout')->with('error', 'Pedido mínimo de R$ ' . number_format($coupon->min_order_value, 2, ',', '.'));
+        }
+
+        session(['applied_coupon' => [
+            'code' => $coupon->code,
+            'type' => $coupon->type,
+            'value' => $coupon->value,
+        ]]);
+
+        return redirect()->route('store.checkout')->with('success', 'Cupom aplicado!');
+    }
+
+    public function removeCoupon()
+    {
+        session()->forget('applied_coupon');
+        return redirect()->route('store.checkout');
     }
 
     public function process(Request $request)
     {
-        $data = $request->validate([
+        $request->validate([
             'customer_name' => 'required|string|max:255',
             'customer_email' => 'required|email',
-            'customer_phone' => 'nullable|string',
-            'payment_method' => 'required|string',
-            'address_street' => 'required|string',
-            'address_number' => 'required|string',
-            'address_complement' => 'nullable|string',
-            'address_neighborhood' => 'required|string',
-            'address_city' => 'required|string',
-            'address_state' => 'required|string',
-            'address_zip' => 'required|string',
         ]);
 
         $cart = session('cart', []);
@@ -64,25 +106,38 @@ class CheckoutController extends Controller
             }
         }
 
+        $shipping = $subtotal >= 299 ? 0 : 15.90;
+        $discount = 0;
+        $coupon = session('applied_coupon');
+        if ($coupon) {
+            $discount = $coupon['type'] === 'percentage'
+                ? $subtotal * ($coupon['value'] / 100)
+                : $coupon['value'];
+        }
+        $total = $subtotal + $shipping - $discount;
+
         $order = Order::create([
             'order_number' => Order::generateOrderNumber(),
             'user_id' => auth()->id(),
-            'customer_name' => $data['customer_name'],
-            'customer_email' => $data['customer_email'],
-            'customer_phone' => $data['customer_phone'] ?? null,
+            'customer_name' => $request->input('customer_name'),
+            'customer_email' => $request->input('customer_email'),
+            'customer_phone' => $request->input('customer_phone'),
             'status' => 'pending',
             'subtotal' => $subtotal,
-            'total' => $subtotal,
-            'payment_method' => $data['payment_method'],
+            'shipping' => $shipping,
+            'discount' => $discount,
+            'total' => $total,
+            'payment_method' => 'credit_card',
             'shipping_address' => [
-                'street' => $data['address_street'],
-                'number' => $data['address_number'],
-                'complement' => $data['address_complement'] ?? '',
-                'neighborhood' => $data['address_neighborhood'],
-                'city' => $data['address_city'],
-                'state' => $data['address_state'],
-                'zip_code' => $data['address_zip'],
+                'street' => $request->input('address_street', ''),
+                'number' => $request->input('address_number', ''),
+                'complement' => $request->input('address_complement', ''),
+                'neighborhood' => $request->input('address_neighborhood', ''),
+                'city' => $request->input('address_city', ''),
+                'state' => $request->input('address_state', ''),
+                'zip_code' => $request->input('address_zip', ''),
             ],
+            'coupon_code' => $coupon['code'] ?? null,
         ]);
 
         foreach ($orderItems as $item) {
@@ -90,6 +145,7 @@ class CheckoutController extends Controller
         }
 
         session()->forget('cart');
+        session()->forget('applied_coupon');
         return redirect()->route('store.order.success', $order);
     }
 
