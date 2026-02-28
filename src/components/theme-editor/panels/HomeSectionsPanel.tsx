@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useTheme } from '@/contexts/ThemeContext';
 import { EditorSection, SectionDivider, HintTooltip } from '../EditorControls';
-import { Grid3X3, GripVertical, ChevronUp, ChevronDown, Trash2, Pencil, Check, X, Eye, EyeOff, FolderTree } from 'lucide-react';
+import { Grid3X3, GripVertical, ChevronUp, ChevronDown, Trash2, Pencil, Check, X, Eye, EyeOff, FolderTree, Plus } from 'lucide-react';
+import { ThemeHomepageSection } from '@/types/theme';
 import { cn } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -9,11 +10,27 @@ import { mockCategories } from '@/data/mock';
 
 const carouselSections = ['categories', 'featured-products'];
 
+const availableSectionTypes: { type: ThemeHomepageSection['type']; label: string }[] = [
+  { type: 'banner', label: 'Banner' },
+  { type: 'double-banner', label: 'Banner Duplo' },
+  { type: 'triple-banner', label: 'Banner Triplo' },
+  { type: 'image-text', label: 'Imagem + Texto' },
+  { type: 'video', label: 'Vídeo' },
+  { type: 'countdown', label: 'Contagem Regressiva' },
+  { type: 'benefits', label: 'Benefícios' },
+  { type: 'trust-bar', label: 'Barra de Confiança' },
+  { type: 'faq', label: 'FAQ' },
+  { type: 'categories', label: 'Categorias' },
+  { type: 'featured-products', label: 'Produtos em Destaque' },
+];
+
 export function HomeSectionsPanel() {
   const { draft, toggleSection, reorderSections, updateDraft } = useTheme();
   const sections = draft.homepageSections;
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editTitle, setEditTitle] = useState('');
+
+  const [showAddMenu, setShowAddMenu] = useState(false);
 
   const startEdit = (id: string, title: string) => {
     setEditingId(id);
@@ -276,6 +293,40 @@ export function HomeSectionsPanel() {
             )}
           </React.Fragment>
         ))}
+      </div>
+
+      <div className="relative mt-3">
+        <button
+          onClick={() => setShowAddMenu(!showAddMenu)}
+          className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-lg border border-dashed border-border text-sm text-muted-foreground hover:text-foreground hover:border-foreground/30 transition-colors"
+        >
+          <Plus className="h-4 w-4" />
+          Adicionar seção
+        </button>
+        {showAddMenu && (
+          <div className="absolute top-full left-0 right-0 mt-1 bg-background border border-border rounded-lg shadow-lg z-20 max-h-52 overflow-y-auto">
+            {availableSectionTypes.map(st => (
+              <button
+                key={st.type}
+                onClick={() => {
+                  const newSection: ThemeHomepageSection = {
+                    id: `${st.type}-${Date.now()}`,
+                    type: st.type,
+                    enabled: true,
+                    title: st.label,
+                    showTitle: true,
+                    settings: {},
+                  };
+                  updateDraft({ homepageSections: [...sections, newSection] });
+                  setShowAddMenu(false);
+                }}
+                className="w-full text-left px-3 py-2 text-xs hover:bg-muted/50 transition-colors"
+              >
+                {st.label}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
     </EditorSection>
