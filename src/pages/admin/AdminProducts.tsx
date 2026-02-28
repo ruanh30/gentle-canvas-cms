@@ -114,8 +114,8 @@ function ConfirmDeleteDialog({ open, onOpenChange, title, description, onConfirm
 /*  CATEGORY FORM                                                      */
 /* ================================================================== */
 
-function CategoryForm({ category, onSave, onBack, onDelete, productCount }: {
-  category: Category; onSave: (c: Category) => void; onBack: () => void; onDelete?: () => void; productCount: number;
+function CategoryForm({ category, allCategories, onSave, onBack, onDelete, productCount }: {
+  category: Category; allCategories: Category[]; onSave: (c: Category) => void; onBack: () => void; onDelete?: () => void; productCount: number;
 }) {
   const [form, setForm] = useState(category);
   const [urlInput, setUrlInput] = useState('');
@@ -128,6 +128,9 @@ function CategoryForm({ category, onSave, onBack, onDelete, productCount }: {
     m.name.toLowerCase().includes(mediaSearch.toLowerCase()) &&
     m.url !== form.image
   );
+
+  // Filter out self and descendants for parent selector
+  const parentOptions = allCategories.filter(c => c.id !== form.id);
 
   return (
     <div className="space-y-6 pt-2">
@@ -232,6 +235,18 @@ function CategoryForm({ category, onSave, onBack, onDelete, productCount }: {
         </div>
 
         <div>
+          <label className="text-sm font-medium text-foreground">Categoria pai</label>
+          <Select value={form.parentId || '_none'} onValueChange={v => setForm({ ...form, parentId: v === '_none' ? undefined : v })}>
+            <SelectTrigger className="mt-1.5"><SelectValue placeholder="Nenhuma (raiz)" /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="_none">Nenhuma (raiz)</SelectItem>
+              {parentOptions.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+            </SelectContent>
+          </Select>
+          <p className="text-[10px] text-muted-foreground mt-1">Defina uma categoria pai para criar hierarquia.</p>
+        </div>
+
+        <div>
           <label className="text-sm font-medium text-foreground">Descrição</label>
           <Textarea className="mt-1.5" placeholder="Descrição da categoria..." rows={3} value={form.description || ''} onChange={e => setForm({ ...form, description: e.target.value })} />
         </div>
@@ -252,6 +267,30 @@ function CategoryForm({ category, onSave, onBack, onDelete, productCount }: {
             </p>
           </div>
         )}
+
+        {/* SEO */}
+        <hr className="border-border" />
+        <h4 className="text-sm font-semibold text-foreground flex items-center gap-2">
+          <Globe className="h-4 w-4" /> SEO
+        </h4>
+        <p className="text-xs text-muted-foreground -mt-3">Otimize como a categoria aparece nos buscadores.</p>
+        <div>
+          <label className="text-sm font-medium text-foreground">Meta título</label>
+          <Input className="mt-1.5" placeholder={form.name || 'Título da página'} value={form.metaTitle || ''}
+            onChange={e => setForm({ ...form, metaTitle: e.target.value })} maxLength={60} />
+          <p className="text-[10px] text-muted-foreground mt-1">{(form.metaTitle || '').length}/60 caracteres</p>
+        </div>
+        <div>
+          <label className="text-sm font-medium text-foreground">Meta descrição</label>
+          <Textarea className="mt-1.5" placeholder={form.description || 'Descrição para buscadores...'} rows={3}
+            value={form.metaDescription || ''} onChange={e => setForm({ ...form, metaDescription: e.target.value })} maxLength={160} />
+          <p className="text-[10px] text-muted-foreground mt-1">{(form.metaDescription || '').length}/160 caracteres</p>
+        </div>
+        <div className="bg-muted/50 rounded-lg p-4 space-y-1">
+          <p className="text-sm font-medium text-primary truncate">{form.metaTitle || form.name || 'Título da categoria'}</p>
+          <p className="text-[10px] text-emerald-600 truncate">modastore.com/categorias/{form.slug || '...'}</p>
+          <p className="text-xs text-muted-foreground line-clamp-2">{form.metaDescription || form.description || 'Descrição da categoria aparecerá aqui...'}</p>
+        </div>
       </div>
 
       {onDelete && (
@@ -284,6 +323,7 @@ function CategoriesTab() {
     return (
       <CategoryForm
         category={editing}
+        allCategories={categories}
         onSave={cat => {
           const duplicate = categories.find(x => x.slug === cat.slug && x.id !== cat.id);
           if (duplicate) {
@@ -334,6 +374,10 @@ function CategoriesTab() {
                 <h3 className="text-sm font-semibold text-foreground">{c.name}</h3>
                 <Badge variant="secondary" className="text-[10px]">{productCount(c.id)} produtos</Badge>
               </div>
+              {c.parentId && (() => {
+                const parent = categories.find(x => x.id === c.parentId);
+                return parent ? <p className="text-[10px] text-primary/70 mt-0.5">↳ Subcategoria de {parent.name}</p> : null;
+              })()}
               {c.description && <p className="text-xs text-muted-foreground mt-1 line-clamp-1">{c.description}</p>}
               <p className="text-[10px] text-muted-foreground/60 mt-1.5">/{c.slug}</p>
             </div>
@@ -354,7 +398,20 @@ function ProductsTab() {
   const [editing, setEditing] = useState<Product | null>(null);
   const [sidebarSearch, setSidebarSearch] = useState('');
   const [confirmDelete, setConfirmDelete] = useState<Product | null>(null);
-  const filtered = products.filter(p => p.name.toLowerCase().includes(search.toLowerCase()));
+  const [filterCategory, setFilterCategory] = useState<string>('all');
+  const [filterStatus, setFilterStatus] = useState<string>('all');
+  const [filterStock, setFilterStock] = useState<string>('all');
+  const filtered = products.filter(p => {
+    if (!p.name.toLowerCase().includes(search.toLowerCase())) return false;
+    if (filterCategory !== 'all' && p.categoryId !== filterCategory) return false;
+    if (filterStatus === 'active' && !p.active) return false;
+    if (filterStatus === 'inactive' && p.active) return false;
+    if (filterStatus === 'featured' && !p.featured) return false;
+    if (filterStock === 'out' && p.stock > 0) return false;
+    if (filterStock === 'low' && (p.stock === 0 || p.stock > 10)) return false;
+    if (filterStock === 'in' && p.stock <= 0) return false;
+    return true;
+  });
 
   const duplicateProduct = (p: Product) => {
     const dup: Product = {
@@ -399,7 +456,7 @@ function ProductsTab() {
   return (
     <div className="space-y-4 pt-2">
       <div className="flex items-center justify-between">
-        <p className="text-sm text-muted-foreground">{products.length} produtos</p>
+        <p className="text-sm text-muted-foreground">{filtered.length} de {products.length} produtos</p>
         <Button onClick={() => setEditing({
           id: `prod-${Date.now()}`, name: '', slug: '', description: '', price: 0,
           images: [], categoryId: '', variants: [], stock: 0, sku: '',
@@ -409,9 +466,36 @@ function ProductsTab() {
           <Plus className="h-4 w-4" /> Novo Produto
         </Button>
       </div>
-      <div className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-        <Input placeholder="Buscar produto..." className="pl-9" value={search} onChange={e => setSearch(e.target.value)} />
+      <div className="flex items-center gap-3 flex-wrap">
+        <div className="relative flex-1 min-w-[200px]">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input placeholder="Buscar produto..." className="pl-9" value={search} onChange={e => setSearch(e.target.value)} />
+        </div>
+        <Select value={filterCategory} onValueChange={setFilterCategory}>
+          <SelectTrigger className="w-40 h-10"><SelectValue placeholder="Categoria" /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Todas categorias</SelectItem>
+            {mockCategories.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+          </SelectContent>
+        </Select>
+        <Select value={filterStatus} onValueChange={setFilterStatus}>
+          <SelectTrigger className="w-36 h-10"><SelectValue placeholder="Status" /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Todos status</SelectItem>
+            <SelectItem value="active">Ativos</SelectItem>
+            <SelectItem value="inactive">Inativos</SelectItem>
+            <SelectItem value="featured">Destaques</SelectItem>
+          </SelectContent>
+        </Select>
+        <Select value={filterStock} onValueChange={setFilterStock}>
+          <SelectTrigger className="w-36 h-10"><SelectValue placeholder="Estoque" /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Todo estoque</SelectItem>
+            <SelectItem value="in">Em estoque</SelectItem>
+            <SelectItem value="low">Estoque baixo</SelectItem>
+            <SelectItem value="out">Esgotado</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
       <div className="border border-border rounded-lg overflow-hidden bg-card divide-y divide-border">
@@ -878,6 +962,15 @@ function StockSection({ form, setForm }: { form: Product; setForm: (f: Product) 
                   <span className="text-[10px] text-muted-foreground ml-2">{v.sku}</span>
                 </div>
                 <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1">
+                    <span className="text-[10px] text-muted-foreground">R$</span>
+                    <Input type="number" min={0} step={0.01} className="w-24 h-8 text-sm text-right" value={v.price}
+                      onChange={e => {
+                        const newPrice = parseFloat(e.target.value) || 0;
+                        const updatedVariants = form.variants.map(vr => vr.id === v.id ? { ...vr, price: newPrice } : vr);
+                        setForm({ ...form, variants: updatedVariants });
+                      }} />
+                  </div>
                   <Input type="number" min={0} className="w-20 h-8 text-sm text-right" value={v.stock}
                     onChange={e => {
                       const newStock = parseInt(e.target.value) || 0;
@@ -1274,7 +1367,13 @@ function CollectionForm({ collection, onSave, onBack, onDelete }: {
   const [prodSearch, setProdSearch] = useState('');
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [urlInput, setUrlInput] = useState('');
+  const [showMedia, setShowMedia] = useState(false);
+  const [mediaSearch, setMediaSearch] = useState('');
   const availableProducts = mockProducts.filter(p => p.name.toLowerCase().includes(prodSearch.toLowerCase()));
+  const allMedia = getAllMediaImages();
+  const filteredMedia = allMedia.filter(m =>
+    m.name.toLowerCase().includes(mediaSearch.toLowerCase()) && m.url !== form.image
+  );
 
   React.useEffect(() => { setForm(collection); }, [collection]);
 
@@ -1328,11 +1427,38 @@ function CollectionForm({ collection, onSave, onBack, onDelete }: {
                     <p className="text-[10px] text-muted-foreground">Nenhuma imagem</p>
                   </div>
                 )}
+                <SecureFileUpload onFileAccepted={(dataUrl) => setForm({ ...form, image: dataUrl })} compact className="mt-2" />
                 <div className="flex gap-2 mt-2">
                   <Input placeholder="URL da imagem..." className="flex-1 h-8 text-xs" value={urlInput}
                     onChange={e => setUrlInput(e.target.value)}
                     onKeyDown={e => { if (e.key === 'Enter' && urlInput.trim()) { setForm({ ...form, image: urlInput.trim() }); setUrlInput(''); } }} />
                   <Button variant="outline" size="sm" className="h-8 text-xs" disabled={!urlInput.trim()} onClick={() => { setForm({ ...form, image: urlInput.trim() }); setUrlInput(''); }}>Usar</Button>
+                </div>
+                <div className="mt-2">
+                  <button onClick={() => setShowMedia(!showMedia)} className="text-xs font-medium text-foreground flex items-center gap-1.5 hover:text-primary transition-colors">
+                    <Image className="h-3 w-3" /> {showMedia ? 'Ocultar Mídia' : 'Selecionar da Mídia'}
+                  </button>
+                  {showMedia && (
+                    <div className="mt-2 border border-border rounded-lg p-3 space-y-2 bg-muted/20">
+                      <div className="relative">
+                        <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+                        <Input placeholder="Buscar..." className="pl-8 h-8 text-xs" value={mediaSearch} onChange={e => setMediaSearch(e.target.value)} />
+                      </div>
+                      {filteredMedia.length > 0 ? (
+                        <div className="grid grid-cols-4 gap-2 max-h-48 overflow-y-auto">
+                          {filteredMedia.map((m, i) => (
+                            <button key={i} onClick={() => { setForm({ ...form, image: m.url }); setShowMedia(false); }}
+                              className="group relative aspect-square rounded-md overflow-hidden border border-border hover:border-primary/50 transition-colors">
+                              <img src={m.url} alt={m.name} className="w-full h-full object-cover" />
+                              <span className="absolute bottom-0 inset-x-0 bg-foreground/60 text-background text-[9px] px-1 py-0.5 truncate">{m.name}</span>
+                            </button>
+                          ))}
+                        </div>
+                      ) : (
+                        <p className="text-xs text-muted-foreground text-center py-3">Nenhuma imagem disponível</p>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
 

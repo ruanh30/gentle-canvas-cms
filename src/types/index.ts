@@ -15,6 +15,8 @@ export interface Category {
   description?: string;
   parentId?: string;
   active?: boolean;
+  metaTitle?: string;
+  metaDescription?: string;
 }
 
 export interface ProductVariant {
