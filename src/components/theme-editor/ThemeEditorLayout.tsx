@@ -153,7 +153,7 @@ export function ThemeEditorLayout({ previewUrl, fullscreen = false }: { previewU
   const activeLabel = sections.find(s => s.id === activeSection)?.label || '';
 
   return (
-    <div className={cn("flex flex-col", fullscreen ? "h-screen" : "h-[calc(100vh-73px)] -m-6")}>
+    <div className="flex flex-col h-screen">
       {/* Top bar */}
       <div className="flex items-center justify-between px-4 py-2 bg-background border-b shrink-0">
         <div className="flex items-center gap-2">
