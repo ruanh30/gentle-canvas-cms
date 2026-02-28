@@ -39,7 +39,8 @@ export interface ButtonProps
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant, size, asChild = false, ...props }, ref) => {
     const Comp = asChild ? Slot : "button";
-    const isStorefrontPath = typeof window !== "undefined" && /^\/(store|products|product|cart|checkout|category)(\/|$)/.test(window.location.pathname);
+    const isPreview = typeof window !== "undefined" && new URLSearchParams(window.location.search).has('theme-preview');
+    const isStorefrontPath = typeof window !== "undefined" && (/^\/(store|products|product|cart|checkout|category)?(\/|$)/.test(window.location.pathname) || isPreview);
     const useThemeButton = (variant ?? "default") === "default" && isStorefrontPath;
 
     return (
