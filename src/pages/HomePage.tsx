@@ -169,6 +169,8 @@ const HomePage = () => {
         const imageBorder = (section.settings?.imageBorder as boolean) ?? false;
         const imageBorderColor = (section.settings?.imageBorderColor as string) || '#e91e8c';
         const shapeClass = imageShape === 'circle' ? 'rounded-full' : imageShape === 'rounded' ? 'rounded-xl' : 'rounded-none';
+        const selectedIds = (section.settings?.selectedCategoryIds as string[]) || [];
+        const filteredCategories = selectedIds.length > 0 ? mockCategories.filter(c => selectedIds.includes(c.id)) : mockCategories;
 
         const categoryCard = (cat: typeof mockCategories[0]) => (
           <Link
@@ -202,11 +204,11 @@ const HomePage = () => {
             )}
             {isCarousel ? (
               <SectionCarousel speed={carouselSpeed} showArrows={carouselShowArrows}>
-                {mockCategories.map(categoryCard)}
+                {filteredCategories.map(categoryCard)}
               </SectionCarousel>
             ) : (
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-                {mockCategories.map(categoryCard)}
+                {filteredCategories.map(categoryCard)}
               </div>
             )}
           </section>
