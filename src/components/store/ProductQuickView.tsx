@@ -77,7 +77,7 @@ export function ProductQuickView({ product, open, onClose }: QuickViewProps) {
   const [relatedScroll, setRelatedScroll] = useState(0);
 
   const content = (
-    <div className="flex flex-col md:flex-row gap-0 max-h-[85vh]">
+    <div className="flex flex-col md:flex-row gap-0 max-h-[80vh]">
       {/* Left: Gallery */}
       <div className="md:w-1/2 flex gap-2 p-4">
         {/* Thumbnails */}
@@ -354,7 +354,7 @@ export function ProductQuickView({ product, open, onClose }: QuickViewProps) {
 
   return (
     <Dialog open={open} onOpenChange={v => !v && onClose()}>
-      <DialogContent className="max-w-4xl p-0 overflow-hidden max-h-[90vh]">
+      <DialogContent className="max-w-3xl w-[95vw] p-0 overflow-hidden max-h-[85vh]">
         {content}
       </DialogContent>
     </Dialog>
