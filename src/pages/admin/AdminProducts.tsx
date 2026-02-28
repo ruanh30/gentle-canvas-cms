@@ -570,6 +570,231 @@ function ImagesSectionContent({ form, setForm }: { form: Product; setForm: React
 }
 
 /* ------------------------------------------------------------------ */
+/*  Stock Section with variant management                              */
+/* ------------------------------------------------------------------ */
+
+const DEFAULT_SIZES = ['PP', 'P', 'M', 'G', 'GG', 'XG', '36', '37', '38', '39', '40', '41', '42', '43', '44'];
+const DEFAULT_COLORS = ['Branca', 'Preta', 'Cinza', 'Azul', 'Vermelha', 'Verde', 'Amarela', 'Rosa', 'Marrom', 'Bege'];
+
+function StockSection({ form, setForm }: { form: Product; setForm: (f: Product) => void }) {
+  const [customColor, setCustomColor] = useState('');
+  const [customSize, setCustomSize] = useState('');
+  const [selectedSizes, setSelectedSizes] = useState<string[]>(() => {
+    const sizes = new Set<string>();
+    form.variants.forEach(v => { if (v.attributes.tamanho) sizes.add(v.attributes.tamanho); });
+    return Array.from(sizes);
+  });
+  const [selectedColors, setSelectedColors] = useState<string[]>(() => {
+    const colors = new Set<string>();
+    form.variants.forEach(v => { if (v.attributes.cor) colors.add(v.attributes.cor); });
+    return Array.from(colors);
+  });
+  const [userColors, setUserColors] = useState<string[]>(() => {
+    const existing = new Set<string>();
+    form.variants.forEach(v => { if (v.attributes.cor && !DEFAULT_COLORS.includes(v.attributes.cor)) existing.add(v.attributes.cor); });
+    return Array.from(existing);
+  });
+  const [userSizes, setUserSizes] = useState<string[]>(() => {
+    const existing = new Set<string>();
+    form.variants.forEach(v => { if (v.attributes.tamanho && !DEFAULT_SIZES.includes(v.attributes.tamanho)) existing.add(v.attributes.tamanho); });
+    return Array.from(existing);
+  });
+
+  const allColors = [...DEFAULT_COLORS, ...userColors];
+  const allSizes = [...DEFAULT_SIZES, ...userSizes];
+
+  const addCustomColor = () => {
+    const c = customColor.trim();
+    if (c && !allColors.includes(c)) {
+      setUserColors(prev => [...prev, c]);
+      setSelectedColors(prev => [...prev, c]);
+      setCustomColor('');
+    }
+  };
+
+  const addCustomSize = () => {
+    const s = customSize.trim();
+    if (s && !allSizes.includes(s)) {
+      setUserSizes(prev => [...prev, s]);
+      setSelectedSizes(prev => [...prev, s]);
+      setCustomSize('');
+    }
+  };
+
+  const toggleColor = (c: string) => setSelectedColors(prev => prev.includes(c) ? prev.filter(x => x !== c) : [...prev, c]);
+  const toggleSize = (s: string) => setSelectedSizes(prev => prev.includes(s) ? prev.filter(x => x !== s) : [...prev, s]);
+
+  const generateVariants = () => {
+    const newVariants: Product['variants'] = [];
+    const sizes = selectedSizes.length > 0 ? selectedSizes : [''];
+    const colors = selectedColors.length > 0 ? selectedColors : [''];
+
+    for (const size of sizes) {
+      for (const color of colors) {
+        const name = [size, color].filter(Boolean).join(' - ');
+        const existing = form.variants.find(v =>
+          (v.attributes.tamanho || '') === size && (v.attributes.cor || '') === color
+        );
+        if (existing) {
+          newVariants.push(existing);
+        } else {
+          const skuParts = [form.sku, size, color.substring(0, 2).toUpperCase()].filter(Boolean).join('-');
+          newVariants.push({
+            id: `v-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
+            productId: form.id,
+            name: name || 'Padrão',
+            sku: skuParts,
+            price: form.price,
+            stock: 0,
+            attributes: {
+              ...(size ? { tamanho: size } : {}),
+              ...(color ? { cor: color } : {}),
+            },
+          });
+        }
+      }
+    }
+    const totalStock = newVariants.reduce((sum, v) => sum + v.stock, 0);
+    setForm({ ...form, variants: newVariants, stock: totalStock });
+  };
+
+  return (
+    <div className="space-y-5">
+      <h3 className="text-base font-semibold text-foreground">Estoque & Variantes</h3>
+      <hr className="border-border" />
+
+      <div>
+        <label className="text-sm font-medium text-foreground">Quantidade em estoque (geral)</label>
+        <Input className="mt-1.5 w-32" type="number" min={0} value={form.stock}
+          onChange={e => setForm({ ...form, stock: parseInt(e.target.value) || 0 })} />
+      </div>
+
+      {form.stock === 0 && form.variants.length === 0 && (
+        <div className="bg-destructive/10 border border-destructive/20 rounded-lg px-4 py-3">
+          <p className="text-sm text-destructive font-medium">Produto esgotado — não será exibido na loja.</p>
+        </div>
+      )}
+
+      <hr className="border-border" />
+
+      {/* Colors */}
+      <div>
+        <p className="text-sm font-medium text-foreground mb-2 flex items-center gap-2">
+          <Palette className="h-4 w-4" /> Cores disponíveis
+        </p>
+        <div className="flex flex-wrap gap-1.5">
+          {allColors.map(c => (
+            <Badge
+              key={c}
+              variant={selectedColors.includes(c) ? 'default' : 'outline'}
+              className="cursor-pointer text-xs select-none"
+              onClick={() => toggleColor(c)}
+            >
+              {selectedColors.includes(c) && <Check className="h-3 w-3 mr-1" />}
+              {c}
+            </Badge>
+          ))}
+        </div>
+        <div className="flex items-center gap-2 mt-2">
+          <Input
+            className="h-8 w-40 text-xs"
+            placeholder="Nova cor personalizada..."
+            value={customColor}
+            onChange={e => setCustomColor(e.target.value)}
+            onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); addCustomColor(); } }}
+          />
+          <Button variant="outline" size="sm" className="h-8 text-xs gap-1" disabled={!customColor.trim()} onClick={addCustomColor}>
+            <Plus className="h-3 w-3" /> Adicionar
+          </Button>
+        </div>
+      </div>
+
+      {/* Sizes */}
+      <div>
+        <p className="text-sm font-medium text-foreground mb-2 flex items-center gap-2">
+          <Layers className="h-4 w-4" /> Tamanhos disponíveis
+        </p>
+        <div className="flex flex-wrap gap-1.5">
+          {allSizes.map(s => (
+            <Badge
+              key={s}
+              variant={selectedSizes.includes(s) ? 'default' : 'outline'}
+              className="cursor-pointer text-xs select-none"
+              onClick={() => toggleSize(s)}
+            >
+              {selectedSizes.includes(s) && <Check className="h-3 w-3 mr-1" />}
+              {s}
+            </Badge>
+          ))}
+        </div>
+        <div className="flex items-center gap-2 mt-2">
+          <Input
+            className="h-8 w-40 text-xs"
+            placeholder="Novo tamanho..."
+            value={customSize}
+            onChange={e => setCustomSize(e.target.value)}
+            onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); addCustomSize(); } }}
+          />
+          <Button variant="outline" size="sm" className="h-8 text-xs gap-1" disabled={!customSize.trim()} onClick={addCustomSize}>
+            <Plus className="h-3 w-3" /> Adicionar
+          </Button>
+        </div>
+      </div>
+
+      {/* Generate */}
+      <Button onClick={generateVariants} className="gap-2" disabled={selectedColors.length === 0 && selectedSizes.length === 0}>
+        <Boxes className="h-4 w-4" /> Gerar variantes ({(selectedColors.length || 1) * (selectedSizes.length || 1)})
+      </Button>
+
+      {/* Variant stock table */}
+      {form.variants.length > 0 && (
+        <>
+          <hr className="border-border" />
+          <p className="text-sm font-medium text-foreground">Estoque por variante ({form.variants.length})</p>
+          <div className="divide-y divide-border border border-border rounded-lg overflow-hidden max-h-72 overflow-y-auto">
+            {form.variants.map(v => (
+              <div key={v.id} className="flex items-center justify-between px-4 py-2.5 bg-card">
+                <div className="flex-1 min-w-0">
+                  <span className="text-sm font-medium text-foreground">{v.name}</span>
+                  <span className="text-[10px] text-muted-foreground ml-2">{v.sku}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Input
+                    type="number" min={0} className="w-20 h-8 text-sm text-right" value={v.stock}
+                    onChange={e => {
+                      const newStock = parseInt(e.target.value) || 0;
+                      const updatedVariants = form.variants.map(vr => vr.id === v.id ? { ...vr, stock: newStock } : vr);
+                      const totalStock = updatedVariants.reduce((sum, vr) => sum + vr.stock, 0);
+                      setForm({ ...form, variants: updatedVariants, stock: totalStock });
+                    }}
+                  />
+                  <span className="text-xs text-muted-foreground w-5">un</span>
+                  <button
+                    onClick={() => {
+                      const updated = form.variants.filter(vr => vr.id !== v.id);
+                      setForm({ ...form, variants: updated, stock: updated.reduce((s, vr) => s + vr.stock, 0) });
+                    }}
+                    className="text-muted-foreground hover:text-destructive transition-colors"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="flex items-center justify-between px-4 py-2 bg-muted/50 rounded-lg">
+            <span className="text-sm font-medium text-foreground">Total</span>
+            <span className="text-sm font-semibold text-foreground">
+              {form.variants.reduce((sum, v) => sum + v.stock, 0)} un
+            </span>
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
 /*  Product Form                                                       */
 /* ------------------------------------------------------------------ */
 
@@ -734,60 +959,7 @@ function ProductForm({ product, allProducts, sidebarSearch, onSidebarSearch, onS
           )}
 
           {section === 'stock' && (
-            <div className="space-y-5">
-              <h3 className="text-base font-semibold text-foreground">Estoque</h3>
-              <hr className="border-border" />
-              <div>
-                <label className="text-sm font-medium text-foreground">Quantidade em estoque</label>
-                <Input className="mt-1.5 w-32" type="number" min={0} value={form.stock} onChange={e => setForm({ ...form, stock: parseInt(e.target.value) || 0 })} />
-              </div>
-              {form.stock === 0 && (
-                <div className="bg-destructive/10 border border-destructive/20 rounded-lg px-4 py-3">
-                  <p className="text-sm text-destructive font-medium">Produto esgotado — não será exibido na loja.</p>
-                </div>
-              )}
-              {form.stock > 0 && form.stock <= 10 && (
-                <div className="bg-amber-50 border border-amber-200 rounded-lg px-4 py-3">
-                  <p className="text-sm text-amber-700 font-medium">Estoque baixo — considere reabastecer.</p>
-                </div>
-              )}
-              {form.variants.length > 0 && (
-                <>
-                  <hr className="border-border" />
-                  <p className="text-sm font-medium text-foreground">Estoque por variante</p>
-                  <div className="divide-y divide-border border border-border rounded-lg overflow-hidden">
-                    {form.variants.map(v => (
-                      <div key={v.id} className="flex items-center justify-between px-4 py-3 bg-card">
-                        <span className="text-sm font-medium text-foreground">{v.name}</span>
-                        <div className="flex items-center gap-2">
-                          <Input
-                            type="number"
-                            min={0}
-                            className="w-20 h-8 text-sm text-right"
-                            value={v.stock}
-                            onChange={e => {
-                              const newStock = parseInt(e.target.value) || 0;
-                              const updatedVariants = form.variants.map(vr =>
-                                vr.id === v.id ? { ...vr, stock: newStock } : vr
-                              );
-                              const totalStock = updatedVariants.reduce((sum, vr) => sum + vr.stock, 0);
-                              setForm({ ...form, variants: updatedVariants, stock: totalStock });
-                            }}
-                          />
-                          <span className="text-xs text-muted-foreground w-5">un</span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                  <div className="flex items-center justify-between px-4 py-2 bg-muted/50 rounded-lg">
-                    <span className="text-sm font-medium text-foreground">Total</span>
-                    <span className="text-sm font-semibold text-foreground">
-                      {form.variants.reduce((sum, v) => sum + v.stock, 0)} un
-                    </span>
-                  </div>
-                </>
-              )}
-            </div>
+            <StockSection form={form} setForm={setForm} />
           )}
 
           {section === 'images' && (
