@@ -1,34 +1,11 @@
 import React, { useState } from 'react';
 import { useTheme } from '@/contexts/ThemeContext';
-import { EditorSection, ToggleRow, TextField, SectionDivider, HintTooltip, SelectField, NumberSlider } from '../EditorControls';
-import { Grid3X3, GripVertical, ChevronUp, ChevronDown, Plus, Trash2, Pencil, Check, X, Eye, EyeOff, FolderTree } from 'lucide-react';
+import { EditorSection, SectionDivider, HintTooltip } from '../EditorControls';
+import { Grid3X3, GripVertical, ChevronUp, ChevronDown, Trash2, Pencil, Check, X, Eye, EyeOff, FolderTree } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
-import { ThemeHomepageSection } from '@/types/theme';
 import { mockCategories } from '@/data/mock';
-
-const sectionTypes: { value: ThemeHomepageSection['type']; label: string }[] = [
-  { value: 'hero', label: 'Hero Banner' },
-  { value: 'categories', label: 'Categorias' },
-  { value: 'featured-products', label: 'Produtos em Destaque' },
-  { value: 'banner', label: 'Banner Promocional' },
-  { value: 'double-banner', label: 'Banner Duplo / Mosaico' },
-  { value: 'triple-banner', label: 'Banner Triplo' },
-  { value: 'countdown', label: 'Contagem Regressiva' },
-  { value: 'video', label: 'Vídeo (YouTube / MP4)' },
-  { value: 'image-text', label: 'Imagem + Texto (Split)' },
-  { value: 'faq', label: 'FAQ (Accordion)' },
-  { value: 'benefits', label: 'Benefícios' },
-  { value: 'testimonials', label: 'Depoimentos' },
-  { value: 'brands', label: 'Marcas' },
-  { value: 'newsletter', label: 'Newsletter' },
-  { value: 'trust-bar', label: 'Selos de Confiança' },
-  { value: 'collections', label: 'Coleções' },
-  { value: 'custom-html', label: 'HTML Customizado' },
-];
 
 const carouselSections = ['categories', 'featured-products'];
 
@@ -37,9 +14,6 @@ export function HomeSectionsPanel() {
   const sections = draft.homepageSections;
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editTitle, setEditTitle] = useState('');
-  const [showAdd, setShowAdd] = useState(false);
-  const [newType, setNewType] = useState<ThemeHomepageSection['type']>('banner');
-  const [newTitle, setNewTitle] = useState('');
 
   const startEdit = (id: string, title: string) => {
     setEditingId(id);
@@ -67,26 +41,10 @@ export function HomeSectionsPanel() {
     });
   };
 
-  const addSection = () => {
-    if (!newTitle.trim()) return;
-    const newSection: ThemeHomepageSection = {
-      id: `custom-${Date.now()}`,
-      type: newType,
-      enabled: true,
-      title: newTitle.trim(),
-      showTitle: true,
-      settings: {},
-    };
-    updateDraft({
-      homepageSections: [...sections, newSection],
-    });
-    setNewTitle('');
-    setShowAdd(false);
-  };
 
   return (
     <EditorSection icon={Grid3X3} title="Seções da Home" description="Ative, desative, renomeie e reordene as seções">
-      <p className="text-[11px] text-muted-foreground">Use as setas para reordenar. Clique no lápis para renomear.<HintTooltip text="Cada seção pode ser ativada/desativada, renomeada, reordenada ou removida. Adicione novas seções com o botão +" /></p>
+      <p className="text-[11px] text-muted-foreground">Use as setas para reordenar. Clique no lápis para renomear. Novas categorias e coleções aparecem aqui automaticamente.<HintTooltip text="Cada seção pode ser ativada/desativada, renomeada, reordenada ou removida. Categorias e coleções são adicionadas automaticamente quando criadas." /></p>
       <div className="space-y-1">
         {sections.map((section, idx) => (
           <React.Fragment key={section.id}>
@@ -293,31 +251,6 @@ export function HomeSectionsPanel() {
         ))}
       </div>
 
-      {showAdd ? (
-        <div className="border border-border rounded-lg p-3 space-y-2">
-          <Select value={newType} onValueChange={v => setNewType(v as ThemeHomepageSection['type'])}>
-            <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
-            <SelectContent>
-              {sectionTypes.map(t => <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>)}
-            </SelectContent>
-          </Select>
-          <Input
-            placeholder="Nome da seção"
-            value={newTitle}
-            onChange={e => setNewTitle(e.target.value)}
-            className="h-8 text-xs"
-            onKeyDown={e => e.key === 'Enter' && addSection()}
-          />
-          <div className="flex gap-2">
-            <Button size="sm" className="h-7 text-xs flex-1" onClick={addSection}>Adicionar</Button>
-            <Button size="sm" variant="outline" className="h-7 text-xs" onClick={() => setShowAdd(false)}>Cancelar</Button>
-          </div>
-        </div>
-      ) : (
-        <Button size="sm" variant="outline" className="w-full h-8 text-xs" onClick={() => setShowAdd(true)}>
-          <Plus className="h-3.5 w-3.5 mr-1" /> Adicionar seção
-        </Button>
-      )}
     </EditorSection>
   );
 }

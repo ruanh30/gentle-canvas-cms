@@ -317,7 +317,19 @@ function CategoriesTab() {
   const [categories, setCategories] = useState<Category[]>(mockCategories);
   const [search, setSearch] = useState('');
   const [editing, setEditing] = useState<Category | null>(null);
+  const { draft, updateDraft } = useTheme();
   const filtered = categories.filter(c => c.name.toLowerCase().includes(search.toLowerCase()));
+
+  const autoAddCategoryToHome = (cat: Category) => {
+    const exists = draft.homepageSections.some(s => s.id === `cat-section-${cat.id}`);
+    if (!exists) {
+      const newSection: ThemeHomepageSection = {
+        id: `cat-section-${cat.id}`, type: 'categories', enabled: true,
+        title: cat.name, showTitle: true, settings: { selectedCategoryIds: [cat.id] },
+      };
+      updateDraft({ homepageSections: [...draft.homepageSections, newSection] });
+    }
+  };
 
   const productCount = (catId: string) => mockProducts.filter(p => p.categoryId === catId).length;
 
@@ -333,7 +345,9 @@ function CategoriesTab() {
             toast({ title: 'Slug já existe', description: `A categoria "${duplicate.name}" já utiliza o slug "/${cat.slug}". Escolha um slug diferente.`, variant: 'destructive' });
             return;
           }
+          const isNewCat = !categories.find(x => x.id === cat.id);
           setCategories(prev => prev.find(x => x.id === cat.id) ? prev.map(x => x.id === cat.id ? cat : x) : [...prev, cat]);
+          if (isNewCat) autoAddCategoryToHome(cat);
           setEditing(null);
         }}
         onBack={() => setEditing(null)}
@@ -1099,131 +1113,8 @@ function ProductStatusSection({ form, setForm }: { form: Product; setForm: React
 }
 
 /* ------------------------------------------------------------------ */
-/*  Home Sections Manager (for Collections tab)                        */
+/*  (HomeSectionsManager removed — now lives in Theme Editor)          */
 /* ------------------------------------------------------------------ */
-
-const sectionTypeLabels: Record<string, string> = {
-  hero: 'Hero Banner', categories: 'Categorias', 'featured-products': 'Produtos em Destaque',
-  banner: 'Banner', 'double-banner': 'Banner Duplo', 'triple-banner': 'Banner Triplo',
-  countdown: 'Contagem Regressiva', video: 'Vídeo', 'image-text': 'Imagem + Texto',
-  faq: 'FAQ', benefits: 'Benefícios', testimonials: 'Depoimentos', brands: 'Marcas',
-  newsletter: 'Newsletter', 'trust-bar': 'Selos de Confiança', collections: 'Coleções',
-  'custom-html': 'HTML Customizado', 'blog-preview': 'Blog',
-};
-
-const sectionTypeOptions = Object.entries(sectionTypeLabels).map(([value, label]) => ({ value, label }));
-
-function HomeSectionsManager() {
-  const { draft, toggleSection, reorderSections, updateDraft } = useTheme();
-  const sections = draft.homepageSections;
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const [editTitle, setEditTitle] = useState('');
-  const [showAdd, setShowAdd] = useState(false);
-  const [newType, setNewType] = useState<ThemeHomepageSection['type']>('banner');
-  const [newTitle, setNewTitle] = useState('');
-
-  const saveEdit = (id: string) => {
-    updateDraft({ homepageSections: sections.map(s => s.id === id ? { ...s, title: editTitle } : s) });
-    setEditingId(null);
-  };
-
-  const removeSection = (id: string) => {
-    updateDraft({ homepageSections: sections.filter(s => s.id !== id) });
-  };
-
-  const addSection = () => {
-    if (!newTitle.trim()) return;
-    const newSection: ThemeHomepageSection = {
-      id: `custom-${Date.now()}`, type: newType, enabled: true,
-      title: newTitle.trim(), showTitle: true, settings: {},
-    };
-    updateDraft({ homepageSections: [...sections, newSection] });
-    setNewTitle(''); setShowAdd(false);
-  };
-
-  return (
-    <div className="border border-border rounded-lg bg-card overflow-hidden">
-      <div className="px-4 py-3 bg-muted/30 border-b border-border">
-        <div className="flex items-center gap-2">
-          <Grid3X3 className="h-4 w-4 text-foreground" />
-          <div>
-            <h3 className="text-sm font-semibold text-foreground">Seções da Página Inicial</h3>
-            <p className="text-[10px] text-muted-foreground">Organize quais blocos aparecem na home e em qual ordem.</p>
-          </div>
-        </div>
-      </div>
-
-      <div className="p-3 space-y-1">
-        {sections.map((section, idx) => (
-          <div key={section.id}
-            className={cn(
-              'flex items-center gap-2 px-3 py-2 rounded-lg border transition-colors',
-              section.enabled ? 'bg-secondary border-border' : 'bg-muted/30 border-transparent opacity-60'
-            )}>
-            <GripVertical className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
-            {editingId === section.id ? (
-              <div className="flex-1 flex items-center gap-1">
-                <Input value={editTitle} onChange={e => setEditTitle(e.target.value)} className="h-7 text-xs flex-1" autoFocus
-                  onKeyDown={e => e.key === 'Enter' && saveEdit(section.id)} />
-                <button onClick={() => saveEdit(section.id)} className="p-0.5 hover:bg-background rounded text-primary"><Check className="h-3.5 w-3.5" /></button>
-                <button onClick={() => setEditingId(null)} className="p-0.5 hover:bg-background rounded"><X className="h-3.5 w-3.5" /></button>
-              </div>
-            ) : (
-              <>
-                <div className="flex-1 min-w-0">
-                  <span className="text-sm font-medium text-foreground">{section.title}</span>
-                  <span className="text-[9px] text-muted-foreground/60 ml-1.5">{sectionTypeLabels[section.type] || section.type}</span>
-                </div>
-                <button onClick={() => { setEditingId(section.id); setEditTitle(section.title); }}
-                  className="p-0.5 hover:bg-background rounded opacity-60 hover:opacity-100">
-                  <Pencil className="h-3 w-3" />
-                </button>
-              </>
-            )}
-            <div className="flex items-center gap-0.5">
-              <button onClick={() => idx > 0 && reorderSections(idx, idx - 1)} className="p-0.5 hover:bg-background rounded" disabled={idx === 0}>
-                <ChevronUp className="h-3.5 w-3.5" />
-              </button>
-              <button onClick={() => idx < sections.length - 1 && reorderSections(idx, idx + 1)} className="p-0.5 hover:bg-background rounded" disabled={idx === sections.length - 1}>
-                <ChevronDown className="h-3.5 w-3.5" />
-              </button>
-            </div>
-            <button onClick={() => updateDraft({ homepageSections: sections.map(s => s.id === section.id ? { ...s, showTitle: !(s.showTitle ?? true) } : s) })}
-              className="p-0.5 hover:bg-background rounded opacity-60 hover:opacity-100"
-              title={section.showTitle !== false ? 'Ocultar título' : 'Mostrar título'}>
-              {section.showTitle !== false ? <Eye className="h-3 w-3" /> : <EyeOff className="h-3 w-3" />}
-            </button>
-            <button onClick={() => removeSection(section.id)} className="p-0.5 hover:bg-background rounded text-destructive opacity-60 hover:opacity-100">
-              <Trash2 className="h-3 w-3" />
-            </button>
-            <input type="checkbox" checked={section.enabled} onChange={() => toggleSection(section.id)} className="rounded" />
-          </div>
-        ))}
-      </div>
-
-      <div className="px-3 pb-3">
-        {showAdd ? (
-          <div className="border border-border rounded-lg p-3 space-y-2">
-            <Select value={newType} onValueChange={v => setNewType(v as ThemeHomepageSection['type'])}>
-              <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
-              <SelectContent>{sectionTypeOptions.map(t => <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>)}</SelectContent>
-            </Select>
-            <Input placeholder="Nome da seção" value={newTitle} onChange={e => setNewTitle(e.target.value)} className="h-8 text-xs"
-              onKeyDown={e => e.key === 'Enter' && addSection()} />
-            <div className="flex gap-2">
-              <Button size="sm" className="h-7 text-xs flex-1" onClick={addSection}>Adicionar</Button>
-              <Button size="sm" variant="outline" className="h-7 text-xs" onClick={() => setShowAdd(false)}>Cancelar</Button>
-            </div>
-          </div>
-        ) : (
-          <Button size="sm" variant="outline" className="w-full h-8 text-xs" onClick={() => setShowAdd(true)}>
-            <Plus className="h-3.5 w-3.5 mr-1" /> Adicionar seção
-          </Button>
-        )}
-      </div>
-    </div>
-  );
-}
 
 /* ------------------------------------------------------------------ */
 /*  Product Form                                                       */
@@ -1469,6 +1360,19 @@ function CollectionsTab() {
   const [collections, setCollections] = useState<ProductCollection[]>(mockCollections);
   const [search, setSearch] = useState('');
   const [editing, setEditing] = useState<ProductCollection | null>(null);
+  const navigate = useNavigate();
+  const { draft, updateDraft } = useTheme();
+
+  const autoAddCollectionToHome = (col: ProductCollection) => {
+    const exists = draft.homepageSections.some(s => s.id === `col-section-${col.id}`);
+    if (!exists) {
+      const newSection: ThemeHomepageSection = {
+        id: `col-section-${col.id}`, type: 'collections', enabled: true,
+        title: col.name, showTitle: true, settings: {},
+      };
+      updateDraft({ homepageSections: [...draft.homepageSections, newSection] });
+    }
+  };
 
   if (editing) {
     const isNew = !collections.find(x => x.id === editing.id);
@@ -1481,7 +1385,9 @@ function CollectionsTab() {
             toast({ title: 'Slug já existe', description: `A coleção "${duplicate.name}" já utiliza o slug "/${c.slug}". Escolha um slug diferente.`, variant: 'destructive' });
             return;
           }
+          const isNewCol = !collections.find(x => x.id === c.id);
           setCollections(prev => prev.find(x => x.id === c.id) ? prev.map(x => x.id === c.id ? c : x) : [...prev, c]);
+          if (isNewCol) autoAddCollectionToHome(c);
           setEditing(null);
         }}
         onBack={() => setEditing(null)}
@@ -1498,10 +1404,20 @@ function CollectionsTab() {
 
   return (
     <div className="space-y-5 pt-2">
-      {/* Home Sections Manager */}
-      <HomeSectionsManager />
+      {/* Link to Home Sections in Theme Editor */}
+      <div className="border border-border rounded-lg bg-card px-4 py-3 flex items-center justify-between gap-3">
+        <div className="flex items-center gap-2.5 min-w-0">
+          <Grid3X3 className="h-4 w-4 text-muted-foreground shrink-0" />
+          <div className="min-w-0">
+            <p className="text-sm font-medium text-foreground">Seções da Página Inicial</p>
+            <p className="text-[11px] text-muted-foreground">Organize a ordem das seções, oculte títulos, ative ou desative blocos. Categorias e coleções novas aparecem lá automaticamente.</p>
+          </div>
+        </div>
+        <Button variant="outline" size="sm" className="shrink-0 gap-1.5 text-xs" onClick={() => navigate('/admin/customization')}>
+          <Palette className="h-3.5 w-3.5" /> Organizar seções
+        </Button>
+      </div>
 
-      <hr className="border-border" />
 
       <div className="flex items-center justify-between gap-4">
         <div className="relative flex-1 max-w-md">
