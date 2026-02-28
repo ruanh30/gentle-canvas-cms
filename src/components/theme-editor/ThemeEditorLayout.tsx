@@ -10,10 +10,10 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 // Sections config
 import {
   Palette, Type, Layout, PanelTop, PanelBottom, Image, Package,
-  CreditCard, MessageCircle, Globe, Code, Accessibility,
+  CreditCard, MessageCircle, Globe, Code,
   Layers, MousePointer, FormInput, Sparkles, LayoutGrid,
   SlidersHorizontal, ShoppingCart, FileText, Eye, Award,
-  TrendingUp, Smartphone as SmartphoneIcon, FlaskConical, Menu as MenuIcon
+  TrendingUp, FlaskConical
 } from 'lucide-react';
 
 // Editor panels
@@ -36,14 +36,11 @@ import { WhatsAppPanel } from './panels/WhatsAppPanel';
 import { SEOPanel } from './panels/SEOPanel';
 import { CustomCodePanel } from './panels/CustomCodePanel';
 import { PresetsPanel } from './panels/PresetsPanel';
-
 import { QuickViewPanel } from './panels/QuickViewPanel';
 import { BadgesPanel } from './panels/BadgesPanel';
 import { MicrocopyPanel } from './panels/MicrocopyPanel';
 import { ConversionPanel } from './panels/ConversionPanel';
-
 import { ABTestPanel } from './panels/ABTestPanel';
-
 
 export interface EditorSectionItem {
   id: string;
@@ -64,27 +61,25 @@ const sections: EditorSectionItem[] = [
   // Estrutura
   { id: 'logo', label: 'Logo & Marca', icon: Image, group: 'Estrutura' },
   { id: 'header', label: 'Cabeçalho', icon: PanelTop, group: 'Estrutura' },
-  
   { id: 'hero', label: 'Hero / Banner', icon: Layers, group: 'Estrutura' },
   { id: 'home-sections', label: 'Seções da Home', icon: LayoutGrid, group: 'Estrutura' },
   { id: 'footer', label: 'Rodapé', icon: PanelBottom, group: 'Estrutura' },
-  // Produtos & Compra
-  { id: 'product-card', label: 'Card de Produto', icon: Package, group: 'Produtos & Compra' },
-  { id: 'product-page', label: 'Página de Produto', icon: FileText, group: 'Produtos & Compra' },
-  { id: 'category', label: 'Categoria / Busca', icon: SlidersHorizontal, group: 'Produtos & Compra' },
-  { id: 'cart', label: 'Carrinho', icon: ShoppingCart, group: 'Produtos & Compra' },
-  { id: 'checkout', label: 'Checkout', icon: CreditCard, group: 'Produtos & Compra' },
-  { id: 'quick-view', label: 'Quick View', icon: Eye, group: 'Produtos & Compra' },
-  { id: 'badges', label: 'Badges / Etiquetas', icon: Award, group: 'Produtos & Compra' },
+  // Aparência de Produto
+  { id: 'product-card', label: 'Card de Produto', icon: Package, group: 'Aparência de Produto' },
+  { id: 'product-page', label: 'Página de Produto', icon: FileText, group: 'Aparência de Produto' },
+  { id: 'category', label: 'Categoria / Busca', icon: SlidersHorizontal, group: 'Aparência de Produto' },
+  { id: 'quick-view', label: 'Quick View', icon: Eye, group: 'Aparência de Produto' },
+  { id: 'badges', label: 'Badges / Etiquetas', icon: Award, group: 'Aparência de Produto' },
+  // Carrinho & Checkout
+  { id: 'cart', label: 'Carrinho', icon: ShoppingCart, group: 'Carrinho & Checkout' },
+  { id: 'checkout', label: 'Checkout', icon: CreditCard, group: 'Carrinho & Checkout' },
   // Conversão & Textos
   { id: 'microcopy', label: 'Textos do Tema', icon: Type, group: 'Conversão & Textos' },
   { id: 'conversion', label: 'Conversão', icon: TrendingUp, group: 'Conversão & Textos' },
   { id: 'whatsapp', label: 'WhatsApp', icon: MessageCircle, group: 'Conversão & Textos' },
   // Avançado
-  
   { id: 'ab-test', label: 'Teste A/B', icon: FlaskConical, group: 'Avançado' },
   { id: 'seo', label: 'SEO', icon: Globe, group: 'Avançado' },
-  
   { id: 'custom-code', label: 'Código Custom', icon: Code, group: 'Avançado' },
 ];
 
@@ -98,7 +93,6 @@ function renderPanel(sectionId: string) {
     case 'inputs': return <InputsPanel />;
     case 'logo': return <LogoPanel />;
     case 'header': return <HeaderPanel />;
-    
     case 'hero': return <HeroPanel />;
     case 'home-sections': return <HomeSectionsPanel />;
     case 'product-card': return <ProductCardPanel />;
@@ -110,13 +104,11 @@ function renderPanel(sectionId: string) {
     case 'badges': return <BadgesPanel />;
     case 'microcopy': return <MicrocopyPanel />;
     case 'conversion': return <ConversionPanel />;
-    
     case 'ab-test': return <ABTestPanel />;
     case 'footer': return <FooterPanel />;
     case 'whatsapp': return <WhatsAppPanel />;
     case 'seo': return <SEOPanel />;
     case 'custom-code': return <CustomCodePanel />;
-    
     default: return <div className="p-4 text-muted-foreground text-sm">Selecione uma seção</div>;
   }
 }
@@ -141,7 +133,7 @@ export function ThemeEditorLayout({ previewUrl, fullscreen = false }: { previewU
     }
   }, [previewUrl]);
 
-  // Send draft to iframe on every change (only after iframe is loaded)
+  // Send draft to iframe on every change
   React.useEffect(() => {
     if (!iframeReady) return;
     const iframe = iframeRef.current;
@@ -152,7 +144,6 @@ export function ThemeEditorLayout({ previewUrl, fullscreen = false }: { previewU
 
   const handleIframeLoad = () => {
     setIframeReady(true);
-    // Small delay to ensure React has mounted inside the iframe
     setTimeout(() => {
       const iframe = iframeRef.current;
       if (iframe?.contentWindow) {

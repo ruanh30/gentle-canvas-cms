@@ -1,7 +1,7 @@
 import React from 'react';
 import { useTheme } from '@/contexts/ThemeContext';
-import { EditorSection, TextField, ToggleRow, NumberSlider, OptionPicker, SelectField, ColorInput, SectionDivider } from '../EditorControls';
-import { Layers } from 'lucide-react';
+import { EditorSection, TextField, ToggleRow, NumberSlider, OptionPicker, SelectField, ColorInput, SectionDivider, AdminLink } from '../EditorControls';
+import { Layers, ImageIcon } from 'lucide-react';
 
 export function HeroPanel() {
   const { draft, updateDraftSection, setDraftDeep } = useTheme();
@@ -72,6 +72,9 @@ export function HeroPanel() {
           )}
         </>
       )}
+      
+      <SectionDivider label="Atalhos" />
+      <AdminLink to="/admin/media" label="Abrir Biblioteca de Mídia" icon={ImageIcon} />
     </EditorSection>
   );
 }

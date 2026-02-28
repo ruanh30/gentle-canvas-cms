@@ -1,7 +1,7 @@
 import React from 'react';
 import { useTheme } from '@/contexts/ThemeContext';
-import { EditorSection, TextField, ToggleRow, NumberSlider, OptionPicker, SectionDivider } from '../EditorControls';
-import { Image } from 'lucide-react';
+import { EditorSection, TextField, ToggleRow, NumberSlider, OptionPicker, SectionDivider, AdminLink } from '../EditorControls';
+import { Image, ImageIcon } from 'lucide-react';
 
 export function LogoPanel() {
   const { draft, updateDraftSection } = useTheme();
@@ -34,6 +34,9 @@ export function LogoPanel() {
         {l.showText && <span className="text-lg font-bold" style={{ fontFamily: draft.typography.headingFont }}>{l.text}</span>}
         {!l.imageUrl && !l.showText && <span className="text-sm text-muted-foreground">Nenhum logo configurado</span>}
       </div>
+
+      <SectionDivider label="Atalhos" />
+      <AdminLink to="/admin/media" label="Abrir Biblioteca de Mídia" icon={ImageIcon} />
     </EditorSection>
   );
 }

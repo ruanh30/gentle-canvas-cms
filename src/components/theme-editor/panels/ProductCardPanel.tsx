@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTheme } from '@/contexts/ThemeContext';
-import { EditorSection, OptionPicker, ToggleRow, SelectField, NumberSlider, SectionDivider, TextField } from '../EditorControls';
+import { EditorSection, OptionPicker, ToggleRow, SelectField, NumberSlider, SectionDivider, TextField, AdminLink } from '../EditorControls';
 import { Package, Zap, CreditCard, Sparkles, ArrowRight, Rocket, BadgeCheck, Tag, ShoppingBag, ShoppingCart, Plus, Heart, Store, PackagePlus, Flame, Send, type LucideIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -201,6 +201,9 @@ export function ProductCardPanel() {
       ]} />
       <ToggleRow label="Sombra ao passar o mouse" hint="Adiciona uma sombra elevada quando o cursor passa sobre o card, criando efeito de profundidade" checked={c.hoverShadow} onChange={v => set({ hoverShadow: v })} />
       <ToggleRow label="Borda ao redor do card" hint="Adiciona uma borda sutil ao redor de cada card de produto para delimitá-lo visualmente" checked={c.border} onChange={v => set({ border: v })} />
+      
+      <SectionDivider label="Atalhos" />
+      <AdminLink to="/admin/products" label="Gerenciar Produtos" icon={Package} />
     </EditorSection>
   );
 }

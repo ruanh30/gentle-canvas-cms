@@ -1,7 +1,7 @@
 import React from 'react';
 import { useTheme } from '@/contexts/ThemeContext';
-import { EditorSection, TextField, ToggleRow, NumberSlider, OptionPicker, SelectField, ColorInput, SectionDivider } from '../EditorControls';
-import { PanelTop } from 'lucide-react';
+import { EditorSection, TextField, ToggleRow, NumberSlider, OptionPicker, SelectField, ColorInput, SectionDivider, AdminLink } from '../EditorControls';
+import { PanelTop, Menu } from 'lucide-react';
 
 export function HeaderPanel() {
   const { draft, updateDraftSection } = useTheme();
@@ -139,6 +139,9 @@ export function HeaderPanel() {
           <ToggleRow label="Largura total" hint="Banner ocupa toda a largura da tela, sem margens laterais" checked={bb.fullWidth} onChange={v => setBanner({ fullWidth: v })} />
         </>
       )}
+
+      <SectionDivider label="Atalhos" />
+      <AdminLink to="/admin/menu" label="Gerenciar Menu de Navegação" icon={Menu} />
     </EditorSection>
   );
 }
