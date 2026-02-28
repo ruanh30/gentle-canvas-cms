@@ -176,6 +176,7 @@ function applyThemeCSS(t: ThemeConfig) {
     large: { px: '24px', py: '14px', fontSize: '16px' },
   };
   const btnSize = btnSizeMap[t.buttons?.size ?? 'medium'] ?? btnSizeMap.medium;
+  root.style.setProperty('--pm-btn-radius', btnRadiusMap[t.buttons?.radius ?? 'medium'] ?? '8px');
   root.style.setProperty('--pm-btn-style', t.buttons?.style ?? 'filled');
   root.setAttribute('data-pm-btn-style', t.buttons?.style ?? 'filled');
   root.style.setProperty('--pm-btn-px', btnSize.px);
