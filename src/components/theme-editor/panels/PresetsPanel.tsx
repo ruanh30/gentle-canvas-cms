@@ -6,21 +6,74 @@ import { Palette, Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 
-function ColorBar({ colors }: { colors: { primary: string; accent: string; buyNow: string; background: string; foreground: string } }) {
-  const swatches = [
-    colors.primary,
-    colors.accent,
-    colors.buyNow,
-    colors.background,
-    colors.foreground,
-  ].filter(Boolean) as string[];
+interface MiniColors {
+  primary: string;
+  background: string;
+  foreground: string;
+  accent: string;
+  buyNow: string;
+  border?: string;
+}
+
+function StoreMiniPreview({ colors }: { colors: MiniColors }) {
+  const bg = colors.background;
+  const fg = colors.foreground;
+  const pr = colors.primary;
+  const ac = colors.accent;
+  const bn = colors.buyNow;
+  const bd = colors.border || '#e5e5e5';
 
   return (
-    <div className="flex h-8 w-12 rounded-md overflow-hidden border border-border/30 shadow-sm shrink-0">
-      {swatches.map((c, i) => (
-        <div key={i} className="flex-1" style={{ backgroundColor: c }} />
-      ))}
-    </div>
+    <svg
+      viewBox="0 0 64 48"
+      className="w-14 h-10 rounded-md border border-border/30 shadow-sm shrink-0 overflow-hidden"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      {/* Background */}
+      <rect width="64" height="48" fill={bg} />
+
+      {/* Header bar */}
+      <rect width="64" height="8" fill={pr} />
+      {/* Logo placeholder */}
+      <rect x="3" y="2.5" width="10" height="3" rx="0.5" fill={bg} opacity="0.9" />
+      {/* Nav dots */}
+      <circle cx="30" cy="4" r="1" fill={bg} opacity="0.5" />
+      <circle cx="34" cy="4" r="1" fill={bg} opacity="0.5" />
+      <circle cx="38" cy="4" r="1" fill={bg} opacity="0.5" />
+      {/* Cart icon */}
+      <rect x="56" y="2.5" width="5" height="3" rx="0.5" fill={bg} opacity="0.6" />
+
+      {/* Hero section */}
+      <rect x="0" y="8" width="64" height="14" fill={ac} />
+      <rect x="6" y="12" width="20" height="2" rx="0.5" fill={fg} opacity="0.7" />
+      <rect x="6" y="15.5" width="14" height="1.5" rx="0.5" fill={fg} opacity="0.3" />
+      <rect x="6" y="18" width="12" height="3" rx="1" fill={bn} />
+
+      {/* Product cards */}
+      <rect x="3" y="24" width="13" height="18" rx="1" fill={bg} stroke={bd} strokeWidth="0.5" />
+      <rect x="3" y="24" width="13" height="10" rx="1" fill={ac} opacity="0.5" />
+      <rect x="5" y="35.5" width="9" height="1" rx="0.3" fill={fg} opacity="0.4" />
+      <rect x="5" y="37.5" width="6" height="1.5" rx="0.3" fill={fg} opacity="0.6" />
+      <rect x="5" y="40" width="9" height="1.5" rx="0.5" fill={bn} opacity="0.8" />
+
+      <rect x="19" y="24" width="13" height="18" rx="1" fill={bg} stroke={bd} strokeWidth="0.5" />
+      <rect x="19" y="24" width="13" height="10" rx="1" fill={ac} opacity="0.5" />
+      <rect x="21" y="35.5" width="9" height="1" rx="0.3" fill={fg} opacity="0.4" />
+      <rect x="21" y="37.5" width="6" height="1.5" rx="0.3" fill={fg} opacity="0.6" />
+      <rect x="21" y="40" width="9" height="1.5" rx="0.5" fill={bn} opacity="0.8" />
+
+      <rect x="35" y="24" width="13" height="18" rx="1" fill={bg} stroke={bd} strokeWidth="0.5" />
+      <rect x="35" y="24" width="13" height="10" rx="1" fill={ac} opacity="0.5" />
+      <rect x="37" y="35.5" width="9" height="1" rx="0.3" fill={fg} opacity="0.4" />
+      <rect x="37" y="37.5" width="6" height="1.5" rx="0.3" fill={fg} opacity="0.6" />
+      <rect x="37" y="40" width="9" height="1.5" rx="0.5" fill={bn} opacity="0.8" />
+
+      <rect x="51" y="24" width="13" height="18" rx="1" fill={bg} stroke={bd} strokeWidth="0.5" />
+      <rect x="51" y="24" width="13" height="10" rx="1" fill={ac} opacity="0.5" />
+      <rect x="53" y="35.5" width="9" height="1" rx="0.3" fill={fg} opacity="0.4" />
+      <rect x="53" y="37.5" width="6" height="1.5" rx="0.3" fill={fg} opacity="0.6" />
+      <rect x="53" y="40" width="9" height="1.5" rx="0.5" fill={bn} opacity="0.8" />
+    </svg>
   );
 }
 
@@ -52,9 +105,9 @@ export function PresetsPanel() {
               )}
             >
               {colors ? (
-                <ColorBar colors={colors} />
+                <StoreMiniPreview colors={colors} />
               ) : (
-                <div className="h-8 w-12 rounded-md bg-secondary border border-border/30 shrink-0" />
+                <div className="w-14 h-10 rounded-md bg-secondary border border-border/30 shrink-0" />
               )}
 
               <div className="flex-1 min-w-0">
