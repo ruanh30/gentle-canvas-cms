@@ -62,7 +62,7 @@ const sections: EditorSectionItem[] = [
   { id: 'logo', label: 'Logo & Marca', icon: Image, group: 'Estrutura' },
   { id: 'header', label: 'Cabeçalho', icon: PanelTop, group: 'Estrutura' },
   { id: 'hero', label: 'Hero / Banner', icon: Layers, group: 'Estrutura' },
-  // home-sections moved to Collections tab in Admin > Produtos
+  { id: 'home-sections', label: 'Seções da Home', icon: LayoutGrid, group: 'Estrutura' },
   { id: 'footer', label: 'Rodapé', icon: PanelBottom, group: 'Estrutura' },
   // Aparência de Produto
   { id: 'product-card', label: 'Card de Produto', icon: Package, group: 'Aparência de Produto' },
