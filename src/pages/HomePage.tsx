@@ -185,7 +185,7 @@ const HomePage = () => {
                 style={{
                   width: imageSize,
                   height: imageSize,
-                  ...(imageBorder ? { border: `3px solid ${imageBorderColor}`, padding: 3 } : {}),
+                  ...(imageBorder ? { border: `${(section.settings?.imageBorderWidth as number) || 2}px solid ${imageBorderColor}` } : {}),
                 }}
               >
                 <img src={cat.image} alt={cat.name} className={cn('w-full h-full object-cover', shapeClass)} loading="lazy" />
