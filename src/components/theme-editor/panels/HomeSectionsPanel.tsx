@@ -346,6 +346,10 @@ export function HomeSectionsPanel() {
                   updateDraft({ homepageSections: [...sections, newSection] });
                   setShowAddMenu(false);
                   setNewSectionName('');
+                  setTimeout(() => {
+                    const container = document.querySelector('[data-radix-scroll-area-viewport]');
+                    if (container) container.scrollTop = container.scrollHeight;
+                  }, 100);
                 }}
                 className="flex-1 h-8 rounded-lg bg-foreground text-background text-sm font-medium hover:opacity-90 transition-opacity"
               >
