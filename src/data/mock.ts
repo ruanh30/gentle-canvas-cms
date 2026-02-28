@@ -1,12 +1,12 @@
 import { Product, Category, Order, Customer, Coupon, StoreSettings, User, ProductCollection } from '@/types';
 
 export const mockCategories: Category[] = [
-  { id: 'cat-1', name: 'Camisetas', slug: 'camisetas', description: 'Camisetas masculinas e femininas' },
-  { id: 'cat-2', name: 'Calças', slug: 'calcas', description: 'Calças jeans, jogger e mais' },
-  { id: 'cat-3', name: 'Vestidos', slug: 'vestidos', description: 'Vestidos para todas as ocasiões' },
-  { id: 'cat-4', name: 'Acessórios', slug: 'acessorios', description: 'Bolsas, cintos e bijuterias' },
-  { id: 'cat-5', name: 'Calçados', slug: 'calcados', description: 'Tênis, sandálias e sapatos' },
-  { id: 'cat-6', name: 'Casacos', slug: 'casacos', description: 'Jaquetas e casacos' },
+  { id: 'cat-1', name: 'Camisetas', slug: 'camisetas', description: 'Camisetas masculinas e femininas', image: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=300&h=300&fit=crop' },
+  { id: 'cat-2', name: 'Calças', slug: 'calcas', description: 'Calças jeans, jogger e mais', image: 'https://images.unsplash.com/photo-1542272604-787c3835535d?w=300&h=300&fit=crop' },
+  { id: 'cat-3', name: 'Vestidos', slug: 'vestidos', description: 'Vestidos para todas as ocasiões', image: 'https://images.unsplash.com/photo-1594938298603-c8148c4dae35?w=300&h=300&fit=crop' },
+  { id: 'cat-4', name: 'Acessórios', slug: 'acessorios', description: 'Bolsas, cintos e bijuterias', image: 'https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?w=300&h=300&fit=crop' },
+  { id: 'cat-5', name: 'Calçados', slug: 'calcados', description: 'Tênis, sandálias e sapatos', image: 'https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?w=300&h=300&fit=crop' },
+  { id: 'cat-6', name: 'Casacos', slug: 'casacos', description: 'Jaquetas e casacos', image: 'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=300&h=300&fit=crop' },
 ];
 
 const imgs = [
