@@ -448,15 +448,35 @@ function ProductForm({ product, allProducts, sidebarSearch, onSidebarSearch, onS
                 <>
                   <hr className="border-border" />
                   <p className="text-sm font-medium text-foreground">Estoque por variante</p>
-                  <div className="space-y-2">
+                  <div className="divide-y divide-border border border-border rounded-lg overflow-hidden">
                     {form.variants.map(v => (
-                      <div key={v.id} className="flex items-center justify-between px-3 py-2 bg-muted/30 rounded-lg">
-                        <span className="text-xs font-medium text-foreground">{v.name}</span>
-                        <span className={cn('text-xs font-medium', v.stock === 0 ? 'text-destructive' : v.stock <= 5 ? 'text-amber-600' : 'text-foreground')}>
-                          {v.stock} un
-                        </span>
+                      <div key={v.id} className="flex items-center justify-between px-4 py-3 bg-card">
+                        <span className="text-sm font-medium text-foreground">{v.name}</span>
+                        <div className="flex items-center gap-2">
+                          <Input
+                            type="number"
+                            min={0}
+                            className="w-20 h-8 text-sm text-right"
+                            value={v.stock}
+                            onChange={e => {
+                              const newStock = parseInt(e.target.value) || 0;
+                              const updatedVariants = form.variants.map(vr =>
+                                vr.id === v.id ? { ...vr, stock: newStock } : vr
+                              );
+                              const totalStock = updatedVariants.reduce((sum, vr) => sum + vr.stock, 0);
+                              setForm({ ...form, variants: updatedVariants, stock: totalStock });
+                            }}
+                          />
+                          <span className="text-xs text-muted-foreground w-5">un</span>
+                        </div>
                       </div>
                     ))}
+                  </div>
+                  <div className="flex items-center justify-between px-4 py-2 bg-muted/50 rounded-lg">
+                    <span className="text-sm font-medium text-foreground">Total</span>
+                    <span className="text-sm font-semibold text-foreground">
+                      {form.variants.reduce((sum, v) => sum + v.stock, 0)} un
+                    </span>
                   </div>
                 </>
               )}
