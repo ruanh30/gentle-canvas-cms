@@ -15,11 +15,18 @@ const sectionTypes: { value: ThemeHomepageSection['type']; label: string }[] = [
   { value: 'categories', label: 'Categorias' },
   { value: 'featured-products', label: 'Produtos em Destaque' },
   { value: 'banner', label: 'Banner Promocional' },
+  { value: 'double-banner', label: 'Banner Duplo / Mosaico' },
+  { value: 'triple-banner', label: 'Banner Triplo' },
+  { value: 'countdown', label: 'Contagem Regressiva' },
+  { value: 'video', label: 'Vídeo (YouTube / MP4)' },
+  { value: 'image-text', label: 'Imagem + Texto (Split)' },
+  { value: 'faq', label: 'FAQ (Accordion)' },
   { value: 'benefits', label: 'Benefícios' },
   { value: 'testimonials', label: 'Depoimentos' },
   { value: 'brands', label: 'Marcas' },
   { value: 'newsletter', label: 'Newsletter' },
   { value: 'trust-bar', label: 'Selos de Confiança' },
+  { value: 'collections', label: 'Coleções' },
   { value: 'custom-html', label: 'HTML Customizado' },
 ];
 
