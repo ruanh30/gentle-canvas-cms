@@ -235,15 +235,15 @@ function CategoryForm({ category, allCategories, onSave, onBack, onDelete, produ
         </div>
 
         <div>
-          <label className="text-sm font-medium text-foreground">Categoria pai</label>
+          <label className="text-sm font-medium text-foreground">Pertence a</label>
           <Select value={form.parentId || '_none'} onValueChange={v => setForm({ ...form, parentId: v === '_none' ? undefined : v })}>
-            <SelectTrigger className="mt-1.5"><SelectValue placeholder="Nenhuma (raiz)" /></SelectTrigger>
+            <SelectTrigger className="mt-1.5"><SelectValue placeholder="Nenhuma (categoria principal)" /></SelectTrigger>
             <SelectContent>
-              <SelectItem value="_none">Nenhuma (raiz)</SelectItem>
+              <SelectItem value="_none">Nenhuma (categoria principal)</SelectItem>
               {parentOptions.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
             </SelectContent>
           </Select>
-          <p className="text-[10px] text-muted-foreground mt-1">Defina uma categoria pai para criar hierarquia.</p>
+          <p className="text-[10px] text-muted-foreground mt-1">Escolha onde esta categoria fica organizada. Ex: "Camisetas" pode ficar dentro de "Roupas". Se não pertence a nenhuma outra, deixe como principal.</p>
         </div>
 
         <div>
