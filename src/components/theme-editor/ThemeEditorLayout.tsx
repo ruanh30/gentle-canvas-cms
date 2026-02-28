@@ -12,7 +12,7 @@ import {
   Palette, Type, Layout, PanelTop, PanelBottom, Image, Package,
   CreditCard, MessageCircle, Globe, Code, Accessibility,
   Layers, MousePointer, FormInput, Sparkles, LayoutGrid,
-  SlidersHorizontal, ShoppingCart, FileText
+  SlidersHorizontal, ShoppingCart, FileText, Eye
 } from 'lucide-react';
 
 // Editor panels
@@ -36,6 +36,7 @@ import { SEOPanel } from './panels/SEOPanel';
 import { CustomCodePanel } from './panels/CustomCodePanel';
 import { PresetsPanel } from './panels/PresetsPanel';
 import { AccessibilityPanel } from './panels/AccessibilityPanel';
+import { QuickViewPanel } from './panels/QuickViewPanel';
 
 export interface EditorSectionItem {
   id: string;
@@ -65,6 +66,7 @@ const sections: EditorSectionItem[] = [
   { id: 'category', label: 'Categoria / Busca', icon: SlidersHorizontal, group: 'Produtos & Compra' },
   { id: 'cart', label: 'Carrinho', icon: ShoppingCart, group: 'Produtos & Compra' },
   { id: 'checkout', label: 'Checkout', icon: CreditCard, group: 'Produtos & Compra' },
+  { id: 'quick-view', label: 'Quick View', icon: Eye, group: 'Produtos & Compra' },
   // Avançado
   { id: 'whatsapp', label: 'WhatsApp', icon: MessageCircle, group: 'Avançado' },
   { id: 'seo', label: 'SEO', icon: Globe, group: 'Avançado' },
@@ -89,6 +91,7 @@ function renderPanel(sectionId: string) {
     case 'category': return <CategoryPanel />;
     case 'cart': return <CartPanel />;
     case 'checkout': return <CheckoutPanel />;
+    case 'quick-view': return <QuickViewPanel />;
     case 'footer': return <FooterPanel />;
     case 'whatsapp': return <WhatsAppPanel />;
     case 'seo': return <SEOPanel />;
