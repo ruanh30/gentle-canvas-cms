@@ -1,8 +1,13 @@
 import React from 'react';
+import { ThemeProvider } from '@/contexts/ThemeContext';
 import { ThemeEditorLayout } from '@/components/theme-editor/ThemeEditorLayout';
 
 const AdminCustomization = () => {
-  return <ThemeEditorLayout fullscreen />;
+  return (
+    <ThemeProvider>
+      <ThemeEditorLayout fullscreen />
+    </ThemeProvider>
+  );
 };
 
 export default AdminCustomization;
