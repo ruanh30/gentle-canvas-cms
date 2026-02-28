@@ -68,6 +68,7 @@ export function HomeSectionsPanel() {
         {sections.map((section, idx) => (
           <React.Fragment key={section.id}>
             <div
+              id={`section-${section.id}`}
               className={cn(
                 'flex items-center gap-2 px-3 py-2 rounded-lg border transition-colors',
                 section.enabled ? 'bg-secondary border-border' : 'bg-muted/30 border-transparent opacity-60'
@@ -347,9 +348,9 @@ export function HomeSectionsPanel() {
                   setShowAddMenu(false);
                   setNewSectionName('');
                   setTimeout(() => {
-                    const container = document.querySelector('[data-radix-scroll-area-viewport]');
-                    if (container) container.scrollTop = container.scrollHeight;
-                  }, 100);
+                    const el = document.getElementById(`section-${newSection.id}`);
+                    el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                  }, 150);
                 }}
                 className="flex-1 h-8 rounded-lg bg-foreground text-background text-sm font-medium hover:opacity-90 transition-opacity"
               >
