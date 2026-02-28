@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { toast } from '@/hooks/use-toast';
 import SecureFileUpload from '@/components/admin/SecureFileUpload';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -249,6 +250,11 @@ function CategoriesTab() {
       <CategoryForm
         category={editing}
         onSave={cat => {
+          const duplicate = categories.find(x => x.slug === cat.slug && x.id !== cat.id);
+          if (duplicate) {
+            toast({ title: 'Slug já existe', description: `A categoria "${duplicate.name}" já utiliza o slug "/${cat.slug}". Escolha um slug diferente.`, variant: 'destructive' });
+            return;
+          }
           setCategories(prev => prev.find(x => x.id === cat.id) ? prev.map(x => x.id === cat.id ? cat : x) : [...prev, cat]);
           setEditing(null);
         }}
@@ -315,6 +321,11 @@ function ProductsTab() {
         onSidebarSearch={setSidebarSearch}
         onSelect={setEditing}
         onSave={p => {
+          const duplicate = products.find(x => x.slug === p.slug && x.id !== p.id);
+          if (duplicate) {
+            toast({ title: 'Slug já existe', description: `O produto "${duplicate.name}" já utiliza o slug "/${p.slug}". Escolha um slug diferente.`, variant: 'destructive' });
+            return;
+          }
           setProducts(prev => prev.find(x => x.id === p.id) ? prev.map(x => x.id === p.id ? p : x) : [...prev, p]);
           setEditing(null);
         }}
@@ -1050,6 +1061,11 @@ function CollectionsTab() {
       <CollectionForm
         collection={editing}
         onSave={c => {
+          const duplicate = collections.find(x => x.slug === c.slug && x.id !== c.id);
+          if (duplicate) {
+            toast({ title: 'Slug já existe', description: `A coleção "${duplicate.name}" já utiliza o slug "/${c.slug}". Escolha um slug diferente.`, variant: 'destructive' });
+            return;
+          }
           setCollections(prev => prev.find(x => x.id === c.id) ? prev.map(x => x.id === c.id ? c : x) : [...prev, c]);
           setEditing(null);
         }}
