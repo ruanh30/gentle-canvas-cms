@@ -318,6 +318,37 @@ export interface ThemeAccessibility {
   reducedMotion: boolean;
 }
 
+export interface ThemeQuickView {
+  enabled: boolean;
+  style: 'modal' | 'drawer' | 'side-panel';
+  showGalleryThumbs: boolean;
+  showVariations: boolean;
+  variationStyle: 'list' | 'buttons' | 'swatches';
+  showQuantityPerVariation: boolean;
+  showDescription: boolean;
+  descriptionStyle: 'inline' | 'accordion';
+  showShippingEstimate: boolean;
+  showSocialActions: boolean;
+  socialActions: {
+    wishlist: boolean;
+    chat: boolean;
+    share: boolean;
+    whatsapp: boolean;
+  };
+  showRelatedProducts: boolean;
+  relatedTitle: string;
+  relatedCount: number;
+  showTags: boolean;
+  showSalesCount: boolean;
+  showSKU: boolean;
+  showRating: boolean;
+  ctaText: string;
+  ctaStyle: 'filled' | 'outline';
+  showBuyNow: boolean;
+  buyNowText: string;
+  showDownloadImage: boolean;
+}
+
 export interface ThemeCustomCode {
   css: string;
   headScripts: string;
@@ -349,6 +380,7 @@ export interface ThemeConfig {
   category: ThemeCategory;
   cart: ThemeCart;
   checkout: ThemeCheckout;
+  quickView: ThemeQuickView;
 
   footer: ThemeFooter;
 

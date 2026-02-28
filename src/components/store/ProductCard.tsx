@@ -11,9 +11,8 @@ const iconMap: Record<string, LucideIcon> = {
   Zap, CreditCard, Sparkles, ArrowRight, Rocket, BadgeCheck, Tag, Flame, Send,
   ShoppingBag, ShoppingCart, Plus, PackagePlus, Heart, Store,
 };
-import { Dialog, DialogContent } from '@/components/ui/dialog';
-import { Sheet, SheetContent } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
+import { ProductQuickView } from './ProductQuickView';
 
 interface Props {
   product: Product;
@@ -65,101 +64,6 @@ const badgePosMap: Record<string, string> = {
   'bottom-left': 'bottom-3 left-3',
 };
 
-function ProductQuickView({ product, open, onClose, style }: { product: Product; open: boolean; onClose: () => void; style: string }) {
-  const { addItem } = useCart();
-  const navigate = useNavigate();
-  const { theme } = useTheme();
-  const c = theme.productCard;
-  const [quantity, setQuantity] = useState(1);
-  const discount = product.compareAtPrice
-    ? Math.round((1 - product.price / product.compareAtPrice) * 100)
-    : 0;
-
-  const showAdd = c.buttonVisibility === 'both' || c.buttonVisibility === 'add-only';
-  const showBuy = c.buttonVisibility === 'both' || c.buttonVisibility === 'buy-only';
-
-  const content = (
-    <div className="flex flex-col md:flex-row gap-6">
-      <div className="md:w-1/2">
-        <div className="aspect-[3/4] rounded-lg overflow-hidden bg-secondary">
-          <img src={product.images[0]} alt={product.name} className="h-full w-full object-cover" />
-        </div>
-      </div>
-      <div className="md:w-1/2 space-y-4">
-        <div>
-          <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">SKU: {product.sku}</p>
-          <h2 className="text-xl font-display font-bold">{product.name}</h2>
-          {product.rating && (
-            <div className="flex items-center gap-1 mt-1">
-              <Star className="h-3.5 w-3.5 fill-foreground text-foreground" />
-              <span className="text-xs">{product.rating} ({product.reviewCount})</span>
-            </div>
-          )}
-        </div>
-        <div className="flex items-baseline gap-2">
-          <span className="text-2xl font-bold">{formatCurrency(product.price)}</span>
-          {product.compareAtPrice && (
-            <>
-              <span className="text-sm text-muted-foreground line-through">{formatCurrency(product.compareAtPrice)}</span>
-              <span className="text-xs bg-foreground text-background px-1.5 py-0.5 rounded font-bold">-{discount}%</span>
-            </>
-          )}
-        </div>
-        <p className="text-sm text-muted-foreground">{product.description}</p>
-
-        <div className="flex items-center border rounded-lg w-fit">
-          <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="p-2 hover:bg-secondary"><Minus className="h-4 w-4" /></button>
-          <span className="px-4 text-sm font-medium">{quantity}</span>
-          <button onClick={() => setQuantity(quantity + 1)} className="p-2 hover:bg-secondary"><Plus className="h-4 w-4" /></button>
-        </div>
-
-        <div className="flex flex-col gap-2 pt-2">
-          {showBuy && (
-            <Button
-              className="w-full"
-              style={{ backgroundColor: theme.colors.buyNow, color: '#fff' }}
-              onClick={() => { addItem(product, undefined, quantity); navigate('/cart'); onClose(); }}
-            >
-              {c.buyNowText || 'Comprar Agora'}
-            </Button>
-          )}
-          {showAdd && (
-            <Button variant="outline" className="w-full" onClick={() => { addItem(product, undefined, quantity); onClose(); }}>
-              <ShoppingBag className="mr-2 h-4 w-4" /> {c.addToCartText || 'Adicionar ao Carrinho'}
-            </Button>
-          )}
-        </div>
-
-        <div className="flex items-center gap-2 text-xs text-muted-foreground pt-1">
-          <Truck className="h-3.5 w-3.5" />
-          <span>Frete grátis acima de R$ 299</span>
-        </div>
-
-        <button onClick={() => { onClose(); navigate(`/product/${product.slug}`); }} className="text-xs text-muted-foreground underline hover:text-foreground">
-          Ver página completa →
-        </button>
-      </div>
-    </div>
-  );
-
-  if (style === 'drawer' || style === 'side-panel') {
-    return (
-      <Sheet open={open} onOpenChange={v => !v && onClose()}>
-        <SheetContent side="right" className="w-full sm:max-w-lg overflow-y-auto">
-          <div className="pt-6">{content}</div>
-        </SheetContent>
-      </Sheet>
-    );
-  }
-
-  return (
-    <Dialog open={open} onOpenChange={v => !v && onClose()}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-        {content}
-      </DialogContent>
-    </Dialog>
-  );
-}
 
 const btnStyleMap: Record<string, string> = {
   solid: 'rounded-md',
@@ -417,7 +321,6 @@ export function ProductCard({ product }: Props) {
           product={product}
           open={showPreview}
           onClose={() => setShowPreview(false)}
-          style={c.quickViewStyle}
         />
       )}
     </>
