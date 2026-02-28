@@ -176,7 +176,8 @@ export function ProductCard({ product }: Props) {
   const showBuy = (c.showBuyNow !== false) && (visibility === 'both' || visibility === 'buy-only');
 
   const handleClick = (e: React.MouseEvent) => {
-    if (c.clickBehavior === 'modal') {
+    // Open Quick View if enabled (either via clickBehavior or quickView.enabled)
+    if (c.clickBehavior === 'modal' || theme.quickView?.enabled) {
       e.preventDefault();
       setShowPreview(true);
     }

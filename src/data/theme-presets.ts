@@ -192,7 +192,7 @@ export const defaultThemeConfig: ThemeConfig = {
     buttonLayout: 'stacked',
     buttonStyle: 'solid',
     addToCartStyle: 'full-width',
-    clickBehavior: 'navigate',
+    clickBehavior: 'modal',
     badgePosition: 'top-left',
     badgeStyle: 'rounded',
     priceSize: 'medium',
