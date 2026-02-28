@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import SecureFileUpload from '@/components/admin/SecureFileUpload';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
@@ -124,9 +125,16 @@ function CategoryForm({ category, onSave, onBack, productCount }: {
           ) : (
             <div className="border-2 border-dashed border-border rounded-lg py-8 flex flex-col items-center justify-center gap-2">
               <ImageIcon className="h-8 w-8 text-muted-foreground/25" />
-              <p className="text-xs text-muted-foreground">Nenhuma imagem · Adicione via URL ou Mídia</p>
+              <p className="text-xs text-muted-foreground">Nenhuma imagem</p>
             </div>
           )}
+
+          {/* Upload */}
+          <SecureFileUpload
+            onFileAccepted={(dataUrl) => setForm({ ...form, image: dataUrl })}
+            compact
+            className="mt-3"
+          />
 
           {/* URL input */}
           <div className="mt-3">
@@ -473,6 +481,12 @@ function ImagesSectionContent({ form, setForm }: { form: Product; setForm: React
           <p className="text-xs text-muted-foreground">Adicione via URL ou selecione da Mídia</p>
         </div>
       )}
+
+      {/* Upload */}
+      <SecureFileUpload
+        onFileAccepted={(dataUrl) => addImage(dataUrl)}
+        multiple
+      />
 
       {/* Add methods */}
       <div className="space-y-3">
