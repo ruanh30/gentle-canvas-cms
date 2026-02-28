@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTheme } from '@/contexts/ThemeContext';
-import { EditorSection, TextField, ToggleRow, NumberSlider, OptionPicker, SelectField, ColorInput, SectionDivider, AdminLink } from '../EditorControls';
+import { EditorSection, TextField, ImageField, ToggleRow, NumberSlider, OptionPicker, SelectField, ColorInput, SectionDivider, AdminLink } from '../EditorControls';
 import { PanelTop, Menu } from 'lucide-react';
 
 export function HeaderPanel() {
@@ -121,16 +121,16 @@ export function HeaderPanel() {
       <ToggleRow label="Ativar banner" hint="Exibe um banner com imagem logo abaixo do cabeçalho" checked={bb.enabled} onChange={v => setBanner({ enabled: v })} />
       {bb.enabled && (
         <>
-          <TextField label="URL da imagem principal" value={bb.imageUrl} onChange={v => setBanner({ imageUrl: v })} placeholder="https://..." />
+           <ImageField label="URL da imagem principal" value={bb.imageUrl} onChange={v => setBanner({ imageUrl: v })} />
           <ToggleRow label="Carrossel de imagens" hint="Ativa rotação automática entre múltiplas imagens no banner" checked={bb.carousel} onChange={v => setBanner({ carousel: v })} />
           {bb.carousel && (
             <>
-              <TextField label="Imagem 2" value={bb.images[0] || ''} onChange={v => {
+              <ImageField label="Imagem 2" value={bb.images[0] || ''} onChange={v => {
                 const imgs = [...(bb.images || [])]; while (imgs.length < 1) imgs.push(''); imgs[0] = v; setBanner({ images: imgs });
-              }} placeholder="https://..." />
-              <TextField label="Imagem 3" value={bb.images[1] || ''} onChange={v => {
+              }} />
+              <ImageField label="Imagem 3" value={bb.images[1] || ''} onChange={v => {
                 const imgs = [...(bb.images || [])]; while (imgs.length < 2) imgs.push(''); imgs[1] = v; setBanner({ images: imgs });
-              }} placeholder="https://..." />
+              }} />
               <NumberSlider label="Velocidade do carrossel" value={bb.carouselSpeed} onChange={v => setBanner({ carouselSpeed: v })} min={2} max={10} suffix="s" />
             </>
           )}

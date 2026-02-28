@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
@@ -7,8 +7,9 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
-import { HelpCircle, Check, ExternalLink } from 'lucide-react';
+import { HelpCircle, Check, ExternalLink, ImageIcon } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { MediaPickerModal } from './MediaPickerModal';
 
 // Tooltip helper
 export function HintTooltip({ text }: { text: string }) {
@@ -234,6 +235,45 @@ export function TextField({ label, value, onChange, placeholder, multiline }: {
       ) : (
         <Input value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder} className="h-9 text-sm bg-secondary/30 border-border/50" />
       )}
+    </div>
+  );
+}
+
+// Image URL field with media picker
+export function ImageField({ label, value, onChange, placeholder }: {
+  label: string; value: string; onChange: (v: string) => void; placeholder?: string;
+}) {
+  const [pickerOpen, setPickerOpen] = useState(false);
+
+  return (
+    <div className="space-y-1.5">
+      <Label className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">{label}</Label>
+      <div className="flex items-center gap-1.5">
+        <Input
+          value={value}
+          onChange={e => onChange(e.target.value)}
+          placeholder={placeholder || 'https://...'}
+          className="h-9 text-sm bg-secondary/30 border-border/50 flex-1"
+        />
+        <button
+          onClick={() => setPickerOpen(true)}
+          className="h-9 w-9 shrink-0 rounded-lg border border-border/50 bg-secondary/30 hover:bg-secondary flex items-center justify-center transition-colors"
+          title="Selecionar da biblioteca de mídia"
+        >
+          <ImageIcon className="h-4 w-4 text-muted-foreground" />
+        </button>
+      </div>
+      {value && (
+        <div className="mt-1 rounded-lg overflow-hidden border border-border/30 bg-muted/30 max-h-20">
+          <img src={value} alt="Preview" className="w-full h-20 object-cover" />
+        </div>
+      )}
+      <MediaPickerModal
+        open={pickerOpen}
+        onClose={() => setPickerOpen(false)}
+        onSelect={onChange}
+        currentValue={value}
+      />
     </div>
   );
 }

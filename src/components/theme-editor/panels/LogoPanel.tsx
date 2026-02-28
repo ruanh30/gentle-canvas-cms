@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTheme } from '@/contexts/ThemeContext';
-import { EditorSection, TextField, ToggleRow, NumberSlider, OptionPicker, SectionDivider, AdminLink } from '../EditorControls';
+import { EditorSection, TextField, ImageField, ToggleRow, NumberSlider, OptionPicker, SectionDivider, AdminLink } from '../EditorControls';
 import { Image, ImageIcon } from 'lucide-react';
 
 export function LogoPanel() {
@@ -15,7 +15,7 @@ export function LogoPanel() {
         Nome da loja e imagem do logo. Se ambos estiverem preenchidos, você pode exibir os dois ou apenas um.
       </p>
       <TextField label="Nome da loja" value={l.text} onChange={v => set({ text: v })} placeholder="Minha Loja" />
-      <TextField label="URL da imagem do logo" value={l.imageUrl} onChange={v => set({ imageUrl: v })} placeholder="https://..." />
+      <ImageField label="URL da imagem do logo" value={l.imageUrl} onChange={v => set({ imageUrl: v })} />
       <ToggleRow label="Mostrar nome como texto" hint="Exibe o nome da loja como texto ao lado ou no lugar do logo. Útil quando não há imagem" checked={l.showText} onChange={v => set({ showText: v })} />
 
       <SectionDivider label="Dimensão e Posição" />
