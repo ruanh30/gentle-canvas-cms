@@ -731,21 +731,20 @@ function StockSection({ form, setForm }: { form: Product; setForm: (f: Product) 
   const toggleSize = (s: string) => setSelectedSizes(prev => prev.includes(s) ? prev.filter(x => x !== s) : [...prev, s]);
 
   const generateVariants = () => {
-    const newVariants: Product['variants'] = [];
     const sizes = selectedSizes.length > 0 ? selectedSizes : [''];
     const colors = selectedColors.length > 0 ? selectedColors : [''];
+    const existingVariants = [...form.variants];
 
+    let added = 0;
     for (const size of sizes) {
       for (const color of colors) {
-        const name = [size, color].filter(Boolean).join(' - ');
-        const existing = form.variants.find(v =>
+        const alreadyExists = existingVariants.some(v =>
           (v.attributes.tamanho || '') === size && (v.attributes.cor || '') === color
         );
-        if (existing) {
-          newVariants.push(existing);
-        } else {
+        if (!alreadyExists) {
+          const name = [size, color].filter(Boolean).join(' - ');
           const skuParts = [form.sku, size, color.substring(0, 2).toUpperCase()].filter(Boolean).join('-');
-          newVariants.push({
+          existingVariants.push({
             id: `v-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
             productId: form.id,
             name: name || 'Padrão',
@@ -757,11 +756,19 @@ function StockSection({ form, setForm }: { form: Product; setForm: (f: Product) 
               ...(color ? { cor: color } : {}),
             },
           });
+          added++;
         }
       }
     }
-    const totalStock = newVariants.reduce((sum, v) => sum + v.stock, 0);
-    setForm({ ...form, variants: newVariants, stock: totalStock });
+
+    if (added === 0) {
+      toast({ title: 'Nenhuma variante nova', description: 'Todas as combinações selecionadas já existem.', variant: 'destructive' });
+      return;
+    }
+
+    const totalStock = existingVariants.reduce((sum, v) => sum + v.stock, 0);
+    setForm({ ...form, variants: existingVariants, stock: totalStock });
+    toast({ title: `${added} variante(s) adicionada(s)`, description: 'As variantes existentes foram preservadas.' });
   };
 
   return (
