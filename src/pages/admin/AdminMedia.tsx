@@ -1,6 +1,7 @@
 import React from 'react';
-import { ImageIcon, Upload, Grid3X3, List } from 'lucide-react';
+import { ImageIcon, Upload, Palette } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useNavigate } from 'react-router-dom';
 
 const mockMedia = [
   { id: 1, name: 'hero-banner.jpg', size: '245 KB', date: '28/02/2026' },
@@ -12,6 +13,8 @@ const mockMedia = [
 ];
 
 export default function AdminMedia() {
+  const navigate = useNavigate();
+
   return (
     <div className="p-6 max-w-5xl mx-auto space-y-6">
       <div className="flex items-center justify-between">
@@ -19,10 +22,16 @@ export default function AdminMedia() {
           <h1 className="text-xl font-semibold text-foreground">Mídia</h1>
           <p className="text-sm text-muted-foreground">Gerencie imagens e arquivos da sua loja</p>
         </div>
-        <Button size="sm" className="gap-1.5">
-          <Upload className="h-4 w-4" />
-          Upload
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" size="sm" className="gap-1.5" onClick={() => navigate('/admin/customization')}>
+            <Palette className="h-4 w-4" />
+            Editor de Tema
+          </Button>
+          <Button size="sm" className="gap-1.5">
+            <Upload className="h-4 w-4" />
+            Upload
+          </Button>
+        </div>
       </div>
 
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">

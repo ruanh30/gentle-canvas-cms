@@ -13,9 +13,10 @@ import {
 import {
   Plus, Search, ChevronLeft,
   FileText, DollarSign, Globe, ImageIcon, Eye,
-  Pencil, Trash2, Package as PackageIcon, Save,
+  Pencil, Trash2, Package as PackageIcon, Save, Palette,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useNavigate } from 'react-router-dom';
 
 /* ------------------------------------------------------------------ */
 /*  Types & Mock Data                                                  */
@@ -609,30 +610,37 @@ function CollectionForm({ collection, allCollections, sidebarSearch, onSidebarSe
 
 export default function AdminProducts() {
   const [tab, setTab] = useState<Tab>('categories');
+  const navigate = useNavigate();
 
   return (
     <div className="h-full flex flex-col">
       {/* Underline-style tabs */}
-      <div className="border-b border-border px-6 pt-2 flex gap-0">
-        {([
-          { key: 'categories' as Tab, label: 'Categorias' },
-          { key: 'products' as Tab, label: 'Produtos', icon: Globe },
-          { key: 'collections' as Tab, label: 'Coleções' },
-        ]).map(t => (
-          <button
-            key={t.key}
-            onClick={() => setTab(t.key)}
-            className={cn(
-              'flex items-center gap-1.5 px-4 py-3 text-sm font-medium border-b-2 transition-colors -mb-px',
-              tab === t.key
-                ? 'border-primary text-foreground'
-                : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
-            )}
-          >
-            {t.icon && <t.icon className="h-3.5 w-3.5" />}
-            {t.label}
-          </button>
-        ))}
+      <div className="border-b border-border px-6 pt-2 flex items-center justify-between">
+        <div className="flex gap-0">
+          {([
+            { key: 'categories' as Tab, label: 'Categorias' },
+            { key: 'products' as Tab, label: 'Produtos', icon: Globe },
+            { key: 'collections' as Tab, label: 'Coleções' },
+          ]).map(t => (
+            <button
+              key={t.key}
+              onClick={() => setTab(t.key)}
+              className={cn(
+                'flex items-center gap-1.5 px-4 py-3 text-sm font-medium border-b-2 transition-colors -mb-px',
+                tab === t.key
+                  ? 'border-primary text-foreground'
+                  : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
+              )}
+            >
+              {t.icon && <t.icon className="h-3.5 w-3.5" />}
+              {t.label}
+            </button>
+          ))}
+        </div>
+        <Button variant="outline" size="sm" className="gap-1.5 -mt-1" onClick={() => navigate('/admin/customization')}>
+          <Palette className="h-3.5 w-3.5" />
+          Aparência dos Produtos
+        </Button>
       </div>
 
       {/* Content */}

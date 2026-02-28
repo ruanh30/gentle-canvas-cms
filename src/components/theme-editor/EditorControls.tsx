@@ -7,7 +7,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
-import { HelpCircle, Check } from 'lucide-react';
+import { HelpCircle, Check, ExternalLink } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 // Tooltip helper
 export function HintTooltip({ text }: { text: string }) {
@@ -89,7 +90,6 @@ export function OptionPicker<T extends string>({ label, options, value, onChange
 }) {
   const isCompact = options.length <= 4 && options.every(o => (o.label?.length ?? 0) <= 10 && !o.description);
 
-  // Compact mode: horizontal pills (only for short labels without descriptions)
   if (isCompact) {
     return (
       <div className="space-y-2">
@@ -114,7 +114,6 @@ export function OptionPicker<T extends string>({ label, options, value, onChange
     );
   }
 
-  // Full mode: vertical list with descriptions
   return (
     <div className="space-y-2">
       <Label className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">{label}</Label>
@@ -248,4 +247,19 @@ export function SectionDivider({ label }: { label?: string }) {
       <div className="h-px bg-border/60 flex-1" />
     </div>
   ) : <div className="h-px bg-border/40 my-1" />;
+}
+
+// Cross-link to admin pages
+export function AdminLink({ to, label, icon: Icon }: { to: string; label: string; icon: React.ElementType }) {
+  const navigate = useNavigate();
+  return (
+    <button
+      onClick={() => navigate(to)}
+      className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg border border-dashed border-primary/30 bg-primary/5 hover:bg-primary/10 transition-colors text-left group"
+    >
+      <Icon className="h-4 w-4 text-primary/70 shrink-0" />
+      <span className="text-xs font-medium text-primary/80 flex-1">{label}</span>
+      <ExternalLink className="h-3 w-3 text-primary/40 group-hover:text-primary/70 transition-colors" />
+    </button>
+  );
 }
