@@ -11,9 +11,9 @@ import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import { mockProducts } from '@/data/mock';
 import {
-  Heart, MessageCircle, Share2, Phone, Minus, Plus, Star, Truck,
-  ShoppingCart, ChevronLeft, ChevronRight, Download, Tag, X,
-  ChevronDown, ChevronUp,
+  Heart, Share2, Minus, Plus, Star, Truck,
+  ShoppingCart, ChevronLeft, ChevronRight, Tag, X,
+  ChevronDown, ChevronUp, FileText, MapPin,
 } from 'lucide-react';
 
 interface QuickViewProps {
@@ -29,7 +29,7 @@ export function ProductQuickView({ product, open, onClose }: QuickViewProps) {
   const qv = theme.quickView;
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [variantQuantities, setVariantQuantities] = useState<Record<string, number>>({});
-  const [showDescription, setShowDescription] = useState(qv?.descriptionStyle !== 'accordion');
+  const [showDescription, setShowDescription] = useState(true);
   const [cep, setCep] = useState('');
 
   const discount = product.compareAtPrice
@@ -129,12 +129,7 @@ export function ProductQuickView({ product, open, onClose }: QuickViewProps) {
               <div key={i} className={cn('h-0.5 rounded-full transition-all', i === activeImageIndex ? 'w-6 bg-foreground' : 'w-3 bg-foreground/30')} />
             ))}
           </div>
-          {/* Download */}
-          {qv?.showDownloadImage && (
-            <button className="absolute bottom-3 right-3 bg-background/80 backdrop-blur-sm p-2 rounded-full shadow hover:bg-background">
-              <Download className="h-4 w-4" />
-            </button>
-          )}
+          {/* No download button */}
         </div>
       </div>
 
@@ -180,15 +175,15 @@ export function ProductQuickView({ product, open, onClose }: QuickViewProps) {
 
         {/* Variations */}
         {qv?.showVariations !== false && variants.length > 0 && (
-          <fieldset className="border border-border/50 rounded-lg p-3">
-            <legend className="text-xs font-semibold px-2">Escolha as Variações</legend>
-            <div className="space-y-2.5 mt-1">
+          <div className="space-y-3">
+            <p className="text-sm font-semibold">Escolha as Variações</p>
+            <div className="space-y-2">
               {variants.map(v => (
-                <div key={v.id} className="flex items-center justify-between gap-3">
-                  <div className="flex items-center gap-2 min-w-0 flex-1">
-                    {/* Color dot */}
+                <div key={v.id} className="flex items-center justify-between gap-3 py-2.5 border-b border-border/30 last:border-0">
+                  <div className="flex items-center gap-3 min-w-0 flex-1">
+                    {/* Color swatch */}
                     {v.attributes.cor && (
-                      <div className="w-4 h-4 rounded border border-border/50 shrink-0"
+                      <div className="w-5 h-5 rounded-sm border border-border/50 shrink-0"
                         style={{ backgroundColor: v.attributes.cor === 'Branca' ? '#fff' : v.attributes.cor === 'Preta' ? '#000' : v.attributes.cor === 'Azul' ? '#3b82f6' : v.attributes.cor === 'Cinza' ? '#9ca3af' : v.attributes.cor === 'Verde' ? '#22c55e' : '#ddd' }}
                       />
                     )}
@@ -199,12 +194,12 @@ export function ProductQuickView({ product, open, onClose }: QuickViewProps) {
                   </div>
                   {/* Quantity stepper */}
                   {qv?.showQuantityPerVariation !== false && (
-                    <div className="flex items-center border rounded-lg shrink-0">
-                      <button onClick={() => updateQty(v.id, -1)} className="p-1.5 hover:bg-secondary rounded-l-lg">
+                    <div className="flex items-center shrink-0">
+                      <button onClick={() => updateQty(v.id, -1)} className="w-8 h-8 flex items-center justify-center bg-foreground text-background rounded-l-md hover:opacity-80 transition-opacity">
                         <Minus className="h-3.5 w-3.5" />
                       </button>
-                      <span className="w-8 text-center text-sm font-medium">{variantQuantities[v.id] || 0}</span>
-                      <button onClick={() => updateQty(v.id, 1)} className="p-1.5 hover:bg-secondary rounded-r-lg">
+                      <span className="w-10 h-8 flex items-center justify-center text-sm font-medium border-y border-border">{variantQuantities[v.id] || 0}</span>
+                      <button onClick={() => updateQty(v.id, 1)} className="w-8 h-8 flex items-center justify-center bg-foreground text-background rounded-r-md hover:opacity-80 transition-opacity">
                         <Plus className="h-3.5 w-3.5" />
                       </button>
                     </div>
@@ -212,31 +207,31 @@ export function ProductQuickView({ product, open, onClose }: QuickViewProps) {
                 </div>
               ))}
             </div>
-          </fieldset>
+          </div>
         )}
 
         {/* Shipping estimate */}
         {qv?.showShippingEstimate !== false && (
-          <fieldset className="border border-border/50 rounded-lg p-3">
-            <legend className="text-xs font-semibold px-2 inline-flex items-center gap-1">
-              <Truck className="h-3 w-3" /> Simular Frete
-            </legend>
-            <div className="flex items-center gap-2 mt-1">
-              <div className="flex items-center gap-1 border rounded-md px-2 py-1.5 text-xs shrink-0">
-                🇧🇷 BR
+          <div className="space-y-2">
+            <p className="text-sm font-semibold inline-flex items-center gap-2">
+              <Truck className="h-4 w-4" /> Calcular Frete
+            </p>
+            <div className="flex items-center gap-2">
+              <div className="relative flex-1">
+                <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Digite seu CEP"
+                  value={cep}
+                  onChange={e => setCep(e.target.value)}
+                  className="h-9 text-sm pl-9"
+                  maxLength={9}
+                />
               </div>
-              <Input
-                placeholder="00000-000"
-                value={cep}
-                onChange={e => setCep(e.target.value)}
-                className="h-8 text-sm flex-1"
-                maxLength={9}
-              />
-              <Button size="sm" className="h-8 text-xs shrink-0">
+              <Button size="sm" className="h-9 text-xs shrink-0 px-4">
                 Calcular
               </Button>
             </div>
-          </fieldset>
+          </div>
         )}
 
         {/* CTA Button */}
@@ -269,14 +264,8 @@ export function ProductQuickView({ product, open, onClose }: QuickViewProps) {
             {qv?.socialActions?.wishlist !== false && (
               <button className="text-muted-foreground hover:text-foreground transition-colors"><Heart className="h-5 w-5" /></button>
             )}
-            {qv?.socialActions?.chat !== false && (
-              <button className="text-muted-foreground hover:text-foreground transition-colors"><MessageCircle className="h-5 w-5" /></button>
-            )}
             {qv?.socialActions?.share !== false && (
               <button className="text-muted-foreground hover:text-foreground transition-colors"><Share2 className="h-5 w-5" /></button>
-            )}
-            {qv?.socialActions?.whatsapp !== false && (
-              <button className="text-green-500 hover:text-green-600 transition-colors"><Phone className="h-5 w-5" /></button>
             )}
           </div>
         )}
@@ -289,13 +278,17 @@ export function ProductQuickView({ product, open, onClose }: QuickViewProps) {
                 onClick={() => setShowDescription(!showDescription)}
                 className="w-full flex items-center justify-between text-sm font-semibold"
               >
-                <span className="inline-flex items-center gap-2">📝 Descrição do Produto</span>
+                <span className="inline-flex items-center gap-2">
+                  <FileText className="h-4 w-4" /> Descrição do Produto
+                </span>
                 {showDescription ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
               </button>
             ) : (
-              <p className="text-sm font-semibold mb-2 inline-flex items-center gap-2">📝 Descrição do Produto</p>
+              <p className="text-sm font-semibold mb-2 inline-flex items-center gap-2">
+                <FileText className="h-4 w-4" /> Descrição do Produto
+              </p>
             )}
-            {(showDescription || qv?.descriptionStyle !== 'accordion') && (
+            {showDescription && (
               <p className="text-sm text-muted-foreground mt-2 leading-relaxed">{product.description}</p>
             )}
           </div>
