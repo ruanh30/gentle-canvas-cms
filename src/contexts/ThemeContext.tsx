@@ -353,9 +353,14 @@ export function ThemeProvider({
 
   const activeTheme = isPreviewMode && previewTheme ? previewTheme : published;
 
+  // Check if we're on an admin route — if so, don't apply theme CSS to the root
+  // to prevent storefront colors from leaking into the editor UI
+  const isAdminRoute = typeof window !== 'undefined' && window.location.pathname.startsWith('/admin');
+
   useEffect(() => {
+    if (isAdminRoute) return; // Don't apply theme CSS on admin pages
     applyThemeCSS(activeTheme);
-  }, [activeTheme]);
+  }, [activeTheme, isAdminRoute]);
 
   // Draft mutations
   const updateDraft = useCallback((updates: Partial<ThemeConfig>) => {
