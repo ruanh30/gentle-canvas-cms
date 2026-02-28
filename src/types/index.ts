@@ -14,6 +14,7 @@ export interface Category {
   image?: string;
   description?: string;
   parentId?: string;
+  active?: boolean;
 }
 
 export interface ProductVariant {
@@ -46,6 +47,13 @@ export interface Product {
   reviewCount: number;
   createdAt: string;
   tags: string[];
+  weight?: number;
+  width?: number;
+  height?: number;
+  depth?: number;
+  metaTitle?: string;
+  metaDescription?: string;
+  variantImages?: Record<string, string>;
 }
 
 export interface CartItem {
@@ -151,10 +159,13 @@ export interface ProductCollection {
   name: string;
   slug: string;
   description?: string;
+  image?: string;
   productIds: string[];
   order: number;
   active: boolean;
   createdAt: string;
+  startsAt?: string;
+  endsAt?: string;
 }
 
 export interface DashboardStats {
