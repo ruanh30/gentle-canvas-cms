@@ -14,10 +14,21 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import {
   Plus, Search, ChevronLeft,
   FileText, DollarSign, Boxes, ImageIcon, Eye,
-  Pencil, Trash2, Package as PackageIcon, Save, Palette,
+  Trash2, Package as PackageIcon, Save, Palette,
   Star, Tag, Layers, Link, Image, Check, Info, X,
+  Copy, Weight, Ruler, Globe,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useNavigate } from 'react-router-dom';
@@ -29,7 +40,7 @@ import type { Product, Category, ProductCollection } from '@/types';
 /* ------------------------------------------------------------------ */
 
 type Tab = 'categories' | 'products' | 'collections';
-type ProductSection = 'info' | 'price' | 'stock' | 'images' | 'status';
+type ProductSection = 'info' | 'price' | 'stock' | 'images' | 'seo' | 'status';
 type CollectionSection = 'info' | 'products' | 'status';
 
 /* ------------------------------------------------------------------ */
@@ -73,17 +84,44 @@ function SectionNav<T extends string>({ items, active, onChange }: {
   );
 }
 
+/* ------------------------------------------------------------------ */
+/*  Confirm Delete Dialog                                              */
+/* ------------------------------------------------------------------ */
+
+function ConfirmDeleteDialog({ open, onOpenChange, title, description, onConfirm }: {
+  open: boolean; onOpenChange: (o: boolean) => void;
+  title: string; description: string; onConfirm: () => void;
+}) {
+  return (
+    <AlertDialog open={open} onOpenChange={onOpenChange}>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>{title}</AlertDialogTitle>
+          <AlertDialogDescription>{description}</AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Cancelar</AlertDialogCancel>
+          <AlertDialogAction onClick={onConfirm} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+            Excluir
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  );
+}
+
 /* ================================================================== */
 /*  CATEGORY FORM                                                      */
 /* ================================================================== */
 
-function CategoryForm({ category, onSave, onBack, productCount }: {
-  category: Category; onSave: (c: Category) => void; onBack: () => void; productCount: number;
+function CategoryForm({ category, onSave, onBack, onDelete, productCount }: {
+  category: Category; onSave: (c: Category) => void; onBack: () => void; onDelete?: () => void; productCount: number;
 }) {
   const [form, setForm] = useState(category);
   const [urlInput, setUrlInput] = useState('');
   const [showMedia, setShowMedia] = useState(false);
   const [mediaSearch, setMediaSearch] = useState('');
+  const [confirmDelete, setConfirmDelete] = useState(false);
 
   const allMedia = getAllMediaImages();
   const filteredMedia = allMedia.filter(m =>
@@ -97,7 +135,14 @@ function CategoryForm({ category, onSave, onBack, productCount }: {
         <button onClick={onBack} className="flex items-center gap-1.5 text-sm font-medium text-foreground hover:text-foreground/80 transition-colors">
           <ChevronLeft className="h-4 w-4" /> {form.name || 'Nova Categoria'}
         </button>
-        <SaveButton onClick={() => onSave(form)} />
+        <div className="flex items-center gap-2">
+          {onDelete && (
+            <Button variant="outline" size="sm" className="gap-1.5 text-destructive hover:text-destructive" onClick={() => setConfirmDelete(true)}>
+              <Trash2 className="h-3.5 w-3.5" /> Excluir
+            </Button>
+          )}
+          <SaveButton onClick={() => onSave(form)} />
+        </div>
       </div>
 
       <div className="max-w-xl space-y-5">
@@ -130,47 +175,24 @@ function CategoryForm({ category, onSave, onBack, productCount }: {
             </div>
           )}
 
-          {/* Upload */}
-          <SecureFileUpload
-            onFileAccepted={(dataUrl) => setForm({ ...form, image: dataUrl })}
-            compact
-            className="mt-3"
-          />
+          <SecureFileUpload onFileAccepted={(dataUrl) => setForm({ ...form, image: dataUrl })} compact className="mt-3" />
 
-          {/* URL input */}
           <div className="mt-3">
             <label className="text-xs font-medium text-foreground flex items-center gap-1.5">
               <Link className="h-3 w-3" /> URL da imagem
             </label>
             <div className="flex gap-2 mt-1">
-              <Input
-                placeholder="https://exemplo.com/imagem.jpg"
-                className="flex-1 h-9 text-sm"
-                value={urlInput}
+              <Input placeholder="https://exemplo.com/imagem.jpg" className="flex-1 h-9 text-sm" value={urlInput}
                 onChange={e => setUrlInput(e.target.value)}
-                onKeyDown={e => {
-                  if (e.key === 'Enter' && urlInput.trim()) {
-                    setForm({ ...form, image: urlInput.trim() });
-                    setUrlInput('');
-                  }
-                }}
-              />
-              <Button variant="outline" size="sm" disabled={!urlInput.trim()} onClick={() => { setForm({ ...form, image: urlInput.trim() }); setUrlInput(''); }}>
-                Usar
-              </Button>
+                onKeyDown={e => { if (e.key === 'Enter' && urlInput.trim()) { setForm({ ...form, image: urlInput.trim() }); setUrlInput(''); } }} />
+              <Button variant="outline" size="sm" disabled={!urlInput.trim()} onClick={() => { setForm({ ...form, image: urlInput.trim() }); setUrlInput(''); }}>Usar</Button>
             </div>
           </div>
 
-          {/* Media picker */}
           <div className="mt-3">
-            <button
-              onClick={() => setShowMedia(!showMedia)}
-              className="text-xs font-medium text-foreground flex items-center gap-1.5 hover:text-primary transition-colors"
-            >
-              <Image className="h-3 w-3" />
-              {showMedia ? 'Ocultar Mídia' : 'Selecionar da Mídia'}
+            <button onClick={() => setShowMedia(!showMedia)} className="text-xs font-medium text-foreground flex items-center gap-1.5 hover:text-primary transition-colors">
+              <Image className="h-3 w-3" /> {showMedia ? 'Ocultar Mídia' : 'Selecionar da Mídia'}
             </button>
-
             {showMedia && (
               <div className="mt-2 border border-border rounded-lg p-3 space-y-2 bg-muted/20">
                 <div className="relative">
@@ -180,11 +202,8 @@ function CategoryForm({ category, onSave, onBack, productCount }: {
                 {filteredMedia.length > 0 ? (
                   <div className="grid grid-cols-4 gap-2 max-h-48 overflow-y-auto">
                     {filteredMedia.map((m, i) => (
-                      <button
-                        key={i}
-                        onClick={() => { setForm({ ...form, image: m.url }); setShowMedia(false); }}
-                        className="group relative aspect-square rounded-md overflow-hidden border border-border hover:border-primary/50 transition-colors"
-                      >
+                      <button key={i} onClick={() => { setForm({ ...form, image: m.url }); setShowMedia(false); }}
+                        className="group relative aspect-square rounded-md overflow-hidden border border-border hover:border-primary/50 transition-colors">
                         <img src={m.url} alt={m.name} className="w-full h-full object-cover" />
                         <span className="absolute bottom-0 inset-x-0 bg-foreground/60 text-background text-[9px] px-1 py-0.5 truncate">{m.name}</span>
                       </button>
@@ -200,27 +219,32 @@ function CategoryForm({ category, onSave, onBack, productCount }: {
 
         <hr className="border-border" />
 
-        {/* Name */}
         <div>
           <label className="text-sm font-medium text-foreground">Nome da categoria</label>
           <Input className="mt-1.5" placeholder="Ex: Camisetas" value={form.name}
             onChange={e => setForm({ ...form, name: e.target.value, slug: e.target.value.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '') })} />
         </div>
 
-        {/* Slug */}
         <div>
           <label className="text-sm font-medium text-foreground">Slug</label>
           <Input className="mt-1.5" value={form.slug} onChange={e => setForm({ ...form, slug: e.target.value })} />
           <p className="text-[10px] text-muted-foreground mt-1">URL: /categorias/{form.slug || '...'}</p>
         </div>
 
-        {/* Description */}
         <div>
           <label className="text-sm font-medium text-foreground">Descrição</label>
           <Textarea className="mt-1.5" placeholder="Descrição da categoria..." rows={3} value={form.description || ''} onChange={e => setForm({ ...form, description: e.target.value })} />
         </div>
 
-        {/* Info */}
+        {/* Active toggle */}
+        <div className="flex items-center justify-between py-2">
+          <div>
+            <p className="text-sm font-medium text-foreground">Categoria ativa</p>
+            <p className="text-xs text-muted-foreground">Visível na navegação da loja.</p>
+          </div>
+          <Switch checked={form.active !== false} onCheckedChange={v => setForm({ ...form, active: v })} />
+        </div>
+
         {productCount > 0 && (
           <div className="bg-muted/50 rounded-lg px-4 py-3">
             <p className="text-xs text-muted-foreground">
@@ -229,6 +253,16 @@ function CategoryForm({ category, onSave, onBack, productCount }: {
           </div>
         )}
       </div>
+
+      {onDelete && (
+        <ConfirmDeleteDialog
+          open={confirmDelete}
+          onOpenChange={setConfirmDelete}
+          title="Excluir categoria"
+          description={`Tem certeza que deseja excluir "${form.name}"? ${productCount > 0 ? `Existem ${productCount} produto(s) vinculados.` : ''} Esta ação não pode ser desfeita.`}
+          onConfirm={onDelete}
+        />
+      )}
     </div>
   );
 }
@@ -246,6 +280,7 @@ function CategoriesTab() {
   const productCount = (catId: string) => mockProducts.filter(p => p.categoryId === catId).length;
 
   if (editing) {
+    const isNew = !categories.find(x => x.id === editing.id);
     return (
       <CategoryForm
         category={editing}
@@ -259,6 +294,11 @@ function CategoriesTab() {
           setEditing(null);
         }}
         onBack={() => setEditing(null)}
+        onDelete={!isNew ? () => {
+          setCategories(prev => prev.filter(x => x.id !== editing.id));
+          setEditing(null);
+          toast({ title: 'Categoria excluída', description: `"${editing.name}" foi removida.` });
+        } : undefined}
         productCount={productCount(editing.id)}
       />
     );
@@ -271,7 +311,7 @@ function CategoriesTab() {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input placeholder="Buscar categoria..." className="pl-9" value={search} onChange={e => setSearch(e.target.value)} />
         </div>
-        <Button onClick={() => setEditing({ id: `cat-${Date.now()}`, name: '', slug: '' })} className="gap-2">
+        <Button onClick={() => setEditing({ id: `cat-${Date.now()}`, name: '', slug: '', active: true })} className="gap-2">
           <Plus className="h-4 w-4" /> Nova Categoria
         </Button>
       </div>
@@ -279,11 +319,14 @@ function CategoriesTab() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {filtered.map(c => (
           <div key={c.id} className="border border-border rounded-lg overflow-hidden bg-card hover:border-primary/30 transition-colors group cursor-pointer" onClick={() => setEditing(c)}>
-            <div className="h-28 bg-muted overflow-hidden">
+            <div className="h-28 bg-muted overflow-hidden relative">
               {c.image ? (
                 <img src={c.image} alt={c.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
               ) : (
                 <div className="flex items-center justify-center h-full"><PackageIcon className="h-8 w-8 text-muted-foreground/20" /></div>
+              )}
+              {c.active === false && (
+                <Badge variant="secondary" className="absolute top-2 right-2 text-[9px]">Inativa</Badge>
               )}
             </div>
             <div className="p-3.5">
@@ -310,9 +353,26 @@ function ProductsTab() {
   const [search, setSearch] = useState('');
   const [editing, setEditing] = useState<Product | null>(null);
   const [sidebarSearch, setSidebarSearch] = useState('');
+  const [confirmDelete, setConfirmDelete] = useState<Product | null>(null);
   const filtered = products.filter(p => p.name.toLowerCase().includes(search.toLowerCase()));
 
+  const duplicateProduct = (p: Product) => {
+    const dup: Product = {
+      ...p,
+      id: `prod-${Date.now()}`,
+      name: `${p.name} (Cópia)`,
+      slug: `${p.slug}-copia-${Date.now()}`,
+      sku: `${p.sku}-COPY`,
+      createdAt: new Date().toISOString(),
+      variants: p.variants.map(v => ({ ...v, id: `v-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`, productId: `prod-${Date.now()}` })),
+    };
+    setProducts(prev => [...prev, dup]);
+    setEditing(dup);
+    toast({ title: 'Produto duplicado', description: `"${p.name}" foi duplicado. Edite as informações conforme necessário.` });
+  };
+
   if (editing) {
+    const isNew = !products.find(x => x.id === editing.id);
     return (
       <ProductForm
         product={editing}
@@ -330,6 +390,8 @@ function ProductsTab() {
           setEditing(null);
         }}
         onBack={() => setEditing(null)}
+        onDuplicate={duplicateProduct}
+        onDelete={!isNew ? () => setConfirmDelete(editing) : undefined}
       />
     );
   }
@@ -404,6 +466,21 @@ function ProductsTab() {
           <div className="px-5 py-10 text-center text-sm text-muted-foreground">Nenhum produto encontrado.</div>
         )}
       </div>
+
+      <ConfirmDeleteDialog
+        open={!!confirmDelete}
+        onOpenChange={o => { if (!o) setConfirmDelete(null); }}
+        title="Excluir produto"
+        description={`Tem certeza que deseja excluir "${confirmDelete?.name}"? Esta ação não pode ser desfeita.`}
+        onConfirm={() => {
+          if (confirmDelete) {
+            setProducts(prev => prev.filter(x => x.id !== confirmDelete.id));
+            setEditing(null);
+            toast({ title: 'Produto excluído', description: `"${confirmDelete.name}" foi removido.` });
+            setConfirmDelete(null);
+          }
+        }}
+      />
     </div>
   );
 }
@@ -448,12 +525,14 @@ function ImagesSectionContent({ form, setForm }: { form: Product; setForm: React
     }
   };
 
+  // Get unique colors from variants
+  const variantColors = Array.from(new Set(form.variants.map(v => v.attributes.cor).filter(Boolean)));
+
   return (
     <div className="space-y-5">
       <h3 className="text-base font-semibold text-foreground">Imagens</h3>
       <hr className="border-border" />
 
-      {/* Recommended sizes */}
       <div className="flex items-start gap-2 bg-muted/50 border border-border rounded-lg px-4 py-3">
         <Info className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" />
         <div className="text-xs text-muted-foreground space-y-0.5">
@@ -463,7 +542,6 @@ function ImagesSectionContent({ form, setForm }: { form: Product; setForm: React
         </div>
       </div>
 
-      {/* Current images */}
       {form.images.length > 0 ? (
         <div className="grid grid-cols-3 gap-3">
           {form.images.map((img, i) => (
@@ -493,79 +571,41 @@ function ImagesSectionContent({ form, setForm }: { form: Product; setForm: React
         </div>
       )}
 
-      {/* Upload */}
-      <SecureFileUpload
-        onFileAccepted={(dataUrl) => addImage(dataUrl)}
-        multiple
-      />
+      <SecureFileUpload onFileAccepted={(dataUrl) => addImage(dataUrl)} multiple />
 
-      {/* Add methods */}
       <div className="space-y-3">
-        {/* URL input */}
         <div>
           <label className="text-sm font-medium text-foreground flex items-center gap-1.5">
             <Link className="h-3.5 w-3.5" /> Adicionar por URL
           </label>
           <div className="flex gap-2 mt-1.5">
-            <Input
-              placeholder="https://exemplo.com/imagem.jpg"
-              className="flex-1"
-              value={urlInput}
+            <Input placeholder="https://exemplo.com/imagem.jpg" className="flex-1" value={urlInput}
               onChange={e => setUrlInput(e.target.value)}
-              onKeyDown={e => {
-                if (e.key === 'Enter' && urlInput.trim()) {
-                  addImage(urlInput.trim());
-                  setUrlInput('');
-                }
-              }}
-            />
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={!urlInput.trim()}
-              onClick={() => { addImage(urlInput.trim()); setUrlInput(''); }}
-            >
-              Adicionar
-            </Button>
+              onKeyDown={e => { if (e.key === 'Enter' && urlInput.trim()) { addImage(urlInput.trim()); setUrlInput(''); } }} />
+            <Button variant="outline" size="sm" disabled={!urlInput.trim()} onClick={() => { addImage(urlInput.trim()); setUrlInput(''); }}>Adicionar</Button>
           </div>
         </div>
 
-        {/* Media gallery toggle */}
         <div>
-          <button
-            onClick={() => setShowMedia(!showMedia)}
-            className="text-sm font-medium text-foreground flex items-center gap-1.5 hover:text-primary transition-colors"
-          >
-            <Image className="h-3.5 w-3.5" />
-            {showMedia ? 'Ocultar Mídia' : 'Selecionar da Mídia'}
+          <button onClick={() => setShowMedia(!showMedia)} className="text-sm font-medium text-foreground flex items-center gap-1.5 hover:text-primary transition-colors">
+            <Image className="h-3.5 w-3.5" /> {showMedia ? 'Ocultar Mídia' : 'Selecionar da Mídia'}
           </button>
-
           {showMedia && (
             <div className="mt-3 border border-border rounded-lg p-3 space-y-3 bg-muted/20">
               <div className="relative">
                 <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
-                <Input
-                  placeholder="Buscar imagem..."
-                  className="pl-8 h-8 text-xs"
-                  value={mediaSearch}
-                  onChange={e => setMediaSearch(e.target.value)}
-                />
+                <Input placeholder="Buscar imagem..." className="pl-8 h-8 text-xs" value={mediaSearch} onChange={e => setMediaSearch(e.target.value)} />
               </div>
               {filteredMedia.length > 0 ? (
                 <div className="grid grid-cols-4 gap-2 max-h-60 overflow-y-auto">
                   {filteredMedia.map((m, i) => (
-                    <button
-                      key={i}
-                      onClick={() => addImage(m.url)}
-                      className="group relative aspect-square rounded-md overflow-hidden border border-border hover:border-primary/50 transition-colors"
-                    >
+                    <button key={i} onClick={() => addImage(m.url)}
+                      className="group relative aspect-square rounded-md overflow-hidden border border-border hover:border-primary/50 transition-colors">
                       <img src={m.url} alt={m.name} className="w-full h-full object-cover" />
                       <div className="absolute inset-0 bg-foreground/0 group-hover:bg-foreground/20 transition-colors flex items-center justify-center">
                         <Plus className="h-5 w-5 text-background opacity-0 group-hover:opacity-100 transition-opacity drop-shadow-lg" />
                       </div>
-                      <span className="absolute bottom-0 inset-x-0 bg-foreground/60 text-background text-[9px] px-1.5 py-0.5 truncate">
-                        {m.name}
-                      </span>
+                      <span className="absolute bottom-0 inset-x-0 bg-foreground/60 text-background text-[9px] px-1.5 py-0.5 truncate">{m.name}</span>
                     </button>
                   ))}
                 </div>
@@ -576,6 +616,59 @@ function ImagesSectionContent({ form, setForm }: { form: Product; setForm: React
           )}
         </div>
       </div>
+
+      {/* Variant images */}
+      {variantColors.length > 0 && (
+        <>
+          <hr className="border-border" />
+          <div className="space-y-3">
+            <h4 className="text-sm font-semibold text-foreground flex items-center gap-2">
+              <Palette className="h-4 w-4" /> Imagem por cor
+            </h4>
+            <p className="text-xs text-muted-foreground">Associe uma imagem da galeria a cada cor para exibição automática na loja.</p>
+            {variantColors.map(color => {
+              const currentImg = form.variantImages?.[color];
+              return (
+                <div key={color} className="flex items-center gap-3 px-3 py-2.5 bg-muted/30 rounded-lg">
+                  <span className="text-sm font-medium text-foreground w-24">{color}</span>
+                  {currentImg ? (
+                    <div className="relative group h-10 w-10 rounded-md overflow-hidden border border-border shrink-0">
+                      <img src={currentImg} alt={color} className="w-full h-full object-cover" />
+                      <button
+                        onClick={() => {
+                          const updated = { ...form.variantImages };
+                          delete updated[color];
+                          setForm(prev => ({ ...prev, variantImages: updated }));
+                        }}
+                        className="absolute inset-0 bg-foreground/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
+                      >
+                        <X className="h-3 w-3 text-background" />
+                      </button>
+                    </div>
+                  ) : (
+                    <span className="text-xs text-muted-foreground">Sem imagem</span>
+                  )}
+                  <Select
+                    value={currentImg || ''}
+                    onValueChange={v => setForm(prev => ({ ...prev, variantImages: { ...prev.variantImages, [color]: v } }))}
+                  >
+                    <SelectTrigger className="h-8 text-xs flex-1 max-w-[200px]">
+                      <SelectValue placeholder="Selecionar imagem..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {form.images.map((img, i) => (
+                        <SelectItem key={i} value={img}>
+                          <span className="text-xs">Imagem {i + 1}{i === 0 ? ' (Principal)' : ''}</span>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              );
+            })}
+          </div>
+        </>
+      )}
     </div>
   );
 }
@@ -696,30 +789,20 @@ function StockSection({ form, setForm }: { form: Product; setForm: (f: Product) 
           <Palette className="h-4 w-4" /> Cores disponíveis
         </p>
         <div className="flex flex-wrap gap-1.5">
-           {allColors.map(c => {
+          {allColors.map(c => {
             const isCustom = userColors.includes(c);
             return (
-              <Badge
-                key={c}
-                variant={selectedColors.includes(c) ? 'default' : 'outline'}
-                className="cursor-pointer text-xs select-none gap-1 pr-1"
-                onClick={() => toggleColor(c)}
-              >
+              <Badge key={c} variant={selectedColors.includes(c) ? 'default' : 'outline'}
+                className="cursor-pointer text-xs select-none gap-1 pr-1" onClick={() => toggleColor(c)}>
                 {selectedColors.includes(c) && <Check className="h-3 w-3" />}
                 {c}
-                <button
-                  type="button"
-                  className="ml-0.5 rounded-full hover:bg-destructive/20 p-0.5"
+                <button type="button" className="ml-0.5 rounded-full hover:bg-destructive/20 p-0.5"
                   onClick={e => {
                     e.stopPropagation();
-                    if (isCustom) {
-                      setUserColors(prev => prev.filter(x => x !== c));
-                    } else {
-                      setHiddenColors(prev => [...prev, c]);
-                    }
+                    if (isCustom) { setUserColors(prev => prev.filter(x => x !== c)); }
+                    else { setHiddenColors(prev => [...prev, c]); }
                     setSelectedColors(prev => prev.filter(x => x !== c));
-                  }}
-                >
+                  }}>
                   <X className="h-3 w-3" />
                 </button>
               </Badge>
@@ -727,13 +810,9 @@ function StockSection({ form, setForm }: { form: Product; setForm: (f: Product) 
           })}
         </div>
         <div className="flex items-center gap-2 mt-2">
-          <Input
-            className="h-8 w-40 text-xs"
-            placeholder="Nova cor personalizada..."
-            value={customColor}
+          <Input className="h-8 w-40 text-xs" placeholder="Nova cor personalizada..." value={customColor}
             onChange={e => setCustomColor(e.target.value)}
-            onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); addCustomColor(); } }}
-          />
+            onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); addCustomColor(); } }} />
           <Button variant="outline" size="sm" className="h-8 text-xs gap-1" disabled={!customColor.trim()} onClick={addCustomColor}>
             <Plus className="h-3 w-3" /> Adicionar
           </Button>
@@ -746,30 +825,20 @@ function StockSection({ form, setForm }: { form: Product; setForm: (f: Product) 
           <Layers className="h-4 w-4" /> Tamanhos disponíveis
         </p>
         <div className="flex flex-wrap gap-1.5">
-           {allSizes.map(s => {
+          {allSizes.map(s => {
             const isCustom = userSizes.includes(s);
             return (
-              <Badge
-                key={s}
-                variant={selectedSizes.includes(s) ? 'default' : 'outline'}
-                className="cursor-pointer text-xs select-none gap-1 pr-1"
-                onClick={() => toggleSize(s)}
-              >
+              <Badge key={s} variant={selectedSizes.includes(s) ? 'default' : 'outline'}
+                className="cursor-pointer text-xs select-none gap-1 pr-1" onClick={() => toggleSize(s)}>
                 {selectedSizes.includes(s) && <Check className="h-3 w-3" />}
                 {s}
-                <button
-                  type="button"
-                  className="ml-0.5 rounded-full hover:bg-destructive/20 p-0.5"
+                <button type="button" className="ml-0.5 rounded-full hover:bg-destructive/20 p-0.5"
                   onClick={e => {
                     e.stopPropagation();
-                    if (isCustom) {
-                      setUserSizes(prev => prev.filter(x => x !== s));
-                    } else {
-                      setHiddenSizes(prev => [...prev, s]);
-                    }
+                    if (isCustom) { setUserSizes(prev => prev.filter(x => x !== s)); }
+                    else { setHiddenSizes(prev => [...prev, s]); }
                     setSelectedSizes(prev => prev.filter(x => x !== s));
-                  }}
-                >
+                  }}>
                   <X className="h-3 w-3" />
                 </button>
               </Badge>
@@ -777,25 +846,19 @@ function StockSection({ form, setForm }: { form: Product; setForm: (f: Product) 
           })}
         </div>
         <div className="flex items-center gap-2 mt-2">
-          <Input
-            className="h-8 w-40 text-xs"
-            placeholder="Novo tamanho..."
-            value={customSize}
+          <Input className="h-8 w-40 text-xs" placeholder="Novo tamanho..." value={customSize}
             onChange={e => setCustomSize(e.target.value)}
-            onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); addCustomSize(); } }}
-          />
+            onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); addCustomSize(); } }} />
           <Button variant="outline" size="sm" className="h-8 text-xs gap-1" disabled={!customSize.trim()} onClick={addCustomSize}>
             <Plus className="h-3 w-3" /> Adicionar
           </Button>
         </div>
       </div>
 
-      {/* Generate */}
       <Button onClick={generateVariants} className="gap-2" disabled={selectedColors.length === 0 && selectedSizes.length === 0}>
         <Boxes className="h-4 w-4" /> Gerar variantes ({(selectedColors.length || 1) * (selectedSizes.length || 1)})
       </Button>
 
-      {/* Variant stock table */}
       {form.variants.length > 0 && (
         <>
           <hr className="border-border" />
@@ -808,23 +871,18 @@ function StockSection({ form, setForm }: { form: Product; setForm: (f: Product) 
                   <span className="text-[10px] text-muted-foreground ml-2">{v.sku}</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Input
-                    type="number" min={0} className="w-20 h-8 text-sm text-right" value={v.stock}
+                  <Input type="number" min={0} className="w-20 h-8 text-sm text-right" value={v.stock}
                     onChange={e => {
                       const newStock = parseInt(e.target.value) || 0;
                       const updatedVariants = form.variants.map(vr => vr.id === v.id ? { ...vr, stock: newStock } : vr);
                       const totalStock = updatedVariants.reduce((sum, vr) => sum + vr.stock, 0);
                       setForm({ ...form, variants: updatedVariants, stock: totalStock });
-                    }}
-                  />
+                    }} />
                   <span className="text-xs text-muted-foreground w-5">un</span>
-                  <button
-                    onClick={() => {
-                      const updated = form.variants.filter(vr => vr.id !== v.id);
-                      setForm({ ...form, variants: updated, stock: updated.reduce((s, vr) => s + vr.stock, 0) });
-                    }}
-                    className="text-muted-foreground hover:text-destructive transition-colors"
-                  >
+                  <button onClick={() => {
+                    const updated = form.variants.filter(vr => vr.id !== v.id);
+                    setForm({ ...form, variants: updated, stock: updated.reduce((s, vr) => s + vr.stock, 0) });
+                  }} className="text-muted-foreground hover:text-destructive transition-colors">
                     <Trash2 className="h-3.5 w-3.5" />
                   </button>
                 </div>
@@ -847,14 +905,16 @@ function StockSection({ form, setForm }: { form: Product; setForm: (f: Product) 
 /*  Product Form                                                       */
 /* ------------------------------------------------------------------ */
 
-function ProductForm({ product, allProducts, sidebarSearch, onSidebarSearch, onSelect, onSave, onBack }: {
+function ProductForm({ product, allProducts, sidebarSearch, onSidebarSearch, onSelect, onSave, onBack, onDuplicate, onDelete }: {
   product: Product; allProducts: Product[]; sidebarSearch: string;
   onSidebarSearch: (s: string) => void; onSelect: (p: Product) => void;
   onSave: (p: Product) => void; onBack: () => void;
+  onDuplicate: (p: Product) => void; onDelete?: () => void;
 }) {
   const [form, setForm] = useState(product);
   const [section, setSection] = useState<ProductSection>('info');
   const [tagInput, setTagInput] = useState('');
+  const [confirmDelete, setConfirmDelete] = useState(false);
 
   React.useEffect(() => { setForm(product); }, [product]);
 
@@ -865,6 +925,7 @@ function ProductForm({ product, allProducts, sidebarSearch, onSidebarSearch, onS
     { key: 'price', label: 'Preço', icon: DollarSign },
     { key: 'stock', label: 'Estoque', icon: Boxes },
     { key: 'images', label: 'Imagens', icon: ImageIcon },
+    { key: 'seo', label: 'SEO', icon: Globe },
     { key: 'status', label: 'Status', icon: Eye },
   ];
 
@@ -875,7 +936,17 @@ function ProductForm({ product, allProducts, sidebarSearch, onSidebarSearch, onS
           <ChevronLeft className="h-4 w-4" />
           {form.name || 'Novo Produto'}
         </button>
-        <SaveButton onClick={() => onSave(form)} />
+        <div className="flex items-center gap-2">
+          <Button variant="outline" size="sm" className="gap-1.5" onClick={() => onDuplicate(form)}>
+            <Copy className="h-3.5 w-3.5" /> Duplicar
+          </Button>
+          {onDelete && (
+            <Button variant="outline" size="sm" className="gap-1.5 text-destructive hover:text-destructive" onClick={() => setConfirmDelete(true)}>
+              <Trash2 className="h-3.5 w-3.5" /> Excluir
+            </Button>
+          )}
+          <SaveButton onClick={() => onSave(form)} />
+        </div>
       </div>
 
       <div className="flex gap-5">
@@ -887,20 +958,11 @@ function ProductForm({ product, allProducts, sidebarSearch, onSidebarSearch, onS
           </div>
           <div className="space-y-0.5 max-h-[65vh] overflow-y-auto">
             {sidebarFiltered.map(p => (
-              <button
-                key={p.id}
-                onClick={() => onSelect(p)}
-                className={cn(
-                  'flex items-center gap-2 w-full px-2 py-2 rounded-md text-left transition-colors',
-                  p.id === form.id ? 'bg-muted' : 'hover:bg-muted/40'
-                )}
-              >
+              <button key={p.id} onClick={() => onSelect(p)}
+                className={cn('flex items-center gap-2 w-full px-2 py-2 rounded-md text-left transition-colors', p.id === form.id ? 'bg-muted' : 'hover:bg-muted/40')}>
                 <div className="h-8 w-8 rounded-md bg-muted overflow-hidden shrink-0">
-                  {p.images[0] ? (
-                    <img src={p.images[0]} alt="" className="w-full h-full object-cover" />
-                  ) : (
-                    <div className="flex items-center justify-center h-full"><PackageIcon className="h-3.5 w-3.5 text-muted-foreground/30" /></div>
-                  )}
+                  {p.images[0] ? <img src={p.images[0]} alt="" className="w-full h-full object-cover" />
+                    : <div className="flex items-center justify-center h-full"><PackageIcon className="h-3.5 w-3.5 text-muted-foreground/30" /></div>}
                 </div>
                 <div className="min-w-0 flex-1">
                   <p className="text-xs font-medium text-foreground truncate">{p.name}</p>
@@ -911,10 +973,8 @@ function ProductForm({ product, allProducts, sidebarSearch, onSidebarSearch, onS
           </div>
         </div>
 
-        {/* Section Nav */}
         <SectionNav items={sectionItems} active={section} onChange={s => setSection(s as ProductSection)} />
 
-        {/* Content */}
         <div className="flex-1 min-w-0 pl-4">
           {section === 'info' && (
             <div className="space-y-5">
@@ -950,18 +1010,38 @@ function ProductForm({ product, allProducts, sidebarSearch, onSidebarSearch, onS
                       {tag} ×
                     </Badge>
                   ))}
-                  <Input
-                    className="h-7 w-28 text-xs"
-                    placeholder="Nova tag..."
-                    value={tagInput}
+                  <Input className="h-7 w-28 text-xs" placeholder="Nova tag..." value={tagInput}
                     onChange={e => setTagInput(e.target.value)}
-                    onKeyDown={e => {
-                      if (e.key === 'Enter' && tagInput.trim()) {
-                        setForm({ ...form, tags: [...form.tags, tagInput.trim()] });
-                        setTagInput('');
-                      }
-                    }}
-                  />
+                    onKeyDown={e => { if (e.key === 'Enter' && tagInput.trim()) { setForm({ ...form, tags: [...form.tags, tagInput.trim()] }); setTagInput(''); } }} />
+                </div>
+              </div>
+
+              {/* Weight & Dimensions */}
+              <hr className="border-border" />
+              <h4 className="text-sm font-semibold text-foreground flex items-center gap-2">
+                <Weight className="h-4 w-4" /> Peso & Dimensões
+              </h4>
+              <p className="text-xs text-muted-foreground -mt-3">Usado para cálculo de frete.</p>
+              <div className="grid grid-cols-4 gap-3">
+                <div>
+                  <label className="text-xs font-medium text-foreground">Peso (g)</label>
+                  <Input className="mt-1 h-9 text-sm" type="number" min={0} placeholder="0" value={form.weight || ''}
+                    onChange={e => setForm({ ...form, weight: parseFloat(e.target.value) || 0 })} />
+                </div>
+                <div>
+                  <label className="text-xs font-medium text-foreground">Larg. (cm)</label>
+                  <Input className="mt-1 h-9 text-sm" type="number" min={0} placeholder="0" value={form.width || ''}
+                    onChange={e => setForm({ ...form, width: parseFloat(e.target.value) || 0 })} />
+                </div>
+                <div>
+                  <label className="text-xs font-medium text-foreground">Alt. (cm)</label>
+                  <Input className="mt-1 h-9 text-sm" type="number" min={0} placeholder="0" value={form.height || ''}
+                    onChange={e => setForm({ ...form, height: parseFloat(e.target.value) || 0 })} />
+                </div>
+                <div>
+                  <label className="text-xs font-medium text-foreground">Prof. (cm)</label>
+                  <Input className="mt-1 h-9 text-sm" type="number" min={0} placeholder="0" value={form.depth || ''}
+                    onChange={e => setForm({ ...form, depth: parseFloat(e.target.value) || 0 })} />
                 </div>
               </div>
             </div>
@@ -1007,12 +1087,35 @@ function ProductForm({ product, allProducts, sidebarSearch, onSidebarSearch, onS
             </div>
           )}
 
-          {section === 'stock' && (
-            <StockSection form={form} setForm={setForm} />
-          )}
+          {section === 'stock' && <StockSection form={form} setForm={setForm} />}
 
-          {section === 'images' && (
-            <ImagesSectionContent form={form} setForm={setForm} />
+          {section === 'images' && <ImagesSectionContent form={form} setForm={setForm} />}
+
+          {section === 'seo' && (
+            <div className="space-y-5">
+              <h3 className="text-base font-semibold text-foreground flex items-center gap-2">
+                <Globe className="h-4 w-4" /> SEO
+              </h3>
+              <hr className="border-border" />
+              <p className="text-xs text-muted-foreground">Otimize como o produto aparece nos mecanismos de busca.</p>
+              <div>
+                <label className="text-sm font-medium text-foreground">Meta título</label>
+                <Input className="mt-1.5" placeholder={form.name || 'Título da página'} value={form.metaTitle || ''}
+                  onChange={e => setForm({ ...form, metaTitle: e.target.value })} maxLength={60} />
+                <p className="text-[10px] text-muted-foreground mt-1">{(form.metaTitle || '').length}/60 caracteres</p>
+              </div>
+              <div>
+                <label className="text-sm font-medium text-foreground">Meta descrição</label>
+                <Textarea className="mt-1.5" placeholder={form.description || 'Descrição para buscadores...'} rows={3}
+                  value={form.metaDescription || ''} onChange={e => setForm({ ...form, metaDescription: e.target.value })} maxLength={160} />
+                <p className="text-[10px] text-muted-foreground mt-1">{(form.metaDescription || '').length}/160 caracteres</p>
+              </div>
+              <div className="bg-muted/50 rounded-lg p-4 space-y-1">
+                <p className="text-sm font-medium text-primary truncate">{form.metaTitle || form.name || 'Título do produto'}</p>
+                <p className="text-[10px] text-emerald-600 truncate">modastore.com/produto/{form.slug || '...'}</p>
+                <p className="text-xs text-muted-foreground line-clamp-2">{form.metaDescription || form.description || 'Descrição do produto aparecerá aqui...'}</p>
+              </div>
+            </div>
           )}
 
           {section === 'status' && (
@@ -1043,6 +1146,16 @@ function ProductForm({ product, allProducts, sidebarSearch, onSidebarSearch, onS
           )}
         </div>
       </div>
+
+      {onDelete && (
+        <ConfirmDeleteDialog
+          open={confirmDelete}
+          onOpenChange={setConfirmDelete}
+          title="Excluir produto"
+          description={`Tem certeza que deseja excluir "${form.name}"? Esta ação não pode ser desfeita.`}
+          onConfirm={onDelete}
+        />
+      )}
     </div>
   );
 }
@@ -1057,6 +1170,7 @@ function CollectionsTab() {
   const [editing, setEditing] = useState<ProductCollection | null>(null);
 
   if (editing) {
+    const isNew = !collections.find(x => x.id === editing.id);
     return (
       <CollectionForm
         collection={editing}
@@ -1070,6 +1184,11 @@ function CollectionsTab() {
           setEditing(null);
         }}
         onBack={() => setEditing(null)}
+        onDelete={!isNew ? () => {
+          setCollections(prev => prev.filter(x => x.id !== editing.id));
+          setEditing(null);
+          toast({ title: 'Coleção excluída', description: `"${editing.name}" foi removida.` });
+        } : undefined}
       />
     );
   }
@@ -1112,11 +1231,8 @@ function CollectionsTab() {
                 <div className="flex gap-1.5 overflow-hidden">
                   {colProducts.slice(0, 4).map(p => (
                     <div key={p.id} className="h-10 w-10 rounded-md bg-muted overflow-hidden shrink-0">
-                      {p.images[0] ? (
-                        <img src={p.images[0]} alt="" className="w-full h-full object-cover" />
-                      ) : (
-                        <div className="flex items-center justify-center h-full"><PackageIcon className="h-3.5 w-3.5 text-muted-foreground/20" /></div>
-                      )}
+                      {p.images[0] ? <img src={p.images[0]} alt="" className="w-full h-full object-cover" />
+                        : <div className="flex items-center justify-center h-full"><PackageIcon className="h-3.5 w-3.5 text-muted-foreground/20" /></div>}
                     </div>
                   ))}
                   {colProducts.length > 4 && (
@@ -1140,14 +1256,17 @@ function CollectionsTab() {
 /*  Collection Form                                                    */
 /* ------------------------------------------------------------------ */
 
-function CollectionForm({ collection, onSave, onBack }: {
+function CollectionForm({ collection, onSave, onBack, onDelete }: {
   collection: ProductCollection;
   onSave: (c: ProductCollection) => void;
   onBack: () => void;
+  onDelete?: () => void;
 }) {
   const [form, setForm] = useState(collection);
   const [section, setSection] = useState<CollectionSection>('info');
   const [prodSearch, setProdSearch] = useState('');
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [urlInput, setUrlInput] = useState('');
   const availableProducts = mockProducts.filter(p => p.name.toLowerCase().includes(prodSearch.toLowerCase()));
 
   React.useEffect(() => { setForm(collection); }, [collection]);
@@ -1165,7 +1284,14 @@ function CollectionForm({ collection, onSave, onBack }: {
           <ChevronLeft className="h-4 w-4" />
           {form.name || 'Nova Coleção'}
         </button>
-        <SaveButton onClick={() => onSave(form)} />
+        <div className="flex items-center gap-2">
+          {onDelete && (
+            <Button variant="outline" size="sm" className="gap-1.5 text-destructive hover:text-destructive" onClick={() => setConfirmDelete(true)}>
+              <Trash2 className="h-3.5 w-3.5" /> Excluir
+            </Button>
+          )}
+          <SaveButton onClick={() => onSave(form)} />
+        </div>
       </div>
 
       <div className="flex gap-5">
@@ -1176,6 +1302,33 @@ function CollectionForm({ collection, onSave, onBack }: {
             <div className="space-y-5">
               <h3 className="text-base font-semibold text-foreground">Informações</h3>
               <hr className="border-border" />
+
+              {/* Collection image */}
+              <div>
+                <label className="text-sm font-medium text-foreground">Imagem de destaque</label>
+                {form.image ? (
+                  <div className="relative group w-full h-32 rounded-lg overflow-hidden bg-muted border border-border mt-1.5">
+                    <img src={form.image} alt={form.name} className="w-full h-full object-cover" />
+                    <div className="absolute inset-0 bg-foreground/0 group-hover:bg-foreground/30 transition-colors flex items-center justify-center">
+                      <button onClick={() => setForm({ ...form, image: undefined })} className="opacity-0 group-hover:opacity-100 p-2 bg-background rounded-full shadow-lg transition-opacity">
+                        <Trash2 className="h-4 w-4 text-destructive" />
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="border-2 border-dashed border-border rounded-lg py-6 flex flex-col items-center justify-center gap-1 mt-1.5">
+                    <ImageIcon className="h-6 w-6 text-muted-foreground/25" />
+                    <p className="text-[10px] text-muted-foreground">Nenhuma imagem</p>
+                  </div>
+                )}
+                <div className="flex gap-2 mt-2">
+                  <Input placeholder="URL da imagem..." className="flex-1 h-8 text-xs" value={urlInput}
+                    onChange={e => setUrlInput(e.target.value)}
+                    onKeyDown={e => { if (e.key === 'Enter' && urlInput.trim()) { setForm({ ...form, image: urlInput.trim() }); setUrlInput(''); } }} />
+                  <Button variant="outline" size="sm" className="h-8 text-xs" disabled={!urlInput.trim()} onClick={() => { setForm({ ...form, image: urlInput.trim() }); setUrlInput(''); }}>Usar</Button>
+                </div>
+              </div>
+
               <div>
                 <label className="text-sm font-medium text-foreground">Nome da coleção</label>
                 <Input className="mt-1.5" placeholder="Ex: Novidades" value={form.name}
@@ -1205,20 +1358,15 @@ function CollectionForm({ collection, onSave, onBack }: {
                 {availableProducts.map(p => {
                   const selected = form.productIds.includes(p.id);
                   return (
-                    <button
-                      key={p.id}
+                    <button key={p.id}
                       onClick={() => setForm(prev => ({
                         ...prev,
                         productIds: selected ? prev.productIds.filter(id => id !== p.id) : [...prev.productIds, p.id],
                       }))}
-                      className={cn('flex items-center gap-3 px-4 py-3 w-full text-left transition-colors', selected ? 'bg-primary/5' : 'hover:bg-muted/30')}
-                    >
+                      className={cn('flex items-center gap-3 px-4 py-3 w-full text-left transition-colors', selected ? 'bg-primary/5' : 'hover:bg-muted/30')}>
                       <div className="h-9 w-9 rounded-md bg-muted overflow-hidden shrink-0">
-                        {p.images[0] ? (
-                          <img src={p.images[0]} alt="" className="w-full h-full object-cover" />
-                        ) : (
-                          <div className="flex items-center justify-center h-full"><PackageIcon className="h-4 w-4 text-muted-foreground/30" /></div>
-                        )}
+                        {p.images[0] ? <img src={p.images[0]} alt="" className="w-full h-full object-cover" />
+                          : <div className="flex items-center justify-center h-full"><PackageIcon className="h-4 w-4 text-muted-foreground/30" /></div>}
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-sm text-foreground truncate">{p.name}</p>
@@ -1247,6 +1395,22 @@ function CollectionForm({ collection, onSave, onBack }: {
                 </div>
                 <Switch checked={form.active} onCheckedChange={v => setForm({ ...form, active: v })} />
               </div>
+
+              {/* Period */}
+              <hr className="border-border" />
+              <h4 className="text-sm font-semibold text-foreground">Período ativo</h4>
+              <p className="text-xs text-muted-foreground -mt-3">Opcional. Defina datas para coleções sazonais.</p>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-xs font-medium text-foreground">Início</label>
+                  <Input className="mt-1 h-9 text-sm" type="date" value={form.startsAt || ''} onChange={e => setForm({ ...form, startsAt: e.target.value || undefined })} />
+                </div>
+                <div>
+                  <label className="text-xs font-medium text-foreground">Fim</label>
+                  <Input className="mt-1 h-9 text-sm" type="date" value={form.endsAt || ''} onChange={e => setForm({ ...form, endsAt: e.target.value || undefined })} />
+                </div>
+              </div>
+
               <div className="bg-muted/50 rounded-lg px-4 py-3">
                 <p className="text-xs text-muted-foreground"><span className="font-medium text-foreground">Slug:</span> /{form.slug}</p>
               </div>
@@ -1254,6 +1418,16 @@ function CollectionForm({ collection, onSave, onBack }: {
           )}
         </div>
       </div>
+
+      {onDelete && (
+        <ConfirmDeleteDialog
+          open={confirmDelete}
+          onOpenChange={setConfirmDelete}
+          title="Excluir coleção"
+          description={`Tem certeza que deseja excluir "${form.name}"? Esta ação não pode ser desfeita.`}
+          onConfirm={onDelete}
+        />
+      )}
     </div>
   );
 }
