@@ -72,6 +72,159 @@ function SectionNav<T extends string>({ items, active, onChange }: {
 }
 
 /* ================================================================== */
+/*  CATEGORY FORM                                                      */
+/* ================================================================== */
+
+function CategoryForm({ category, onSave, onBack, productCount }: {
+  category: Category; onSave: (c: Category) => void; onBack: () => void; productCount: number;
+}) {
+  const [form, setForm] = useState(category);
+  const [urlInput, setUrlInput] = useState('');
+  const [showMedia, setShowMedia] = useState(false);
+  const [mediaSearch, setMediaSearch] = useState('');
+
+  const allMedia = getAllMediaImages();
+  const filteredMedia = allMedia.filter(m =>
+    m.name.toLowerCase().includes(mediaSearch.toLowerCase()) &&
+    m.url !== form.image
+  );
+
+  return (
+    <div className="space-y-6 pt-2">
+      <div className="flex items-center justify-between">
+        <button onClick={onBack} className="flex items-center gap-1.5 text-sm font-medium text-foreground hover:text-foreground/80 transition-colors">
+          <ChevronLeft className="h-4 w-4" /> {form.name || 'Nova Categoria'}
+        </button>
+        <SaveButton onClick={() => onSave(form)} />
+      </div>
+
+      <div className="max-w-xl space-y-5">
+        {/* Image preview */}
+        <div>
+          <label className="text-sm font-medium text-foreground">Imagem da categoria</label>
+          <div className="flex items-start gap-2 bg-muted/50 border border-border rounded-lg px-3 py-2 mt-1.5 mb-3">
+            <Info className="h-3.5 w-3.5 text-muted-foreground mt-0.5 shrink-0" />
+            <p className="text-[11px] text-muted-foreground">
+              Recomendado: <span className="font-medium">600×600px</span> (quadrada) ou <span className="font-medium">800×400px</span> (banner). JPG/PNG.
+            </p>
+          </div>
+
+          {form.image ? (
+            <div className="relative group w-full h-36 rounded-lg overflow-hidden bg-muted border border-border">
+              <img src={form.image} alt={form.name} className="w-full h-full object-cover" />
+              <div className="absolute inset-0 bg-foreground/0 group-hover:bg-foreground/30 transition-colors flex items-center justify-center gap-2">
+                <button
+                  onClick={() => setForm({ ...form, image: undefined })}
+                  className="opacity-0 group-hover:opacity-100 p-2 bg-background rounded-full shadow-lg transition-opacity"
+                >
+                  <Trash2 className="h-4 w-4 text-destructive" />
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="border-2 border-dashed border-border rounded-lg py-8 flex flex-col items-center justify-center gap-2">
+              <ImageIcon className="h-8 w-8 text-muted-foreground/25" />
+              <p className="text-xs text-muted-foreground">Nenhuma imagem · Adicione via URL ou Mídia</p>
+            </div>
+          )}
+
+          {/* URL input */}
+          <div className="mt-3">
+            <label className="text-xs font-medium text-foreground flex items-center gap-1.5">
+              <Link className="h-3 w-3" /> URL da imagem
+            </label>
+            <div className="flex gap-2 mt-1">
+              <Input
+                placeholder="https://exemplo.com/imagem.jpg"
+                className="flex-1 h-9 text-sm"
+                value={urlInput}
+                onChange={e => setUrlInput(e.target.value)}
+                onKeyDown={e => {
+                  if (e.key === 'Enter' && urlInput.trim()) {
+                    setForm({ ...form, image: urlInput.trim() });
+                    setUrlInput('');
+                  }
+                }}
+              />
+              <Button variant="outline" size="sm" disabled={!urlInput.trim()} onClick={() => { setForm({ ...form, image: urlInput.trim() }); setUrlInput(''); }}>
+                Usar
+              </Button>
+            </div>
+          </div>
+
+          {/* Media picker */}
+          <div className="mt-3">
+            <button
+              onClick={() => setShowMedia(!showMedia)}
+              className="text-xs font-medium text-foreground flex items-center gap-1.5 hover:text-primary transition-colors"
+            >
+              <Image className="h-3 w-3" />
+              {showMedia ? 'Ocultar Mídia' : 'Selecionar da Mídia'}
+            </button>
+
+            {showMedia && (
+              <div className="mt-2 border border-border rounded-lg p-3 space-y-2 bg-muted/20">
+                <div className="relative">
+                  <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+                  <Input placeholder="Buscar..." className="pl-8 h-8 text-xs" value={mediaSearch} onChange={e => setMediaSearch(e.target.value)} />
+                </div>
+                {filteredMedia.length > 0 ? (
+                  <div className="grid grid-cols-4 gap-2 max-h-48 overflow-y-auto">
+                    {filteredMedia.map((m, i) => (
+                      <button
+                        key={i}
+                        onClick={() => { setForm({ ...form, image: m.url }); setShowMedia(false); }}
+                        className="group relative aspect-square rounded-md overflow-hidden border border-border hover:border-primary/50 transition-colors"
+                      >
+                        <img src={m.url} alt={m.name} className="w-full h-full object-cover" />
+                        <span className="absolute bottom-0 inset-x-0 bg-foreground/60 text-background text-[9px] px-1 py-0.5 truncate">{m.name}</span>
+                      </button>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-xs text-muted-foreground text-center py-3">Nenhuma imagem disponível</p>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+
+        <hr className="border-border" />
+
+        {/* Name */}
+        <div>
+          <label className="text-sm font-medium text-foreground">Nome da categoria</label>
+          <Input className="mt-1.5" placeholder="Ex: Camisetas" value={form.name}
+            onChange={e => setForm({ ...form, name: e.target.value, slug: e.target.value.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '') })} />
+        </div>
+
+        {/* Slug */}
+        <div>
+          <label className="text-sm font-medium text-foreground">Slug</label>
+          <Input className="mt-1.5" value={form.slug} onChange={e => setForm({ ...form, slug: e.target.value })} />
+          <p className="text-[10px] text-muted-foreground mt-1">URL: /categorias/{form.slug || '...'}</p>
+        </div>
+
+        {/* Description */}
+        <div>
+          <label className="text-sm font-medium text-foreground">Descrição</label>
+          <Textarea className="mt-1.5" placeholder="Descrição da categoria..." rows={3} value={form.description || ''} onChange={e => setForm({ ...form, description: e.target.value })} />
+        </div>
+
+        {/* Info */}
+        {productCount > 0 && (
+          <div className="bg-muted/50 rounded-lg px-4 py-3">
+            <p className="text-xs text-muted-foreground">
+              <span className="font-medium text-foreground">{productCount}</span> produto(s) nesta categoria
+            </p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/* ================================================================== */
 /*  CATEGORIES TAB                                                     */
 /* ================================================================== */
 
@@ -85,41 +238,15 @@ function CategoriesTab() {
 
   if (editing) {
     return (
-      <div className="space-y-6 pt-2">
-        <div className="flex items-center justify-between">
-          <button onClick={() => setEditing(null)} className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors">
-            <ChevronLeft className="h-4 w-4" /> Voltar
-          </button>
-          <SaveButton onClick={() => {
-            setCategories(prev => prev.find(x => x.id === editing.id) ? prev.map(x => x.id === editing.id ? editing : x) : [...prev, editing]);
-            setEditing(null);
-          }} />
-        </div>
-        <div className="max-w-xl space-y-5">
-          {editing.image && (
-            <div className="w-full h-32 rounded-lg overflow-hidden bg-muted">
-              <img src={editing.image} alt={editing.name} className="w-full h-full object-cover" />
-            </div>
-          )}
-          <div>
-            <label className="text-sm font-medium text-foreground">Nome da categoria</label>
-            <Input className="mt-1.5" placeholder="Ex: Camisetas" value={editing.name}
-              onChange={e => setEditing({ ...editing, name: e.target.value, slug: e.target.value.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '') })} />
-          </div>
-          <div>
-            <label className="text-sm font-medium text-foreground">Slug</label>
-            <Input className="mt-1.5" value={editing.slug} onChange={e => setEditing({ ...editing, slug: e.target.value })} />
-          </div>
-          <div>
-            <label className="text-sm font-medium text-foreground">Imagem URL</label>
-            <Input className="mt-1.5" placeholder="https://..." value={editing.image || ''} onChange={e => setEditing({ ...editing, image: e.target.value })} />
-          </div>
-          <div>
-            <label className="text-sm font-medium text-foreground">Descrição</label>
-            <Textarea className="mt-1.5" placeholder="Descrição da categoria..." value={editing.description || ''} onChange={e => setEditing({ ...editing, description: e.target.value })} />
-          </div>
-        </div>
-      </div>
+      <CategoryForm
+        category={editing}
+        onSave={cat => {
+          setCategories(prev => prev.find(x => x.id === cat.id) ? prev.map(x => x.id === cat.id ? cat : x) : [...prev, cat]);
+          setEditing(null);
+        }}
+        onBack={() => setEditing(null)}
+        productCount={productCount(editing.id)}
+      />
     );
   }
 
