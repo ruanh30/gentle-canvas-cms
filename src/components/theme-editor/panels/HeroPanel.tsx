@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTheme } from '@/contexts/ThemeContext';
-import { EditorSection, TextField, ToggleRow, NumberSlider, OptionPicker, SelectField, ColorInput, SectionDivider, AdminLink } from '../EditorControls';
+import { EditorSection, TextField, ImageField, ToggleRow, NumberSlider, OptionPicker, SelectField, ColorInput, SectionDivider, AdminLink } from '../EditorControls';
 import { Layers, ImageIcon } from 'lucide-react';
 
 export function HeroPanel() {
@@ -63,7 +63,7 @@ export function HeroPanel() {
           <p className="text-[10px] text-muted-foreground/60 leading-relaxed -mt-2">
             Imagem de fundo do slide. Use o overlay para escurecer e melhorar a legibilidade do texto.
           </p>
-          <TextField label="URL da imagem" value={slide?.backgroundImage || ''} onChange={v => setSlide({ backgroundImage: v })} placeholder="https://..." />
+          <ImageField label="URL da imagem" value={slide?.backgroundImage || ''} onChange={v => setSlide({ backgroundImage: v })} />
           {slide?.backgroundImage && (
             <>
               <ColorInput label="Cor do overlay" value={slide.overlayColor} onChange={v => setSlide({ overlayColor: v })} />

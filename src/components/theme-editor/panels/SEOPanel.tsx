@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTheme } from '@/contexts/ThemeContext';
-import { EditorSection, TextField, ToggleRow, SectionDivider } from '../EditorControls';
+import { EditorSection, TextField, ImageField, ToggleRow, SectionDivider } from '../EditorControls';
 import { Globe } from 'lucide-react';
 
 export function SEOPanel() {
@@ -24,7 +24,7 @@ export function SEOPanel() {
       <p className="text-[10px] text-muted-foreground/60 leading-relaxed -mt-2">
         Imagem exibida quando a loja é compartilhada no WhatsApp, Facebook, Twitter, etc.
       </p>
-      <TextField label="URL da imagem OG" value={s.ogImage} onChange={v => set({ ogImage: v })} placeholder="https://..." />
+      <ImageField label="URL da imagem OG" value={s.ogImage} onChange={v => set({ ogImage: v })} />
 
       <SectionDivider label="Navegação" />
       <p className="text-[10px] text-muted-foreground/60 leading-relaxed -mt-2">
