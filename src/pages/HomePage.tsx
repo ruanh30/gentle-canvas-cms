@@ -9,7 +9,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import { cn } from '@/lib/utils';
 import { ThemeHomepageSection } from '@/types/theme';
 
-function SectionCarousel({ children, speed }: { children: React.ReactNode[]; speed: number }) {
+function SectionCarousel({ children, speed, showArrows = true }: { children: React.ReactNode[]; speed: number; showArrows?: boolean }) {
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -32,15 +32,19 @@ function SectionCarousel({ children, speed }: { children: React.ReactNode[]; spe
 
   return (
     <div className="relative">
-      <button onClick={() => scroll('left')} className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-background/90 backdrop-blur-sm p-2 rounded-full shadow-md hover:bg-background">
-        <ChevronLeft className="h-5 w-5" />
-      </button>
-      <div ref={scrollRef} className="flex gap-4 overflow-x-auto scroll-smooth pb-4 px-8 snap-x snap-mandatory" style={{ scrollbarWidth: 'none' }}>
+      {showArrows && (
+        <button onClick={() => scroll('left')} className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-background/90 backdrop-blur-sm p-2 rounded-full shadow-md hover:bg-background">
+          <ChevronLeft className="h-5 w-5" />
+        </button>
+      )}
+      <div ref={scrollRef} className={cn("flex gap-4 overflow-x-auto scroll-smooth pb-4 snap-x snap-mandatory", showArrows ? "px-8" : "px-2")} style={{ scrollbarWidth: 'none' }}>
         {children}
       </div>
-      <button onClick={() => scroll('right')} className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-background/90 backdrop-blur-sm p-2 rounded-full shadow-md hover:bg-background">
-        <ChevronRight className="h-5 w-5" />
-      </button>
+      {showArrows && (
+        <button onClick={() => scroll('right')} className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-background/90 backdrop-blur-sm p-2 rounded-full shadow-md hover:bg-background">
+          <ChevronRight className="h-5 w-5" />
+        </button>
+      )}
     </div>
   );
 }
@@ -110,6 +114,7 @@ const HomePage = () => {
   const renderSection = (section: ThemeHomepageSection) => {
     const isCarousel = (section.settings?.displayMode as string) === 'carousel';
     const carouselSpeed = (section.settings?.carouselSpeed as number) || 4;
+    const carouselShowArrows = (section.settings?.showArrows as boolean) ?? true;
     const isHiddenMobile = hiddenMobile.includes(section.id);
 
     const wrapperClass = isHiddenMobile ? 'hidden md:block' : '';
@@ -196,7 +201,7 @@ const HomePage = () => {
               <h2 className="text-2xl font-display font-bold mb-8 text-center">{section.title}</h2>
             )}
             {isCarousel ? (
-              <SectionCarousel speed={carouselSpeed}>
+              <SectionCarousel speed={carouselSpeed} showArrows={carouselShowArrows}>
                 {mockCategories.map(categoryCard)}
               </SectionCarousel>
             ) : (
@@ -220,7 +225,7 @@ const HomePage = () => {
               </Link>
             </div>
             {isCarousel ? (
-              <SectionCarousel speed={carouselSpeed}>
+              <SectionCarousel speed={carouselSpeed} showArrows={carouselShowArrows}>
                 {featured.map(product => (
                   <div key={product.id} className="min-w-[260px] max-w-[280px] snap-start flex-shrink-0">
                     <ProductCard product={product} />
