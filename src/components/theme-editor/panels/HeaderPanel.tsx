@@ -111,40 +111,6 @@ export function HeaderPanel() {
             <ColorInput label="Cor do texto" value={a.textColor} onChange={v => setAnn({ textColor: v })} />
           </div>
           <ToggleRow label="Pausar no hover" hint="Pausa a animação quando o mouse está sobre a barra" checked={a.pauseOnHover} onChange={v => setAnn({ pauseOnHover: v })} />
-
-          <SectionDivider label="Regras Avançadas" />
-          <p className="text-[10px] text-muted-foreground/60 leading-relaxed -mt-2">
-            Controle em quais páginas, horários e para quais públicos a barra aparece.
-          </p>
-          <OptionPicker label="Exibir em" value={a.pageRules || 'all'} onChange={v => setAnn({ pageRules: v })} options={[
-            { value: 'all', label: 'Todas as páginas', description: 'Barra visível em toda a loja' },
-            { value: 'home-only', label: 'Só na Home', description: 'Exibe apenas na página inicial' },
-            { value: 'checkout-only', label: 'Só no Checkout', description: 'Exibe apenas no checkout' },
-            { value: 'mobile-only', label: 'Só no Mobile', description: 'Visível apenas em dispositivos móveis' },
-          ]} />
-          <OptionPicker label="Segmentação" value={a.segmentation || 'all'} onChange={v => setAnn({ segmentation: v })} options={[
-            { value: 'all', label: 'Todos', description: 'Todos os visitantes' },
-            { value: 'first-visit', label: 'Primeira visita', description: 'Apenas novos visitantes' },
-            { value: 'logged-in', label: 'Logados', description: 'Apenas clientes autenticados' },
-            { value: 'campaign', label: 'Campanha UTM', description: 'Visitantes de campanhas específicas' },
-          ]} />
-          <ToggleRow label="Agendar exibição" hint="Define data/hora de início e fim para a barra de anúncio" checked={a.scheduleEnabled ?? false} onChange={v => setAnn({ scheduleEnabled: v })} />
-          {a.scheduleEnabled && (
-            <>
-              <TextField label="Início (data/hora)" value={a.scheduleStart || ''} onChange={v => setAnn({ scheduleStart: v })} placeholder="2025-01-01T00:00" />
-              <TextField label="Fim (data/hora)" value={a.scheduleEnd || ''} onChange={v => setAnn({ scheduleEnd: v })} placeholder="2025-01-31T23:59" />
-            </>
-          )}
-
-          <SectionDivider label="CTA e UTM" />
-          <p className="text-[10px] text-muted-foreground/60 leading-relaxed -mt-2">
-            Adicione um botão/link no anúncio e parâmetros UTM para rastreamento.
-          </p>
-          <TextField label="Texto do CTA" value={a.ctaText || ''} onChange={v => setAnn({ ctaText: v })} placeholder="Ver ofertas" />
-          <TextField label="Link do CTA" value={a.ctaLink || ''} onChange={v => setAnn({ ctaLink: v })} placeholder="/products?promo=true" />
-          <TextField label="UTM Source" value={a.utmSource || ''} onChange={v => setAnn({ utmSource: v })} placeholder="announcement_bar" />
-          <TextField label="UTM Medium" value={a.utmMedium || ''} onChange={v => setAnn({ utmMedium: v })} placeholder="banner" />
-          <TextField label="UTM Campaign" value={a.utmCampaign || ''} onChange={v => setAnn({ utmCampaign: v })} placeholder="black_friday_2025" />
         </>
       )}
 
