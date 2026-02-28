@@ -208,15 +208,30 @@ export function HomeSectionsPanel() {
                           <HintTooltip text="Adiciona uma borda colorida ao redor da imagem da categoria" />
                         </div>
                         {(section.settings?.imageBorder as boolean) && (
-                          <div className="flex items-center gap-2">
-                            <label className="text-[11px] text-muted-foreground">Cor da borda:</label>
-                            <input
-                              type="color"
-                              value={(section.settings?.imageBorderColor as string) || '#e91e8c'}
-                              onChange={e => setSetting(section.id, 'imageBorderColor', e.target.value)}
-                              className="h-6 w-8 rounded border border-border cursor-pointer"
-                            />
-                          </div>
+                          <>
+                            <div className="flex items-center gap-2">
+                              <label className="text-[11px] text-muted-foreground">Largura da borda:</label>
+                              <input
+                                type="range"
+                                min={1}
+                                max={6}
+                                step={1}
+                                value={(section.settings?.imageBorderWidth as number) || 2}
+                                onChange={e => setSetting(section.id, 'imageBorderWidth', Number(e.target.value))}
+                                className="flex-1 h-1"
+                              />
+                              <span className="text-[11px] text-muted-foreground w-6 text-right">{(section.settings?.imageBorderWidth as number) || 2}px</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <label className="text-[11px] text-muted-foreground">Cor da borda:</label>
+                              <input
+                                type="color"
+                                value={(section.settings?.imageBorderColor as string) || '#e91e8c'}
+                                onChange={e => setSetting(section.id, 'imageBorderColor', e.target.value)}
+                                className="h-6 w-8 rounded border border-border cursor-pointer"
+                              />
+                            </div>
+                          </>
                         )}
                       </>
                     )}
