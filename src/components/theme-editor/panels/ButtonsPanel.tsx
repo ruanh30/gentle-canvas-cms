@@ -2,6 +2,7 @@ import React from 'react';
 import { useTheme } from '@/contexts/ThemeContext';
 import { EditorSection, OptionPicker, NumberSlider, ToggleRow, SectionDivider } from '../EditorControls';
 import { MousePointer } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 export function ButtonsPanel() {
   const { draft, updateDraftSection } = useTheme();
@@ -9,38 +10,74 @@ export function ButtonsPanel() {
   const set = (u: Partial<typeof b>) => updateDraftSection('buttons', u);
 
   return (
-    <EditorSection icon={MousePointer} title="Botões" description="Aparência e comportamento dos botões em toda a loja">
+    <EditorSection icon={MousePointer} title="Botões" description="Personalize o estilo, tamanho e comportamento de todos os botões da loja">
+      <SectionDivider label="Estilo Visual" />
+      <p className="text-[10px] text-muted-foreground/60 leading-relaxed -mt-2">
+        Define a aparência base de todos os botões. Afeta botões de navegação, formulários e ações.
+      </p>
       <OptionPicker label="Estilo" value={b.style} onChange={v => set({ style: v })} options={[
-        { value: 'filled', label: 'Sólido', description: 'Fundo preenchido' },
-        { value: 'outline', label: 'Contorno', description: 'Apenas borda' },
-        { value: 'ghost', label: 'Fantasma', description: 'Sem fundo/borda' },
-        { value: 'soft', label: 'Suave', description: 'Fundo translúcido' },
-        { value: 'gradient', label: 'Gradiente', description: 'Fundo degradê' },
-        { value: '3d', label: '3D', description: 'Com profundidade' },
-        { value: 'neon', label: 'Neon', description: 'Brilho luminoso' },
+        { value: 'filled', label: 'Sólido', description: 'Fundo preenchido com cor primária' },
+        { value: 'outline', label: 'Contorno', description: 'Apenas borda, sem fundo' },
+        { value: 'ghost', label: 'Fantasma', description: 'Sem fundo e sem borda' },
+        { value: 'soft', label: 'Suave', description: 'Fundo translúcido e sutil' },
+        { value: 'gradient', label: 'Gradiente', description: 'Fundo com efeito degradê' },
+        { value: '3d', label: '3D', description: 'Com sombra de profundidade' },
+        { value: 'neon', label: 'Neon', description: 'Borda com brilho luminoso' },
         { value: 'minimal', label: 'Minimal', description: 'Apenas texto sublinhado' },
       ]} />
+
+      <SectionDivider label="Arredondamento" />
+      <p className="text-[10px] text-muted-foreground/60 leading-relaxed -mt-2">
+        Controla o arredondamento dos cantos dos botões.
+      </p>
       <OptionPicker label="Arredondamento" value={b.radius} onChange={v => set({ radius: v })} options={[
-        { value: 'none', label: 'Reto', description: 'Sem curva' }, { value: 'small', label: 'Pequeno', description: '4px' },
-        { value: 'medium', label: 'Médio', description: '8px' }, { value: 'large', label: 'Grande', description: '16px' }, { value: 'full', label: 'Pílula', description: 'Totalmente arredondado' },
+        { value: 'none', label: 'Reto', description: 'Cantos retos (0px)' },
+        { value: 'small', label: 'Pequeno', description: 'Levemente arredondado (4px)' },
+        { value: 'medium', label: 'Médio', description: 'Arredondamento padrão (8px)' },
+        { value: 'large', label: 'Grande', description: 'Bem arredondado (16px)' },
+        { value: 'full', label: 'Pílula', description: 'Totalmente arredondado' },
       ]} />
+
+      <SectionDivider label="Tamanho" />
+      <p className="text-[10px] text-muted-foreground/60 leading-relaxed -mt-2">
+        Define o tamanho padrão dos botões (padding interno e fonte).
+      </p>
       <OptionPicker label="Tamanho" value={b.size} onChange={v => set({ size: v })} options={[
-        { value: 'small', label: 'Pequeno', description: 'Compacto' }, { value: 'medium', label: 'Médio', description: 'Padrão' }, { value: 'large', label: 'Grande', description: 'Destaque' },
+        { value: 'small', label: 'Pequeno', description: 'Compacto: padding 6×12px, fonte 13px' },
+        { value: 'medium', label: 'Médio', description: 'Padrão: padding 10×16px, fonte 14px' },
+        { value: 'large', label: 'Grande', description: 'Destaque: padding 14×24px, fonte 16px' },
       ]} />
+
+      <SectionDivider label="Tipografia e Efeitos" />
+      <p className="text-[10px] text-muted-foreground/60 leading-relaxed -mt-2">
+        Ajuste o peso da fonte, caixa alta e sombra dos botões.
+      </p>
       <NumberSlider label="Peso da fonte" value={b.fontWeight} onChange={v => set({ fontWeight: v })} min={400} max={800} step={100} suffix="" />
       <ToggleRow label="Texto maiúsculo" hint="Transforma todo o texto dos botões em CAIXA ALTA" checked={b.uppercase} onChange={v => set({ uppercase: v })} />
       <ToggleRow label="Sombra" hint="Adiciona uma sombra sutil abaixo dos botões para dar profundidade" checked={b.shadow} onChange={v => set({ shadow: v })} />
+
       <SectionDivider label="Preview" />
-      <div className="flex gap-2 flex-wrap p-3 bg-secondary rounded-lg">
-        <ButtonPreview style={b.style} label="Primário" />
-        <ButtonPreview style="outline" label="Contorno" />
-        <ButtonPreview style="ghost" label="Fantasma" />
+      <p className="text-[10px] text-muted-foreground/60 leading-relaxed -mt-2">
+        Pré-visualização dos estilos de botão com as configurações atuais.
+      </p>
+      <div className="p-4 bg-secondary/30 rounded-lg border border-border/30 space-y-3">
+        <div className="flex gap-2 flex-wrap">
+          <ButtonPreview config={b} label="Primário" styleOverride={b.style} />
+          <ButtonPreview config={b} label="Contorno" styleOverride="outline" />
+          <ButtonPreview config={b} label="Fantasma" styleOverride="ghost" />
+        </div>
+        <div className="flex gap-2 flex-wrap">
+          <ButtonPreview config={b} label="Comprar Agora" styleOverride={b.style} isBuy />
+          <ButtonPreview config={b} label="Adicionar" styleOverride="outline" />
+        </div>
       </div>
     </EditorSection>
   );
 }
 
-function ButtonPreview({ style, label }: { style: string; label: string }) {
+function ButtonPreview({ config, label, styleOverride, isBuy }: { config: any; label: string; styleOverride: string; isBuy?: boolean }) {
+  const radiusMap: Record<string, string> = { none: '0px', small: '4px', medium: '8px', large: '16px', full: '9999px' };
+  const sizeMap: Record<string, string> = { small: 'px-3 py-1.5 text-[11px]', medium: 'px-4 py-2 text-[12px]', large: 'px-5 py-2.5 text-[13px]' };
   const styleMap: Record<string, string> = {
     filled: 'bg-foreground text-background',
     outline: 'border-2 border-foreground text-foreground',
@@ -51,8 +88,22 @@ function ButtonPreview({ style, label }: { style: string; label: string }) {
     neon: 'border-2 border-foreground text-foreground shadow-[0_0_10px] shadow-foreground/50',
     minimal: 'text-foreground underline underline-offset-4',
   };
+
   return (
-    <button className={`px-4 py-2 text-sm rounded-md transition-all ${styleMap[style] || styleMap.filled}`}>
+    <button
+      className={cn(
+        'transition-all',
+        sizeMap[config.size] || sizeMap.medium,
+        styleMap[styleOverride] || styleMap.filled,
+        config.shadow && 'shadow-md',
+      )}
+      style={{
+        borderRadius: radiusMap[config.radius] || '8px',
+        fontWeight: config.fontWeight || 500,
+        textTransform: config.uppercase ? 'uppercase' : 'none',
+        letterSpacing: config.uppercase ? '0.05em' : 'normal',
+      }}
+    >
       {label}
     </button>
   );
