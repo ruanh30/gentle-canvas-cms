@@ -73,6 +73,17 @@ export interface ThemeAnnouncementBar {
   pauseOnHover: boolean;
   style: 'static' | 'carousel' | 'ticker';
   direction: 'ltr' | 'rtl';
+  // Advanced rules
+  pageRules: 'all' | 'home-only' | 'checkout-only' | 'mobile-only';
+  scheduleEnabled: boolean;
+  scheduleStart: string;
+  scheduleEnd: string;
+  segmentation: 'all' | 'first-visit' | 'logged-in' | 'campaign';
+  ctaText: string;
+  ctaLink: string;
+  utmSource: string;
+  utmMedium: string;
+  utmCampaign: string;
 }
 
 export interface ThemeBannerBelow {
@@ -291,12 +302,112 @@ export interface ThemeSEO {
 export interface ThemeHomepageSection {
   id: string;
   type: 'hero' | 'categories' | 'featured-products' | 'banner' | 'double-banner' |
-        'testimonials' | 'brands' | 'newsletter' | 'benefits' | 'faq' | 'collections' |
-        'trust-bar' | 'blog-preview' | 'custom-html';
+        'triple-banner' | 'testimonials' | 'brands' | 'newsletter' | 'benefits' | 'faq' |
+        'collections' | 'trust-bar' | 'blog-preview' | 'custom-html' |
+        'countdown' | 'video' | 'image-text';
   enabled: boolean;
   title: string;
   showTitle: boolean;
   settings: Record<string, unknown>;
+}
+
+// Menu
+export interface ThemeMenuItem {
+  id: string;
+  label: string;
+  link: string;
+  openNewTab: boolean;
+  badge: string;             // "Novo", "Promo", "-30%"
+  badgeColor: string;
+  icon: string;
+  children: ThemeMenuItem[];
+}
+
+export interface ThemeMegaMenu {
+  items: ThemeMenuItem[];
+  mobileGroupStyle: 'accordion' | 'list';
+  showIcons: boolean;
+  showBadges: boolean;
+}
+
+// Badges
+export interface ThemeBadgeRule {
+  id: string;
+  label: string;
+  condition: 'manual' | 'new' | 'bestseller' | 'free-shipping' | 'low-stock' | 'on-sale';
+  color: string;
+  textColor: string;
+  style: 'pill' | 'corner' | 'ribbon';
+  enabled: boolean;
+  daysNew: number;           // for "new" condition
+  stockThreshold: number;    // for "low-stock" condition
+}
+
+export interface ThemeBadges {
+  enabled: boolean;
+  rules: ThemeBadgeRule[];
+  position: 'top-left' | 'top-right' | 'bottom-left';
+  maxVisible: number;
+}
+
+// Microcopy
+export interface ThemeMicrocopy {
+  buyButton: string;
+  addToCartButton: string;
+  checkoutButton: string;
+  continueShoppingButton: string;
+  outOfStockMessage: string;
+  lowStockMessage: string;     // "Restam {count} unidades"
+  freeShippingMessage: string;
+  shippingEstimateLabel: string;
+  couponPlaceholder: string;
+  couponApplyButton: string;
+  couponErrorMessage: string;
+  checkoutErrorMessage: string;
+  variationColorLabel: string;
+  variationSizeLabel: string;
+  searchPlaceholder: string;
+  emptySearchMessage: string;
+  relatedProductsTitle: string;
+}
+
+// Conversion integrations
+export interface ThemeConversion {
+  whatsappOnPDP: boolean;
+  whatsappPDPText: string;
+  whatsappPDPMessage: string;
+  socialProofEnabled: boolean;
+  socialProofType: 'sold-count' | 'viewing-now' | 'recent-purchase';
+  socialProofText: string;
+  reviewsEnabled: boolean;
+  reviewsStyle: 'stars' | 'thumbs';
+  trustDifferentials: { icon: string; title: string; description: string }[];
+  showTrustDifferentials: boolean;
+}
+
+// Responsive
+export interface ThemeResponsive {
+  heroTitleSizeMobile: number;
+  hideSectionsMobile: string[];    // section IDs
+  columnsMobile: number;
+  spacingMobile: 'compact' | 'normal' | 'spacious';
+  showSearchMobile: boolean;
+  stickyHeaderMobile: boolean;
+}
+
+// A/B Test
+export interface ThemeABTest {
+  enabled: boolean;
+  tests: {
+    id: string;
+    name: string;
+    sectionId: string;
+    variantA: Record<string, unknown>;
+    variantB: Record<string, unknown>;
+    activeVariant: 'A' | 'B' | 'random';
+    clicksA: number;
+    clicksB: number;
+  }[];
 }
 
 export interface ThemeGlobal {
@@ -374,6 +485,7 @@ export interface ThemeConfig {
   logo: ThemeLogo;
   header: ThemeHeader;
   hero: ThemeHero;
+  megaMenu: ThemeMegaMenu;
 
   productCard: ThemeProductCard;
   productPage: ThemeProductPage;
@@ -385,6 +497,12 @@ export interface ThemeConfig {
   footer: ThemeFooter;
 
   homepageSections: ThemeHomepageSection[];
+
+  badges: ThemeBadges;
+  microcopy: ThemeMicrocopy;
+  conversion: ThemeConversion;
+  responsive: ThemeResponsive;
+  abTest: ThemeABTest;
 
   whatsapp: ThemeWhatsApp;
   seo: ThemeSEO;

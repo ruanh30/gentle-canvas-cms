@@ -31,6 +31,11 @@ const defaultHomeSections = [
   { id: 'categories', type: 'categories' as const, enabled: true, title: 'Categorias', showTitle: true, settings: {} },
   { id: 'featured', type: 'featured-products' as const, enabled: true, title: 'Destaques', showTitle: true, settings: {} },
   { id: 'banner', type: 'banner' as const, enabled: true, title: 'Banner Promocional', showTitle: false, settings: { title: 'Cadastre-se e ganhe 15% OFF', description: 'Use o cupom BEMVINDO na sua primeira compra.' } },
+  { id: 'countdown', type: 'countdown' as const, enabled: false, title: 'Contagem Regressiva', showTitle: true, settings: { targetDate: '', label: 'Promoção termina em', backgroundColor: '#1a1a1a', textColor: '#ffffff' } },
+  { id: 'video', type: 'video' as const, enabled: false, title: 'Vídeo', showTitle: true, settings: { url: '', provider: 'youtube', autoplay: false } },
+  { id: 'double-banner', type: 'double-banner' as const, enabled: false, title: 'Banner Duplo', showTitle: false, settings: { image1: '', link1: '', image2: '', link2: '' } },
+  { id: 'image-text', type: 'image-text' as const, enabled: false, title: 'Imagem + Texto', showTitle: false, settings: { imageUrl: '', title: '', description: '', ctaText: '', ctaLink: '', imagePosition: 'left' } },
+  { id: 'faq', type: 'faq' as const, enabled: false, title: 'Perguntas Frequentes', showTitle: true, settings: { items: [{ question: 'Qual o prazo de entrega?', answer: 'De 3 a 7 dias úteis.' }, { question: 'Como funciona a troca?', answer: 'Até 30 dias após o recebimento.' }] } },
   { id: 'benefits', type: 'benefits' as const, enabled: false, title: 'Benefícios', showTitle: false, settings: {} },
   { id: 'testimonials', type: 'testimonials' as const, enabled: false, title: 'Depoimentos', showTitle: true, settings: {} },
   { id: 'brands', type: 'brands' as const, enabled: false, title: 'Marcas', showTitle: true, settings: {} },
@@ -147,6 +152,16 @@ export const defaultThemeConfig: ThemeConfig = {
       pauseOnHover: true,
       style: 'static',
       direction: 'rtl',
+      pageRules: 'all',
+      scheduleEnabled: false,
+      scheduleStart: '',
+      scheduleEnd: '',
+      segmentation: 'all',
+      ctaText: '',
+      ctaLink: '',
+      utmSource: '',
+      utmMedium: '',
+      utmCampaign: '',
     },
     bannerBelow: {
       enabled: false,
@@ -306,6 +321,77 @@ export const defaultThemeConfig: ThemeConfig = {
   },
 
   homepageSections: defaultHomeSections,
+
+  megaMenu: {
+    items: [],
+    mobileGroupStyle: 'accordion',
+    showIcons: false,
+    showBadges: true,
+  },
+
+  badges: {
+    enabled: true,
+    rules: [
+      { id: 'b-new', label: 'Novo', condition: 'new', color: '#16a34a', textColor: '#ffffff', style: 'pill', enabled: true, daysNew: 30, stockThreshold: 5 },
+      { id: 'b-sale', label: 'Oferta', condition: 'on-sale', color: '#dc2626', textColor: '#ffffff', style: 'pill', enabled: true, daysNew: 30, stockThreshold: 5 },
+      { id: 'b-best', label: 'Mais Vendido', condition: 'bestseller', color: '#f59e0b', textColor: '#ffffff', style: 'pill', enabled: false, daysNew: 30, stockThreshold: 5 },
+      { id: 'b-free', label: 'Frete Grátis', condition: 'free-shipping', color: '#0ea5e9', textColor: '#ffffff', style: 'pill', enabled: false, daysNew: 30, stockThreshold: 5 },
+      { id: 'b-low', label: 'Últimas Unidades', condition: 'low-stock', color: '#ef4444', textColor: '#ffffff', style: 'pill', enabled: false, daysNew: 30, stockThreshold: 5 },
+    ],
+    position: 'top-left',
+    maxVisible: 2,
+  },
+
+  microcopy: {
+    buyButton: 'Comprar Agora',
+    addToCartButton: 'Adicionar ao Carrinho',
+    checkoutButton: 'Finalizar Compra',
+    continueShoppingButton: 'Continuar Comprando',
+    outOfStockMessage: 'Produto indisponível',
+    lowStockMessage: 'Restam {count} unidades',
+    freeShippingMessage: 'Frete grátis acima de R$ {value}',
+    shippingEstimateLabel: 'Calcular frete',
+    couponPlaceholder: 'Código do cupom',
+    couponApplyButton: 'Aplicar',
+    couponErrorMessage: 'Cupom inválido ou expirado',
+    checkoutErrorMessage: 'Erro ao processar. Tente novamente.',
+    variationColorLabel: 'Cor',
+    variationSizeLabel: 'Tamanho',
+    searchPlaceholder: 'Buscar produtos...',
+    emptySearchMessage: 'Nenhum produto encontrado',
+    relatedProductsTitle: 'Você também pode gostar',
+  },
+
+  conversion: {
+    whatsappOnPDP: false,
+    whatsappPDPText: 'Comprar pelo WhatsApp',
+    whatsappPDPMessage: 'Olá! Tenho interesse no produto: {product}',
+    socialProofEnabled: false,
+    socialProofType: 'viewing-now',
+    socialProofText: '{count} pessoas estão vendo agora',
+    reviewsEnabled: false,
+    reviewsStyle: 'stars',
+    trustDifferentials: [
+      { icon: 'ShieldCheck', title: 'Compra Segura', description: 'Seus dados protegidos' },
+      { icon: 'Truck', title: 'Entrega Rápida', description: 'Envio em 24h' },
+      { icon: 'RefreshCw', title: 'Troca Garantida', description: 'Até 30 dias' },
+    ],
+    showTrustDifferentials: false,
+  },
+
+  responsive: {
+    heroTitleSizeMobile: 28,
+    hideSectionsMobile: [],
+    columnsMobile: 2,
+    spacingMobile: 'compact',
+    showSearchMobile: true,
+    stickyHeaderMobile: true,
+  },
+
+  abTest: {
+    enabled: false,
+    tests: [],
+  },
 
   whatsapp: {
     enabled: false,
