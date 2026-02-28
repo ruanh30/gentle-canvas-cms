@@ -355,7 +355,7 @@ export function ProductCard({ product }: Props) {
         </Link>
 
         {/* Action buttons */}
-        <div className={cn('mt-2 flex', c.buttonLayout === 'side-by-side' ? 'flex-row gap-1 items-center justify-center' : 'flex-col gap-1 items-start', c.contentAlign === 'center' && 'items-center')}>
+        <div className={cn('mt-2 flex', c.buttonLayout === 'side-by-side' ? 'flex-row gap-1 items-center justify-center' : 'flex-col gap-1 items-stretch w-fit', c.contentAlign === 'center' && 'mx-auto')}>
           {showBuy && (
             <BuyButton
               label={c.buyNowText || 'Comprar Agora'}
