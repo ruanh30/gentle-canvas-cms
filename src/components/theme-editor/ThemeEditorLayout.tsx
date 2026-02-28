@@ -117,7 +117,10 @@ type DeviceSize = 'desktop' | 'tablet' | 'mobile';
 
 export function ThemeEditorLayout({ previewUrl, fullscreen = false }: { previewUrl?: string; fullscreen?: boolean } = {}) {
   const { isDirty, publish, discardDraft, resetToDefault, versions, rollback, draft } = useTheme();
-  const [activeSection, setActiveSection] = useState('presets');
+  const [activeSection, setActiveSection] = useState(() => {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('section') || 'presets';
+  });
   const [searchQuery, setSearchQuery] = useState('');
   const [device, setDevice] = useState<DeviceSize>('desktop');
   const [showVersions, setShowVersions] = useState(false);
