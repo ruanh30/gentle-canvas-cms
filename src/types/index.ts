@@ -56,6 +56,7 @@ export interface Product {
   metaTitle?: string;
   metaDescription?: string;
   variantImages?: Record<string, string>;
+  manualBadges?: string[];
 }
 
 export interface CartItem {
