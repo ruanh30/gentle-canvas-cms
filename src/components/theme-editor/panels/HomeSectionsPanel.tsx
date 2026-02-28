@@ -131,18 +131,30 @@ export function HomeSectionsPanel() {
                   <HintTooltip text="Escolha se esta seção exibe os itens em grade ou carrossel horizontal" />
                 </div>
                 {(section.settings?.displayMode as string) === 'carousel' && (
-                  <div className="flex items-center gap-2">
-                    <label className="text-[11px] text-muted-foreground">Velocidade:</label>
-                    <input
-                      type="range"
-                      min={1}
-                      max={10}
-                      value={(section.settings?.carouselSpeed as number) || 4}
-                      onChange={e => setSetting(section.id, 'carouselSpeed', Number(e.target.value))}
-                      className="flex-1 h-1"
-                    />
-                    <span className="text-[11px] text-muted-foreground w-6 text-right">{(section.settings?.carouselSpeed as number) || 4}s</span>
-                  </div>
+                  <>
+                    <div className="flex items-center gap-2">
+                      <label className="text-[11px] text-muted-foreground">Velocidade:</label>
+                      <input
+                        type="range"
+                        min={1}
+                        max={10}
+                        value={(section.settings?.carouselSpeed as number) || 4}
+                        onChange={e => setSetting(section.id, 'carouselSpeed', Number(e.target.value))}
+                        className="flex-1 h-1"
+                      />
+                      <span className="text-[11px] text-muted-foreground w-6 text-right">{(section.settings?.carouselSpeed as number) || 4}s</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <label className="text-[11px] text-muted-foreground">Mostrar setas:</label>
+                      <input
+                        type="checkbox"
+                        checked={(section.settings?.showArrows as boolean) ?? true}
+                        onChange={e => setSetting(section.id, 'showArrows', e.target.checked)}
+                        className="rounded"
+                      />
+                      <HintTooltip text="Exibe ou oculta as setas de navegação (esquerda/direita) do carrossel" />
+                    </div>
+                  </>
                 )}
                 {section.type === 'categories' && (
                   <>
