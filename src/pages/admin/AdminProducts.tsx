@@ -24,16 +24,19 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import {
-  Plus, Search, ChevronLeft,
-  FileText, DollarSign, Boxes, ImageIcon, Eye,
+  Plus, Search, ChevronLeft, ChevronUp, ChevronDown,
+  FileText, DollarSign, Boxes, ImageIcon, Eye, EyeOff,
   Trash2, Package as PackageIcon, Save, Palette,
   Star, Tag, Layers, Link, Image, Check, Info, X,
-  Copy, Weight, Ruler, Globe,
+  Copy, Weight, Ruler, Globe, Award, GripVertical, Pencil,
+  Grid3X3,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useNavigate } from 'react-router-dom';
+import { useTheme } from '@/contexts/ThemeContext';
 import { mockProducts, mockCategories, mockCollections } from '@/data/mock';
 import type { Product, Category, ProductCollection } from '@/types';
+import type { ThemeHomepageSection } from '@/types/theme';
 
 /* ------------------------------------------------------------------ */
 /*  Types                                                              */
@@ -1002,6 +1005,227 @@ function StockSection({ form, setForm }: { form: Product; setForm: (f: Product) 
 }
 
 /* ------------------------------------------------------------------ */
+/*  Product Status Section with Badges                                 */
+/* ------------------------------------------------------------------ */
+
+function ProductStatusSection({ form, setForm }: { form: Product; setForm: React.Dispatch<React.SetStateAction<Product>> }) {
+  const [badgeInput, setBadgeInput] = useState('');
+  const { draft, updateDraftSection } = useTheme();
+  const badgeConfig = draft.badges ?? { enabled: true, rules: [], position: 'top-left', maxVisible: 2 };
+  const badges = form.manualBadges || [];
+
+  const addBadge = () => {
+    const b = badgeInput.trim();
+    if (b && !badges.includes(b)) {
+      setForm(prev => ({ ...prev, manualBadges: [...(prev.manualBadges || []), b] }));
+      setBadgeInput('');
+    }
+  };
+
+  const removeBadge = (b: string) => {
+    setForm(prev => ({ ...prev, manualBadges: (prev.manualBadges || []).filter(x => x !== b) }));
+  };
+
+  return (
+    <div className="space-y-5">
+      <h3 className="text-base font-semibold text-foreground">Status</h3>
+      <hr className="border-border" />
+      <div className="flex items-center justify-between py-2">
+        <div>
+          <p className="text-sm font-medium text-foreground">Produto ativo</p>
+          <p className="text-xs text-muted-foreground">Visível na loja para os clientes.</p>
+        </div>
+        <Switch checked={form.active} onCheckedChange={v => setForm(prev => ({ ...prev, active: v }))} />
+      </div>
+      <div className="flex items-center justify-between py-2">
+        <div>
+          <p className="text-sm font-medium text-foreground">Produto destaque</p>
+          <p className="text-xs text-muted-foreground">Aparece na seção de destaques da home.</p>
+        </div>
+        <Switch checked={form.featured} onCheckedChange={v => setForm(prev => ({ ...prev, featured: v }))} />
+      </div>
+
+      {/* Badges */}
+      <hr className="border-border" />
+      <div className="space-y-3">
+        <h4 className="text-sm font-semibold text-foreground flex items-center gap-2">
+          <Award className="h-4 w-4" /> Etiquetas (Badges)
+        </h4>
+        <p className="text-xs text-muted-foreground">
+          Adicione etiquetas que aparecem sobre a foto do produto na loja, como "Novo", "Promoção" ou "Frete Grátis".
+        </p>
+        <div className="flex flex-wrap gap-1.5">
+          {badges.map(b => (
+            <Badge key={b} variant="default" className="gap-1 text-xs cursor-pointer" onClick={() => removeBadge(b)}>
+              {b} ×
+            </Badge>
+          ))}
+          {badges.length === 0 && <span className="text-xs text-muted-foreground/60">Nenhuma etiqueta</span>}
+        </div>
+        <div className="flex items-center gap-2">
+          <Input className="h-8 flex-1 text-xs" placeholder="Ex: Novo, Lançamento, Frete Grátis..." value={badgeInput}
+            onChange={e => setBadgeInput(e.target.value)}
+            onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); addBadge(); } }} />
+          <Button variant="outline" size="sm" className="h-8 text-xs gap-1" disabled={!badgeInput.trim()} onClick={addBadge}>
+            <Plus className="h-3 w-3" /> Adicionar
+          </Button>
+        </div>
+
+        {/* Quick add from existing badge rules */}
+        {badgeConfig.rules.length > 0 && (
+          <div>
+            <p className="text-[10px] text-muted-foreground mb-1.5">Sugestões (do tema):</p>
+            <div className="flex flex-wrap gap-1">
+              {badgeConfig.rules.filter(r => r.enabled && !badges.includes(r.label)).map(r => (
+                <button key={r.id} onClick={() => setForm(prev => ({ ...prev, manualBadges: [...(prev.manualBadges || []), r.label] }))}
+                  className="text-[10px] font-medium px-2 py-0.5 rounded-full border border-border hover:border-primary/50 transition-colors"
+                  style={{ backgroundColor: r.color + '20', color: r.color }}>
+                  + {r.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+
+      <hr className="border-border" />
+      <div className="bg-muted/50 rounded-lg px-4 py-3 space-y-1.5">
+        <p className="text-xs text-muted-foreground"><span className="font-medium text-foreground">Avaliação:</span> {form.rating}/5 ({form.reviewCount} avaliações)</p>
+        <p className="text-xs text-muted-foreground"><span className="font-medium text-foreground">Slug:</span> /{form.slug}</p>
+        <p className="text-xs text-muted-foreground"><span className="font-medium text-foreground">Criado em:</span> {new Date(form.createdAt).toLocaleDateString('pt-BR')}</p>
+      </div>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Home Sections Manager (for Collections tab)                        */
+/* ------------------------------------------------------------------ */
+
+const sectionTypeLabels: Record<string, string> = {
+  hero: 'Hero Banner', categories: 'Categorias', 'featured-products': 'Produtos em Destaque',
+  banner: 'Banner', 'double-banner': 'Banner Duplo', 'triple-banner': 'Banner Triplo',
+  countdown: 'Contagem Regressiva', video: 'Vídeo', 'image-text': 'Imagem + Texto',
+  faq: 'FAQ', benefits: 'Benefícios', testimonials: 'Depoimentos', brands: 'Marcas',
+  newsletter: 'Newsletter', 'trust-bar': 'Selos de Confiança', collections: 'Coleções',
+  'custom-html': 'HTML Customizado', 'blog-preview': 'Blog',
+};
+
+const sectionTypeOptions = Object.entries(sectionTypeLabels).map(([value, label]) => ({ value, label }));
+
+function HomeSectionsManager() {
+  const { draft, toggleSection, reorderSections, updateDraft } = useTheme();
+  const sections = draft.homepageSections;
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editTitle, setEditTitle] = useState('');
+  const [showAdd, setShowAdd] = useState(false);
+  const [newType, setNewType] = useState<ThemeHomepageSection['type']>('banner');
+  const [newTitle, setNewTitle] = useState('');
+
+  const saveEdit = (id: string) => {
+    updateDraft({ homepageSections: sections.map(s => s.id === id ? { ...s, title: editTitle } : s) });
+    setEditingId(null);
+  };
+
+  const removeSection = (id: string) => {
+    updateDraft({ homepageSections: sections.filter(s => s.id !== id) });
+  };
+
+  const addSection = () => {
+    if (!newTitle.trim()) return;
+    const newSection: ThemeHomepageSection = {
+      id: `custom-${Date.now()}`, type: newType, enabled: true,
+      title: newTitle.trim(), showTitle: true, settings: {},
+    };
+    updateDraft({ homepageSections: [...sections, newSection] });
+    setNewTitle(''); setShowAdd(false);
+  };
+
+  return (
+    <div className="border border-border rounded-lg bg-card overflow-hidden">
+      <div className="px-4 py-3 bg-muted/30 border-b border-border">
+        <div className="flex items-center gap-2">
+          <Grid3X3 className="h-4 w-4 text-foreground" />
+          <div>
+            <h3 className="text-sm font-semibold text-foreground">Seções da Página Inicial</h3>
+            <p className="text-[10px] text-muted-foreground">Organize quais blocos aparecem na home e em qual ordem.</p>
+          </div>
+        </div>
+      </div>
+
+      <div className="p-3 space-y-1">
+        {sections.map((section, idx) => (
+          <div key={section.id}
+            className={cn(
+              'flex items-center gap-2 px-3 py-2 rounded-lg border transition-colors',
+              section.enabled ? 'bg-secondary border-border' : 'bg-muted/30 border-transparent opacity-60'
+            )}>
+            <GripVertical className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+            {editingId === section.id ? (
+              <div className="flex-1 flex items-center gap-1">
+                <Input value={editTitle} onChange={e => setEditTitle(e.target.value)} className="h-7 text-xs flex-1" autoFocus
+                  onKeyDown={e => e.key === 'Enter' && saveEdit(section.id)} />
+                <button onClick={() => saveEdit(section.id)} className="p-0.5 hover:bg-background rounded text-primary"><Check className="h-3.5 w-3.5" /></button>
+                <button onClick={() => setEditingId(null)} className="p-0.5 hover:bg-background rounded"><X className="h-3.5 w-3.5" /></button>
+              </div>
+            ) : (
+              <>
+                <div className="flex-1 min-w-0">
+                  <span className="text-sm font-medium text-foreground">{section.title}</span>
+                  <span className="text-[9px] text-muted-foreground/60 ml-1.5">{sectionTypeLabels[section.type] || section.type}</span>
+                </div>
+                <button onClick={() => { setEditingId(section.id); setEditTitle(section.title); }}
+                  className="p-0.5 hover:bg-background rounded opacity-60 hover:opacity-100">
+                  <Pencil className="h-3 w-3" />
+                </button>
+              </>
+            )}
+            <div className="flex items-center gap-0.5">
+              <button onClick={() => idx > 0 && reorderSections(idx, idx - 1)} className="p-0.5 hover:bg-background rounded" disabled={idx === 0}>
+                <ChevronUp className="h-3.5 w-3.5" />
+              </button>
+              <button onClick={() => idx < sections.length - 1 && reorderSections(idx, idx + 1)} className="p-0.5 hover:bg-background rounded" disabled={idx === sections.length - 1}>
+                <ChevronDown className="h-3.5 w-3.5" />
+              </button>
+            </div>
+            <button onClick={() => updateDraft({ homepageSections: sections.map(s => s.id === section.id ? { ...s, showTitle: !(s.showTitle ?? true) } : s) })}
+              className="p-0.5 hover:bg-background rounded opacity-60 hover:opacity-100"
+              title={section.showTitle !== false ? 'Ocultar título' : 'Mostrar título'}>
+              {section.showTitle !== false ? <Eye className="h-3 w-3" /> : <EyeOff className="h-3 w-3" />}
+            </button>
+            <button onClick={() => removeSection(section.id)} className="p-0.5 hover:bg-background rounded text-destructive opacity-60 hover:opacity-100">
+              <Trash2 className="h-3 w-3" />
+            </button>
+            <input type="checkbox" checked={section.enabled} onChange={() => toggleSection(section.id)} className="rounded" />
+          </div>
+        ))}
+      </div>
+
+      <div className="px-3 pb-3">
+        {showAdd ? (
+          <div className="border border-border rounded-lg p-3 space-y-2">
+            <Select value={newType} onValueChange={v => setNewType(v as ThemeHomepageSection['type'])}>
+              <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
+              <SelectContent>{sectionTypeOptions.map(t => <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>)}</SelectContent>
+            </Select>
+            <Input placeholder="Nome da seção" value={newTitle} onChange={e => setNewTitle(e.target.value)} className="h-8 text-xs"
+              onKeyDown={e => e.key === 'Enter' && addSection()} />
+            <div className="flex gap-2">
+              <Button size="sm" className="h-7 text-xs flex-1" onClick={addSection}>Adicionar</Button>
+              <Button size="sm" variant="outline" className="h-7 text-xs" onClick={() => setShowAdd(false)}>Cancelar</Button>
+            </div>
+          </div>
+        ) : (
+          <Button size="sm" variant="outline" className="w-full h-8 text-xs" onClick={() => setShowAdd(true)}>
+            <Plus className="h-3.5 w-3.5 mr-1" /> Adicionar seção
+          </Button>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
 /*  Product Form                                                       */
 /* ------------------------------------------------------------------ */
 
@@ -1219,30 +1443,7 @@ function ProductForm({ product, allProducts, sidebarSearch, onSidebarSearch, onS
           )}
 
           {section === 'status' && (
-            <div className="space-y-5">
-              <h3 className="text-base font-semibold text-foreground">Status</h3>
-              <hr className="border-border" />
-              <div className="flex items-center justify-between py-2">
-                <div>
-                  <p className="text-sm font-medium text-foreground">Produto ativo</p>
-                  <p className="text-xs text-muted-foreground">Visível na loja para os clientes.</p>
-                </div>
-                <Switch checked={form.active} onCheckedChange={v => setForm({ ...form, active: v })} />
-              </div>
-              <div className="flex items-center justify-between py-2">
-                <div>
-                  <p className="text-sm font-medium text-foreground">Produto destaque</p>
-                  <p className="text-xs text-muted-foreground">Aparece na seção de destaques da home.</p>
-                </div>
-                <Switch checked={form.featured} onCheckedChange={v => setForm({ ...form, featured: v })} />
-              </div>
-              <hr className="border-border" />
-              <div className="bg-muted/50 rounded-lg px-4 py-3 space-y-1.5">
-                <p className="text-xs text-muted-foreground"><span className="font-medium text-foreground">Avaliação:</span> {form.rating}/5 ({form.reviewCount} avaliações)</p>
-                <p className="text-xs text-muted-foreground"><span className="font-medium text-foreground">Slug:</span> /{form.slug}</p>
-                <p className="text-xs text-muted-foreground"><span className="font-medium text-foreground">Criado em:</span> {new Date(form.createdAt).toLocaleDateString('pt-BR')}</p>
-              </div>
-            </div>
+            <ProductStatusSection form={form} setForm={setForm} />
           )}
         </div>
       </div>
@@ -1297,6 +1498,11 @@ function CollectionsTab() {
 
   return (
     <div className="space-y-5 pt-2">
+      {/* Home Sections Manager */}
+      <HomeSectionsManager />
+
+      <hr className="border-border" />
+
       <div className="flex items-center justify-between gap-4">
         <div className="relative flex-1 max-w-md">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />

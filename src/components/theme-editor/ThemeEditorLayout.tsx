@@ -62,14 +62,14 @@ const sections: EditorSectionItem[] = [
   { id: 'logo', label: 'Logo & Marca', icon: Image, group: 'Estrutura' },
   { id: 'header', label: 'Cabeçalho', icon: PanelTop, group: 'Estrutura' },
   { id: 'hero', label: 'Hero / Banner', icon: Layers, group: 'Estrutura' },
-  { id: 'home-sections', label: 'Seções da Home', icon: LayoutGrid, group: 'Estrutura' },
+  // home-sections moved to Collections tab in Admin > Produtos
   { id: 'footer', label: 'Rodapé', icon: PanelBottom, group: 'Estrutura' },
   // Aparência de Produto
   { id: 'product-card', label: 'Card de Produto', icon: Package, group: 'Aparência de Produto' },
   { id: 'product-page', label: 'Página de Produto', icon: FileText, group: 'Aparência de Produto' },
   { id: 'category', label: 'Categoria / Busca', icon: SlidersHorizontal, group: 'Aparência de Produto' },
   { id: 'quick-view', label: 'Quick View', icon: Eye, group: 'Aparência de Produto' },
-  { id: 'badges', label: 'Badges / Etiquetas', icon: Award, group: 'Aparência de Produto' },
+  // badges moved to Product Status in Admin > Produtos
   // Carrinho & Checkout
   { id: 'cart', label: 'Carrinho', icon: ShoppingCart, group: 'Carrinho & Checkout' },
   { id: 'checkout', label: 'Checkout', icon: CreditCard, group: 'Carrinho & Checkout' },
