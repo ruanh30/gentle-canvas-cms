@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ShoppingBag, Search, User, Menu, Heart } from 'lucide-react';
+import { ShoppingBag, Search, User, Menu, Heart, ShoppingCart, Plus, PackagePlus, Store, type LucideIcon } from 'lucide-react';
 import { useCart } from '@/contexts/CartContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -141,11 +141,14 @@ function BannerBelow() {
   return <div>{content}</div>;
 }
 
+const headerCartIconMap: Record<string, LucideIcon> = { ShoppingBag, ShoppingCart, Plus, PackagePlus, Heart, Store };
+
 export function StoreHeader() {
   const { itemCount } = useCart();
   const { user } = useAuth();
   const { theme } = useTheme();
   const [searchOpen, setSearchOpen] = useState(false);
+  const CartIconComponent = headerCartIconMap[theme.productCard?.addToCartIcon || ''] || ShoppingBag;
 
   const navLinks = mockCategories.slice(0, 5);
   const h = theme.header ?? {} as any;
@@ -234,7 +237,7 @@ export function StoreHeader() {
             {h.showCart && (
               <Link to="/cart" className="relative">
                 <Button variant="ghost" size="icon">
-                  <ShoppingBag style={{ width: h.iconSize, height: h.iconSize }} />
+                  <CartIconComponent style={{ width: h.iconSize, height: h.iconSize }} />
                   {itemCount > 0 && h.cartBadgeStyle !== 'none' && (
                     <span className="absolute -top-1 -right-1 bg-foreground text-background text-[10px] font-bold rounded-full h-5 w-5 flex items-center justify-center">
                       {h.cartBadgeStyle === 'count' ? itemCount : '●'}
