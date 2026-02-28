@@ -211,3 +211,14 @@
 .animate-ticker-ltr {
   animation: ticker-ltr linear infinite;
 }
+
+/* Quick View – thin scrollbar */
+.qv-scrollbar::-webkit-scrollbar { width: 4px; }
+.qv-scrollbar::-webkit-scrollbar-track { background: transparent; }
+.qv-scrollbar::-webkit-scrollbar-thumb { background: hsl(var(--border)); border-radius: 999px; }
+.qv-scrollbar { scrollbar-width: thin; scrollbar-color: hsl(var(--border)) transparent; }
+
+.qv-scrollbar-h::-webkit-scrollbar { height: 3px; }
+.qv-scrollbar-h::-webkit-scrollbar-track { background: transparent; }
+.qv-scrollbar-h::-webkit-scrollbar-thumb { background: hsl(var(--border)); border-radius: 999px; }
+.qv-scrollbar-h { scrollbar-width: thin; scrollbar-color: hsl(var(--border)) transparent; }
