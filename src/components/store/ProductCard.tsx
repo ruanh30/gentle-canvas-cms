@@ -4,8 +4,13 @@ import { Product } from '@/types';
 import { formatCurrency } from '@/lib/format';
 import { useCart } from '@/contexts/CartContext';
 import { useTheme } from '@/contexts/ThemeContext';
-import { ShoppingBag, Heart, Eye, X, Minus, Plus, Star, Truck, Zap } from 'lucide-react';
+import { ShoppingBag, Heart, Eye, X, Minus, Plus, Star, Truck, Zap, CreditCard, Sparkles, ArrowRight, Rocket, BadgeCheck, Tag, ShoppingCart, PackagePlus, Store, Flame, Send, type LucideIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
+
+const iconMap: Record<string, LucideIcon> = {
+  Zap, CreditCard, Sparkles, ArrowRight, Rocket, BadgeCheck, Tag, Flame, Send,
+  ShoppingBag, ShoppingCart, Plus, PackagePlus, Heart, Store,
+};
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Sheet, SheetContent } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
@@ -166,14 +171,15 @@ const btnStyleMap: Record<string, string> = {
   underline: 'rounded-none',
 };
 
-function BuyButton({ label, btnStyle, color, hoverColor, sideBySide, onClick }: {
-  label: string; btnStyle: string; color: string; hoverColor: string; sideBySide: boolean; onClick: (e: React.MouseEvent) => void;
+function BuyButton({ label, btnStyle, color, hoverColor, sideBySide, onClick, buyNowIcon }: {
+  label: string; btnStyle: string; color: string; hoverColor: string; sideBySide: boolean; onClick: (e: React.MouseEvent) => void; buyNowIcon?: string;
 }) {
   const { theme } = useTheme();
   const b = theme.buttons;
   const isOutline = btnStyle === 'outline';
   const isUnderline = btnStyle === 'underline';
   const isGradient = btnStyle === 'gradient';
+  const BuyIcon = iconMap[buyNowIcon || ''] || Zap;
 
   const btnDimensions = {
     padding: `${b?.paddingY ?? 10}px ${b?.paddingX ?? 16}px`,
@@ -201,20 +207,21 @@ function BuyButton({ label, btnStyle, color, hoverColor, sideBySide, onClick }: 
           : { backgroundColor: color, color: '#fff' }),
       }}
     >
-      <Zap className="h-3.5 w-3.5 mr-1.5 shrink-0" />
+      <BuyIcon className="h-3.5 w-3.5 mr-1.5 shrink-0" />
       {label}
     </button>
   );
 }
 
-function CartButton({ label, btnStyle, sideBySide, compact, onClick }: {
-  label: string; btnStyle: string; sideBySide: boolean; compact?: boolean; onClick: (e: React.MouseEvent) => void;
+function CartButton({ label, btnStyle, sideBySide, compact, onClick, cartIcon }: {
+  label: string; btnStyle: string; sideBySide: boolean; compact?: boolean; onClick: (e: React.MouseEvent) => void; cartIcon?: string;
 }) {
   const { theme } = useTheme();
   const b = theme.buttons;
   const isOutline = btnStyle === 'outline';
   const isUnderline = btnStyle === 'underline';
   const isGradient = btnStyle === 'gradient';
+  const CartIcon = iconMap[cartIcon || ''] || ShoppingBag;
 
   const btnDimensions: React.CSSProperties = {
     padding: `${b?.paddingY ?? 10}px ${b?.paddingX ?? 16}px`,
@@ -237,7 +244,7 @@ function CartButton({ label, btnStyle, sideBySide, compact, onClick }: {
       )}
       style={btnDimensions}
     >
-      <ShoppingBag className="h-3.5 w-3.5 mr-1.5 shrink-0" />
+      <CartIcon className="h-3.5 w-3.5 mr-1.5 shrink-0" />
       {label}
     </button>
   );
@@ -366,6 +373,7 @@ export function ProductCard({ product }: Props) {
               hoverColor={theme.colors.buyNowHover}
               sideBySide={c.buttonLayout === 'side-by-side'}
               onClick={handleBuyNow}
+              buyNowIcon={c.buyNowIcon}
             />
           )}
           {showAdd && (
@@ -375,6 +383,7 @@ export function ProductCard({ product }: Props) {
                 btnStyle={c.buttonStyle || 'solid'}
                 sideBySide={c.buttonLayout === 'side-by-side'}
                 onClick={(e) => { e.preventDefault(); addItem(product); }}
+                cartIcon={c.addToCartIcon}
               />
             ) : c.addToCartStyle === 'button' ? (
               <CartButton
@@ -383,15 +392,21 @@ export function ProductCard({ product }: Props) {
                 sideBySide={false}
                 compact
                 onClick={(e) => { e.preventDefault(); addItem(product); }}
+                cartIcon={c.addToCartIcon}
               />
             ) : (
-              <button
-                onClick={(e) => { e.preventDefault(); addItem(product); }}
-                className="absolute top-3 right-3 bg-background/90 backdrop-blur-sm p-2 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-200 hover:bg-background shadow-sm"
-                aria-label={c.addToCartText || 'Adicionar ao carrinho'}
-              >
-                <ShoppingBag className="h-4 w-4" />
-              </button>
+              (() => {
+                const FloatingIcon = iconMap[c.addToCartIcon || ''] || ShoppingBag;
+                return (
+                  <button
+                    onClick={(e) => { e.preventDefault(); addItem(product); }}
+                    className="absolute top-3 right-3 bg-background/90 backdrop-blur-sm p-2 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-200 hover:bg-background shadow-sm"
+                    aria-label={c.addToCartText || 'Adicionar ao carrinho'}
+                  >
+                    <FloatingIcon className="h-4 w-4" />
+                  </button>
+                );
+              })()
             )
           )}
         </div>

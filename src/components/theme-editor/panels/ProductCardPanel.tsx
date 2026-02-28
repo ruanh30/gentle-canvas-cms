@@ -1,7 +1,54 @@
 import React from 'react';
 import { useTheme } from '@/contexts/ThemeContext';
 import { EditorSection, OptionPicker, ToggleRow, SelectField, NumberSlider, SectionDivider, TextField } from '../EditorControls';
-import { Package } from 'lucide-react';
+import { Package, Zap, CreditCard, Sparkles, ArrowRight, Rocket, BadgeCheck, Tag, ShoppingBag, ShoppingCart, Plus, Heart, Store, PackagePlus, Flame, Send, type LucideIcon } from 'lucide-react';
+import { cn } from '@/lib/utils';
+
+const buyNowIcons: { value: string; label: string; Icon: LucideIcon }[] = [
+  { value: 'Zap', label: 'Raio', Icon: Zap },
+  { value: 'CreditCard', label: 'Cartão', Icon: CreditCard },
+  { value: 'Sparkles', label: 'Brilho', Icon: Sparkles },
+  { value: 'Rocket', label: 'Foguete', Icon: Rocket },
+  { value: 'Flame', label: 'Fogo', Icon: Flame },
+  { value: 'ArrowRight', label: 'Seta', Icon: ArrowRight },
+  { value: 'BadgeCheck', label: 'Selo', Icon: BadgeCheck },
+  { value: 'Send', label: 'Enviar', Icon: Send },
+  { value: 'Tag', label: 'Etiqueta', Icon: Tag },
+];
+
+const cartIcons: { value: string; label: string; Icon: LucideIcon }[] = [
+  { value: 'ShoppingBag', label: 'Sacola', Icon: ShoppingBag },
+  { value: 'ShoppingCart', label: 'Carrinho', Icon: ShoppingCart },
+  { value: 'Plus', label: 'Mais', Icon: Plus },
+  { value: 'PackagePlus', label: 'Pacote+', Icon: PackagePlus },
+  { value: 'Heart', label: 'Coração', Icon: Heart },
+  { value: 'Store', label: 'Loja', Icon: Store },
+];
+
+function IconPicker({ label, value, onChange, icons }: { label: string; value: string; onChange: (v: string) => void; icons: { value: string; label: string; Icon: LucideIcon }[] }) {
+  return (
+    <div className="space-y-1.5">
+      <p className="text-[11px] font-medium text-muted-foreground">{label}</p>
+      <div className="grid grid-cols-5 gap-1.5">
+        {icons.map(({ value: v, label: l, Icon }) => (
+          <button
+            key={v}
+            onClick={() => onChange(v)}
+            className={cn(
+              'flex flex-col items-center gap-1 p-2 rounded-lg border transition-all text-[9px]',
+              value === v
+                ? 'border-foreground bg-foreground/5 text-foreground'
+                : 'border-border/40 text-muted-foreground hover:border-foreground/30 hover:bg-secondary/50'
+            )}
+          >
+            <Icon className="h-4 w-4" />
+            <span>{l}</span>
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 export function ProductCardPanel() {
   const { draft, updateDraftSection } = useTheme();
@@ -70,11 +117,17 @@ export function ProductCardPanel() {
       <SectionDivider label="Botões de Ação" />
       <ToggleRow label="Botão Comprar Agora" hint="Exibe o botão de compra rápida que leva direto ao carrinho. A cor é configurada em Cores > Ação de Compra" checked={c.showBuyNow} onChange={v => set({ showBuyNow: v })} />
       {c.showBuyNow && (
-        <TextField label="Texto do botão Comprar" value={c.buyNowText || 'Comprar Agora'} onChange={v => set({ buyNowText: v })} placeholder="Comprar Agora" />
+        <>
+          <TextField label="Texto do botão Comprar" value={c.buyNowText || 'Comprar Agora'} onChange={v => set({ buyNowText: v })} placeholder="Comprar Agora" />
+          <IconPicker label="Ícone do Comprar Agora" value={c.buyNowIcon || 'Zap'} onChange={v => set({ buyNowIcon: v })} icons={buyNowIcons} />
+        </>
       )}
-      <ToggleRow label="Botão Adicionar ao Carrinho" hint="Exibe o botão para adicionar o produto ao carrinho sem sair da página atual" checked={c.showAddToCart} onChange={v => set({ showAddToCart: v })} />
+      <ToggleRow label="Botão Adicionar ao Carrinho" hint="Exibe o botão para adicionar o produto ao carrinho sem sair da página atual. O ícone escolhido também será usado no cabeçalho da loja." checked={c.showAddToCart} onChange={v => set({ showAddToCart: v })} />
       {c.showAddToCart && (
-        <TextField label="Texto do botão Carrinho" value={c.addToCartText || 'Adicionar ao Carrinho'} onChange={v => set({ addToCartText: v })} placeholder="Adicionar ao Carrinho" />
+        <>
+          <TextField label="Texto do botão Carrinho" value={c.addToCartText || 'Adicionar ao Carrinho'} onChange={v => set({ addToCartText: v })} placeholder="Adicionar ao Carrinho" />
+          <IconPicker label="Ícone do Carrinho (também altera o cabeçalho)" value={c.addToCartIcon || 'ShoppingBag'} onChange={v => set({ addToCartIcon: v })} icons={cartIcons} />
+        </>
       )}
       {(c.showBuyNow || c.showAddToCart) && (
         <>
