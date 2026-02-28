@@ -169,9 +169,18 @@ const btnStyleMap: Record<string, string> = {
 function BuyButton({ label, btnStyle, color, hoverColor, sideBySide, onClick }: {
   label: string; btnStyle: string; color: string; hoverColor: string; sideBySide: boolean; onClick: (e: React.MouseEvent) => void;
 }) {
+  const { theme } = useTheme();
+  const b = theme.buttons;
   const isOutline = btnStyle === 'outline';
   const isUnderline = btnStyle === 'underline';
   const isGradient = btnStyle === 'gradient';
+
+  const btnDimensions = {
+    padding: `${b?.paddingY ?? 10}px ${b?.paddingX ?? 16}px`,
+    fontSize: `${b?.fontSize ?? 14}px`,
+    fontWeight: b?.fontWeight ?? 600,
+    textTransform: (b?.uppercase ? 'uppercase' : 'none') as React.CSSProperties['textTransform'],
+  };
 
   return (
     <button
@@ -181,15 +190,16 @@ function BuyButton({ label, btnStyle, color, hoverColor, sideBySide, onClick }: 
         btnStyleMap[btnStyle] || 'rounded-md',
         sideBySide ? 'flex-1' : 'w-full',
       )}
-      style={
-        isOutline
+      style={{
+        ...btnDimensions,
+        ...(isOutline
           ? { border: `2px solid ${color}`, color, backgroundColor: 'transparent' }
           : isUnderline
           ? { borderBottom: `2px solid ${color}`, color, backgroundColor: 'transparent' }
           : isGradient
           ? { background: `linear-gradient(135deg, ${color}, ${hoverColor})`, color: '#fff' }
-          : { backgroundColor: color, color: '#fff' }
-      }
+          : { backgroundColor: color, color: '#fff' }),
+      }}
     >
       {label}
     </button>
@@ -199,9 +209,18 @@ function BuyButton({ label, btnStyle, color, hoverColor, sideBySide, onClick }: 
 function CartButton({ label, btnStyle, sideBySide, compact, onClick }: {
   label: string; btnStyle: string; sideBySide: boolean; compact?: boolean; onClick: (e: React.MouseEvent) => void;
 }) {
+  const { theme } = useTheme();
+  const b = theme.buttons;
   const isOutline = btnStyle === 'outline';
   const isUnderline = btnStyle === 'underline';
   const isGradient = btnStyle === 'gradient';
+
+  const btnDimensions: React.CSSProperties = {
+    padding: `${b?.paddingY ?? 10}px ${b?.paddingX ?? 16}px`,
+    fontSize: `${b?.fontSize ?? 14}px`,
+    fontWeight: b?.fontWeight ?? 600,
+    textTransform: b?.uppercase ? 'uppercase' : 'none',
+  };
 
   return (
     <button
@@ -215,6 +234,7 @@ function CartButton({ label, btnStyle, sideBySide, compact, onClick }: {
         isGradient && 'bg-gradient-to-r from-foreground/90 to-foreground text-background',
         !isOutline && !isUnderline && !isGradient && 'bg-foreground text-background',
       )}
+      style={btnDimensions}
     >
       {label}
     </button>
