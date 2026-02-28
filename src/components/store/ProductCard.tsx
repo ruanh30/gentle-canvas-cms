@@ -4,7 +4,7 @@ import { Product } from '@/types';
 import { formatCurrency } from '@/lib/format';
 import { useCart } from '@/contexts/CartContext';
 import { useTheme } from '@/contexts/ThemeContext';
-import { ShoppingBag, Heart, Eye, X, Minus, Plus, Star, Truck } from 'lucide-react';
+import { ShoppingBag, Heart, Eye, X, Minus, Plus, Star, Truck, Zap } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Sheet, SheetContent } from '@/components/ui/sheet';
@@ -201,6 +201,7 @@ function BuyButton({ label, btnStyle, color, hoverColor, sideBySide, onClick }: 
           : { backgroundColor: color, color: '#fff' }),
       }}
     >
+      <Zap className="h-3.5 w-3.5 mr-1.5 shrink-0" />
       {label}
     </button>
   );
@@ -236,6 +237,7 @@ function CartButton({ label, btnStyle, sideBySide, compact, onClick }: {
       )}
       style={btnDimensions}
     >
+      <ShoppingBag className="h-3.5 w-3.5 mr-1.5 shrink-0" />
       {label}
     </button>
   );
