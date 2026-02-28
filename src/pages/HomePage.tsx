@@ -111,7 +111,44 @@ const HomePage = () => {
           </section>
         );
 
-      case 'categories':
+      case 'categories': {
+        const showImage = (section.settings?.showImage as boolean) !== false;
+        const imageShape = (section.settings?.imageShape as string) || 'circle';
+        const imageSize = (section.settings?.imageSize as number) || 80;
+        const imageBorder = (section.settings?.imageBorder as boolean) ?? false;
+        const imageBorderColor = (section.settings?.imageBorderColor as string) || '#e91e8c';
+        const shapeClass = imageShape === 'circle' ? 'rounded-full' : imageShape === 'rounded' ? 'rounded-xl' : 'rounded-none';
+
+        const categoryCard = (cat: typeof mockCategories[0]) => (
+          <Link
+            key={cat.id}
+            to={`/products?category=${cat.slug}`}
+            className={cn(
+              'group text-center flex flex-col items-center gap-2 p-4 transition-colors min-w-[120px] flex-shrink-0 snap-start',
+              !showImage && 'p-6 rounded-xl bg-secondary hover:bg-accent',
+            )}
+          >
+            {showImage && cat.image && (
+              <div
+                className={cn('overflow-hidden bg-secondary flex-shrink-0 transition-transform group-hover:scale-105', shapeClass)}
+                style={{
+                  width: imageSize,
+                  height: imageSize,
+                  ...(imageBorder ? { border: `3px solid ${imageBorderColor}`, padding: 3 } : {}),
+                }}
+              >
+                <img
+                  src={cat.image}
+                  alt={cat.name}
+                  className={cn('w-full h-full object-cover', shapeClass)}
+                  loading="lazy"
+                />
+              </div>
+            )}
+            <p className="text-xs font-medium group-hover:text-foreground transition-colors uppercase tracking-wider">{cat.name}</p>
+          </Link>
+        );
+
         return (
           <section key={section.id} className="container mx-auto px-4 py-16">
             {section.showTitle !== false && (
@@ -119,31 +156,16 @@ const HomePage = () => {
             )}
             {isCarousel ? (
               <SectionCarousel speed={carouselSpeed}>
-                {mockCategories.map(cat => (
-                  <Link
-                    key={cat.id}
-                    to={`/products?category=${cat.slug}`}
-                    className="group text-center p-6 rounded-xl bg-secondary hover:bg-accent transition-colors min-w-[160px] flex-shrink-0 snap-start"
-                  >
-                    <p className="text-sm font-medium group-hover:text-foreground transition-colors">{cat.name}</p>
-                  </Link>
-                ))}
+                {mockCategories.map(categoryCard)}
               </SectionCarousel>
             ) : (
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-                {mockCategories.map(cat => (
-                  <Link
-                    key={cat.id}
-                    to={`/products?category=${cat.slug}`}
-                    className="group text-center p-6 rounded-xl bg-secondary hover:bg-accent transition-colors"
-                  >
-                    <p className="text-sm font-medium group-hover:text-foreground transition-colors">{cat.name}</p>
-                  </Link>
-                ))}
+                {mockCategories.map(categoryCard)}
               </div>
             )}
           </section>
         );
+      }
 
       case 'featured-products':
         return (

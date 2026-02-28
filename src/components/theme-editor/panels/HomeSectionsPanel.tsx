@@ -181,6 +181,68 @@ export function HomeSectionsPanel() {
                 )}
                 {section.type === 'categories' && (
                   <>
+                    <SectionDivider label="Aparência das Categorias" />
+                    <div className="flex items-center gap-2">
+                      <label className="text-[11px] text-muted-foreground">Mostrar imagem:</label>
+                      <input
+                        type="checkbox"
+                        checked={(section.settings?.showImage as boolean) ?? true}
+                        onChange={e => setSetting(section.id, 'showImage', e.target.checked)}
+                        className="rounded"
+                      />
+                      <HintTooltip text="Exibe a imagem da categoria acima do nome, como nos sites de referência" />
+                    </div>
+                    {(section.settings?.showImage as boolean) !== false && (
+                      <>
+                        <div className="flex items-center gap-2">
+                          <label className="text-[11px] text-muted-foreground">Formato:</label>
+                          <select
+                            value={(section.settings?.imageShape as string) || 'circle'}
+                            onChange={e => setSetting(section.id, 'imageShape', e.target.value)}
+                            className="h-6 text-[11px] rounded border border-border bg-background px-1.5"
+                          >
+                            <option value="circle">Circular</option>
+                            <option value="rounded">Arredondado</option>
+                            <option value="square">Quadrado</option>
+                          </select>
+                          <HintTooltip text="Formato do contêiner da imagem da categoria" />
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <label className="text-[11px] text-muted-foreground">Tamanho:</label>
+                          <input
+                            type="range"
+                            min={60}
+                            max={140}
+                            step={10}
+                            value={(section.settings?.imageSize as number) || 80}
+                            onChange={e => setSetting(section.id, 'imageSize', Number(e.target.value))}
+                            className="flex-1 h-1"
+                          />
+                          <span className="text-[11px] text-muted-foreground w-8 text-right">{(section.settings?.imageSize as number) || 80}px</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <label className="text-[11px] text-muted-foreground">Borda na imagem:</label>
+                          <input
+                            type="checkbox"
+                            checked={(section.settings?.imageBorder as boolean) ?? false}
+                            onChange={e => setSetting(section.id, 'imageBorder', e.target.checked)}
+                            className="rounded"
+                          />
+                          <HintTooltip text="Adiciona uma borda colorida ao redor da imagem da categoria" />
+                        </div>
+                        {(section.settings?.imageBorder as boolean) && (
+                          <div className="flex items-center gap-2">
+                            <label className="text-[11px] text-muted-foreground">Cor da borda:</label>
+                            <input
+                              type="color"
+                              value={(section.settings?.imageBorderColor as string) || '#e91e8c'}
+                              onChange={e => setSetting(section.id, 'imageBorderColor', e.target.value)}
+                              className="h-6 w-8 rounded border border-border cursor-pointer"
+                            />
+                          </div>
+                        )}
+                      </>
+                    )}
                     <SectionDivider label="Categorias em destaque" />
                     <p className="text-[10px] text-muted-foreground">Selecione quais categorias aparecem nesta seção da home:</p>
                     <div className="space-y-1 max-h-40 overflow-y-auto">
@@ -204,6 +266,9 @@ export function HomeSectionsPanel() {
                                 setSetting(section.id, 'selectedCategoryIds', newIds);
                               }}
                             />
+                            {cat.image && (
+                              <img src={cat.image} alt={cat.name} className="h-5 w-5 rounded-full object-cover shrink-0" />
+                            )}
                             <FolderTree className="h-3 w-3 shrink-0" />
                             <span>{cat.name}</span>
                           </label>
