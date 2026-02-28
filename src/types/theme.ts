@@ -19,6 +19,8 @@ export interface ThemeColors {
   error: string;
   buyNow: string;
   buyNowHover: string;
+  link: string;
+  linkHover: string;
 }
 
 export interface ThemeTypography {
@@ -29,6 +31,7 @@ export interface ThemeTypography {
   bodyWeight: number;
   lineHeight: number;         // ratio
   letterSpacing: number;      // em
+  headingLineHeight: number;  // ratio for headings
 }
 
 export interface ThemeButtons {

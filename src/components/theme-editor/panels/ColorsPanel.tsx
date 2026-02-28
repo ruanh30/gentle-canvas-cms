@@ -54,6 +54,15 @@ export function ColorsPanel() {
         <ColorInput label="Cor no hover" value={c.buyNowHover} onChange={v => set({ buyNowHover: v })} />
       </div>
 
+      <SectionDivider label="Links" />
+      <p className="text-[10px] text-muted-foreground/60 leading-relaxed -mt-2">
+        Cor dos links de texto clicáveis em toda a loja (menus, breadcrumbs, textos com link).
+      </p>
+      <div className="grid grid-cols-2 gap-3">
+        <ColorInput label="Cor do link" value={c.link || '#1a1a1a'} onChange={v => set({ link: v })} />
+        <ColorInput label="Link no hover" value={c.linkHover || '#4a4a4a'} onChange={v => set({ linkHover: v })} />
+      </div>
+
       {/* Live preview */}
       <SectionDivider label="Preview da Paleta" />
       <div className="p-3 rounded-lg border border-border/30 space-y-2">
