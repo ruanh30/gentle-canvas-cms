@@ -38,21 +38,19 @@ export function ButtonsPanel() {
         { value: 'full', label: 'Pílula', description: 'Totalmente arredondado' },
       ]} />
 
-      <SectionDivider label="Tamanho" />
+      <SectionDivider label="Dimensões" />
       <p className="text-[10px] text-muted-foreground/60 leading-relaxed -mt-2">
-        Define o tamanho padrão dos botões (padding interno e fonte).
+        Controle o espaçamento interno e tamanho da fonte com precisão.
       </p>
-      <OptionPicker label="Tamanho" value={b.size} onChange={v => set({ size: v })} options={[
-        { value: 'small', label: 'Pequeno', description: 'Compacto: padding 6×12px, fonte 13px' },
-        { value: 'medium', label: 'Médio', description: 'Padrão: padding 10×16px, fonte 14px' },
-        { value: 'large', label: 'Grande', description: 'Destaque: padding 14×24px, fonte 16px' },
-      ]} />
+      <NumberSlider label="Padding horizontal (px)" value={b.paddingX ?? 16} onChange={v => set({ paddingX: v })} min={4} max={48} step={2} suffix="px" />
+      <NumberSlider label="Padding vertical (px)" value={b.paddingY ?? 10} onChange={v => set({ paddingY: v })} min={2} max={24} step={1} suffix="px" />
+      <NumberSlider label="Tamanho da fonte (px)" value={b.fontSize ?? 14} onChange={v => set({ fontSize: v })} min={10} max={22} step={1} suffix="px" />
 
       <SectionDivider label="Tipografia e Efeitos" />
       <p className="text-[10px] text-muted-foreground/60 leading-relaxed -mt-2">
         Ajuste o peso da fonte, caixa alta e sombra dos botões.
       </p>
-      <NumberSlider label="Peso da fonte" value={b.fontWeight} onChange={v => set({ fontWeight: v })} min={400} max={800} step={100} suffix="" />
+      <NumberSlider label="Peso da fonte" value={b.fontWeight} onChange={v => set({ fontWeight: v })} min={300} max={900} step={100} suffix="" />
       <ToggleRow label="Texto maiúsculo" hint="Transforma todo o texto dos botões em CAIXA ALTA" checked={b.uppercase} onChange={v => set({ uppercase: v })} />
       <ToggleRow label="Sombra" hint="Adiciona uma sombra sutil abaixo dos botões para dar profundidade" checked={b.shadow} onChange={v => set({ shadow: v })} />
 
@@ -77,7 +75,6 @@ export function ButtonsPanel() {
 
 function ButtonPreview({ config, label, styleOverride, isBuy }: { config: any; label: string; styleOverride: string; isBuy?: boolean }) {
   const radiusMap: Record<string, string> = { none: '0px', small: '4px', medium: '8px', large: '16px', full: '9999px' };
-  const sizeMap: Record<string, string> = { small: 'px-3 py-1.5 text-[11px]', medium: 'px-4 py-2 text-[12px]', large: 'px-5 py-2.5 text-[13px]' };
   const styleMap: Record<string, string> = {
     filled: 'bg-foreground text-background',
     outline: 'border-2 border-foreground text-foreground',
@@ -93,7 +90,6 @@ function ButtonPreview({ config, label, styleOverride, isBuy }: { config: any; l
     <button
       className={cn(
         'transition-all',
-        sizeMap[config.size] || sizeMap.medium,
         styleMap[styleOverride] || styleMap.filled,
         config.shadow && 'shadow-md',
       )}
@@ -102,6 +98,11 @@ function ButtonPreview({ config, label, styleOverride, isBuy }: { config: any; l
         fontWeight: config.fontWeight || 500,
         textTransform: config.uppercase ? 'uppercase' : 'none',
         letterSpacing: config.uppercase ? '0.05em' : 'normal',
+        paddingLeft: `${config.paddingX ?? 16}px`,
+        paddingRight: `${config.paddingX ?? 16}px`,
+        paddingTop: `${config.paddingY ?? 10}px`,
+        paddingBottom: `${config.paddingY ?? 10}px`,
+        fontSize: `${config.fontSize ?? 14}px`,
       }}
     >
       {label}

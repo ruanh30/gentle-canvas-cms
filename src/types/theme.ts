@@ -35,6 +35,9 @@ export interface ThemeButtons {
   style: 'filled' | 'outline' | 'ghost' | 'soft' | 'gradient' | '3d' | 'neon' | 'minimal';
   radius: 'none' | 'small' | 'medium' | 'large' | 'full';
   size: 'small' | 'medium' | 'large';
+  paddingX: number;   // px
+  paddingY: number;   // px
+  fontSize: number;   // px
   uppercase: boolean;
   fontWeight: number;
   shadow: boolean;
