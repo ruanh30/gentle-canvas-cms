@@ -27,6 +27,10 @@ export function TypographyPanel() {
 
       <SectionDivider label="Espaçamento" />
       <p className="text-[10px] text-muted-foreground/60 leading-relaxed -mt-2">
+        Controla a altura entre linhas do corpo, dos títulos e o espaço entre letras.
+      </p>
+      <NumberSlider label="Altura da linha (títulos)" value={t.headingLineHeight ?? 1.2} onChange={v => set({ headingLineHeight: v })} min={0.8} max={1.8} step={0.05} />
+      <p className="text-[10px] text-muted-foreground/60 leading-relaxed -mt-2">
         Controla a altura entre linhas e o espaço entre letras para melhor legibilidade.
       </p>
       <NumberSlider label="Altura da linha" value={t.lineHeight} onChange={v => set({ lineHeight: v })} min={1} max={2} step={0.05} />

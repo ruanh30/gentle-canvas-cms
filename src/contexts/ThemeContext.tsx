@@ -109,6 +109,8 @@ function applyThemeCSS(t: ThemeConfig) {
   root.style.setProperty('--border', hexToHSL(t.colors.border));
   root.style.setProperty('--buy-now', hexToHSL(t.colors.buyNow));
   root.style.setProperty('--buy-now-hover', hexToHSL(t.colors.buyNowHover));
+  root.style.setProperty('--link-color', hexToHSL(t.colors.link || '#1a1a1a'));
+  root.style.setProperty('--link-hover', hexToHSL(t.colors.linkHover || '#4a4a4a'));
   root.style.setProperty('--radius', getRadiusValue(t.global.borderRadius));
   // Load Google Fonts dynamically
   loadGoogleFont(t.typography.headingFont);
@@ -121,6 +123,7 @@ function applyThemeCSS(t: ThemeConfig) {
   root.style.setProperty('--body-weight', `${t.typography.bodyWeight}`);
   root.style.setProperty('--line-height', `${t.typography.lineHeight}`);
   root.style.setProperty('--letter-spacing', `${t.typography.letterSpacing}em`);
+  root.style.setProperty('--heading-line-height', `${t.typography.headingLineHeight ?? 1.2}`);
 
   // Set base font on root
   root.style.fontSize = `${t.typography.baseFontSize}px`;
@@ -144,6 +147,8 @@ function applyThemeCSS(t: ThemeConfig) {
   root.style.setProperty('--pm-border', t.colors.border);
   root.style.setProperty('--pm-buy-now', t.colors.buyNow);
   root.style.setProperty('--pm-buy-now-hover', t.colors.buyNowHover);
+  root.style.setProperty('--pm-link-color', t.colors.link || '#1a1a1a');
+  root.style.setProperty('--pm-link-hover', t.colors.linkHover || '#4a4a4a');
   root.style.setProperty('--color-primary', t.colors.primary);
 
   root.style.setProperty('--pm-font-heading', `'${t.typography.headingFont}', serif`);
@@ -153,6 +158,7 @@ function applyThemeCSS(t: ThemeConfig) {
   root.style.setProperty('--pm-body-weight', `${t.typography.bodyWeight}`);
   root.style.setProperty('--pm-line-height', `${t.typography.lineHeight}`);
   root.style.setProperty('--pm-letter-spacing', `${t.typography.letterSpacing}px`);
+  root.style.setProperty('--pm-heading-line-height', `${t.typography.headingLineHeight ?? 1.2}`);
 
   root.style.setProperty('--pm-radius', getRadiusPx(t.global.borderRadius));
   root.style.setProperty('--pm-container-width', t.global.containerWidth === 'full' ? '100%' : (t.global.containerMaxPx ? `${t.global.containerMaxPx}px` : '1280px'));

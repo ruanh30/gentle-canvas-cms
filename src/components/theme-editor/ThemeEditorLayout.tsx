@@ -9,9 +9,10 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 
 // Sections config
 import {
-  Palette, Type, Layout, PanelTop, PanelBottom, Image, ShoppingBag, Package,
-  Grid3X3, CreditCard, CheckSquare, MessageCircle, Globe, Code, Accessibility,
-  Layers, MousePointer, FormInput, Sparkles
+  Palette, Type, Layout, PanelTop, PanelBottom, Image, Package,
+  CreditCard, MessageCircle, Globe, Code, Accessibility,
+  Layers, MousePointer, FormInput, Sparkles, LayoutGrid,
+  SlidersHorizontal, ShoppingCart, FileText
 } from 'lucide-react';
 
 // Editor panels
@@ -34,6 +35,7 @@ import { WhatsAppPanel } from './panels/WhatsAppPanel';
 import { SEOPanel } from './panels/SEOPanel';
 import { CustomCodePanel } from './panels/CustomCodePanel';
 import { PresetsPanel } from './panels/PresetsPanel';
+import { AccessibilityPanel } from './panels/AccessibilityPanel';
 
 export interface EditorSectionItem {
   id: string;
@@ -43,28 +45,31 @@ export interface EditorSectionItem {
 }
 
 const sections: EditorSectionItem[] = [
-  // Design System
-  { id: 'presets', label: 'Temas Prontos', icon: Sparkles, group: 'Sistema' },
-  { id: 'colors', label: 'Cores', icon: Palette, group: 'Sistema' },
-  { id: 'typography', label: 'Tipografia', icon: Type, group: 'Sistema' },
-  { id: 'global', label: 'Layout Global', icon: Layout, group: 'Sistema' },
-  { id: 'buttons', label: 'Botões', icon: MousePointer, group: 'Sistema' },
-  { id: 'inputs', label: 'Formulários', icon: FormInput, group: 'Sistema' },
-  // Componentes
-  { id: 'logo', label: 'Logo', icon: Image, group: 'Componentes' },
-  { id: 'header', label: 'Cabeçalho', icon: PanelTop, group: 'Componentes' },
-  { id: 'hero', label: 'Hero / Banner', icon: Layers, group: 'Componentes' },
-  { id: 'home-sections', label: 'Seções da Home', icon: Grid3X3, group: 'Componentes' },
-  { id: 'product-card', label: 'Card de Produto', icon: Package, group: 'Componentes' },
-  { id: 'product-page', label: 'Página de Produto', icon: ShoppingBag, group: 'Componentes' },
-  { id: 'category', label: 'Categoria / Busca', icon: Grid3X3, group: 'Componentes' },
-  { id: 'cart', label: 'Carrinho', icon: ShoppingBag, group: 'Componentes' },
-  { id: 'checkout', label: 'Checkout', icon: CreditCard, group: 'Componentes' },
-  { id: 'footer', label: 'Rodapé', icon: PanelBottom, group: 'Componentes' },
-  // Extras
-  { id: 'whatsapp', label: 'WhatsApp', icon: MessageCircle, group: 'Extras' },
-  { id: 'seo', label: 'SEO', icon: Globe, group: 'Extras' },
-  { id: 'custom-code', label: 'Código Custom', icon: Code, group: 'Extras' },
+  // Início Rápido
+  { id: 'presets', label: 'Temas Prontos', icon: Sparkles, group: 'Início Rápido' },
+  // Design & Estilo
+  { id: 'colors', label: 'Cores', icon: Palette, group: 'Design & Estilo' },
+  { id: 'typography', label: 'Tipografia', icon: Type, group: 'Design & Estilo' },
+  { id: 'global', label: 'Layout Global', icon: Layout, group: 'Design & Estilo' },
+  { id: 'buttons', label: 'Botões', icon: MousePointer, group: 'Design & Estilo' },
+  { id: 'inputs', label: 'Formulários', icon: FormInput, group: 'Design & Estilo' },
+  // Estrutura
+  { id: 'logo', label: 'Logo & Marca', icon: Image, group: 'Estrutura' },
+  { id: 'header', label: 'Cabeçalho', icon: PanelTop, group: 'Estrutura' },
+  { id: 'hero', label: 'Hero / Banner', icon: Layers, group: 'Estrutura' },
+  { id: 'home-sections', label: 'Seções da Home', icon: LayoutGrid, group: 'Estrutura' },
+  { id: 'footer', label: 'Rodapé', icon: PanelBottom, group: 'Estrutura' },
+  // Produtos & Compra
+  { id: 'product-card', label: 'Card de Produto', icon: Package, group: 'Produtos & Compra' },
+  { id: 'product-page', label: 'Página de Produto', icon: FileText, group: 'Produtos & Compra' },
+  { id: 'category', label: 'Categoria / Busca', icon: SlidersHorizontal, group: 'Produtos & Compra' },
+  { id: 'cart', label: 'Carrinho', icon: ShoppingCart, group: 'Produtos & Compra' },
+  { id: 'checkout', label: 'Checkout', icon: CreditCard, group: 'Produtos & Compra' },
+  // Avançado
+  { id: 'whatsapp', label: 'WhatsApp', icon: MessageCircle, group: 'Avançado' },
+  { id: 'seo', label: 'SEO', icon: Globe, group: 'Avançado' },
+  { id: 'accessibility', label: 'Acessibilidade', icon: Accessibility, group: 'Avançado' },
+  { id: 'custom-code', label: 'Código Custom', icon: Code, group: 'Avançado' },
 ];
 
 function renderPanel(sectionId: string) {
@@ -88,6 +93,7 @@ function renderPanel(sectionId: string) {
     case 'whatsapp': return <WhatsAppPanel />;
     case 'seo': return <SEOPanel />;
     case 'custom-code': return <CustomCodePanel />;
+    case 'accessibility': return <AccessibilityPanel />;
     default: return <div className="p-4 text-muted-foreground text-sm">Selecione uma seção</div>;
   }
 }

@@ -62,6 +62,8 @@ export const defaultThemeConfig: ThemeConfig = {
     error: '#dc2626',
     buyNow: '#dc2626',
     buyNowHover: '#b91c1c',
+    link: '#1a1a1a',
+    linkHover: '#4a4a4a',
   },
 
   typography: {
@@ -72,6 +74,7 @@ export const defaultThemeConfig: ThemeConfig = {
     bodyWeight: 400,
     lineHeight: 1.6,
     letterSpacing: 0,
+    headingLineHeight: 1.2,
   },
 
   buttons: {
