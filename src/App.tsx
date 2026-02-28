@@ -22,7 +22,11 @@ import AddressesPage from "@/pages/AddressesPage";
 import PersonalDataPage from "@/pages/PersonalDataPage";
 import WishlistPage from "@/pages/WishlistPage";
 
+import { AdminLayout } from "@/components/admin/AdminLayout";
 import AdminCustomization from "@/pages/admin/AdminCustomization";
+import AdminProducts from "@/pages/admin/AdminProducts";
+import AdminMenu from "@/pages/admin/AdminMenu";
+import AdminMedia from "@/pages/admin/AdminMedia";
 
 import NotFound from "./pages/NotFound";
 
@@ -54,8 +58,13 @@ const App = () => (
                 <Route path="/wishlist" element={<WishlistPage />} />
               </Route>
 
-              {/* Admin — only customization */}
-              <Route path="/admin/customization" element={<AdminCustomization />} />
+              {/* Admin */}
+              <Route path="/admin" element={<AdminLayout />}>
+                <Route path="customization" element={<AdminCustomization />} />
+                <Route path="products" element={<AdminProducts />} />
+                <Route path="menu" element={<AdminMenu />} />
+                <Route path="media" element={<AdminMedia />} />
+              </Route>
 
               <Route path="*" element={<NotFound />} />
             </Routes>
