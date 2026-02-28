@@ -16,7 +16,7 @@ import {
   Plus, Search, ChevronLeft,
   FileText, DollarSign, Boxes, ImageIcon, Eye,
   Pencil, Trash2, Package as PackageIcon, Save, Palette,
-  Star, Tag, Layers, Link, Image, Check, Info,
+  Star, Tag, Layers, Link, Image, Check, Info, X,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useNavigate } from 'react-router-dom';
@@ -683,17 +683,33 @@ function StockSection({ form, setForm }: { form: Product; setForm: (f: Product) 
           <Palette className="h-4 w-4" /> Cores disponíveis
         </p>
         <div className="flex flex-wrap gap-1.5">
-          {allColors.map(c => (
-            <Badge
-              key={c}
-              variant={selectedColors.includes(c) ? 'default' : 'outline'}
-              className="cursor-pointer text-xs select-none"
-              onClick={() => toggleColor(c)}
-            >
-              {selectedColors.includes(c) && <Check className="h-3 w-3 mr-1" />}
-              {c}
-            </Badge>
-          ))}
+          {allColors.map(c => {
+            const isCustom = userColors.includes(c);
+            return (
+              <Badge
+                key={c}
+                variant={selectedColors.includes(c) ? 'default' : 'outline'}
+                className="cursor-pointer text-xs select-none gap-1 pr-1.5"
+                onClick={() => toggleColor(c)}
+              >
+                {selectedColors.includes(c) && <Check className="h-3 w-3" />}
+                {c}
+                {isCustom && (
+                  <button
+                    type="button"
+                    className="ml-0.5 rounded-full hover:bg-destructive/20 p-0.5"
+                    onClick={e => {
+                      e.stopPropagation();
+                      setUserColors(prev => prev.filter(x => x !== c));
+                      setSelectedColors(prev => prev.filter(x => x !== c));
+                    }}
+                  >
+                    <X className="h-3 w-3" />
+                  </button>
+                )}
+              </Badge>
+            );
+          })}
         </div>
         <div className="flex items-center gap-2 mt-2">
           <Input
@@ -715,17 +731,33 @@ function StockSection({ form, setForm }: { form: Product; setForm: (f: Product) 
           <Layers className="h-4 w-4" /> Tamanhos disponíveis
         </p>
         <div className="flex flex-wrap gap-1.5">
-          {allSizes.map(s => (
-            <Badge
-              key={s}
-              variant={selectedSizes.includes(s) ? 'default' : 'outline'}
-              className="cursor-pointer text-xs select-none"
-              onClick={() => toggleSize(s)}
-            >
-              {selectedSizes.includes(s) && <Check className="h-3 w-3 mr-1" />}
-              {s}
-            </Badge>
-          ))}
+          {allSizes.map(s => {
+            const isCustom = userSizes.includes(s);
+            return (
+              <Badge
+                key={s}
+                variant={selectedSizes.includes(s) ? 'default' : 'outline'}
+                className="cursor-pointer text-xs select-none gap-1 pr-1.5"
+                onClick={() => toggleSize(s)}
+              >
+                {selectedSizes.includes(s) && <Check className="h-3 w-3" />}
+                {s}
+                {isCustom && (
+                  <button
+                    type="button"
+                    className="ml-0.5 rounded-full hover:bg-destructive/20 p-0.5"
+                    onClick={e => {
+                      e.stopPropagation();
+                      setUserSizes(prev => prev.filter(x => x !== s));
+                      setSelectedSizes(prev => prev.filter(x => x !== s));
+                    }}
+                  >
+                    <X className="h-3 w-3" />
+                  </button>
+                )}
+              </Badge>
+            );
+          })}
         </div>
         <div className="flex items-center gap-2 mt-2">
           <Input
