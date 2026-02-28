@@ -1413,7 +1413,7 @@ function CollectionsTab() {
             <p className="text-[11px] text-muted-foreground">Organize a ordem das seções, oculte títulos, ative ou desative blocos. Categorias e coleções novas aparecem lá automaticamente.</p>
           </div>
         </div>
-        <Button variant="outline" size="sm" className="shrink-0 gap-1.5 text-xs" onClick={() => navigate('/admin/customization')}>
+        <Button variant="outline" size="sm" className="shrink-0 gap-1.5 text-xs" onClick={() => navigate('/admin/customization?section=home-sections')}>
           <Palette className="h-3.5 w-3.5" /> Organizar seções
         </Button>
       </div>
