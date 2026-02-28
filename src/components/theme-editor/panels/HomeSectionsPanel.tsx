@@ -31,6 +31,8 @@ export function HomeSectionsPanel() {
   const [editTitle, setEditTitle] = useState('');
 
   const [showAddMenu, setShowAddMenu] = useState(false);
+  const [newSectionType, setNewSectionType] = useState(availableSectionTypes[0].type);
+  const [newSectionName, setNewSectionName] = useState('');
 
   const startEdit = (id: string, title: string) => {
     setEditingId(id);
@@ -295,36 +297,70 @@ export function HomeSectionsPanel() {
         ))}
       </div>
 
-      <div className="relative mt-3">
-        <button
-          onClick={() => setShowAddMenu(!showAddMenu)}
-          className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-lg border border-dashed border-border text-sm text-muted-foreground hover:text-foreground hover:border-foreground/30 transition-colors"
-        >
-          <Plus className="h-4 w-4" />
-          Adicionar seção
-        </button>
-        {showAddMenu && (
-          <div className="absolute top-full left-0 right-0 mt-1 bg-background border border-border rounded-lg shadow-lg z-20 max-h-52 overflow-y-auto">
-            {availableSectionTypes.map(st => (
+      <div className="mt-3">
+        {!showAddMenu ? (
+          <button
+            onClick={() => {
+              setShowAddMenu(true);
+              setNewSectionType(availableSectionTypes[0].type);
+              setNewSectionName('');
+            }}
+            className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-lg border border-dashed border-border text-sm text-muted-foreground hover:text-foreground hover:border-foreground/30 transition-colors"
+          >
+            <Plus className="h-4 w-4" />
+            Adicionar seção
+          </button>
+        ) : (
+          <div className="space-y-2 p-3 rounded-lg border border-border bg-background">
+            <select
+              value={newSectionType}
+              onChange={e => {
+                setNewSectionType(e.target.value as ThemeHomepageSection['type']);
+                const found = availableSectionTypes.find(s => s.type === e.target.value);
+                if (found && !newSectionName) setNewSectionName(found.label);
+              }}
+              className="w-full h-8 text-sm rounded border border-border bg-background px-2"
+            >
+              {availableSectionTypes.map(st => (
+                <option key={st.type} value={st.type}>{st.label}</option>
+              ))}
+            </select>
+            <Input
+              value={newSectionName}
+              onChange={e => setNewSectionName(e.target.value)}
+              placeholder="Nome da seção"
+              className="h-8 text-sm"
+            />
+            <div className="flex gap-2">
               <button
-                key={st.type}
                 onClick={() => {
+                  const label = newSectionName.trim() || availableSectionTypes.find(s => s.type === newSectionType)?.label || 'Nova seção';
                   const newSection: ThemeHomepageSection = {
-                    id: `${st.type}-${Date.now()}`,
-                    type: st.type,
+                    id: `${newSectionType}-${Date.now()}`,
+                    type: newSectionType,
                     enabled: true,
-                    title: st.label,
+                    title: label,
                     showTitle: true,
                     settings: {},
                   };
                   updateDraft({ homepageSections: [...sections, newSection] });
                   setShowAddMenu(false);
+                  setNewSectionName('');
                 }}
-                className="w-full text-left px-3 py-2 text-xs hover:bg-muted/50 transition-colors"
+                className="flex-1 h-8 rounded-lg bg-foreground text-background text-sm font-medium hover:opacity-90 transition-opacity"
               >
-                {st.label}
+                Adicionar
               </button>
-            ))}
+              <button
+                onClick={() => {
+                  setShowAddMenu(false);
+                  setNewSectionName('');
+                }}
+                className="flex-1 h-8 rounded-lg border border-border text-sm font-medium hover:bg-muted/50 transition-colors"
+              >
+                Cancelar
+              </button>
+            </div>
           </div>
         )}
       </div>
