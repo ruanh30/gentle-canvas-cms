@@ -15,7 +15,7 @@ import {
   Plus, Search, ChevronLeft,
   FileText, DollarSign, Boxes, ImageIcon, Eye,
   Pencil, Trash2, Package as PackageIcon, Save, Palette,
-  Star, Tag, Layers,
+  Star, Tag, Layers, Link, Image, Check, Info,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useNavigate } from 'react-router-dom';
@@ -263,6 +263,172 @@ function ProductsTab() {
 }
 
 /* ------------------------------------------------------------------ */
+/*  Images Section with Media Gallery                                  */
+/* ------------------------------------------------------------------ */
+
+function getAllMediaImages() {
+  const items: { url: string; name: string; source: string }[] = [];
+  const seen = new Set<string>();
+  mockCategories.forEach(c => {
+    if (c.image && !seen.has(c.image)) {
+      seen.add(c.image);
+      items.push({ url: c.image, name: c.name, source: 'Categoria' });
+    }
+  });
+  mockProducts.forEach(p => {
+    p.images.forEach((img, i) => {
+      if (!seen.has(img)) {
+        seen.add(img);
+        items.push({ url: img, name: `${p.name}${i > 0 ? ` (${i + 1})` : ''}`, source: 'Produto' });
+      }
+    });
+  });
+  return items;
+}
+
+function ImagesSectionContent({ form, setForm }: { form: Product; setForm: React.Dispatch<React.SetStateAction<Product>> }) {
+  const [urlInput, setUrlInput] = useState('');
+  const [showMedia, setShowMedia] = useState(false);
+  const [mediaSearch, setMediaSearch] = useState('');
+  const allMedia = getAllMediaImages();
+  const filteredMedia = allMedia.filter(m =>
+    m.name.toLowerCase().includes(mediaSearch.toLowerCase()) &&
+    !form.images.includes(m.url)
+  );
+
+  const addImage = (url: string) => {
+    if (url && !form.images.includes(url)) {
+      setForm(prev => ({ ...prev, images: [...prev.images, url] }));
+    }
+  };
+
+  return (
+    <div className="space-y-5">
+      <h3 className="text-base font-semibold text-foreground">Imagens</h3>
+      <hr className="border-border" />
+
+      {/* Recommended sizes */}
+      <div className="flex items-start gap-2 bg-muted/50 border border-border rounded-lg px-4 py-3">
+        <Info className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" />
+        <div className="text-xs text-muted-foreground space-y-0.5">
+          <p className="font-medium text-foreground">Tamanhos recomendados</p>
+          <p>Principal: <span className="font-medium">1000×1000px</span> (quadrada)</p>
+          <p>Galeria: <span className="font-medium">800×800px</span> mínimo · Formato: JPG ou PNG · Máx: 2MB</p>
+        </div>
+      </div>
+
+      {/* Current images */}
+      {form.images.length > 0 ? (
+        <div className="grid grid-cols-3 gap-3">
+          {form.images.map((img, i) => (
+            <div key={i} className="relative group aspect-square rounded-lg overflow-hidden border border-border">
+              <img src={img} alt={`Imagem ${i + 1}`} className="w-full h-full object-cover" />
+              <div className="absolute inset-0 bg-foreground/0 group-hover:bg-foreground/30 transition-colors flex items-center justify-center">
+                <button
+                  onClick={() => setForm(prev => ({ ...prev, images: prev.images.filter((_, idx) => idx !== i) }))}
+                  className="opacity-0 group-hover:opacity-100 p-2 bg-background rounded-full shadow-lg transition-opacity"
+                >
+                  <Trash2 className="h-4 w-4 text-destructive" />
+                </button>
+              </div>
+              {i === 0 && (
+                <span className="absolute top-1.5 left-1.5 text-[9px] font-bold bg-primary text-primary-foreground px-1.5 py-0.5 rounded">
+                  Principal
+                </span>
+              )}
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="border-2 border-dashed border-border rounded-lg py-10 flex flex-col items-center justify-center gap-2">
+          <ImageIcon className="h-10 w-10 text-muted-foreground/25" />
+          <p className="text-sm text-muted-foreground">Nenhuma imagem adicionada</p>
+          <p className="text-xs text-muted-foreground">Adicione via URL ou selecione da Mídia</p>
+        </div>
+      )}
+
+      {/* Add methods */}
+      <div className="space-y-3">
+        {/* URL input */}
+        <div>
+          <label className="text-sm font-medium text-foreground flex items-center gap-1.5">
+            <Link className="h-3.5 w-3.5" /> Adicionar por URL
+          </label>
+          <div className="flex gap-2 mt-1.5">
+            <Input
+              placeholder="https://exemplo.com/imagem.jpg"
+              className="flex-1"
+              value={urlInput}
+              onChange={e => setUrlInput(e.target.value)}
+              onKeyDown={e => {
+                if (e.key === 'Enter' && urlInput.trim()) {
+                  addImage(urlInput.trim());
+                  setUrlInput('');
+                }
+              }}
+            />
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={!urlInput.trim()}
+              onClick={() => { addImage(urlInput.trim()); setUrlInput(''); }}
+            >
+              Adicionar
+            </Button>
+          </div>
+        </div>
+
+        {/* Media gallery toggle */}
+        <div>
+          <button
+            onClick={() => setShowMedia(!showMedia)}
+            className="text-sm font-medium text-foreground flex items-center gap-1.5 hover:text-primary transition-colors"
+          >
+            <Image className="h-3.5 w-3.5" />
+            {showMedia ? 'Ocultar Mídia' : 'Selecionar da Mídia'}
+          </button>
+
+          {showMedia && (
+            <div className="mt-3 border border-border rounded-lg p-3 space-y-3 bg-muted/20">
+              <div className="relative">
+                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+                <Input
+                  placeholder="Buscar imagem..."
+                  className="pl-8 h-8 text-xs"
+                  value={mediaSearch}
+                  onChange={e => setMediaSearch(e.target.value)}
+                />
+              </div>
+              {filteredMedia.length > 0 ? (
+                <div className="grid grid-cols-4 gap-2 max-h-60 overflow-y-auto">
+                  {filteredMedia.map((m, i) => (
+                    <button
+                      key={i}
+                      onClick={() => addImage(m.url)}
+                      className="group relative aspect-square rounded-md overflow-hidden border border-border hover:border-primary/50 transition-colors"
+                    >
+                      <img src={m.url} alt={m.name} className="w-full h-full object-cover" />
+                      <div className="absolute inset-0 bg-foreground/0 group-hover:bg-foreground/20 transition-colors flex items-center justify-center">
+                        <Plus className="h-5 w-5 text-background opacity-0 group-hover:opacity-100 transition-opacity drop-shadow-lg" />
+                      </div>
+                      <span className="absolute bottom-0 inset-x-0 bg-foreground/60 text-background text-[9px] px-1.5 py-0.5 truncate">
+                        {m.name}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-xs text-muted-foreground text-center py-4">Nenhuma imagem disponível</p>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
 /*  Product Form                                                       */
 /* ------------------------------------------------------------------ */
 
@@ -484,55 +650,7 @@ function ProductForm({ product, allProducts, sidebarSearch, onSidebarSearch, onS
           )}
 
           {section === 'images' && (
-            <div className="space-y-5">
-              <h3 className="text-base font-semibold text-foreground">Imagens</h3>
-              <hr className="border-border" />
-              {form.images.length > 0 ? (
-                <div className="grid grid-cols-3 gap-3">
-                  {form.images.map((img, i) => (
-                    <div key={i} className="relative group aspect-square rounded-lg overflow-hidden border border-border">
-                      <img src={img} alt={`Imagem ${i + 1}`} className="w-full h-full object-cover" />
-                      <div className="absolute inset-0 bg-foreground/0 group-hover:bg-foreground/30 transition-colors flex items-center justify-center">
-                        <button
-                          onClick={() => setForm({ ...form, images: form.images.filter((_, idx) => idx !== i) })}
-                          className="opacity-0 group-hover:opacity-100 p-2 bg-background rounded-full shadow-lg transition-opacity"
-                        >
-                          <Trash2 className="h-4 w-4 text-destructive" />
-                        </button>
-                      </div>
-                      {i === 0 && (
-                        <span className="absolute top-1.5 left-1.5 text-[9px] font-bold bg-primary text-primary-foreground px-1.5 py-0.5 rounded">
-                          Principal
-                        </span>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="border-2 border-dashed border-border rounded-lg py-10 flex flex-col items-center justify-center gap-2">
-                  <ImageIcon className="h-10 w-10 text-muted-foreground/25" />
-                  <p className="text-sm text-muted-foreground">Nenhuma imagem</p>
-                </div>
-              )}
-              <div>
-                <label className="text-sm font-medium text-foreground">Adicionar URL de imagem</label>
-                <div className="flex gap-2 mt-1.5">
-                  <Input
-                    placeholder="https://..."
-                    className="flex-1"
-                    onKeyDown={e => {
-                      if (e.key === 'Enter') {
-                        const val = (e.target as HTMLInputElement).value.trim();
-                        if (val) {
-                          setForm({ ...form, images: [...form.images, val] });
-                          (e.target as HTMLInputElement).value = '';
-                        }
-                      }
-                    }}
-                  />
-                </div>
-              </div>
-            </div>
+            <ImagesSectionContent form={form} setForm={setForm} />
           )}
 
           {section === 'status' && (
