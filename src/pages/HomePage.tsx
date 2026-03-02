@@ -565,11 +565,9 @@ const HomePage = () => {
 
         return (
           <section key={section.id} className={cn('container mx-auto px-4 py-16', wrapperClass)}>
-            <div className="flex items-center justify-between mb-8">
-              {section.showTitle !== false && (
-                <h2 className="text-2xl font-display font-bold">{section.title}</h2>
-              )}
-            </div>
+            {section.showTitle !== false && (
+              <h2 className="text-2xl font-display font-bold text-center mb-8">{section.title}</h2>
+            )}
             {isCarousel ? (
               <SectionCarousel speed={carouselSpeed} showArrows={carouselShowArrows}>
                 {collectionProducts.map(product => (
