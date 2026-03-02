@@ -37,13 +37,12 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { mockProducts, mockCategories, mockCollections } from '@/data/mock';
 import type { Product, Category, ProductCollection } from '@/types';
 import type { ThemeHomepageSection } from '@/types/theme';
-import MenuTab from '@/components/admin/MenuTab';
 
 /* ------------------------------------------------------------------ */
 /*  Types                                                              */
 /* ------------------------------------------------------------------ */
 
-type Tab = 'categories' | 'products' | 'collections' | 'menu';
+type Tab = 'categories' | 'products' | 'collections';
 type ProductSection = 'info' | 'price' | 'stock' | 'images' | 'seo' | 'status';
 type CollectionSection = 'info' | 'products' | 'status';
 
@@ -1704,7 +1703,6 @@ export default function AdminProducts() {
             { key: 'categories' as Tab, label: 'Categorias', count: mockCategories.length },
             { key: 'products' as Tab, label: 'Produtos', count: mockProducts.length },
             { key: 'collections' as Tab, label: 'Coleções', count: mockCollections.length },
-            { key: 'menu' as Tab, label: 'Menu', count: undefined },
           ]).map(t => (
             <button
               key={t.key}
@@ -1717,14 +1715,12 @@ export default function AdminProducts() {
               )}
             >
               {t.label}
-              {t.count !== undefined && (
-                <span className={cn(
-                  'text-[10px] px-1.5 py-0.5 rounded-full',
-                  tab === t.key ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground'
-                )}>
-                  {t.count}
-                </span>
-              )}
+              <span className={cn(
+                'text-[10px] px-1.5 py-0.5 rounded-full',
+                tab === t.key ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground'
+              )}>
+                {t.count}
+              </span>
             </button>
           ))}
         </div>
@@ -1738,7 +1734,7 @@ export default function AdminProducts() {
         {tab === 'categories' && <CategoriesTab />}
         {tab === 'products' && <ProductsTab />}
         {tab === 'collections' && <CollectionsTab />}
-        {tab === 'menu' && <MenuTab />}
+        
       </div>
     </div>
   );
