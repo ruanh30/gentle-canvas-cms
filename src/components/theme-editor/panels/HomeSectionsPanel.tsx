@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTheme } from '@/contexts/ThemeContext';
 import { EditorSection, SectionDivider, HintTooltip } from '../EditorControls';
 import { Grid3X3, GripVertical, ChevronUp, ChevronDown, Trash2, Pencil, Check, X, Eye, EyeOff, FolderTree, Plus } from 'lucide-react';
@@ -6,7 +6,7 @@ import { ThemeHomepageSection } from '@/types/theme';
 import { cn } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
-import { mockCategories } from '@/data/mock';
+import { mockCategories, mockCollections } from '@/data/mock';
 
 const carouselSections = ['categories', 'featured-products', 'collections'];
 
@@ -60,6 +60,29 @@ export function HomeSectionsPanel() {
       ),
     });
   };
+
+  // Auto-sync: ensure all active collections from catalog exist in home sections
+  useEffect(() => {
+    const activeCollections = mockCollections.filter(c => c.active);
+    const missing = activeCollections.filter(col =>
+      !sections.some(s =>
+        s.id === col.id ||
+        s.id === `col-section-${col.id}` ||
+        (s.type === 'collections' && (s.settings?.collectionId as string) === col.id)
+      )
+    );
+    if (missing.length > 0) {
+      const newSections: ThemeHomepageSection[] = missing.map(col => ({
+        id: col.id,
+        type: 'collections' as const,
+        enabled: true,
+        title: col.name,
+        showTitle: true,
+        settings: { collectionId: col.id },
+      }));
+      updateDraft({ homepageSections: [...sections, ...newSections] });
+    }
+  }, []); // Run once on mount
 
 
   return (
