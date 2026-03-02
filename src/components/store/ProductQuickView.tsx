@@ -525,19 +525,23 @@ export function ProductQuickView({ product, open, onClose }: QuickViewProps) {
 
   /* ── Modal layout: 2-column (gallery left, info right) ── */
   const modalContent = (
-    <div className="grid grid-cols-1 md:grid-cols-[1.15fr_0.85fr] h-full">
-      <div className="hidden md:block bg-secondary/20 p-5 overflow-y-auto qv-scrollbar">
-        <QuickViewGallery product={product} qv={qv} />
-        <div className="mt-5">
-          {qv?.showDescription !== false && <QuickViewDescription product={product} defaultOpen />}
-          {qv?.showSizeGuide && (
-            <AccordionSection icon={Ruler} title="Tabela de Medidas" defaultOpen>
-              <p className="text-sm text-muted-foreground">Consulte a tabela de medidas para escolher o tamanho ideal.</p>
-            </AccordionSection>
-          )}
+    <div className="grid grid-cols-1 md:grid-cols-[1.15fr_0.85fr] h-full overflow-hidden">
+      <div className="hidden md:flex md:flex-col bg-secondary/20 overflow-hidden">
+        <div className="flex-shrink-0 p-5 pb-0">
+          <QuickViewGallery product={product} qv={qv} />
+        </div>
+        <div className="flex-1 overflow-y-auto qv-scrollbar px-5 pb-5">
+          <div className="mt-4">
+            {qv?.showDescription !== false && <QuickViewDescription product={product} defaultOpen />}
+            {qv?.showSizeGuide && (
+              <AccordionSection icon={Ruler} title="Tabela de Medidas" defaultOpen>
+                <p className="text-sm text-muted-foreground">Consulte a tabela de medidas para escolher o tamanho ideal.</p>
+              </AccordionSection>
+            )}
+          </div>
         </div>
       </div>
-      <div className="flex flex-col h-full">
+      <div className="flex flex-col h-full overflow-hidden">
         <QuickViewHeader product={product} onClose={onClose} qv={qv} />
         <div className="flex-1 overflow-y-auto qv-scrollbar" style={{ padding: `0 ${padding}px` }}>
           <div style={{ paddingTop: spacing, paddingBottom: spacing }} className="space-y-0">
@@ -556,9 +560,11 @@ export function ProductQuickView({ product, open, onClose }: QuickViewProps) {
             {qv?.showShipping !== false && <QuickViewShipping defaultOpen />}
             {qv?.showDescription !== false && <div className="md:hidden"><QuickViewDescription product={product} defaultOpen /></div>}
             {qv?.showSizeGuide && (
-              <AccordionSection icon={Ruler} title="Tabela de Medidas">
-                <p className="text-sm text-muted-foreground">Consulte a tabela de medidas.</p>
-              </AccordionSection>
+              <div className="md:hidden">
+                <AccordionSection icon={Ruler} title="Tabela de Medidas">
+                  <p className="text-sm text-muted-foreground">Consulte a tabela de medidas.</p>
+                </AccordionSection>
+              </div>
             )}
             {qv?.showViewProduct && (
               <button
