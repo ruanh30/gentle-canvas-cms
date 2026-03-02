@@ -124,8 +124,6 @@ export function ProductCardPanel() {
         </>
       )}
 
-      <SectionDivider label="Interação" />
-      <ToggleRow label="Lista de Desejos (Wishlist)" hint="Exibe ícone de coração para o cliente salvar o produto como favorito" checked={c.showWishlist} onChange={v => set({ showWishlist: v })} />
 
       <SectionDivider label="Badges de Desconto" />
       <SelectField label="Posição do badge" value={c.badgePosition} onChange={v => set({ badgePosition: v })} options={[
