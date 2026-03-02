@@ -133,7 +133,7 @@ const ProductsPage = () => {
 
       case 'compact-grid':
         return (
-          <div className={cn('grid gap-1', gridCols[cat.columnsDesktop] || gridCols[4])}>
+          <div className={cn('grid gap-0', gridCols[cat.columnsDesktop] || gridCols[4])}>
             {filtered.map(product => (
               <ProductCard key={product.id} product={product} />
             ))}
