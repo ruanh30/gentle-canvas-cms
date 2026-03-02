@@ -144,11 +144,13 @@ function BannerBelow() {
 
 const headerCartIconMap: Record<string, LucideIcon> = { ShoppingBag, ShoppingCart, Plus, PackagePlus, Heart, Store };
 
-function NavItem({ item, className, style, openNewTab }: {
+function NavItem({ item, className, style, openNewTab, elevated, padded }: {
   item: ThemeMenuItem;
   className?: string;
   style?: React.CSSProperties;
   openNewTab?: boolean;
+  elevated?: boolean;
+  padded?: boolean;
 }) {
   const [open, setOpen] = useState(false);
   const timeoutRef = useRef<ReturnType<typeof setTimeout>>();
@@ -162,11 +164,15 @@ function NavItem({ item, className, style, openNewTab }: {
     timeoutRef.current = setTimeout(() => setOpen(false), 200);
   };
 
+  const paddingCls = padded
+    ? 'px-3 py-2 rounded-md hover:bg-accent/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1'
+    : '';
+
   if (!hasChildren) {
     return (
       <Link
         to={item.link || '#'}
-        className={cn(className, 'px-3 py-2 rounded-md hover:bg-accent/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1')}
+        className={cn(className, paddingCls)}
         style={style}
         {...(openNewTab ? { target: '_blank', rel: 'noopener' } : {})}
       >
@@ -179,7 +185,7 @@ function NavItem({ item, className, style, openNewTab }: {
     <div className="relative" onMouseEnter={handleEnter} onMouseLeave={handleLeave}>
       <Link
         to={item.link || '#'}
-        className={cn(className, 'inline-flex items-center gap-1.5 px-3 py-2 rounded-md hover:bg-accent/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1')}
+        className={cn(className, 'inline-flex items-center gap-1.5', paddingCls)}
         style={style}
         {...(openNewTab ? { target: '_blank', rel: 'noopener' } : {})}
       >
@@ -187,15 +193,22 @@ function NavItem({ item, className, style, openNewTab }: {
         <ChevronDown className={cn('h-3.5 w-3.5 transition-transform duration-200', open && 'rotate-180')} />
       </Link>
       {open && (
-        <div className="absolute top-full left-1/2 -translate-x-1/2 pt-3 z-50">
-          {/* Arrow indicator */}
-          <div className="absolute top-[6px] left-1/2 -translate-x-1/2 w-3 h-3 rotate-45 bg-popover border-l border-t border-border z-10" />
-          <div className="bg-popover border border-border rounded-lg shadow-xl py-2 min-w-[200px] relative">
+        <div className={cn('absolute top-full z-50', elevated ? 'left-1/2 -translate-x-1/2 pt-3' : 'left-0 pt-2')}>
+          {elevated && (
+            <div className="absolute top-[6px] left-1/2 -translate-x-1/2 w-3 h-3 rotate-45 bg-popover border-l border-t border-border z-10" />
+          )}
+          <div className={cn(
+            'bg-popover border border-border py-2 min-w-[200px] relative',
+            elevated ? 'rounded-lg shadow-xl' : 'rounded-md shadow-md'
+          )}>
             {item.children.map(child => (
               <Link
                 key={child.id}
                 to={child.link || '#'}
-                className="block px-4 py-2.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/70 transition-colors mx-1.5 rounded-md"
+                className={cn(
+                  'block px-4 py-2.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/70 transition-colors',
+                  elevated && 'mx-1.5 rounded-md'
+                )}
                 {...(child.openNewTab ? { target: '_blank', rel: 'noopener' } : {})}
               >
                 {child.label}
@@ -227,7 +240,8 @@ export function StoreHeader() {
   return (
     <header className={cn(
       'z-50 bg-background/95 backdrop-blur-md supports-[backdrop-filter]:bg-background/80',
-      'border-b border-border/60 shadow-[0_1px_3px_0_hsl(var(--foreground)/0.04),0_1px_2px_-1px_hsl(var(--foreground)/0.06)]',
+      (h.headerSurface ?? true) && 'border-b border-border/60 shadow-[0_1px_3px_0_hsl(var(--foreground)/0.04),0_1px_2px_-1px_hsl(var(--foreground)/0.06)]',
+      !(h.headerSurface ?? true) && h.borderBottom && 'border-b',
       h.sticky && 'sticky top-0'
     )}>
       {!isMinimal && <AnnouncementBar />}
@@ -293,6 +307,8 @@ export function StoreHeader() {
                 <NavItem
                   key={mi.id}
                   item={mi}
+                  elevated={h.dropdownElevated ?? true}
+                  padded={h.menuItemPadding ?? true}
                   className={cn(
                     'font-medium text-muted-foreground hover:text-foreground transition-all duration-150 tracking-wider',
                     h.menuDesktopModel === 'model3' && 'font-bold tracking-widest',
@@ -305,12 +321,15 @@ export function StoreHeader() {
                   }}
                   openNewTab={mi.openNewTab}
                 />
-              )) : mockCategories.slice(0, 5).map(cat => (
+              )) : mockCategories.slice(0, 5).map(cat => {
+                const padded = h.menuItemPadding ?? true;
+                return (
                 <Link
                   key={cat.id}
                   to={`/products?category=${cat.slug}`}
                   className={cn(
-                    'font-medium text-muted-foreground hover:text-foreground transition-all duration-150 tracking-wider px-3 py-2 rounded-md hover:bg-accent/80',
+                    'font-medium text-muted-foreground hover:text-foreground transition-all duration-150 tracking-wider',
+                    padded && 'px-3 py-2 rounded-md hover:bg-accent/80',
                     h.menuDesktopModel === 'model3' && 'font-bold tracking-widest',
                     h.menuDesktopModel === 'model4' && 'border-b-2 border-transparent hover:border-foreground pb-0.5',
                   )}
@@ -322,7 +341,8 @@ export function StoreHeader() {
                 >
                   {cat.name}
                 </Link>
-              ))}
+                );
+              })}
             </nav>
           )}
 
@@ -365,6 +385,8 @@ export function StoreHeader() {
               <NavItem
                 key={mi.id}
                 item={mi}
+                elevated={h.dropdownElevated ?? true}
+                padded={h.menuItemPadding ?? true}
                 className="font-medium text-muted-foreground hover:text-foreground transition-all duration-150 tracking-wider"
                 style={{
                   fontSize: h.menuFontSize,
@@ -372,11 +394,16 @@ export function StoreHeader() {
                 }}
                 openNewTab={mi.openNewTab}
               />
-            )) : mockCategories.slice(0, 5).map(cat => (
+            )) : mockCategories.slice(0, 5).map(cat => {
+              const padded = h.menuItemPadding ?? true;
+              return (
               <Link
                 key={cat.id}
                 to={`/products?category=${cat.slug}`}
-                className="font-medium text-muted-foreground hover:text-foreground transition-all duration-150 tracking-wider px-3 py-2 rounded-md hover:bg-accent/80"
+                className={cn(
+                  'font-medium text-muted-foreground hover:text-foreground transition-all duration-150 tracking-wider',
+                  padded && 'px-3 py-2 rounded-md hover:bg-accent/80'
+                )}
                 style={{
                   fontSize: h.menuFontSize,
                   textTransform: h.menuUppercase ? 'uppercase' : 'none',
@@ -384,7 +411,8 @@ export function StoreHeader() {
               >
                 {cat.name}
               </Link>
-            ))}
+              );
+            })}
           </nav>
         )}
 
