@@ -499,33 +499,64 @@ export const defaultThemeConfig: ThemeConfig = {
 
   quickView: {
     enabled: true,
+    // Tab 1 — Modelo
+    model: 'drawer-right',
+    drawerWidth: 480,
+    modalWidth: 860,
+    overlayOpacity: 0.5,
+    overlayBlur: 'off',
+    // Tab 2 — Estrutura
+    showRating: true,
+    showShare: false,
+    showSKU: false,
+    showInstallments: false,
+    showViewProduct: true,
+    showShipping: true,
+    showDescription: true,
+    showSizeGuide: false,
+    // Tab 3 — Galeria
+    galleryThumbsLayout: 'left',
+    galleryMaxHeight: '55vh',
+    galleryShowArrows: true,
+    galleryZoom: 'off',
+    galleryFit: 'cover',
+    // Tab 4 — Variações
+    variationStyle: 'chips',
+    showStock: false,
+    allowMultiVariant: true,
+    stepperStyle: 'compact',
+    // Tab 5 — CTAs
+    ctaText: 'Adicionar ao Carrinho',
+    ctaSecondaryText: 'Comprar Agora',
+    showSecondaryCta: true,
+    ctaSize: 'normal',
+    // Tab 6 — Aparência
+    containerRadius: 'md',
+    containerShadow: 'md',
+    containerBorder: false,
+    containerPadding: 20,
+    sectionSpacing: 16,
+    // Tab 7 — Animação
+    animationType: 'slide',
+    animationDuration: 200,
+    // Legacy compat
     style: 'modal',
     showGalleryThumbs: true,
     showVariations: true,
-    variationStyle: 'list',
     showQuantityPerVariation: true,
-    showDescription: true,
     descriptionStyle: 'accordion',
-    showShippingEstimate: true,
-    showSocialActions: true,
-    socialActions: {
-      
-      chat: true,
-      share: true,
-      whatsapp: true,
-    },
-    showRelatedProducts: true,
+    
+    showSocialActions: false,
+    socialActions: { chat: false, share: false, whatsapp: false },
+    showRelatedProducts: false,
     relatedTitle: 'Produtos Relacionados',
     relatedCount: 6,
-    showTags: true,
-    showSalesCount: true,
-    showSKU: true,
-    showRating: true,
-    ctaText: 'Adicionar ao Carrinho',
+    showTags: false,
+    showSalesCount: false,
     ctaStyle: 'filled',
-    showBuyNow: false,
+    showBuyNow: true,
     buyNowText: 'Comprar Agora',
-    showDownloadImage: true,
+    showDownloadImage: false,
   },
 
   customCode: {

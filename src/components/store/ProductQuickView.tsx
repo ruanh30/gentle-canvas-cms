@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Product } from '@/types';
 import { formatCurrency } from '@/lib/format';
@@ -6,72 +6,402 @@ import { useCart } from '@/contexts/CartContext';
 import { useTheme } from '@/contexts/ThemeContext';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Sheet, SheetContent } from '@/components/ui/sheet';
+import { Drawer, DrawerContent } from '@/components/ui/drawer';
 import { cn } from '@/lib/utils';
 import { mockProducts } from '@/data/mock';
 import {
-  Heart, Share2, Minus, Plus, Star, Truck,
-  ShoppingCart, ChevronLeft, ChevronRight, Tag, X,
-  ChevronDown, ChevronUp, FileText, MapPin, Package,
+  X, Minus, Plus, Star, Truck, ShoppingCart,
+  ChevronLeft, ChevronRight, ChevronDown,
+  MapPin, Package, ExternalLink, Share2, Ruler,
 } from 'lucide-react';
 
-/* ------------------------------------------------------------------ */
-/*  Sub-components                                                     */
-/* ------------------------------------------------------------------ */
-
-/** Icon button – 40×40, border, hover bg, focus ring (Duetto pattern) */
-function IconBtn({ children, className, ...props }: React.ButtonHTMLAttributes<HTMLButtonElement>) {
-  return (
-    <button
-      {...props}
-      className={cn(
-        'w-10 h-10 grid place-items-center rounded-full border border-border/60',
-        'bg-background transition-all duration-150',
-        'hover:bg-muted hover:border-border',
-        'focus:outline-none focus:ring-2 focus:ring-ring/25',
-        className,
-      )}
-    >
-      {children}
-    </button>
-  );
-}
-
-/** Quantity stepper – bordered container, -/+, centered value */
-function Stepper({ value, onMinus, onPlus }: { value: number; onMinus: () => void; onPlus: () => void }) {
-  return (
-    <div className="flex items-center border border-border/60 rounded-[10px] overflow-hidden h-10 bg-background">
-      <button
-        onClick={onMinus}
-        className="w-10 h-10 grid place-items-center hover:bg-muted transition-colors"
-      >
-        <Minus className="h-3.5 w-3.5 text-foreground" />
-      </button>
-      <span className="w-11 text-center text-sm font-semibold text-foreground select-none tabular-nums">
-        {value}
-      </span>
-      <button
-        onClick={onPlus}
-        className="w-10 h-10 grid place-items-center hover:bg-muted transition-colors"
-      >
-        <Plus className="h-3.5 w-3.5 text-foreground" />
-      </button>
-    </div>
-  );
-}
-
-/* ------------------------------------------------------------------ */
-/*  Color helper                                                       */
-/* ------------------------------------------------------------------ */
+/* ================================================================== */
+/*  Tokens helper                                                      */
+/* ================================================================== */
+const radiusMap = { sm: 'rounded-lg', md: 'rounded-xl', lg: 'rounded-2xl' } as const;
+const shadowMap = { sm: 'shadow-md', md: 'shadow-xl' } as const;
 const colorHex: Record<string, string> = {
   Branca: '#ffffff', Preta: '#111827', Azul: '#3b82f6',
   Cinza: '#9ca3af', Verde: '#22c55e', Vermelha: '#ef4444',
   Rosa: '#ec4899', Amarela: '#eab308', Laranja: '#f97316',
 };
 
-/* ------------------------------------------------------------------ */
-/*  Main component                                                     */
-/* ------------------------------------------------------------------ */
+/* ================================================================== */
+/*  QuickViewHeader — sticky top                                       */
+/* ================================================================== */
+function QuickViewHeader({ product, onClose, qv }: {
+  product: Product; onClose: () => void; qv: any;
+}) {
+  const discount = product.compareAtPrice
+    ? Math.round((1 - product.price / product.compareAtPrice) * 100) : 0;
 
+  return (
+    <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm border-b border-border/40 px-5 py-4 flex items-start justify-between gap-3">
+      <div className="min-w-0 flex-1">
+        <h2 className="text-lg font-semibold leading-snug text-foreground line-clamp-2">
+          {product.name}
+        </h2>
+        <div className="flex items-baseline gap-2.5 mt-1.5">
+          <span className="text-xl font-bold text-foreground tracking-tight">
+            {formatCurrency(product.price)}
+          </span>
+          {product.compareAtPrice && (
+            <>
+              <span className="text-sm text-muted-foreground line-through">
+                {formatCurrency(product.compareAtPrice)}
+              </span>
+              <span className="text-[11px] font-bold bg-foreground/10 text-foreground px-1.5 py-0.5 rounded-full">
+                -{discount}%
+              </span>
+            </>
+          )}
+        </div>
+        {qv?.showRating && product.rating > 0 && (
+          <div className="flex items-center gap-1 mt-1">
+            <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
+            <span className="text-xs font-medium text-foreground">{product.rating}</span>
+            <span className="text-xs text-muted-foreground">({product.reviewCount})</span>
+          </div>
+        )}
+      </div>
+      <button
+        onClick={onClose}
+        className="w-9 h-9 grid place-items-center rounded-full border border-border/50 bg-background hover:bg-muted transition-colors shrink-0"
+      >
+        <X className="h-4 w-4" />
+      </button>
+    </div>
+  );
+}
+
+/* ================================================================== */
+/*  QuickViewGallery                                                   */
+/* ================================================================== */
+function QuickViewGallery({ product, qv }: { product: Product; qv: any }) {
+  const [idx, setIdx] = useState(0);
+  const thumbLayout = qv?.galleryThumbsLayout || 'left';
+  const maxH = qv?.galleryMaxHeight || '55vh';
+  const fit = qv?.galleryFit || 'cover';
+  const showArrows = qv?.galleryShowArrows !== false;
+
+  return (
+    <div className={cn(
+      'relative flex gap-2.5',
+      thumbLayout === 'left' ? 'flex-row' : 'flex-col',
+    )} style={{ maxHeight: maxH }}>
+      {/* Thumbnails */}
+      {thumbLayout !== 'hidden' && product.images.length > 1 && (
+        <div className={cn(
+          'flex gap-1.5 shrink-0',
+          thumbLayout === 'left' ? 'flex-col w-14 overflow-y-auto qv-scrollbar' : 'flex-row overflow-x-auto order-2 qv-scrollbar-h',
+        )}>
+          {product.images.map((img, i) => (
+            <button
+              key={i}
+              onClick={() => setIdx(i)}
+              className={cn(
+                'shrink-0 rounded-lg overflow-hidden border-2 transition-all',
+                thumbLayout === 'left' ? 'w-14 h-14' : 'w-12 h-12',
+                i === idx ? 'border-foreground shadow-sm' : 'border-border/30 hover:border-border/60',
+              )}
+            >
+              <img src={img} alt="" className="w-full h-full object-cover" />
+            </button>
+          ))}
+        </div>
+      )}
+
+      {/* Main image */}
+      <div className="flex-1 relative rounded-xl overflow-hidden bg-secondary border border-border/20">
+        <img
+          src={product.images[idx]}
+          alt={product.name}
+          className={cn('w-full h-full', fit === 'contain' ? 'object-contain' : 'object-cover')}
+        />
+        {showArrows && product.images.length > 1 && (
+          <>
+            <button
+              onClick={() => setIdx(i => i > 0 ? i - 1 : product.images.length - 1)}
+              className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 grid place-items-center rounded-full bg-background/80 backdrop-blur-sm shadow-sm border border-border/30 hover:bg-background transition-colors"
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </button>
+            <button
+              onClick={() => setIdx(i => i < product.images.length - 1 ? i + 1 : 0)}
+              className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 grid place-items-center rounded-full bg-background/80 backdrop-blur-sm shadow-sm border border-border/30 hover:bg-background transition-colors"
+            >
+              <ChevronRight className="h-4 w-4" />
+            </button>
+          </>
+        )}
+        {/* Dots */}
+        <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1">
+          {product.images.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => setIdx(i)}
+              className={cn(
+                'h-1.5 rounded-full transition-all',
+                i === idx ? 'w-5 bg-foreground' : 'w-2 bg-foreground/25',
+              )}
+            />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ================================================================== */
+/*  QuickViewVariants                                                  */
+/* ================================================================== */
+function QuickViewVariants({ product, qv, quantities, onUpdateQty }: {
+  product: Product; qv: any;
+  quantities: Record<string, number>;
+  onUpdateQty: (id: string, delta: number) => void;
+}) {
+  const variants = product.variants || [];
+  if (variants.length === 0) return null;
+
+  const style = qv?.variationStyle || 'chips';
+  const attrKeys = [...new Set(variants.flatMap(v => Object.keys(v.attributes)))];
+
+  if (style === 'chips') {
+    return (
+      <div className="space-y-4">
+        {attrKeys.map(key => {
+          const values = [...new Set(variants.map(v => v.attributes[key]))];
+          return (
+            <div key={key}>
+              <p className="text-xs font-semibold text-foreground uppercase tracking-wider mb-2">{key}</p>
+              <div className="flex flex-wrap gap-2">
+                {values.map(val => {
+                  const isColor = key.toLowerCase() === 'cor';
+                  return (
+                    <button
+                      key={val}
+                      className={cn(
+                        'px-3 py-1.5 text-sm border rounded-lg transition-colors',
+                        'border-border/60 hover:border-foreground text-foreground',
+                      )}
+                    >
+                      {isColor && colorHex[val] && (
+                        <span
+                          className="inline-block w-3 h-3 rounded-full mr-1.5 border border-border/40 align-middle"
+                          style={{ backgroundColor: colorHex[val] }}
+                        />
+                      )}
+                      {val}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          );
+        })}
+        {/* Single qty stepper */}
+        <div>
+          <p className="text-xs font-semibold text-foreground uppercase tracking-wider mb-2">Quantidade</p>
+          <div className="flex items-center border border-border/60 rounded-lg w-fit">
+            <button
+              onClick={() => onUpdateQty('_single', -1)}
+              className="w-9 h-9 grid place-items-center hover:bg-muted transition-colors"
+            >
+              <Minus className="h-3.5 w-3.5" />
+            </button>
+            <span className="w-10 text-center text-sm font-semibold tabular-nums">
+              {quantities['_single'] || 1}
+            </span>
+            <button
+              onClick={() => onUpdateQty('_single', 1)}
+              className="w-9 h-9 grid place-items-center hover:bg-muted transition-colors"
+            >
+              <Plus className="h-3.5 w-3.5" />
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (style === 'list-compact') {
+    return (
+      <div>
+        <p className="text-xs font-semibold text-foreground uppercase tracking-wider mb-2">Variações</p>
+        <div className="divide-y divide-border/30">
+          {variants.map(v => (
+            <div key={v.id} className="flex items-center justify-between py-2.5 gap-3">
+              <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                {v.attributes.cor && colorHex[v.attributes.cor] && (
+                  <span
+                    className="w-3.5 h-3.5 rounded shrink-0 border border-border/40"
+                    style={{ backgroundColor: colorHex[v.attributes.cor] }}
+                  />
+                )}
+                <div className="min-w-0">
+                  <p className="text-sm font-medium text-foreground truncate">{v.name}</p>
+                  {qv?.showSKU && (
+                    <p className="text-[10px] text-muted-foreground font-mono">#{v.sku}</p>
+                  )}
+                </div>
+              </div>
+              <div className="flex items-center border border-border/60 rounded-lg">
+                <button
+                  onClick={() => onUpdateQty(v.id, -1)}
+                  className="w-8 h-8 grid place-items-center hover:bg-muted transition-colors"
+                >
+                  <Minus className="h-3 w-3" />
+                </button>
+                <span className="w-8 text-center text-xs font-semibold tabular-nums">
+                  {quantities[v.id] || 0}
+                </span>
+                <button
+                  onClick={() => onUpdateQty(v.id, 1)}
+                  className="w-8 h-8 grid place-items-center hover:bg-muted transition-colors"
+                >
+                  <Plus className="h-3 w-3" />
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  // dropdown
+  return (
+    <div className="space-y-3">
+      {attrKeys.map(key => {
+        const values = [...new Set(variants.map(v => v.attributes[key]))];
+        return (
+          <div key={key}>
+            <p className="text-xs font-semibold text-foreground uppercase tracking-wider mb-1.5">{key}</p>
+            <select className="w-full h-10 rounded-lg border border-border/60 bg-background px-3 text-sm text-foreground">
+              {values.map(val => (
+                <option key={val} value={val}>{val}</option>
+              ))}
+            </select>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+/* ================================================================== */
+/*  Accordion section helper                                           */
+/* ================================================================== */
+function AccordionSection({ icon: Icon, title, children, defaultOpen = false }: {
+  icon: React.ElementType; title: string; children: React.ReactNode; defaultOpen?: boolean;
+}) {
+  const [open, setOpen] = useState(defaultOpen);
+  return (
+    <div className="border-t border-border/30">
+      <button
+        onClick={() => setOpen(!open)}
+        className="w-full flex items-center justify-between py-3 group"
+      >
+        <span className="inline-flex items-center gap-2 text-sm font-semibold text-foreground">
+          <Icon className="h-4 w-4 text-muted-foreground" /> {title}
+        </span>
+        <ChevronDown className={cn(
+          'h-4 w-4 text-muted-foreground transition-transform duration-200',
+          open && 'rotate-180',
+        )} />
+      </button>
+      {open && <div className="pb-4">{children}</div>}
+    </div>
+  );
+}
+
+/* ================================================================== */
+/*  QuickViewShipping                                                  */
+/* ================================================================== */
+function QuickViewShipping() {
+  const [cep, setCep] = useState('');
+  return (
+    <AccordionSection icon={Truck} title="Calcular Frete">
+      <div className="flex items-center h-10 rounded-lg border border-border/60 overflow-hidden bg-background focus-within:ring-2 focus-within:ring-ring/25 transition-shadow">
+        <div className="pl-3 pr-1 text-muted-foreground">
+          <MapPin className="h-4 w-4" />
+        </div>
+        <input
+          type="text"
+          placeholder="Digite seu CEP"
+          value={cep}
+          onChange={e => setCep(e.target.value)}
+          maxLength={9}
+          className="flex-1 h-full bg-transparent text-sm text-foreground placeholder:text-muted-foreground outline-none px-2"
+        />
+        <button className="h-full px-4 text-xs font-semibold bg-foreground text-background hover:opacity-90 transition-opacity shrink-0">
+          Calcular
+        </button>
+      </div>
+    </AccordionSection>
+  );
+}
+
+/* ================================================================== */
+/*  QuickViewDescription                                               */
+/* ================================================================== */
+function QuickViewDescription({ product }: { product: Product }) {
+  if (!product.description) return null;
+  return (
+    <AccordionSection icon={Package} title="Descrição do Produto">
+      <p className="text-sm text-muted-foreground leading-relaxed">
+        {product.description}
+      </p>
+    </AccordionSection>
+  );
+}
+
+/* ================================================================== */
+/*  QuickViewFooter — sticky bottom                                    */
+/* ================================================================== */
+function QuickViewFooter({ onAddToCart, onBuyNow, qv, theme, installmentPrice }: {
+  onAddToCart: () => void; onBuyNow: () => void; qv: any; theme: any; installmentPrice?: string;
+}) {
+  const ctaSize = qv?.ctaSize === 'large' ? 'h-12' : 'h-11';
+  return (
+    <div className="sticky bottom-0 z-10 bg-background/95 backdrop-blur-sm border-t border-border/40 px-5 py-4 space-y-2">
+      <button
+        onClick={onAddToCart}
+        className={cn(
+          'w-full rounded-xl font-semibold text-sm inline-flex items-center justify-center gap-2',
+          'transition-all duration-150 hover:opacity-90 active:scale-[0.99]',
+          'focus:outline-none focus:ring-2 focus:ring-ring/25',
+          ctaSize,
+        )}
+        style={{ backgroundColor: theme.colors.primary, color: theme.colors.primaryForeground }}
+      >
+        <ShoppingCart className="h-4 w-4" />
+        {qv?.ctaText || 'Adicionar ao Carrinho'}
+      </button>
+      {qv?.showSecondaryCta !== false && (
+        <button
+          onClick={onBuyNow}
+          className={cn(
+            'w-full rounded-xl font-medium text-sm inline-flex items-center justify-center gap-2',
+            'border border-border/60 text-foreground hover:bg-muted transition-colors',
+            qv?.ctaSize === 'large' ? 'h-11' : 'h-10',
+          )}
+        >
+          {qv?.ctaSecondaryText || 'Comprar Agora'}
+        </button>
+      )}
+      {qv?.showInstallments && installmentPrice && (
+        <p className="text-center text-xs text-muted-foreground">
+          ou até 12x de {installmentPrice}
+        </p>
+      )}
+    </div>
+  );
+}
+
+/* ================================================================== */
+/*  Main ProductQuickView                                              */
+/* ================================================================== */
 interface QuickViewProps {
   product: Product;
   open: boolean;
@@ -84,34 +414,34 @@ export function ProductQuickView({ product, open, onClose }: QuickViewProps) {
   const { theme } = useTheme();
   const qv = theme.quickView;
 
-  const [activeImageIndex, setActiveImageIndex] = useState(0);
-  const [variantQuantities, setVariantQuantities] = useState<Record<string, number>>({});
-  const [showDescription, setShowDescription] = useState(true);
-  const [cep, setCep] = useState('');
+  const [quantities, setQuantities] = useState<Record<string, number>>({ _single: 1 });
 
-  const discount = product.compareAtPrice
-    ? Math.round((1 - product.price / product.compareAtPrice) * 100)
-    : 0;
-
-  const variants = product.variants || [];
-
-  const updateQty = (variantId: string, delta: number) => {
-    setVariantQuantities(prev => ({
+  const updateQty = useCallback((id: string, delta: number) => {
+    setQuantities(prev => ({
       ...prev,
-      [variantId]: Math.max(0, (prev[variantId] || 0) + delta),
+      [id]: Math.max(id === '_single' ? 1 : 0, (prev[id] || (id === '_single' ? 1 : 0)) + delta),
     }));
-  };
+  }, []);
 
-  const totalQty = Object.values(variantQuantities).reduce((a, b) => a + b, 0);
+  const totalQty = Object.entries(quantities).reduce((sum, [k, v]) => {
+    if (k === '_single') return sum + v;
+    return sum + v;
+  }, 0);
 
   const handleAddToCart = () => {
-    Object.entries(variantQuantities).forEach(([variantId, qty]) => {
-      if (qty > 0) {
-        const variant = variants.find(v => v.id === variantId);
+    const style = qv?.variationStyle || 'chips';
+    if (style === 'list-compact') {
+      Object.entries(quantities).forEach(([vid, qty]) => {
+        if (vid === '_single' || qty <= 0) return;
+        const variant = product.variants.find(v => v.id === vid);
         for (let i = 0; i < qty; i++) addItem(product, variant);
-      }
-    });
-    if (totalQty === 0) addItem(product);
+      });
+      const hasAny = Object.entries(quantities).some(([k, v]) => k !== '_single' && v > 0);
+      if (!hasAny) addItem(product);
+    } else {
+      const singleQty = quantities._single || 1;
+      for (let i = 0; i < singleQty; i++) addItem(product);
+    }
     onClose();
   };
 
@@ -120,365 +450,194 @@ export function ProductQuickView({ product, open, onClose }: QuickViewProps) {
     navigate('/cart');
   };
 
-  const relatedProducts = useMemo(() => {
-    return mockProducts
-      .filter(p => p.id !== product.id && p.categoryId === product.categoryId)
-      .slice(0, qv?.relatedCount || 6);
-  }, [product.id, product.categoryId, qv?.relatedCount]);
+  const installmentPrice = product.price > 100 ? formatCurrency(product.price / 12) : undefined;
 
-  /* ---------------------------------------------------------------- */
-  /*  Gallery (left side)                                              */
-  /* ---------------------------------------------------------------- */
-  const gallery = (
-    <div className="relative flex gap-3 p-5 md:p-6 h-full">
-      {/* Thumbnails */}
-      {qv?.showGalleryThumbs !== false && product.images.length > 1 && (
-        <div className="hidden md:flex flex-col gap-2 w-14 shrink-0">
-          {product.images.map((img, i) => (
-            <button
-              key={i}
-              onClick={() => setActiveImageIndex(i)}
-              className={cn(
-                'w-14 h-14 rounded-xl overflow-hidden border-2 transition-all',
-                i === activeImageIndex
-                  ? 'border-foreground shadow-sm'
-                  : 'border-border/30 hover:border-border/60',
-              )}
-            >
-              <img src={img} alt="" className="w-full h-full object-cover" />
-            </button>
-          ))}
-        </div>
-      )}
-
-      {/* Main image */}
-      <div className="flex-1 relative">
-        <div className="w-full h-full rounded-xl overflow-hidden bg-secondary">
-          <img
-            src={product.images[activeImageIndex]}
-            alt={product.name}
-            className="w-full h-full object-cover"
-          />
-        </div>
-
-        {/* Nav arrows */}
-        {product.images.length > 1 && (
-          <>
-            <IconBtn
-              onClick={() => setActiveImageIndex(i => i > 0 ? i - 1 : product.images.length - 1)}
-              className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 shadow-md bg-background/90 backdrop-blur-sm"
-            >
-              <ChevronLeft className="h-4 w-4" />
-            </IconBtn>
-            <IconBtn
-              onClick={() => setActiveImageIndex(i => i < product.images.length - 1 ? i + 1 : 0)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 shadow-md bg-background/90 backdrop-blur-sm"
-            >
-              <ChevronRight className="h-4 w-4" />
-            </IconBtn>
-          </>
-        )}
-
-        {/* Progress dots */}
-        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5">
-          {product.images.map((_, i) => (
-            <button
-              key={i}
-              onClick={() => setActiveImageIndex(i)}
-              className={cn(
-                'h-1.5 rounded-full transition-all',
-                i === activeImageIndex ? 'w-6 bg-foreground' : 'w-2.5 bg-foreground/25',
-              )}
-            />
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-
-  /* ---------------------------------------------------------------- */
-  /*  Info panel (right side – scrollable)                             */
-  /* ---------------------------------------------------------------- */
-  const infoPanel = (
-    <div className="overflow-y-auto md:border-l border-border/40 qv-scrollbar">
-      <div className="p-5 md:p-6 space-y-5">
-
-        {/* ── Close (mobile) ── */}
-        <div className="flex justify-end md:hidden">
-          <IconBtn onClick={onClose} className="w-9 h-9">
-            <X className="h-4 w-4" />
-          </IconBtn>
-        </div>
-
-        {/* ── 1. Title + meta ── */}
-        <div>
-          <h2 className="text-xl font-semibold leading-snug tracking-tight text-foreground">
-            {product.name}
-          </h2>
-          <div className="flex items-center gap-3 mt-2 flex-wrap">
-            {qv?.showTags && product.tags?.[0] && (
-              <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
-                <Tag className="h-3 w-3" /> {product.tags[0]}
-              </span>
-            )}
-            {qv?.showSalesCount && product.reviewCount > 0 && (
-              <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
-                <ShoppingCart className="h-3 w-3" /> {product.reviewCount} vendas
-              </span>
-            )}
-            {qv?.showRating && product.rating > 0 && (
-              <span className="inline-flex items-center gap-1 text-xs font-medium text-foreground">
-                <Star className="h-3 w-3 fill-amber-400 text-amber-400" /> {product.rating}
-              </span>
-            )}
-          </div>
-        </div>
-
-        {/* ── 2. Price + discount ── */}
-        <div className="flex items-baseline gap-3">
-          <span className="text-2xl font-bold tracking-tight text-foreground">
-            {formatCurrency(product.price)}
-          </span>
-          {product.compareAtPrice && (
-            <>
-              <span className="text-sm text-muted-foreground line-through">
-                {formatCurrency(product.compareAtPrice)}
-              </span>
-              <span className="text-xs font-bold bg-foreground/10 text-foreground px-2 py-0.5 rounded-full">
-                -{discount}%
-              </span>
-            </>
-          )}
-        </div>
-
-        {/* ── Divider ── */}
-        <div className="h-px bg-border/50" />
-
-        {/* ── 3. Variations ── */}
-        {qv?.showVariations !== false && variants.length > 0 && (
-          <div>
-            <p className="text-sm font-semibold text-foreground mb-3">Escolha as Variações</p>
-            <div>
-              {variants.map((v, idx) => (
-                <div
-                  key={v.id}
-                  className={cn(
-                    'flex items-center justify-between gap-3 py-3',
-                    idx < variants.length - 1 && 'border-b border-border/30',
-                  )}
-                >
-                  <div className="flex items-center gap-3 min-w-0 flex-1">
-                    {/* Color swatch */}
-                    {v.attributes.cor && (
-                      <div
-                        className="w-3.5 h-3.5 rounded shrink-0 border border-border/60"
-                        style={{ backgroundColor: colorHex[v.attributes.cor] || '#ddd' }}
-                      />
-                    )}
-                    <div className="min-w-0">
-                      <p className="text-sm font-semibold text-foreground truncate">{v.name}</p>
-                      {qv?.showSKU && (
-                        <p className="text-[11px] text-muted-foreground font-mono mt-0.5"># {v.sku}</p>
-                      )}
-                    </div>
-                  </div>
-                  {qv?.showQuantityPerVariation !== false && (
-                    <Stepper
-                      value={variantQuantities[v.id] || 0}
-                      onMinus={() => updateQty(v.id, -1)}
-                      onPlus={() => updateQty(v.id, 1)}
-                    />
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* ── Divider ── */}
-        <div className="h-px bg-border/50" />
-
-        {/* ── 4. Shipping ── */}
-        {qv?.showShippingEstimate !== false && (
-          <div>
-            <p className="text-sm font-semibold text-foreground mb-3 inline-flex items-center gap-2">
-              <Truck className="h-4 w-4" /> Calcular Frete
-            </p>
-            <div className="flex items-center h-11 rounded-xl border border-border/60 overflow-hidden bg-background focus-within:ring-2 focus-within:ring-ring/25 transition-shadow">
-              <div className="pl-3 pr-1 text-muted-foreground">
-                <MapPin className="h-4 w-4" />
-              </div>
-              <input
-                type="text"
-                placeholder="Digite seu CEP"
-                value={cep}
-                onChange={e => setCep(e.target.value)}
-                maxLength={9}
-                className="flex-1 h-full bg-transparent text-sm text-foreground placeholder:text-muted-foreground outline-none px-2"
-              />
-              <button
-                className="h-full px-5 text-sm font-semibold bg-foreground text-background hover:opacity-90 transition-opacity shrink-0"
-              >
-                Calcular
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* ── Divider ── */}
-        <div className="h-px bg-border/50" />
-
-        {/* ── 5. CTA ── */}
-        <div className="space-y-2.5">
-          <button
-            onClick={handleAddToCart}
-            className={cn(
-              'w-full h-12 rounded-xl font-semibold text-sm',
-              'inline-flex items-center justify-center gap-2',
-              'border border-foreground/10 shadow-md',
-              'transition-all duration-150',
-              'hover:-translate-y-0.5 hover:shadow-lg',
-              'active:translate-y-0 active:shadow-none',
-              'focus:outline-none focus:ring-2 focus:ring-ring/25',
-            )}
-            style={qv?.ctaStyle === 'outline'
-              ? { border: `2px solid ${theme.colors.primary}`, color: theme.colors.primary, backgroundColor: 'transparent' }
-              : { backgroundColor: theme.colors.primary, color: theme.colors.primaryForeground }
-            }
-          >
-            <ShoppingCart className="h-4 w-4" />
-            {qv?.ctaText || 'Adicionar ao Carrinho'}
-          </button>
-          {qv?.showBuyNow && (
-            <button
-              onClick={handleBuyNow}
-              className={cn(
-                'w-full h-12 rounded-xl font-semibold text-sm',
-                'inline-flex items-center justify-center gap-2',
-                'border border-foreground/10 shadow-md',
-                'transition-all duration-150',
-                'hover:-translate-y-0.5 hover:shadow-lg',
-                'active:translate-y-0 active:shadow-none',
-                'focus:outline-none focus:ring-2 focus:ring-ring/25',
-              )}
-              style={{ backgroundColor: theme.colors.buyNow, color: '#fff' }}
-            >
-              {qv?.buyNowText || 'Comprar Agora'}
-            </button>
-          )}
-        </div>
-
-        {/* ── 6. Social actions (icon buttons) ── */}
-        {qv?.showSocialActions !== false && (
-          <div className="flex items-center justify-center gap-3 pt-1">
-            {qv?.socialActions?.share !== false && (
-              <IconBtn aria-label="Compartilhar">
-                <Share2 className="h-[18px] w-[18px] text-muted-foreground" />
-              </IconBtn>
-            )}
-          </div>
-        )}
-
-        {/* ── Divider ── */}
-        <div className="h-px bg-border/50" />
-
-        {/* ── 7. Description (accordion, starts open) ── */}
-        {qv?.showDescription !== false && product.description && (
-          <div>
-            <button
-              onClick={() => setShowDescription(!showDescription)}
-              className="w-full flex items-center justify-between py-1 group"
-            >
-              <span className="inline-flex items-center gap-2 text-sm font-semibold text-foreground">
-                <FileText className="h-4 w-4 text-muted-foreground" /> Descrição do Produto
-              </span>
-              <ChevronDown className={cn(
-                'h-4 w-4 text-muted-foreground transition-transform duration-200',
-                showDescription && 'rotate-180',
-              )} />
-            </button>
-            {showDescription && (
-              <p className="text-sm text-muted-foreground mt-3 leading-relaxed">
-                {product.description}
-              </p>
-            )}
-          </div>
-        )}
-
-        {/* ── Divider ── */}
-        {qv?.showRelatedProducts !== false && relatedProducts.length > 0 && (
-          <div className="h-px bg-border/50" />
-        )}
-
-        {/* ── 8. Related products ── */}
-        {qv?.showRelatedProducts !== false && relatedProducts.length > 0 && (
-          <div>
-            <p className="text-sm font-semibold text-foreground mb-3 inline-flex items-center gap-2">
-              <Package className="h-4 w-4 text-muted-foreground" />
-              {qv?.relatedTitle || 'Produtos Relacionados'}
-            </p>
-            <div className="relative">
-              <div className="flex gap-3 overflow-x-auto pb-2 qv-scrollbar-h">
-                {relatedProducts.map(rp => (
-                  <button
-                    key={rp.id}
-                    onClick={() => { onClose(); navigate(`/product/${rp.slug}`); }}
-                    className="shrink-0 w-28 group/related text-left"
-                  >
-                    <div className="aspect-[3/4] rounded-xl overflow-hidden bg-secondary mb-1.5 border border-border/20">
-                      <img
-                        src={rp.images[0]}
-                        alt={rp.name}
-                        className="w-full h-full object-cover group-hover/related:scale-105 transition-transform duration-300"
-                      />
-                    </div>
-                    <p className="text-[11px] font-medium text-foreground line-clamp-1">{rp.name}</p>
-                    <p className="text-[11px] text-muted-foreground">{formatCurrency(rp.price)}</p>
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-
-  /* ---------------------------------------------------------------- */
-  /*  Content: grid layout (60/40)                                     */
-  /* ---------------------------------------------------------------- */
-  const content = (
-    <div className="grid grid-cols-1 md:grid-cols-[1.2fr_.8fr] h-full">
-      {/* Left – gallery (stable, no scroll) */}
-      <div className="hidden md:flex bg-secondary/30">
-        {gallery}
-      </div>
-      {/* Mobile gallery */}
-      <div className="md:hidden">
-        {gallery}
-      </div>
-      {/* Right – info (scrollable) */}
-      {infoPanel}
-    </div>
-  );
+  const model = qv?.model || 'drawer-right';
+  const padding = qv?.containerPadding || 20;
+  const spacing = qv?.sectionSpacing || 16;
 
   if (!qv?.enabled) return null;
 
-  if (qv?.style === 'drawer' || qv?.style === 'side-panel') {
+  /* ── Body content ── */
+  const body = (
+    <div className="flex-1 overflow-y-auto qv-scrollbar" style={{ padding: `0 ${padding}px` }}>
+      <div style={{ paddingTop: spacing, paddingBottom: spacing }} className="space-y-0">
+        {/* Gallery */}
+        <div style={{ marginBottom: spacing }}>
+          <QuickViewGallery product={product} qv={qv} />
+        </div>
+
+        {/* SKU */}
+        {qv?.showSKU && (
+          <p className="text-[10px] text-muted-foreground font-mono mb-2">SKU: {product.sku}</p>
+        )}
+
+        {/* Variants */}
+        {product.variants.length > 0 && (
+          <div style={{ marginBottom: spacing }}>
+            <QuickViewVariants product={product} qv={qv} quantities={quantities} onUpdateQty={updateQty} />
+          </div>
+        )}
+
+        {/* Accordions */}
+        {qv?.showShipping !== false && <QuickViewShipping />}
+        {qv?.showDescription !== false && <QuickViewDescription product={product} />}
+        {qv?.showSizeGuide && (
+          <AccordionSection icon={Ruler} title="Tabela de Medidas">
+            <p className="text-sm text-muted-foreground">Consulte a tabela de medidas para escolher o tamanho ideal.</p>
+          </AccordionSection>
+        )}
+
+        {/* View product link */}
+        {qv?.showViewProduct && (
+          <button
+            onClick={() => { onClose(); navigate(`/product/${product.slug}`); }}
+            className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors py-2"
+          >
+            <ExternalLink className="h-3.5 w-3.5" /> Ver página completa do produto
+          </button>
+        )}
+
+        {/* Share */}
+        {qv?.showShare && (
+          <button className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors py-1">
+            <Share2 className="h-3.5 w-3.5" /> Compartilhar
+          </button>
+        )}
+      </div>
+    </div>
+  );
+
+  /* ── Full layout: header + body + footer ── */
+  const fullContent = (
+    <div className="flex flex-col h-full">
+      <QuickViewHeader product={product} onClose={onClose} qv={qv} />
+      {body}
+      <QuickViewFooter
+        onAddToCart={handleAddToCart}
+        onBuyNow={handleBuyNow}
+        qv={qv}
+        theme={theme}
+        installmentPrice={installmentPrice}
+      />
+    </div>
+  );
+
+  /* ── Modal layout: 2-column (gallery left, info right) ── */
+  const modalContent = (
+    <div className="grid grid-cols-1 md:grid-cols-[1.15fr_0.85fr] h-full">
+      <div className="hidden md:block bg-secondary/20 p-5 overflow-hidden">
+        <QuickViewGallery product={product} qv={qv} />
+      </div>
+      <div className="flex flex-col h-full">
+        <QuickViewHeader product={product} onClose={onClose} qv={qv} />
+        <div className="flex-1 overflow-y-auto qv-scrollbar" style={{ padding: `0 ${padding}px` }}>
+          <div style={{ paddingTop: spacing, paddingBottom: spacing }} className="space-y-0">
+            {/* Mobile gallery */}
+            <div className="md:hidden" style={{ marginBottom: spacing }}>
+              <QuickViewGallery product={product} qv={qv} />
+            </div>
+            {qv?.showSKU && (
+              <p className="text-[10px] text-muted-foreground font-mono mb-2">SKU: {product.sku}</p>
+            )}
+            {product.variants.length > 0 && (
+              <div style={{ marginBottom: spacing }}>
+                <QuickViewVariants product={product} qv={qv} quantities={quantities} onUpdateQty={updateQty} />
+              </div>
+            )}
+            {qv?.showShipping !== false && <QuickViewShipping />}
+            {qv?.showDescription !== false && <QuickViewDescription product={product} />}
+            {qv?.showSizeGuide && (
+              <AccordionSection icon={Ruler} title="Tabela de Medidas">
+                <p className="text-sm text-muted-foreground">Consulte a tabela de medidas.</p>
+              </AccordionSection>
+            )}
+            {qv?.showViewProduct && (
+              <button
+                onClick={() => { onClose(); navigate(`/product/${product.slug}`); }}
+                className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors py-2"
+              >
+                <ExternalLink className="h-3.5 w-3.5" /> Ver página completa
+              </button>
+            )}
+          </div>
+        </div>
+        <QuickViewFooter
+          onAddToCart={handleAddToCart}
+          onBuyNow={handleBuyNow}
+          qv={qv}
+          theme={theme}
+          installmentPrice={installmentPrice}
+        />
+      </div>
+    </div>
+  );
+
+  const containerCn = cn(radiusMap[qv?.containerRadius || 'md']);
+  const shadowCn = shadowMap[qv?.containerShadow || 'md'];
+  const borderCn = qv?.containerBorder ? 'border border-border/40' : '';
+
+  // Animation classes
+  const animType = qv?.animationType || 'slide';
+
+  /* ── Render based on model ── */
+  if (model === 'modal-center') {
     return (
-      <Sheet open={open} onOpenChange={v => !v && onClose()}>
-        <SheetContent side="right" className="w-full sm:max-w-2xl overflow-y-auto p-0">
-          {content}
-        </SheetContent>
-      </Sheet>
+      <Dialog open={open} onOpenChange={v => !v && onClose()}>
+        <DialogContent
+          className={cn(
+            'p-0 overflow-hidden max-w-none',
+            containerCn, shadowCn, borderCn,
+          )}
+          style={{
+            width: `min(${qv?.modalWidth || 860}px, 94vw)`,
+            height: 'min(720px, 90vh)',
+          }}
+        >
+          {modalContent}
+        </DialogContent>
+      </Dialog>
     );
   }
 
+  if (model === 'bottom-sheet') {
+    return (
+      <>
+        {/* Desktop: drawer right */}
+        <div className="hidden md:block">
+          <Sheet open={open} onOpenChange={v => !v && onClose()}>
+            <SheetContent
+              side="right"
+              className={cn('w-full p-0 overflow-hidden', borderCn)}
+              style={{ maxWidth: `${qv?.drawerWidth || 480}px` }}
+            >
+              {fullContent}
+            </SheetContent>
+          </Sheet>
+        </div>
+        {/* Mobile: bottom sheet */}
+        <div className="md:hidden">
+          <Drawer open={open} onOpenChange={v => !v && onClose()}>
+            <DrawerContent className="max-h-[90vh] p-0">
+              {fullContent}
+            </DrawerContent>
+          </Drawer>
+        </div>
+      </>
+    );
+  }
+
+  // drawer-right or drawer-left
+  const side = model === 'drawer-left' ? 'left' : 'right';
   return (
-    <Dialog open={open} onOpenChange={v => !v && onClose()}>
-      <DialogContent className="w-[min(1100px,92vw)] max-w-none h-[min(720px,92vh)] p-0 overflow-hidden rounded-2xl shadow-[0_20px_60px_rgba(2,6,23,0.20)] border-border/40">
-        {content}
-      </DialogContent>
-    </Dialog>
+    <Sheet open={open} onOpenChange={v => !v && onClose()}>
+      <SheetContent
+        side={side as any}
+        className={cn('w-full p-0 overflow-hidden', borderCn)}
+        style={{ maxWidth: `${qv?.drawerWidth || 480}px` }}
+      >
+        {fullContent}
+      </SheetContent>
+    </Sheet>
   );
 }
