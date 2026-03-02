@@ -10,7 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 // Sections config
 import {
   Palette, Type, Layout, PanelBottom, Image, Package,
-  CreditCard, MessageCircle, Globe, Code,
+  CreditCard, MessageCircle, Code,
   Layers, MousePointer, Sparkles, LayoutGrid,
   SlidersHorizontal, ShoppingCart, FileText, Eye,
   TrendingUp
@@ -33,7 +33,7 @@ import { CartPanel } from './panels/CartPanel';
 import { CheckoutPanel } from './panels/CheckoutPanel';
 import { FooterPanel } from './panels/FooterPanel';
 import { WhatsAppPanel } from './panels/WhatsAppPanel';
-import { SEOPanel } from './panels/SEOPanel';
+
 import { CustomCodePanel } from './panels/CustomCodePanel';
 import { PresetsPanel } from './panels/PresetsPanel';
 import { QuickViewPanel } from './panels/QuickViewPanel';
@@ -79,7 +79,7 @@ const sections: EditorSectionItem[] = [
   { id: 'whatsapp', label: 'WhatsApp', icon: MessageCircle, group: 'Conversão & Textos' },
   // Avançado
   
-  { id: 'seo', label: 'SEO', icon: Globe, group: 'Avançado' },
+  
   { id: 'custom-code', label: 'Código Custom', icon: Code, group: 'Avançado' },
 ];
 
@@ -107,7 +107,7 @@ function renderPanel(sectionId: string) {
     
     case 'footer': return <FooterPanel />;
     case 'whatsapp': return <WhatsAppPanel />;
-    case 'seo': return <SEOPanel />;
+    
     case 'custom-code': return <CustomCodePanel />;
     default: return <div className="p-4 text-muted-foreground text-sm">Selecione uma seção</div>;
   }
