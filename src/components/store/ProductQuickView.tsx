@@ -526,8 +526,9 @@ export function ProductQuickView({ product, open, onClose }: QuickViewProps) {
   /* ── Modal layout: 2-column (gallery left, info right) ── */
   const modalContent = (
     <div className="grid grid-cols-1 md:grid-cols-[1.15fr_0.85fr] h-full">
-      <div className="hidden md:block bg-secondary/20 p-5 overflow-hidden">
+      <div className="hidden md:block bg-secondary/20 p-5 overflow-y-auto qv-scrollbar">
         <QuickViewGallery product={product} qv={qv} />
+        {qv?.showDescription !== false && <QuickViewDescription product={product} defaultOpen />}
       </div>
       <div className="flex flex-col h-full">
         <QuickViewHeader product={product} onClose={onClose} qv={qv} />
@@ -546,7 +547,7 @@ export function ProductQuickView({ product, open, onClose }: QuickViewProps) {
               </div>
             )}
             {qv?.showShipping !== false && <QuickViewShipping defaultOpen />}
-            {qv?.showDescription !== false && <QuickViewDescription product={product} defaultOpen />}
+            {qv?.showDescription !== false && <div className="md:hidden"><QuickViewDescription product={product} defaultOpen /></div>}
             {qv?.showSizeGuide && (
               <AccordionSection icon={Ruler} title="Tabela de Medidas">
                 <p className="text-sm text-muted-foreground">Consulte a tabela de medidas.</p>
