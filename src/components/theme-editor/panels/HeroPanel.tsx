@@ -73,11 +73,11 @@ export function HeroPanel() {
             Define a altura do banner e o efeito de transição entre slides.
           </p>
           <OptionPicker label="Altura" value={h.height} onChange={v => set({ height: v })} options={[
-            { value: 'extra-small', label: 'Extra pequeno', description: 'Banner mínimo (~200px)' },
-            { value: 'small', label: 'Pequeno', description: 'Banner compacto (~300px)' },
-            { value: 'medium', label: 'Médio', description: 'Tamanho padrão (~450px)' },
-            { value: 'large', label: 'Grande', description: 'Banner alto (~600px)' },
-            { value: 'fullscreen', label: 'Tela cheia', description: 'Ocupa toda a tela do navegador' },
+            { value: '200', label: '200px', description: 'Extra compacto' },
+            { value: '300', label: '300px', description: 'Compacto' },
+            { value: '400', label: '400px', description: 'Médio' },
+            { value: '500', label: '500px', description: 'Grande' },
+            { value: 'fullscreen', label: 'Tela cheia', description: 'Ocupa toda a tela' },
           ]} />
           <SelectField label="Transição" value={h.transition} onChange={v => set({ transition: v })} options={[
             { value: 'fade', label: 'Fade — transição suave com opacidade' },
