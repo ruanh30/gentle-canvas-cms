@@ -81,7 +81,7 @@ export function ProductCardPanel() {
 
       <SectionDivider label="Informações exibidas" />
       <ToggleRow label="Categoria" hint="Mostra a categoria do produto acima do nome (ex: Jeans, Acessórios)" checked={c.showCategory} onChange={v => set({ showCategory: v })} />
-      <NumberSlider label="Linhas do título" value={c.titleLines} onChange={v => set({ titleLines: v as 1 | 2 | 3 })} min={1} max={3} />
+      
 
       <SectionDivider label="Preço" />
       <OptionPicker label="Tamanho do preço" value={c.priceSize} onChange={v => set({ priceSize: v })} options={[
