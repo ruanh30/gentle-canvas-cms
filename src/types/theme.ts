@@ -153,6 +153,17 @@ export interface ThemeMenuTypography {
   lineHeight: number;           // ratio (1.0-1.6)
 }
 
+export interface ThemeMenuBar {
+  enabled: boolean;
+  backgroundColor: string;
+  textColor: string;
+  height: number;
+  fullWidth: boolean;
+  borderTop: boolean;
+  borderBottom: boolean;
+  shadow: 'none' | 'subtle' | 'medium';
+}
+
 export interface ThemeHeader {
   layout: 'classic' | 'centered' | 'minimal' | 'logo-center-nav-left' | 'hamburger-only' | 'top-bar-split' | 'double-row' | 'sidebar-nav' | 'transparent';
   sticky: boolean;
@@ -210,6 +221,8 @@ export interface ThemeHeader {
   };
   // Menu Typography
   menuTypography: ThemeMenuTypography;
+  // Separated Menu Bar
+  menuBar: ThemeMenuBar;
   announcement: ThemeAnnouncementBar;
   bannerBelow: ThemeBannerBelow;
 }

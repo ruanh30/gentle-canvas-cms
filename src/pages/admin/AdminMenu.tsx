@@ -1183,6 +1183,36 @@ function MenuStyleSection() {
           { value: 'slash', label: '/ Barra' },
         ]} />
       </ControlGroup>
+
+      <ControlGroup title="Barra de Menu Separada" hint="Exibe o menu de navegação em uma barra independente abaixo do cabeçalho, com cor e altura próprias">
+        {(() => {
+          const mb = h.menuBar ?? { enabled: false, backgroundColor: '#1a1a1a', textColor: '#ffffff', height: 48, fullWidth: true, borderTop: false, borderBottom: false, shadow: 'none' };
+          const setMB = (u: Partial<typeof mb>) => updateDraftSection('header', { menuBar: { ...mb, ...u } });
+
+          return (
+            <>
+              <ToggleRow label="Ativar barra separada" hint="O menu sai do cabeçalho e fica em sua própria barra com visual independente" checked={mb.enabled} onChange={v => setMB({ enabled: v })} />
+              {mb.enabled && (
+                <>
+                  <div className="grid grid-cols-2 gap-3">
+                    <ColorField label="Cor de fundo" value={mb.backgroundColor} onChange={v => setMB({ backgroundColor: v })} />
+                    <ColorField label="Cor do texto" value={mb.textColor} onChange={v => setMB({ textColor: v })} />
+                  </div>
+                  <NumSlider label="Altura" value={mb.height} onChange={v => setMB({ height: v })} min={36} max={64} suffix="px" hint="Altura da barra de navegação separada" />
+                  <ToggleRow label="Largura total" hint="Barra ocupa 100% da tela" checked={mb.fullWidth} onChange={v => setMB({ fullWidth: v })} />
+                  <ToggleRow label="Borda superior" hint="Linha fina acima da barra" checked={mb.borderTop} onChange={v => setMB({ borderTop: v })} />
+                  <ToggleRow label="Borda inferior" hint="Linha fina abaixo da barra" checked={mb.borderBottom} onChange={v => setMB({ borderBottom: v })} />
+                  <Pills label="Sombra" value={mb.shadow} onChange={v => setMB({ shadow: v as any })} options={[
+                    { value: 'none', label: 'Nenhuma' },
+                    { value: 'subtle', label: 'Sutil' },
+                    { value: 'medium', label: 'Média' },
+                  ]} />
+                </>
+              )}
+            </>
+          );
+        })()}
+      </ControlGroup>
     </div>
   );
 }

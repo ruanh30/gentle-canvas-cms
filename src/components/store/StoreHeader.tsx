@@ -444,6 +444,8 @@ export function StoreHeader() {
   const isMinimal = h.layout === 'minimal' || h.layout === 'hamburger-only';
   const isCentered = h.layout === 'centered' || h.layout === 'logo-center-nav-left';
   const isDoubleRow = h.layout === 'double-row';
+  const menuBar = h.menuBar ?? { enabled: false, backgroundColor: '#1a1a1a', textColor: '#ffffff', height: 48, fullWidth: true, borderTop: false, borderBottom: false, shadow: 'none' };
+  const isMenuBarSeparated = menuBar.enabled;
 
   // Container settings
   const container = h.container ?? { width: 'container', maxWidth: 1400, paddingX: 16, gap: 16, verticalAlign: 'center' };
@@ -591,7 +593,7 @@ export function StoreHeader() {
       textTransform: mt.textTransform,
       letterSpacing: `${mt.letterSpacing}em`,
       lineHeight: mt.lineHeight,
-      ...(mc.linkColor ? { color: mc.linkColor } : {}),
+      ...(mc.linkColor ? { color: mc.linkColor } : isMenuBarSeparated ? { color: menuBar.textColor } : {}),
     };
     const itemClass = cn(
       'text-muted-foreground hover:text-foreground transition-all duration-150',
@@ -804,10 +806,12 @@ export function StoreHeader() {
               {renderActions()}
             </div>
 
-            {/* Row 2: Navigation */}
-            <nav className="hidden lg:flex items-center border-t border-border/30 py-2" style={{ gap: `${h.menuItemGap ?? 4}px` }}>
-              {renderNavItems()}
-            </nav>
+            {/* Row 2: Navigation (only if not separated) */}
+            {!isMenuBarSeparated && (
+              <nav className="hidden lg:flex items-center border-t border-border/30 py-2" style={{ gap: `${h.menuItemGap ?? 4}px` }}>
+                {renderNavItems()}
+              </nav>
+            )}
           </>
         ) : !shrinkActive ? (
           /* ALL OTHER LAYOUTS */
@@ -828,7 +832,7 @@ export function StoreHeader() {
               )}
             </Link>
 
-            {h.layout !== 'hamburger-only' && h.layout !== 'centered' && (
+            {h.layout !== 'hamburger-only' && h.layout !== 'centered' && !isMenuBarSeparated && (
               <nav className="hidden lg:flex items-center" style={{ gap: `${h.menuItemGap ?? 4}px` }}>
                 {renderNavItems()}
               </nav>
@@ -850,7 +854,7 @@ export function StoreHeader() {
         )}
 
         {/* Centered layout sub-nav */}
-        {h.layout === 'centered' && !shrinkActive && (
+        {h.layout === 'centered' && !shrinkActive && !isMenuBarSeparated && (
           <nav className="hidden lg:flex items-center justify-center pb-3" style={{ gap: `${h.menuItemGap ?? 4}px` }}>
             {renderNavItems()}
           </nav>
@@ -858,6 +862,35 @@ export function StoreHeader() {
 
         {!shrinkActive && renderSearchOverlay()}
       </div>
+
+      {/* Separated Menu Bar */}
+      {isMenuBarSeparated && !shrinkActive && (
+        <div
+          className={cn(
+            'hidden lg:block transition-all duration-300',
+            menuBar.borderTop && 'border-t border-border/20',
+            menuBar.borderBottom && 'border-b border-border/20',
+            menuBar.shadow === 'subtle' && 'shadow-sm',
+            menuBar.shadow === 'medium' && 'shadow-md',
+          )}
+          style={{
+            backgroundColor: menuBar.backgroundColor,
+            color: menuBar.textColor,
+          }}
+        >
+          <div style={menuBar.fullWidth ? { width: '100%' } : containerStyle}>
+            <nav
+              className="flex items-center justify-center"
+              style={{
+                height: `${menuBar.height}px`,
+                gap: `${h.menuItemGap ?? 4}px`,
+              }}
+            >
+              {renderNavItems()}
+            </nav>
+          </div>
+        </div>
+      )}
 
       {!shrinkActive && <BannerBelow />}
     </header>
