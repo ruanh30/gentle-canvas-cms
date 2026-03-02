@@ -97,6 +97,52 @@ export interface ThemeBannerBelow {
   carouselSpeed: number;
 }
 
+export interface ThemeHeaderStateStyle {
+  backgroundColor: string;
+  textColor: string;
+  borderBottom: boolean;
+  borderColor: string;
+  shadow: 'none' | 'subtle' | 'medium' | 'strong';
+  blur: boolean;
+  height: number;             // px
+}
+
+export interface ThemeHeaderMobile {
+  drawerPosition: 'left' | 'right';
+  showSearchInDrawer: boolean;
+  showAccountInDrawer: boolean;
+  showCartInDrawer: boolean;
+  fixedFooterItems: string[];     // e.g. ['whatsapp', 'login', 'track-order']
+  maxLevels: 2 | 3;
+  groupStyle: 'accordion' | 'list';
+}
+
+export interface ThemeHeaderContainer {
+  width: 'full' | 'container';
+  maxWidth: number;               // px (1200-1600)
+  paddingX: number;               // px
+  gap: number;                    // px between logo/nav/actions
+  verticalAlign: 'center' | 'start' | 'end';
+}
+
+export interface ThemeHeaderMegaMenu {
+  columns: 2 | 3 | 4 | 5 | 6;
+  width: 'auto' | 'full' | 'container';
+  showImages: boolean;
+  showBanner: boolean;
+  bannerImageUrl: string;
+  bannerLink: string;
+}
+
+export interface ThemeHeaderSearch {
+  placeholder: string;
+  showOnDesktop: boolean;
+  showOnMobile: boolean;
+  autoSuggest: boolean;
+  maxResults: number;
+  shortcutEnabled: boolean;       // Ctrl+K or /
+}
+
 export interface ThemeHeader {
   layout: 'classic' | 'centered' | 'minimal' | 'logo-center-nav-left' | 'hamburger-only' | 'top-bar-split' | 'double-row' | 'sidebar-nav' | 'transparent';
   sticky: boolean;
@@ -104,26 +150,42 @@ export interface ThemeHeader {
   shadowOnScroll: boolean;
   backgroundColor: string;
   borderBottom: boolean;
-  headerSurface: boolean;          // elevated surface with shadow/border
-  dropdownElevated: boolean;       // elevated dropdown with arrow & shadow
-  menuItemPadding: boolean;        // larger click targets with bg hover
-  height: number;             // px
+  headerSurface: boolean;
+  dropdownElevated: boolean;
+  menuItemPadding: boolean;
+  height: number;
   menuStyle: 'horizontal' | 'dropdown' | 'mega-menu';
   menuFontSize: number;
   menuUppercase: boolean;
   menuLetterSpacing: number;
-  menuFontWeight: number;          // 400-700
+  menuFontWeight: number;
   menuHoverStyle: 'underline' | 'background' | 'both';
-  menuItemGap: number;             // px gap between items
+  menuItemGap: number;
   menuSeparator: 'none' | 'line' | 'dot' | 'slash';
   iconSize: number;
-  iconStrokeWidth: number;         // 1-3
+  iconStrokeWidth: number;
   showSearch: boolean;
   searchStyle: 'inline' | 'modal' | 'drawer';
   showAccount: boolean;
   showWishlist: boolean;
   showCart: boolean;
   cartBadgeStyle: 'dot' | 'count' | 'none';
+  // States
+  states: {
+    normal: ThemeHeaderStateStyle;
+    sticky: ThemeHeaderStateStyle;
+    transparent: ThemeHeaderStateStyle;
+  };
+  // Container/Grid
+  container: ThemeHeaderContainer;
+  // Mobile
+  mobile: ThemeHeaderMobile;
+  // Mega Menu
+  megaMenuConfig: ThemeHeaderMegaMenu;
+  // Search
+  search: ThemeHeaderSearch;
+  // Preset
+  preset: string;
   announcement: ThemeAnnouncementBar;
   bannerBelow: ThemeBannerBelow;
 }
