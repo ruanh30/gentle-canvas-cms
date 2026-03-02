@@ -787,6 +787,13 @@ function HeaderTab() {
           { value: 'background', label: 'Fundo', description: 'Fundo sutil ao passar o mouse' },
           { value: 'both', label: 'Ambos', description: 'Sublinhado + fundo ao mesmo tempo' },
         ]} />
+        <NumberSlider label="Espaçamento entre itens" value={h.menuItemGap ?? 4} onChange={v => set({ menuItemGap: v })} min={0} max={32} suffix="px" />
+        <OptionPicker label="Separador" value={h.menuSeparator || 'none'} onChange={v => set({ menuSeparator: v })} options={[
+          { value: 'none', label: 'Nenhum' },
+          { value: 'line', label: '| Linha' },
+          { value: 'dot', label: '• Ponto' },
+          { value: 'slash', label: '/ Barra' },
+        ]} />
         <MenuStylePreview menuStyle={h.menuStyle} menuFontSize={h.menuFontSize} menuUppercase={h.menuUppercase} />
       </div>
 

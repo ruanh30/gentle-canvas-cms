@@ -404,6 +404,8 @@ export function StoreHeader() {
     );
   };
 
+  const separatorChar = h.menuSeparator === 'line' ? '|' : h.menuSeparator === 'dot' ? '•' : h.menuSeparator === 'slash' ? '/' : '';
+
   const renderNavItems = (extraClass?: string) => {
     const elevated = h.dropdownElevated ?? true;
     const padded = h.menuItemPadding ?? true;
@@ -419,8 +421,24 @@ export function StoreHeader() {
       extraClass,
     );
 
+    const buildItems = (elements: React.ReactNode[]) => {
+      if (!separatorChar || elements.length <= 1) return elements;
+      const result: React.ReactNode[] = [];
+      elements.forEach((el, i) => {
+        result.push(el);
+        if (i < elements.length - 1) {
+          result.push(
+            <span key={`sep-${i}`} className="text-muted-foreground/40 select-none text-xs" style={{ fontSize: h.menuFontSize ? h.menuFontSize * 0.85 : 11 }}>
+              {separatorChar}
+            </span>
+          );
+        }
+      });
+      return result;
+    };
+
     if (hasCustomMenu) {
-      return mm!.items.map(mi => (
+      return buildItems(mm!.items.map(mi => (
         <MenuItemComponent
           key={mi.id}
           item={mi}
@@ -431,29 +449,27 @@ export function StoreHeader() {
           style={itemStyle}
           openNewTab={mi.openNewTab}
         />
-      ));
+      )));
     }
 
     const useUnderline = hoverStyle === 'underline' || hoverStyle === 'both';
     const useBgHover = hoverStyle === 'background' || hoverStyle === 'both';
 
-    return mockCategories.slice(0, 5).map(cat => {
-      return (
-        <Link
-          key={cat.id}
-          to={`/products?category=${cat.slug}`}
-          className={cn(
-            itemClass,
-            useUnderline && 'nav-link-underline',
-            padded && useBgHover && 'px-3 py-2 rounded-md hover:bg-accent/80',
-            padded && !useBgHover && 'px-3 py-2 rounded-md',
-          )}
-          style={itemStyle}
-        >
-          {cat.name}
-        </Link>
-      );
-    });
+    return buildItems(mockCategories.slice(0, 5).map(cat => (
+      <Link
+        key={cat.id}
+        to={`/products?category=${cat.slug}`}
+        className={cn(
+          itemClass,
+          useUnderline && 'nav-link-underline',
+          padded && useBgHover && 'px-3 py-2 rounded-md hover:bg-accent/80',
+          padded && !useBgHover && 'px-3 py-2 rounded-md',
+        )}
+        style={itemStyle}
+      >
+        {cat.name}
+      </Link>
+    )));
   };
 
   return (
@@ -522,7 +538,7 @@ export function StoreHeader() {
             </Link>
 
             {h.layout !== 'hamburger-only' && h.layout !== 'centered' && (
-              <nav className="hidden lg:flex items-center gap-1">
+              <nav className="hidden lg:flex items-center" style={{ gap: `${h.menuItemGap ?? 4}px` }}>
                 {renderNavItems()}
               </nav>
             )}
@@ -573,14 +589,14 @@ export function StoreHeader() {
 
         {/* When shrunk: show ONLY the nav menu bar */}
         {shrinkActive && (
-          <nav className="flex items-center justify-center gap-1 py-2">
+          <nav className="flex items-center justify-center py-2" style={{ gap: `${h.menuItemGap ?? 4}px` }}>
             {renderNavItems()}
           </nav>
         )}
 
         {/* Centered layout sub-nav */}
         {h.layout === 'centered' && !shrinkActive && (
-          <nav className="hidden lg:flex items-center justify-center gap-1 pb-3">
+          <nav className="hidden lg:flex items-center justify-center pb-3" style={{ gap: `${h.menuItemGap ?? 4}px` }}>
             {renderNavItems()}
           </nav>
         )}

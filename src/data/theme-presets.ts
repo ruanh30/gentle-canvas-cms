@@ -138,6 +138,8 @@ export const defaultThemeConfig: ThemeConfig = {
     menuLetterSpacing: 0.1,
     menuFontWeight: 500,
     menuHoverStyle: 'underline' as const,
+    menuItemGap: 4,
+    menuSeparator: 'none' as const,
     
     iconSize: 20,
     iconStrokeWidth: 1.5,
