@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { StoreHeader } from '@/components/store/StoreHeader';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -240,109 +241,12 @@ function AnnouncementCarouselPreview({ messages, bg, color, speed }: { messages:
 /* ================================================================== */
 
 function LiveHeaderPreview() {
-  const { draft } = useTheme();
-  const h = draft.header ?? {} as any;
-  const logo = draft.logo;
-  const states = h.states;
-  const normal = states?.normal;
-  const container = h.container ?? { width: 'container', maxWidth: 1400, paddingX: 16, gap: 16 };
   const [previewDevice, setPreviewDevice] = useState<'desktop' | 'mobile'>('desktop');
-
-  const bg = normal?.backgroundColor || '#ffffff';
-  const text = normal?.textColor || '#1a1a1a';
-  const isCentered = h.layout === 'centered' || h.layout === 'logo-center-nav-left';
-  const isDoubleRow = h.layout === 'double-row';
   const isMobile = previewDevice === 'mobile';
-  const isMinimal = h.layout === 'minimal' || h.layout === 'hamburger-only';
-  const isTransparent = h.layout === 'transparent';
-  const previewHeight = Math.min(normal?.height || h.height || 64, 56);
-  const scaledPx = Math.max(Math.round(container.paddingX * 0.3), 4);
-  const scaledGap = Math.max(Math.round((container.gap || 16) * 0.25), 2);
-  const separatorChar = h.menuSeparator === 'line' ? '|' : h.menuSeparator === 'dot' ? '•' : h.menuSeparator === 'slash' ? '/' : '';
-  const menuItems = ['Início', 'Loja', 'Sobre'];
-  const menuItemsLong = ['Início', 'Loja', 'Categorias', 'Promoções'];
-  const iconSize = Math.min((h.iconSize || 20) * 0.7, 16);
-  const strokeW = h.iconStrokeWidth || 1.5;
 
-  const hoverStyle = h.menuHoverStyle || 'underline';
-  const useUnderline = hoverStyle === 'underline' || hoverStyle === 'both';
-  const useBgHover = hoverStyle === 'background' || hoverStyle === 'both';
-  const menuPadded = h.menuItemPadding ?? true;
-
-  const renderMenuLabels = (items: string[], extraStyle?: React.CSSProperties) => {
-    const elements: React.ReactNode[] = [];
-    items.forEach((t, i) => {
-      const baseFs = Math.min(h.menuFontSize || 13, 11);
-      elements.push(
-        <span
-          key={i}
-          className={cn(
-            'relative cursor-pointer transition-all duration-200',
-            useUnderline && 'group/navlink',
-            useBgHover && menuPadded && 'hover:bg-[hsl(var(--accent)/0.8)] rounded-[4px]',
-          )}
-          style={{
-            color: text,
-            opacity: i === 0 ? 0.9 : 0.5,
-            fontWeight: h.menuFontWeight || 500,
-            textTransform: h.menuUppercase ? 'uppercase' : 'none',
-            fontSize: baseFs,
-            letterSpacing: h.menuLetterSpacing ? `${h.menuLetterSpacing}em` : undefined,
-            padding: menuPadded ? '3px 6px' : undefined,
-            ...extraStyle,
-          }}
-        >
-          {t}
-          {useUnderline && (
-            <span
-              className="absolute bottom-0 left-0 right-0 h-[1.5px] scale-x-0 group-hover/navlink:scale-x-100 transition-transform duration-200 origin-left"
-              style={{ backgroundColor: text, opacity: 0.7 }}
-            />
-          )}
-        </span>
-      );
-      if (separatorChar && i < items.length - 1) {
-        elements.push(
-          <span key={`sep-${i}`} className="text-[8px]" style={{ color: text, opacity: 0.25 }}>{separatorChar}</span>
-        );
-      }
-    });
-    return elements;
-  };
-
-  const shadowCls = normal?.shadow === 'subtle' ? 'shadow-sm' : normal?.shadow === 'medium' ? 'shadow-md' : normal?.shadow === 'strong' ? 'shadow-lg' : '';
-
-  const renderIcons = () => (
-    <div className="flex items-center gap-1.5">
-      {h.showSearch && h.searchStyle !== 'inline' && <Search style={{ width: iconSize, height: iconSize, color: text, opacity: 0.4, strokeWidth: strokeW }} />}
-      {h.showWishlist && <Heart style={{ width: iconSize, height: iconSize, color: text, opacity: 0.4, strokeWidth: strokeW }} />}
-      {h.showAccount && <User style={{ width: iconSize, height: iconSize, color: text, opacity: 0.4, strokeWidth: strokeW }} />}
-      {h.showCart && (
-        <div className="relative">
-          <ShoppingBag style={{ width: iconSize, height: iconSize, color: text, opacity: 0.4, strokeWidth: strokeW }} />
-          {h.cartBadgeStyle === 'count' && (
-            <span className="absolute -top-1.5 -right-1.5 text-[7px] font-bold rounded-full h-3 w-3 flex items-center justify-center" style={{ backgroundColor: text, color: bg }}>2</span>
-          )}
-          {h.cartBadgeStyle === 'dot' && (
-            <span className="absolute -top-0.5 -right-0.5 rounded-full h-1.5 w-1.5" style={{ backgroundColor: text }} />
-          )}
-        </div>
-      )}
-    </div>
-  );
-
-  const renderInlineSearch = () => {
-    if (!h.showSearch || h.searchStyle !== 'inline') return null;
-    const placeholder = (h.search?.placeholder || 'Buscar...').slice(0, 15);
-    return (
-      <div className="flex-1 mx-2 max-w-[160px] h-5 rounded-full border flex items-center px-1.5" style={{ borderColor: text + '1A' }}>
-        <Search style={{ width: 8, height: 8, color: text, opacity: 0.3 }} />
-        <span className="text-[7px] ml-1" style={{ color: text, opacity: 0.3 }}>{placeholder}</span>
-      </div>
-    );
-  };
-
-  const mobile_drawer = h.mobile?.drawerPosition || 'left';
+  // Scale factor to fit the real header into the admin panel preview area
+  const scale = isMobile ? 0.85 : 0.55;
+  const containerWidth = isMobile ? 375 : '100%';
 
   return (
     <div className="border-b border-border/50 bg-[hsl(var(--flash-surface))]">
@@ -360,131 +264,17 @@ function LiveHeaderPreview() {
         </Tabs>
       </div>
 
-      <div className={cn('mx-auto mb-3 rounded-lg overflow-hidden border border-border/40 shadow-sm transition-all duration-300', isMobile ? 'max-w-[375px]' : 'max-w-full mx-4')}>
-        {/* Announcement bar preview */}
-        {h.announcement?.enabled && (() => {
-          const ann = h.announcement;
-          const msgs = (ann.messages || []).filter(Boolean);
-          const displayMsg = msgs[0] || 'Barra de anúncio';
-          const annBg = ann.backgroundColor || '#1a1a1a';
-          const annColor = ann.textColor || '#fff';
-          const annStyle = ann.style || 'static';
-
-          if (annStyle === 'ticker' && msgs.length > 0) {
-            return (
-              <div className="overflow-hidden py-1" style={{ backgroundColor: annBg, color: annColor }}>
-                <div className={cn('whitespace-nowrap inline-block', ann.direction === 'ltr' ? 'animate-ticker-ltr' : 'animate-ticker')}
-                  style={{ animationDuration: `${(ann.speed || 5) * msgs.length * 3}s` }}>
-                  {msgs.map((m: string, i: number) => <span key={i} className="mx-6 text-[9px] font-medium tracking-wide">{m}</span>)}
-                  {msgs.map((m: string, i: number) => <span key={`d-${i}`} className="mx-6 text-[9px] font-medium tracking-wide">{m}</span>)}
-                </div>
-              </div>
-            );
-          }
-
-          if (annStyle === 'carousel' && msgs.length > 1) {
-            return (
-              <AnnouncementCarouselPreview messages={msgs} bg={annBg} color={annColor} speed={ann.speed || 5} />
-            );
-          }
-
-          return (
-            <div className="text-center py-1 text-[9px] font-medium tracking-wide"
-              style={{ backgroundColor: annBg, color: annColor }}>
-              {displayMsg}
-            </div>
-          );
-        })()}
-
-        {/* Header preview */}
+      <div className={cn('mx-4 mb-3 rounded-lg overflow-hidden border border-border/40 shadow-sm transition-all duration-300', isMobile && 'max-w-[375px] mx-auto')}>
         <div
-          className={cn(
-            'transition-all duration-300',
-            normal?.borderBottom && 'border-b',
-            normal?.blur && 'backdrop-blur-md',
-            shadowCls,
-            (h.headerSurface ?? true) && !normal?.borderBottom && 'border-b border-border/30',
-          )}
           style={{
-            backgroundColor: isTransparent ? '#2d2d2d' : bg,
-            color: text,
-            borderColor: normal?.borderColor || '#e5e7eb',
-            paddingLeft: isMobile ? 8 : scaledPx,
-            paddingRight: isMobile ? 8 : scaledPx,
+            transform: `scale(${scale})`,
+            transformOrigin: 'top left',
+            width: isMobile ? `${375}px` : `${100 / scale}%`,
+            pointerEvents: 'none',
           }}
         >
-          {isMobile ? (
-            <div className="flex items-center justify-between" style={{ height: 48 }}>
-              {mobile_drawer === 'left' ? (
-                <>
-                  <Menu className="h-4 w-4" style={{ color: text, opacity: 0.6 }} />
-                  <span className="text-[11px] font-bold tracking-wide" style={{ color: text }}>{logo?.text || 'LOGO'}</span>
-                  <div className="flex items-center gap-2">
-                    {h.showSearch && <Search style={{ width: iconSize, height: iconSize, color: text, opacity: 0.5, strokeWidth: strokeW }} />}
-                    {h.showCart && <ShoppingBag style={{ width: iconSize, height: iconSize, color: text, opacity: 0.5, strokeWidth: strokeW }} />}
-                  </div>
-                </>
-              ) : (
-                <>
-                  <div className="flex items-center gap-2">
-                    {h.showSearch && <Search style={{ width: iconSize, height: iconSize, color: text, opacity: 0.5, strokeWidth: strokeW }} />}
-                    {h.showCart && <ShoppingBag style={{ width: iconSize, height: iconSize, color: text, opacity: 0.5, strokeWidth: strokeW }} />}
-                  </div>
-                  <span className="text-[11px] font-bold tracking-wide" style={{ color: text }}>{logo?.text || 'LOGO'}</span>
-                  <Menu className="h-4 w-4" style={{ color: text, opacity: 0.6 }} />
-                </>
-              )}
-            </div>
-          ) : isDoubleRow ? (
-            <div className="w-full">
-              <div className="flex items-center justify-between" style={{ height: previewHeight, gap: `${scaledGap}px` }}>
-                <span className="text-[12px] font-bold tracking-wide" style={{ color: text }}>{logo?.text || 'LOGO'}</span>
-                {renderInlineSearch()}
-                {renderIcons()}
-              </div>
-              <div className="flex items-center border-t border-current/5 py-1.5" style={{ gap: `${Math.max(Math.round((h.menuItemGap ?? 8) * 0.4), 3)}px` }}>
-                {renderMenuLabels(menuItemsLong, { fontSize: 9 })}
-              </div>
-            </div>
-          ) : isCentered ? (
-            <div>
-              <div className="flex items-center justify-center relative" style={{ height: previewHeight, gap: `${scaledGap}px` }}>
-                <div className="absolute left-0 flex items-center gap-2">
-                  {h.showSearch && h.searchStyle !== 'inline' && <Search style={{ width: iconSize, height: iconSize, color: text, opacity: 0.4, strokeWidth: strokeW }} />}
-                </div>
-                <span className="text-[12px] font-bold tracking-wide" style={{ color: text }}>{logo?.text || 'LOGO'}</span>
-                <div className="absolute right-0">{renderIcons()}</div>
-              </div>
-              <div className="flex items-center justify-center pb-2" style={{ gap: `${Math.max(Math.round((h.menuItemGap ?? 8) * 0.4), 3)}px` }}>
-                {renderMenuLabels(menuItems)}
-              </div>
-            </div>
-          ) : isMinimal ? (
-            <div className="flex items-center justify-between" style={{ height: previewHeight, gap: `${scaledGap}px` }}>
-              <span className="text-[12px] font-bold tracking-wide" style={{ color: text }}>{logo?.text || 'LOGO'}</span>
-              {renderIcons()}
-            </div>
-          ) : (
-            <div className="flex items-center justify-between" style={{ height: previewHeight, gap: `${scaledGap}px` }}>
-              <span className="text-[12px] font-bold tracking-wide" style={{ color: text }}>{logo?.text || 'LOGO'}</span>
-              <div className="flex items-center" style={{ gap: `${Math.max(Math.round((h.menuItemGap ?? 8) * 0.4), 3)}px` }}>
-                {renderMenuLabels(menuItems)}
-              </div>
-              <div className="flex items-center gap-2">
-                {renderInlineSearch()}
-                {renderIcons()}
-              </div>
-            </div>
-          )}
+          <StoreHeader />
         </div>
-
-        {/* Banner below preview */}
-        {h.bannerBelow?.enabled && (
-          <div className="bg-secondary/40 flex items-center justify-center" style={{ height: Math.min(h.bannerBelow.height || 60, 30) }}>
-            <Image className="h-3 w-3 text-muted-foreground/30 mr-1" />
-            <span className="text-[8px] text-muted-foreground/40">Banner ({h.bannerBelow.height || 60}px)</span>
-          </div>
-        )}
       </div>
     </div>
   );
