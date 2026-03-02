@@ -198,7 +198,37 @@ export function HomeSectionsPanel() {
                       />
                       <HintTooltip text="Exibe ou oculta as setas de navegação (esquerda/direita) do carrossel" />
                     </div>
+                    {section.type === 'categories' && (
+                      <div className="flex items-center gap-2">
+                        <label className="text-[11px] text-muted-foreground">Espaçamento:</label>
+                        <input
+                          type="range"
+                          min={0}
+                          max={32}
+                          step={4}
+                          value={(section.settings?.carouselGap as number) ?? 16}
+                          onChange={e => setSetting(section.id, 'carouselGap', Number(e.target.value))}
+                          className="flex-1 h-1"
+                        />
+                        <span className="text-[11px] text-muted-foreground w-8 text-right">{(section.settings?.carouselGap as number) ?? 16}px</span>
+                      </div>
+                    )}
                   </>
+                )}
+                {(section.settings?.displayMode as string) !== 'carousel' && section.type === 'categories' && (
+                  <div className="flex items-center gap-2">
+                    <label className="text-[11px] text-muted-foreground">Espaçamento da grade:</label>
+                    <input
+                      type="range"
+                      min={0}
+                      max={32}
+                      step={4}
+                      value={(section.settings?.gridGap as number) ?? 16}
+                      onChange={e => setSetting(section.id, 'gridGap', Number(e.target.value))}
+                      className="flex-1 h-1"
+                    />
+                    <span className="text-[11px] text-muted-foreground w-8 text-right">{(section.settings?.gridGap as number) ?? 16}px</span>
+                  </div>
                 )}
                 {section.type === 'categories' && (
                   <>
