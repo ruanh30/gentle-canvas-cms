@@ -73,6 +73,7 @@ export function HeroPanel() {
             Define a altura do banner e o efeito de transição entre slides.
           </p>
           <OptionPicker label="Altura" value={h.height} onChange={v => set({ height: v })} options={[
+            { value: 'extra-small', label: 'Extra pequeno', description: 'Banner mínimo (~200px)' },
             { value: 'small', label: 'Pequeno', description: 'Banner compacto (~300px)' },
             { value: 'medium', label: 'Médio', description: 'Tamanho padrão (~450px)' },
             { value: 'large', label: 'Grande', description: 'Banner alto (~600px)' },

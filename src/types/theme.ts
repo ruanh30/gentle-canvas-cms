@@ -228,7 +228,7 @@ export interface ThemeHeroSlide {
 
 export interface ThemeHero {
   enabled: boolean;
-  height: 'small' | 'medium' | 'large' | 'fullscreen';
+  height: 'extra-small' | 'small' | 'medium' | 'large' | 'fullscreen';
   autoplay: boolean;
   autoplaySpeed: number;
   showDots: boolean;
