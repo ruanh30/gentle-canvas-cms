@@ -11,6 +11,7 @@ import { cn } from '@/lib/utils';
 const ProductsPage = () => {
   const [searchParams] = useSearchParams();
   const categorySlug = searchParams.get('category');
+  const searchQuery = searchParams.get('q')?.toLowerCase().trim() || '';
   const [sortBy, setSortBy] = useState('featured');
   const { theme } = useTheme();
   const cat = theme.category;
@@ -25,13 +26,20 @@ const ProductsPage = () => {
       const c = mockCategories.find(c => c.slug === categorySlug);
       if (c) products = products.filter(p => p.categoryId === c.id);
     }
+    if (searchQuery) {
+      products = products.filter(p =>
+        p.name.toLowerCase().includes(searchQuery) ||
+        p.description.toLowerCase().includes(searchQuery) ||
+        p.tags?.some(t => t.toLowerCase().includes(searchQuery))
+      );
+    }
     switch (sortBy) {
       case 'price-asc': return [...products].sort((a, b) => a.price - b.price);
       case 'price-desc': return [...products].sort((a, b) => b.price - a.price);
       case 'newest': return [...products].sort((a, b) => b.createdAt.localeCompare(a.createdAt));
       default: return products;
     }
-  }, [categorySlug, sortBy]);
+  }, [categorySlug, sortBy, searchQuery]);
 
   const activeCategory = mockCategories.find(c => c.slug === categorySlug);
 
