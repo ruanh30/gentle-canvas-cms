@@ -548,10 +548,7 @@ export function StoreHeader() {
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/60 group-focus-within:text-foreground transition-colors" />
                 <input
                   placeholder="Buscar produtos..."
-                  className="w-full pl-9 pr-3 h-9 text-sm rounded-full border-0 outline-none ring-1 ring-transparent focus:ring-border transition-all duration-200 placeholder:text-muted-foreground/50"
-                  style={{ backgroundColor: 'hsl(var(--secondary) / 0.6)' }}
-                  onFocus={(e) => { e.currentTarget.style.backgroundColor = 'hsl(var(--background))'; }}
-                  onBlur={(e) => { e.currentTarget.style.backgroundColor = 'hsl(var(--secondary) / 0.6)'; }}
+                  className="w-full pl-9 pr-3 h-9 text-sm bg-background rounded-full border border-border/60 outline-none focus:ring-1 focus:ring-border transition-all duration-200 placeholder:text-muted-foreground/50"
                 />
               </div>
             )}
