@@ -229,19 +229,42 @@ function LiveHeaderPreview() {
   const iconSize = Math.min((h.iconSize || 20) * 0.7, 16);
   const strokeW = h.iconStrokeWidth || 1.5;
 
+  const hoverStyle = h.menuHoverStyle || 'underline';
+  const useUnderline = hoverStyle === 'underline' || hoverStyle === 'both';
+  const useBgHover = hoverStyle === 'background' || hoverStyle === 'both';
+  const menuPadded = h.menuItemPadding ?? true;
+
   const renderMenuLabels = (items: string[], extraStyle?: React.CSSProperties) => {
     const elements: React.ReactNode[] = [];
     items.forEach((t, i) => {
+      const baseFs = Math.min(h.menuFontSize || 13, 11);
       elements.push(
-        <span key={i} className="text-[10px]" style={{
-          color: text,
-          opacity: i === 0 ? 0.9 : 0.5,
-          fontWeight: h.menuFontWeight || 500,
-          textTransform: h.menuUppercase ? 'uppercase' : 'none',
-          fontSize: Math.min(h.menuFontSize || 13, 11),
-          letterSpacing: h.menuLetterSpacing ? `${h.menuLetterSpacing}em` : undefined,
-          ...extraStyle,
-        }}>{t}</span>
+        <span
+          key={i}
+          className={cn(
+            'relative cursor-pointer transition-all duration-200',
+            useUnderline && 'group/navlink',
+            useBgHover && menuPadded && 'hover:bg-[hsl(var(--accent)/0.8)] rounded-[4px]',
+          )}
+          style={{
+            color: text,
+            opacity: i === 0 ? 0.9 : 0.5,
+            fontWeight: h.menuFontWeight || 500,
+            textTransform: h.menuUppercase ? 'uppercase' : 'none',
+            fontSize: baseFs,
+            letterSpacing: h.menuLetterSpacing ? `${h.menuLetterSpacing}em` : undefined,
+            padding: menuPadded ? '3px 6px' : undefined,
+            ...extraStyle,
+          }}
+        >
+          {t}
+          {useUnderline && (
+            <span
+              className="absolute bottom-0 left-0 right-0 h-[1.5px] scale-x-0 group-hover/navlink:scale-x-100 transition-transform duration-200 origin-left"
+              style={{ backgroundColor: text, opacity: 0.7 }}
+            />
+          )}
+        </span>
       );
       if (separatorChar && i < items.length - 1) {
         elements.push(
