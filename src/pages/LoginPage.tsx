@@ -19,11 +19,7 @@ const LoginPage = () => {
     const success = login(email, password);
     if (success) {
       toast.success(isRegister ? 'Conta criada com sucesso!' : 'Login realizado!');
-      if (email === 'admin@modastore.com') {
-        navigate('/admin');
-      } else {
-        navigate('/');
-      }
+      navigate('/');
     }
   };
 
