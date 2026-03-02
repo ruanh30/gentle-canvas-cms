@@ -279,8 +279,6 @@ export const defaultThemeConfig: ThemeConfig = {
     titleLines: 2,
     contentAlign: 'left',
     spacing: 'normal',
-    shadow: 'none',
-    hoverShadow: false,
     border: false,
   },
 
@@ -529,7 +527,7 @@ export const themePresets: ThemePreset[] = [
     config: {
       colors: { ...defaultThemeConfig.colors, primary: '#1a1a1a', accent: '#f5f5f5', buyNow: '#1a1a1a', buyNowHover: '#404040' },
       typography: { ...defaultThemeConfig.typography, headingFont: 'Inter', bodyFont: 'Inter' },
-      productCard: { ...defaultThemeConfig.productCard, layout: 'minimal', shadow: 'none', border: false },
+      productCard: { ...defaultThemeConfig.productCard, layout: 'minimal', border: false },
       global: { ...defaultThemeConfig.global, borderRadius: 'none', shadowLevel: 'none' },
     },
   },

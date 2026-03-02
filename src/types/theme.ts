@@ -269,8 +269,6 @@ export interface ThemeProductCard {
   titleLines: 1 | 2 | 3;
   contentAlign: 'left' | 'center';
   spacing: 'compact' | 'normal' | 'spacious';
-  shadow: 'none' | 'subtle' | 'medium' | 'strong';
-  hoverShadow: boolean;
   border: boolean;
 }
 
