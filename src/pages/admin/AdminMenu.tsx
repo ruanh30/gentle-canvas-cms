@@ -5,9 +5,63 @@ import { Plus, Trash2, ChevronDown, ChevronRight, GripVertical, Palette, Save, M
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
 import { ThemeMenuItem } from '@/types/theme';
 import { toast } from 'sonner';
+import { mockCategories } from '@/data/mock';
+
+/* ------------------------------------------------------------------ */
+/*  Destination options for the link dropdown                          */
+/* ------------------------------------------------------------------ */
+
+const FIXED_PAGES = [
+  { value: '/', label: 'Início' },
+  { value: '/products', label: 'Todos os Produtos' },
+  { value: '/cart', label: 'Carrinho' },
+  { value: '/wishlist', label: 'Lista de Desejos' },
+  { value: '/login', label: 'Login / Conta' },
+  { value: '/orders', label: 'Meus Pedidos' },
+];
+
+function DestinationSelect({ value, onChange, className }: { value: string; onChange: (v: string) => void; className?: string }) {
+  const categoryOptions = mockCategories.map(cat => ({
+    value: `/products?category=${cat.slug}`,
+    label: cat.name,
+  }));
+
+  // Check if current value matches a known option
+  const allOptions = [...FIXED_PAGES, ...categoryOptions];
+  const isCustom = value && !allOptions.some(o => o.value === value);
+
+  return (
+    <Select value={isCustom ? '__custom__' : value} onValueChange={v => { if (v !== '__custom__') onChange(v); }}>
+      <SelectTrigger className={cn("h-8 text-xs", className)}>
+        <SelectValue placeholder="Escolha o destino" />
+      </SelectTrigger>
+      <SelectContent>
+        <SelectGroup>
+          <SelectLabel className="text-[10px]">Páginas</SelectLabel>
+          {FIXED_PAGES.map(p => (
+            <SelectItem key={p.value} value={p.value} className="text-xs">{p.label}</SelectItem>
+          ))}
+        </SelectGroup>
+        <SelectGroup>
+          <SelectLabel className="text-[10px]">Categorias</SelectLabel>
+          {categoryOptions.map(c => (
+            <SelectItem key={c.value} value={c.value} className="text-xs">{c.label}</SelectItem>
+          ))}
+        </SelectGroup>
+        {isCustom && (
+          <SelectGroup>
+            <SelectLabel className="text-[10px]">Personalizado</SelectLabel>
+            <SelectItem value="__custom__" className="text-xs font-mono">{value}</SelectItem>
+          </SelectGroup>
+        )}
+      </SelectContent>
+    </Select>
+  );
+}
 
 /* ------------------------------------------------------------------ */
 /*  Subitem Editor (depth = 1, simplified)                             */
@@ -30,11 +84,10 @@ function SubitemEditor({ item, onUpdate, onDelete }: {
           className="h-8 text-xs flex-1"
           placeholder="Nome do subitem"
         />
-        <Input
+        <DestinationSelect
           value={item.link}
-          onChange={e => onUpdate({ ...item, link: e.target.value })}
-          className="h-8 text-xs w-28"
-          placeholder="/link"
+          onChange={v => onUpdate({ ...item, link: v })}
+          className="w-36"
         />
         <button onClick={() => setOpen(!open)} className="p-1 text-muted-foreground hover:text-foreground transition-colors">
           {open ? <ChevronDown className="h-3.5 w-3.5" /> : <Settings2 className="h-3.5 w-3.5" />}
@@ -114,11 +167,10 @@ function MenuItemEditor({ item, onUpdate, onDelete }: {
           className="h-9 text-sm font-medium flex-1"
           placeholder="Nome do item"
         />
-        <Input
+        <DestinationSelect
           value={item.link}
-          onChange={e => onUpdate({ ...item, link: e.target.value })}
-          className="h-9 text-sm w-32 font-mono text-xs"
-          placeholder="/link"
+          onChange={v => onUpdate({ ...item, link: v })}
+          className="w-40"
         />
         {item.badge && (
           <span className="text-[10px] font-bold px-1.5 py-0.5 rounded shrink-0" style={{ backgroundColor: item.badgeColor, color: '#fff' }}>
