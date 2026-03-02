@@ -186,6 +186,18 @@ export interface ThemeHeader {
   search: ThemeHeaderSearch;
   // Preset
   preset: string;
+  // Icon choices
+  searchIcon: string;
+  accountIcon: string;
+  cartIcon: string;
+  // Menu colors
+  menuColors: {
+    linkColor: string;
+    linkHoverColor: string;
+    linkActiveColor: string;
+    linkBg: string;
+    linkHoverBg: string;
+  };
   announcement: ThemeAnnouncementBar;
   bannerBelow: ThemeBannerBelow;
 }
