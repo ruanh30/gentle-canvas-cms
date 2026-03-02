@@ -1364,11 +1364,14 @@ function CollectionsTab() {
   const { draft, updateDraft } = useTheme();
 
   const autoAddCollectionToHome = (col: ProductCollection) => {
-    const exists = draft.homepageSections.some(s => s.id === `col-section-${col.id}`);
+    const exists = draft.homepageSections.some(s =>
+      s.id === col.id || s.id === `col-section-${col.id}` ||
+      (s.type === 'collections' && (s.settings?.collectionId as string) === col.id)
+    );
     if (!exists) {
       const newSection: ThemeHomepageSection = {
-        id: `col-section-${col.id}`, type: 'collections', enabled: true,
-        title: col.name, showTitle: true, settings: {},
+        id: col.id, type: 'collections', enabled: true,
+        title: col.name, showTitle: true, settings: { collectionId: col.id },
       };
       updateDraft({ homepageSections: [...draft.homepageSections, newSection] });
     }
