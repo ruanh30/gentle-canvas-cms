@@ -172,7 +172,15 @@ function applyThemeCSS(t: ThemeConfig) {
   };
   root.style.setProperty('--pm-shadow', shadowMap[t.global.shadowLevel] || 'none');
 
-  // Header
+  // Border style
+  const borderWidthMap: Record<string, string> = {
+    none: '0px',
+    thin: '1px',
+    medium: '2px',
+    thick: '3px',
+  };
+  root.style.setProperty('--pm-border-width', borderWidthMap[t.global.borderStyle] || '0px');
+
   root.style.setProperty('--pm-header-height', `${t.header?.height ?? 64}px`);
   root.style.setProperty('--pm-icon-size', `${t.header?.iconSize ?? 20}px`);
   root.style.setProperty('--pm-menu-font-size', `${t.header?.menuFontSize ?? 14}px`);
