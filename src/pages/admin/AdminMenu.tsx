@@ -210,6 +210,7 @@ function LiveHeaderPreview() {
   const logo = draft.logo;
   const states = h.states;
   const normal = states?.normal;
+  const container = h.container ?? { width: 'container', maxWidth: 1400, paddingX: 16, gap: 16 };
   const [previewDevice, setPreviewDevice] = useState<'desktop' | 'mobile'>('desktop');
 
   const bg = normal?.backgroundColor || '#ffffff';
@@ -217,6 +218,38 @@ function LiveHeaderPreview() {
   const isCentered = h.layout === 'centered' || h.layout === 'logo-center-nav-left';
   const isDoubleRow = h.layout === 'double-row';
   const isMobile = previewDevice === 'mobile';
+  const isMinimal = h.layout === 'minimal' || h.layout === 'hamburger-only';
+  const previewHeight = Math.min(normal?.height || h.height || 64, 56);
+  const scaledPx = Math.max(Math.round(container.paddingX * 0.3), 4);
+  const scaledGap = Math.max(Math.round((container.gap || 16) * 0.25), 2);
+  const separatorChar = h.menuSeparator === 'line' ? '|' : h.menuSeparator === 'dot' ? '•' : h.menuSeparator === 'slash' ? '/' : '';
+  const menuItems = ['Início', 'Loja', 'Sobre'];
+  const menuItemsLong = ['Início', 'Loja', 'Categorias', 'Promoções'];
+
+  const renderMenuLabels = (items: string[], extraStyle?: React.CSSProperties) => {
+    const elements: React.ReactNode[] = [];
+    items.forEach((t, i) => {
+      elements.push(
+        <span key={i} className="text-[10px]" style={{
+          color: text,
+          opacity: i === 0 ? 0.9 : 0.5,
+          fontWeight: h.menuFontWeight || 500,
+          textTransform: h.menuUppercase ? 'uppercase' : 'none',
+          fontSize: Math.min(h.menuFontSize || 13, 11),
+          letterSpacing: h.menuLetterSpacing ? `${h.menuLetterSpacing}em` : undefined,
+          ...extraStyle,
+        }}>{t}</span>
+      );
+      if (separatorChar && i < items.length - 1) {
+        elements.push(
+          <span key={`sep-${i}`} className="text-[8px]" style={{ color: text, opacity: 0.25 }}>{separatorChar}</span>
+        );
+      }
+    });
+    return elements;
+  };
+
+  const shadowCls = normal?.shadow === 'subtle' ? 'shadow-sm' : normal?.shadow === 'medium' ? 'shadow-md' : normal?.shadow === 'strong' ? 'shadow-lg' : '';
 
   return (
     <div className="border-b border-border/50 bg-muted/10">
@@ -246,68 +279,80 @@ function LiveHeaderPreview() {
         {/* Header preview */}
         <div
           className={cn(
-            'flex items-center justify-between px-4 transition-all duration-300',
+            'transition-all duration-300',
             normal?.borderBottom && 'border-b',
             normal?.blur && 'backdrop-blur-md',
+            shadowCls,
+            (h.headerSurface ?? true) && !normal?.borderBottom && 'border-b border-border/30',
           )}
           style={{
             backgroundColor: bg,
             color: text,
             borderColor: normal?.borderColor || '#e5e7eb',
-            height: isMobile ? 48 : Math.min(h.height || 64, 56),
+            paddingLeft: isMobile ? 8 : scaledPx,
+            paddingRight: isMobile ? 8 : scaledPx,
           }}
         >
           {isMobile ? (
-            <>
+            <div className="flex items-center justify-between" style={{ height: 48 }}>
               <Menu className="h-4 w-4" style={{ color: text, opacity: 0.6 }} />
               <span className="text-[11px] font-bold tracking-wide" style={{ color: text }}>{logo?.text || 'LOGO'}</span>
               <div className="flex items-center gap-2">
-                <Search className="h-3.5 w-3.5" style={{ color: text, opacity: 0.5 }} />
-                <ShoppingBag className="h-3.5 w-3.5" style={{ color: text, opacity: 0.5 }} />
+                {h.showSearch && <Search className="h-3.5 w-3.5" style={{ color: text, opacity: 0.5 }} />}
+                {h.showCart && <ShoppingBag className="h-3.5 w-3.5" style={{ color: text, opacity: 0.5 }} />}
               </div>
-            </>
-          ) : isCentered ? (
-            <>
-              <div className="flex items-center gap-3">
-                {['Início', 'Loja', 'Sobre'].map((t, i) => (
-                  <span key={i} className="text-[10px]" style={{ color: text, opacity: i === 0 ? 0.9 : 0.5, fontWeight: h.menuFontWeight || 500, textTransform: h.menuUppercase ? 'uppercase' : 'none', fontSize: Math.min(h.menuFontSize || 13, 11) }}>{t}</span>
-                ))}
-              </div>
-              <span className="text-[12px] font-bold tracking-wide" style={{ color: text }}>{logo?.text || 'LOGO'}</span>
-              <div className="flex items-center gap-2">
-                {h.showSearch && <Search className="h-3.5 w-3.5" style={{ color: text, opacity: 0.4 }} />}
-                {h.showAccount && <User className="h-3.5 w-3.5" style={{ color: text, opacity: 0.4 }} />}
-                {h.showCart && <ShoppingBag className="h-3.5 w-3.5" style={{ color: text, opacity: 0.4 }} />}
-              </div>
-            </>
+            </div>
           ) : isDoubleRow ? (
-            <div className="w-full space-y-1">
-              <div className="flex items-center justify-between">
+            <div className="w-full">
+              <div className="flex items-center justify-between" style={{ height: previewHeight, gap: `${scaledGap}px` }}>
                 <span className="text-[12px] font-bold tracking-wide" style={{ color: text }}>{logo?.text || 'LOGO'}</span>
                 {h.searchStyle === 'inline' && h.showSearch && (
-                  <div className="flex-1 mx-4 max-w-[200px] h-6 rounded-full border border-current/10 flex items-center px-2">
+                  <div className="flex-1 mx-3 max-w-[200px] h-6 rounded-full border border-current/10 flex items-center px-2">
                     <Search className="h-2.5 w-2.5" style={{ color: text, opacity: 0.3 }} />
-                    <span className="text-[8px] ml-1" style={{ color: text, opacity: 0.3 }}>Buscar...</span>
+                    <span className="text-[8px] ml-1" style={{ color: text, opacity: 0.3 }}>{(h.search?.placeholder || 'Buscar...').slice(0, 15)}</span>
                   </div>
                 )}
                 <div className="flex items-center gap-2">
+                  {h.showSearch && h.searchStyle !== 'inline' && <Search className="h-3.5 w-3.5" style={{ color: text, opacity: 0.4 }} />}
+                  {h.showWishlist && <Heart className="h-3.5 w-3.5" style={{ color: text, opacity: 0.4 }} />}
                   {h.showAccount && <User className="h-3.5 w-3.5" style={{ color: text, opacity: 0.4 }} />}
                   {h.showCart && <ShoppingBag className="h-3.5 w-3.5" style={{ color: text, opacity: 0.4 }} />}
                 </div>
               </div>
-              <div className="flex items-center gap-3 border-t border-current/5 pt-1">
-                {['Início', 'Loja', 'Categorias', 'Promoções'].map((t, i) => (
-                  <span key={i} className="text-[9px]" style={{ color: text, opacity: i === 0 ? 0.9 : 0.45, fontWeight: h.menuFontWeight || 500, textTransform: h.menuUppercase ? 'uppercase' : 'none' }}>{t}</span>
-                ))}
+              <div className="flex items-center border-t border-current/5 py-1.5" style={{ gap: `${Math.max(Math.round((h.menuItemGap ?? 8) * 0.4), 3)}px` }}>
+                {renderMenuLabels(menuItemsLong, { fontSize: 9 })}
+              </div>
+            </div>
+          ) : isCentered ? (
+            <div>
+              <div className="flex items-center justify-center relative" style={{ height: previewHeight, gap: `${scaledGap}px` }}>
+                <div className="absolute left-0 flex items-center gap-2">
+                  {h.showSearch && h.searchStyle !== 'inline' && <Search className="h-3.5 w-3.5" style={{ color: text, opacity: 0.4 }} />}
+                </div>
+                <span className="text-[12px] font-bold tracking-wide" style={{ color: text }}>{logo?.text || 'LOGO'}</span>
+                <div className="absolute right-0 flex items-center gap-2">
+                  {h.showWishlist && <Heart className="h-3.5 w-3.5" style={{ color: text, opacity: 0.4 }} />}
+                  {h.showAccount && <User className="h-3.5 w-3.5" style={{ color: text, opacity: 0.4 }} />}
+                  {h.showCart && <ShoppingBag className="h-3.5 w-3.5" style={{ color: text, opacity: 0.4 }} />}
+                </div>
+              </div>
+              <div className="flex items-center justify-center pb-2" style={{ gap: `${Math.max(Math.round((h.menuItemGap ?? 8) * 0.4), 3)}px` }}>
+                {renderMenuLabels(menuItems)}
+              </div>
+            </div>
+          ) : isMinimal ? (
+            <div className="flex items-center justify-between" style={{ height: previewHeight, gap: `${scaledGap}px` }}>
+              <span className="text-[12px] font-bold tracking-wide" style={{ color: text }}>{logo?.text || 'LOGO'}</span>
+              <div className="flex items-center gap-2">
+                {h.showSearch && <Search className="h-3.5 w-3.5" style={{ color: text, opacity: 0.4 }} />}
+                {h.showCart && <ShoppingBag className="h-3.5 w-3.5" style={{ color: text, opacity: 0.4 }} />}
               </div>
             </div>
           ) : (
-            <>
+            <div className="flex items-center justify-between" style={{ height: previewHeight, gap: `${scaledGap}px` }}>
               <span className="text-[12px] font-bold tracking-wide" style={{ color: text }}>{logo?.text || 'LOGO'}</span>
-              <div className="flex items-center gap-3">
-                {['Início', 'Loja', 'Sobre'].map((t, i) => (
-                  <span key={i} className="text-[10px]" style={{ color: text, opacity: i === 0 ? 0.9 : 0.5, fontWeight: h.menuFontWeight || 500, textTransform: h.menuUppercase ? 'uppercase' : 'none', fontSize: Math.min(h.menuFontSize || 13, 11) }}>{t}</span>
-                ))}
+              <div className="flex items-center" style={{ gap: `${Math.max(Math.round((h.menuItemGap ?? 8) * 0.4), 3)}px` }}>
+                {renderMenuLabels(menuItems)}
               </div>
               <div className="flex items-center gap-2">
                 {h.showSearch && h.searchStyle === 'inline' && (
@@ -325,12 +370,22 @@ function LiveHeaderPreview() {
                     {h.cartBadgeStyle === 'count' && (
                       <span className="absolute -top-1.5 -right-1.5 text-[7px] font-bold rounded-full h-3 w-3 flex items-center justify-center" style={{ backgroundColor: text, color: bg }}>2</span>
                     )}
+                    {h.cartBadgeStyle === 'dot' && (
+                      <span className="absolute -top-0.5 -right-0.5 rounded-full h-1.5 w-1.5" style={{ backgroundColor: text }} />
+                    )}
                   </div>
                 )}
               </div>
-            </>
+            </div>
           )}
         </div>
+
+        {/* Banner below preview */}
+        {h.bannerBelow?.enabled && (
+          <div className="bg-secondary/40 flex items-center justify-center" style={{ height: Math.min(h.bannerBelow.height || 60, 30) }}>
+            <span className="text-[8px] text-muted-foreground/40">Banner</span>
+          </div>
+        )}
       </div>
     </div>
   );
