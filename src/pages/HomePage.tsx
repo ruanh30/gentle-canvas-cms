@@ -8,6 +8,7 @@ import { ArrowRight, ChevronLeft, ChevronRight, Truck, RefreshCw, ShieldCheck, C
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { cn } from '@/lib/utils';
 import { ThemeHomepageSection } from '@/types/theme';
+import { AnimatePresence, motion } from 'framer-motion';
 
 function SectionCarousel({ children, speed, showArrows = true }: { children: React.ReactNode[]; speed: number; showArrows?: boolean }) {
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -143,64 +144,99 @@ const HomePage = () => {
         if (!theme.hero.enabled || heroSlides.length === 0) return null;
         const slide = heroSlides[heroIdx] || heroSlides[0];
         if (!slide) return null;
-        const heightClass = heroHeightMap[theme.hero.height] || heroHeightMap.large;
+        const heightClass = heroHeightMap[theme.hero.height] || heroHeightMap['500'];
+        const transition = theme.hero.transition || 'fade';
+
+        const variants = {
+          fade: {
+            initial: { opacity: 0 },
+            animate: { opacity: 1 },
+            exit: { opacity: 0 },
+            transition: { duration: 0.6, ease: [0.4, 0, 0.6, 1] as const },
+          },
+          slide: {
+            initial: { x: '100%', opacity: 0 },
+            animate: { x: 0, opacity: 1 },
+            exit: { x: '-100%', opacity: 0 },
+            transition: { duration: 0.5, ease: [0.4, 0, 0.2, 1] as const },
+          },
+          zoom: {
+            initial: { scale: 1.15, opacity: 0 },
+            animate: { scale: 1, opacity: 1 },
+            exit: { scale: 0.9, opacity: 0 },
+            transition: { duration: 0.6, ease: [0.4, 0, 0.6, 1] as const },
+          },
+        };
+
+        const v = variants[transition] || variants.fade;
 
         return (
           <section
             key={section.id}
             className={cn('relative bg-secondary overflow-hidden', heightClass, wrapperClass)}
-            style={slide.backgroundImage ? {
-              backgroundImage: `url(${slide.backgroundImage})`,
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
-            } : undefined}
           >
-            {slide.backgroundImage && (
-              <div className="absolute inset-0" style={{ backgroundColor: slide.overlayColor || '#000', opacity: slide.overlayOpacity ?? 0 }} />
-            )}
-            <div
-              className="container mx-auto px-4 relative z-10 flex flex-col justify-center h-full"
-              style={{ minHeight: 'inherit' }}
-            >
-              <div
-                className={cn('max-w-xl flex flex-col', heroAlign[slide.contentAlign || 'left'])}
-                style={{
-                  transform: `translate(${slide.contentOffsetX ?? 0}%, ${slide.contentOffsetY ?? 0}%)`,
-                }}
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={slide.id || heroIdx}
+                initial={v.initial}
+                animate={v.animate}
+                exit={v.exit}
+                transition={v.transition}
+                className="absolute inset-0"
+                style={slide.backgroundImage ? {
+                  backgroundImage: `url(${slide.backgroundImage})`,
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                } : undefined}
               >
-                {slide.showText !== false && (
-                  <>
-                    <p className="text-sm uppercase tracking-[0.3em] text-muted-foreground mb-4 font-body">
-                      {slide.subtitle}
-                    </p>
-                    <h1
-                      className="text-4xl md:text-6xl font-display font-bold leading-tight mb-6 whitespace-pre-line"
-                      style={{ fontSize: responsive?.heroTitleSizeMobile ? `clamp(${responsive.heroTitleSizeMobile}px, 5vw, 3.75rem)` : undefined }}
-                    >
-                      {slide.title}
-                    </h1>
-                    <p className="text-muted-foreground mb-8 text-lg font-body">
-                      {slide.description}
-                    </p>
-                  </>
+                {slide.backgroundImage && (
+                  <div className="absolute inset-0" style={{ backgroundColor: slide.overlayColor || '#000', opacity: slide.overlayOpacity ?? 0 }} />
                 )}
-                {slide.showButton !== false && slide.ctaText && (
+                <div
+                  className="container mx-auto px-4 relative z-10 flex flex-col justify-center h-full"
+                  style={{ minHeight: 'inherit' }}
+                >
                   <div
-                    className="flex gap-3"
+                    className={cn('max-w-xl flex flex-col', heroAlign[slide.contentAlign || 'left'])}
                     style={{
-                      transform: `translate(${slide.buttonOffsetX ?? 0}%, ${slide.buttonOffsetY ?? 0}%)`,
+                      transform: `translate(${slide.contentOffsetX ?? 0}%, ${slide.contentOffsetY ?? 0}%)`,
                     }}
                   >
-                    <Link to={slide.ctaLink || '/products'}>
-                      <Button size="lg" className="rounded-full px-8 font-body">
-                        {slide.ctaText}
-                        <ArrowRight className="ml-2 h-4 w-4" />
-                      </Button>
-                    </Link>
+                    {slide.showText !== false && (
+                      <>
+                        <p className="text-sm uppercase tracking-[0.3em] text-muted-foreground mb-4 font-body">
+                          {slide.subtitle}
+                        </p>
+                        <h1
+                          className="text-4xl md:text-6xl font-display font-bold leading-tight mb-6 whitespace-pre-line"
+                          style={{ fontSize: responsive?.heroTitleSizeMobile ? `clamp(${responsive.heroTitleSizeMobile}px, 5vw, 3.75rem)` : undefined }}
+                        >
+                          {slide.title}
+                        </h1>
+                        <p className="text-muted-foreground mb-8 text-lg font-body">
+                          {slide.description}
+                        </p>
+                      </>
+                    )}
+                    {slide.showButton !== false && slide.ctaText && (
+                      <div
+                        className="flex gap-3"
+                        style={{
+                          transform: `translate(${slide.buttonOffsetX ?? 0}%, ${slide.buttonOffsetY ?? 0}%)`,
+                        }}
+                      >
+                        <Link to={slide.ctaLink || '/products'}>
+                          <Button size="lg" className="rounded-full px-8 font-body">
+                            {slide.ctaText}
+                            <ArrowRight className="ml-2 h-4 w-4" />
+                          </Button>
+                        </Link>
+                      </div>
+                    )}
                   </div>
-                )}
-              </div>
-            </div>
+                </div>
+              </motion.div>
+            </AnimatePresence>
 
             {/* Dots */}
             {theme.hero.showDots && heroSlides.length > 1 && (
