@@ -8,9 +8,10 @@ import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { mockCategories } from '@/data/mock';
 
-const carouselSections = ['categories', 'featured-products'];
+const carouselSections = ['categories', 'featured-products', 'collections'];
 
 const availableSectionTypes: { type: ThemeHomepageSection['type']; label: string }[] = [
+  { type: 'collections', label: 'Coleção de Produtos' },
   { type: 'banner', label: 'Banner' },
   { type: 'double-banner', label: 'Banner Duplo' },
   { type: 'triple-banner', label: 'Banner Triplo' },

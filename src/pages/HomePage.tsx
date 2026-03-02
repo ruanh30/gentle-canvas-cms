@@ -554,6 +554,44 @@ const HomePage = () => {
         );
       }
 
+      case 'collections': {
+        const collectionId = section.settings?.collectionId as string;
+        const collection = collectionId
+          ? mockCollections.find(c => c.id === collectionId)
+          : mockCollections.find(c => c.slug === section.id || c.name === section.title);
+        if (!collection) return null;
+        const collectionProducts = mockProducts.filter(p => collection.productIds.includes(p.id));
+        if (collectionProducts.length === 0) return null;
+
+        return (
+          <section key={section.id} className={cn('container mx-auto px-4 py-16', wrapperClass)}>
+            <div className="flex items-center justify-between mb-8">
+              {section.showTitle !== false && (
+                <h2 className="text-2xl font-display font-bold">{section.title}</h2>
+              )}
+              <Link to="/products" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1 ml-auto">
+                Ver todos <ArrowRight className="h-4 w-4" />
+              </Link>
+            </div>
+            {isCarousel ? (
+              <SectionCarousel speed={carouselSpeed} showArrows={carouselShowArrows}>
+                {collectionProducts.map(product => (
+                  <div key={product.id} className="min-w-[260px] max-w-[280px] snap-start flex-shrink-0">
+                    <ProductCard product={product} />
+                  </div>
+                ))}
+              </SectionCarousel>
+            ) : (
+              <div className={cn('grid gap-6', gridCols[theme.category?.columnsDesktop] || 'grid-cols-2 md:grid-cols-3 lg:grid-cols-4')}>
+                {collectionProducts.map(product => (
+                  <ProductCard key={product.id} product={product} />
+                ))}
+              </div>
+            )}
+          </section>
+        );
+      }
+
       default:
         return null;
     }
