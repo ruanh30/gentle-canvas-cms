@@ -62,9 +62,10 @@ export function QuickViewPanel() {
               <OptionPicker label="Tipo de Quick View" value={qv.model || 'drawer-right'} onChange={v => set({ model: v as any })} options={[
                 { value: 'drawer-right', label: 'Painel Lateral', description: 'Abre um painel pela direita com overlay — ideal para navegação rápida' },
                 { value: 'modal-center', label: 'Janela Central', description: 'Modal centralizado com galeria + informações lado a lado' },
+                { value: 'full-page', label: 'Página Completa', description: 'Ocupa a tela inteira — experiência imersiva como página de produto' },
               ]} />
 
-              {qv.model !== 'modal-center' && (
+              {qv.model === 'drawer-right' && (
                 <NumberSlider label="Largura do painel (px)" value={qv.drawerWidth || 480} onChange={v => set({ drawerWidth: v })} min={420} max={520} />
               )}
               {qv.model === 'modal-center' && (
