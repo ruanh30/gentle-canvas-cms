@@ -528,7 +528,9 @@ export function ProductQuickView({ product, open, onClose }: QuickViewProps) {
     <div className="grid grid-cols-1 md:grid-cols-[1.15fr_0.85fr] h-full">
       <div className="hidden md:block bg-secondary/20 p-5 overflow-y-auto qv-scrollbar">
         <QuickViewGallery product={product} qv={qv} />
-        {qv?.showDescription !== false && <QuickViewDescription product={product} defaultOpen />}
+        <div className="mt-5">
+          {qv?.showDescription !== false && <QuickViewDescription product={product} defaultOpen />}
+        </div>
       </div>
       <div className="flex flex-col h-full">
         <QuickViewHeader product={product} onClose={onClose} qv={qv} />
