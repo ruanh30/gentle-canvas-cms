@@ -754,7 +754,7 @@ export function StoreHeader() {
       activeState?.blur && 'backdrop-blur-md',
       !activeState && 'bg-background/95 backdrop-blur-md supports-[backdrop-filter]:bg-background/80',
       activeState?.borderBottom && 'border-b',
-      !activeState && (h.headerSurface ?? true) && 'border-b border-border/60 shadow-[0_1px_3px_0_hsl(var(--foreground)/0.04),0_1px_2px_-1px_hsl(var(--foreground)/0.06)]',
+      !activeState && (h.headerSurface ?? true) && 'border-b border-border/40 shadow-[0_1px_2px_0_rgba(0,0,0,0.03)]',
       !activeState && !(h.headerSurface ?? true) && h.borderBottom && 'border-b border-border',
       activeState ? shadowMap[activeState.shadow] : (h.shadowOnScroll && scrolled ? 'shadow-md' : ''),
       h.sticky && 'sticky top-0'
