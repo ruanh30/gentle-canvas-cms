@@ -530,6 +530,11 @@ export function ProductQuickView({ product, open, onClose }: QuickViewProps) {
         <QuickViewGallery product={product} qv={qv} />
         <div className="mt-5">
           {qv?.showDescription !== false && <QuickViewDescription product={product} defaultOpen />}
+          {qv?.showSizeGuide && (
+            <AccordionSection icon={Ruler} title="Tabela de Medidas" defaultOpen>
+              <p className="text-sm text-muted-foreground">Consulte a tabela de medidas para escolher o tamanho ideal.</p>
+            </AccordionSection>
+          )}
         </div>
       </div>
       <div className="flex flex-col h-full">
