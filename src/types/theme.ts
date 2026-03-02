@@ -143,6 +143,16 @@ export interface ThemeHeaderSearch {
   shortcutEnabled: boolean;       // Ctrl+K or /
 }
 
+export interface ThemeMenuTypography {
+  fontFamily: string;
+  fontWeight: 400 | 500 | 600 | 700;
+  fontSizeDesktop: number;      // px (12-20)
+  fontSizeMobile: number;       // px (12-20)
+  letterSpacing: number;        // em (-0.02 to 0.20)
+  textTransform: 'none' | 'uppercase';
+  lineHeight: number;           // ratio (1.0-1.6)
+}
+
 export interface ThemeHeader {
   layout: 'classic' | 'centered' | 'minimal' | 'logo-center-nav-left' | 'hamburger-only' | 'top-bar-split' | 'double-row' | 'sidebar-nav' | 'transparent';
   sticky: boolean;
@@ -198,6 +208,8 @@ export interface ThemeHeader {
     linkBg: string;
     linkHoverBg: string;
   };
+  // Menu Typography
+  menuTypography: ThemeMenuTypography;
   announcement: ThemeAnnouncementBar;
   bannerBelow: ThemeBannerBelow;
 }
