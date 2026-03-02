@@ -189,7 +189,6 @@ export interface ThemeHeader {
   showSearch: boolean;
   searchStyle: 'inline' | 'modal' | 'drawer';
   showAccount: boolean;
-  showWishlist: boolean;
   showCart: boolean;
   cartBadgeStyle: 'dot' | 'count' | 'none';
   // States
@@ -273,7 +272,7 @@ export interface ThemeProductCard {
   showRating: boolean;
   showQuickView: boolean;
   quickViewStyle: 'modal' | 'drawer' | 'expand' | 'side-panel';
-  showWishlist: boolean;
+  
   showAddToCart: boolean;
   showBuyNow: boolean;
   buyNowHoverReveal: boolean;
@@ -556,7 +555,7 @@ export interface ThemeQuickView {
   showShippingEstimate: boolean;
   showSocialActions: boolean;
   socialActions: {
-    wishlist: boolean;
+    
     chat: boolean;
     share: boolean;
     whatsapp: boolean;

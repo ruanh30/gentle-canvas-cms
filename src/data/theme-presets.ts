@@ -157,7 +157,6 @@ export const defaultThemeConfig: ThemeConfig = {
     showSearch: true,
     searchStyle: 'modal',
     showAccount: true,
-    showWishlist: false,
     showCart: true,
     cartBadgeStyle: 'count',
     preset: 'custom',
@@ -277,7 +276,7 @@ export const defaultThemeConfig: ThemeConfig = {
     showRating: false,
     showQuickView: false,
     quickViewStyle: 'modal',
-    showWishlist: false,
+    
     showAddToCart: true,
     showBuyNow: true,
     buyNowHoverReveal: true,
@@ -510,7 +509,7 @@ export const defaultThemeConfig: ThemeConfig = {
     showShippingEstimate: true,
     showSocialActions: true,
     socialActions: {
-      wishlist: true,
+      
       chat: true,
       share: true,
       whatsapp: true,
