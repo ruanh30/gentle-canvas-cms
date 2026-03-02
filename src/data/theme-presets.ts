@@ -163,6 +163,15 @@ export const defaultThemeConfig: ThemeConfig = {
     searchIcon: 'Search',
     accountIcon: 'User',
     cartIcon: 'ShoppingBag',
+    menuTypography: {
+      fontFamily: 'Inter',
+      fontWeight: 500,
+      fontSizeDesktop: 14,
+      fontSizeMobile: 14,
+      letterSpacing: 0.02,
+      textTransform: 'uppercase',
+      lineHeight: 1.2,
+    },
     menuColors: { linkColor: '', linkHoverColor: '', linkActiveColor: '', linkBg: '', linkHoverBg: '' },
     states: {
       normal: { backgroundColor: '#ffffff', textColor: '#1a1a1a', borderBottom: true, borderColor: '#e5e7eb', shadow: 'none', blur: false, height: 64 },

@@ -413,8 +413,24 @@ export function StoreHeader() {
   const { itemCount } = useCart();
   const { user } = useAuth();
   const { theme } = useTheme();
+
+  // Menu typography config
+  const mt = theme.header?.menuTypography ?? { fontFamily: 'Inter', fontWeight: 500, fontSizeDesktop: 14, fontSizeMobile: 14, letterSpacing: 0.02, textTransform: 'uppercase' as const, lineHeight: 1.2 };
   const [searchOpen, setSearchOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+
+  // Dynamic Google Font loading for menu typography
+  useEffect(() => {
+    if (!mt.fontFamily) return;
+    const fontId = `menu-font-${mt.fontFamily.replace(/\s/g, '-')}`;
+    if (document.getElementById(fontId)) return;
+    const weights = [400, 500, 600, 700].join(';');
+    const link = document.createElement('link');
+    link.id = fontId;
+    link.rel = 'stylesheet';
+    link.href = `https://fonts.googleapis.com/css2?family=${encodeURIComponent(mt.fontFamily)}:wght@${weights}&display=swap`;
+    document.head.appendChild(link);
+  }, [mt.fontFamily]);
 
   const mm = theme.megaMenu;
   const hasCustomMenu = mm && mm.items && mm.items.length > 0;
@@ -569,10 +585,12 @@ export function StoreHeader() {
     const hoverStyle = h.menuHoverStyle || 'underline';
     const mc = h.menuColors ?? {};
     const itemStyle: React.CSSProperties = {
-      fontSize: h.menuFontSize,
-      fontWeight: h.menuFontWeight || 500,
-      textTransform: h.menuUppercase ? 'uppercase' : 'none',
-      letterSpacing: `${h.menuLetterSpacing}em`,
+      fontFamily: mt.fontFamily,
+      fontSize: mt.fontSizeDesktop,
+      fontWeight: mt.fontWeight,
+      textTransform: mt.textTransform,
+      letterSpacing: `${mt.letterSpacing}em`,
+      lineHeight: mt.lineHeight,
       ...(mc.linkColor ? { color: mc.linkColor } : {}),
     };
     const itemClass = cn(
@@ -719,12 +737,12 @@ export function StoreHeader() {
           )}
 
           {/* Nav items */}
-          <nav className="flex flex-col gap-4 mt-4 flex-1">
-            <Link to="/" className="text-lg font-display font-semibold">Início</Link>
+          <nav className="flex flex-col gap-4 mt-4 flex-1" style={{ fontFamily: mt.fontFamily, fontSize: mt.fontSizeMobile, fontWeight: mt.fontWeight, letterSpacing: `${mt.letterSpacing}em`, textTransform: mt.textTransform, lineHeight: mt.lineHeight }}>
+            <Link to="/" className="font-display font-semibold" style={{ fontSize: mt.fontSizeMobile + 2 }}>Início</Link>
             {hasCustomMenu ? mm!.items.map(mi => (
               <MobileNavItem key={mi.id} item={mi} showBadges={mm!.showBadges} maxLevels={mobile.maxLevels} groupStyle={mobile.groupStyle} />
             )) : mockCategories.slice(0, 5).map(cat => (
-              <Link key={cat.id} to={`/products?category=${cat.slug}`} className="text-base hover:text-foreground/80 transition-colors">
+              <Link key={cat.id} to={`/products?category=${cat.slug}`} className="hover:text-foreground/80 transition-colors">
                 {cat.name}
               </Link>
             ))}

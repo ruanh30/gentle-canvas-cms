@@ -1112,11 +1112,61 @@ function MenuStyleSection() {
         { value: 'mega-menu', label: 'Mega Menu', desc: 'Painel expandido' },
       ]} />
 
-      <ControlGroup title="Tipografia do Menu" hint="Fonte, peso e espaçamento dos links de navegação">
-        <NumSlider label="Tamanho da fonte" value={h.menuFontSize} onChange={v => set({ menuFontSize: v })} min={10} max={18} suffix="px" hint="Tamanho dos textos de cada item do menu" />
-        <NumSlider label="Peso da fonte" value={h.menuFontWeight || 500} onChange={v => set({ menuFontWeight: v })} min={300} max={700} step={100} hint="300 = Light, 400 = Regular, 500 = Medium, 600 = Semi, 700 = Bold" />
-        <ToggleRow label="Texto em maiúsculas" hint="Transforma todos os links em CAIXA ALTA (ex: HOME, PRODUTOS, SOBRE)" checked={h.menuUppercase} onChange={v => set({ menuUppercase: v })} />
-        <NumSlider label="Espaçamento entre letras" value={Math.round((h.menuLetterSpacing ?? 0.05) * 100)} onChange={v => set({ menuLetterSpacing: v / 100 })} min={0} max={20} hint="Aumenta a distância entre cada letra — valores altos criam estilo editorial" />
+      <ControlGroup title="Tipografia do Menu" hint="Fonte, peso, tamanho e espaçamento dos links de navegação">
+        {(() => {
+          const mt = h.menuTypography ?? { fontFamily: 'Inter', fontWeight: 500, fontSizeDesktop: 14, fontSizeMobile: 14, letterSpacing: 0.02, textTransform: 'uppercase', lineHeight: 1.2 };
+          const setMT = (u: Partial<typeof mt>) => updateDraftSection('header', { menuTypography: { ...mt, ...u } });
+
+          const CURATED_FONTS = [
+            { value: 'Inter', label: 'Inter', desc: 'Clean e moderna' },
+            { value: 'Poppins', label: 'Poppins', desc: 'Geométrica e amigável' },
+            { value: 'Montserrat', label: 'Montserrat', desc: 'Elegante e versátil' },
+            { value: 'DM Sans', label: 'DM Sans', desc: 'Minimalista e leve' },
+            { value: 'Rubik', label: 'Rubik', desc: 'Arredondada e legível' },
+            { value: 'Manrope', label: 'Manrope', desc: 'Moderna e técnica' },
+            { value: 'Nunito Sans', label: 'Nunito Sans', desc: 'Suave e equilibrada' },
+          ];
+
+          return (
+            <>
+              <div className="space-y-2">
+                <p className="text-[13px] font-medium text-foreground">Fonte</p>
+                <p className="text-[10px] text-muted-foreground/60">Família tipográfica aplicada apenas nos links do menu</p>
+                <div className="grid grid-cols-1 gap-1.5">
+                  {CURATED_FONTS.map(f => (
+                    <button key={f.value} onClick={() => setMT({ fontFamily: f.value })}
+                      className={cn(
+                        'w-full text-left px-3.5 py-2.5 rounded-xl text-[13px] border transition-all duration-150',
+                        mt.fontFamily === f.value
+                          ? 'bg-[hsl(var(--flash-brand)/0.06)] border-[hsl(var(--flash-brand-deep)/0.3)] ring-1 ring-[hsl(var(--flash-brand-deep)/0.15)]'
+                          : 'bg-muted/20 border-border/40 hover:bg-muted/40 hover:border-border/60'
+                      )}>
+                      <div className="flex items-center justify-between">
+                        <span className={cn('font-medium', mt.fontFamily === f.value ? 'text-[hsl(var(--flash-brand-deep))]' : 'text-foreground')} style={{ fontFamily: f.value }}>{f.label}</span>
+                        {mt.fontFamily === f.value && <Check className="h-3.5 w-3.5 text-[hsl(var(--flash-brand-deep))]" />}
+                      </div>
+                      <span className="text-[11px] text-muted-foreground/60 block mt-0.5">{f.desc}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <Pills label="Peso da fonte" value={String(mt.fontWeight)} onChange={v => setMT({ fontWeight: Number(v) as any })} hint="Grossura dos caracteres do menu" options={[
+                { value: '400', label: 'Regular' },
+                { value: '500', label: 'Medium' },
+                { value: '600', label: 'Semibold' },
+                { value: '700', label: 'Bold' },
+              ]} />
+              <NumSlider label="Tamanho desktop" value={mt.fontSizeDesktop} onChange={v => setMT({ fontSizeDesktop: v })} min={12} max={20} suffix="px" hint="Tamanho da fonte dos links no desktop" />
+              <NumSlider label="Tamanho mobile" value={mt.fontSizeMobile} onChange={v => setMT({ fontSizeMobile: v })} min={12} max={20} suffix="px" hint="Tamanho da fonte dos links no menu mobile" />
+              <NumSlider label="Espaçamento entre letras" value={Math.round(mt.letterSpacing * 100)} onChange={v => setMT({ letterSpacing: v / 100 })} min={-2} max={20} hint="Distância entre cada letra — valores altos criam estilo editorial" />
+              <Pills label="Transformação" value={mt.textTransform} onChange={v => setMT({ textTransform: v as any })} hint="Caixa alta ou normal" options={[
+                { value: 'none', label: 'Normal' },
+                { value: 'uppercase', label: 'MAIÚSCULAS' },
+              ]} />
+              <NumSlider label="Altura da linha" value={Math.round(mt.lineHeight * 10)} onChange={v => setMT({ lineHeight: v / 10 })} min={10} max={16} hint="Espaçamento vertical — valores baixos alinham melhor no menu" />
+            </>
+          );
+        })()}
       </ControlGroup>
 
       <ControlGroup title="Interação & Espaçamento" hint="Comportamento ao hover e separadores entre itens">
