@@ -366,7 +366,7 @@ function LayoutPreview({ layout }: { layout: string }) {
   const logoEl = (
     <div className="flex items-center gap-1.5">
       <div className="w-4 h-4 rounded bg-foreground/80" />
-      <span className="text-[11px] font-bold text-foreground tracking-tight">MarcaXYZ</span>
+      <div className="w-14 h-2.5 rounded bg-foreground/60" />
     </div>
   );
   const navItems = ['Início', 'Novidades', 'Masculino', 'Feminino', 'Sale'];
@@ -393,10 +393,19 @@ function LayoutPreview({ layout }: { layout: string }) {
       </div>
     </div>
   );
+  const iconsNoSearch = (
+    <div className="flex items-center gap-2">
+      <User className="h-3.5 w-3.5 text-muted-foreground" />
+      <div className="relative">
+        <ShoppingBag className="h-3.5 w-3.5 text-muted-foreground" />
+        <span className="absolute -top-1 -right-1 bg-foreground text-background text-[7px] font-bold rounded-full h-3 w-3 flex items-center justify-center">2</span>
+      </div>
+    </div>
+  );
   const searchBar = (
-    <div className="flex items-center gap-1.5 bg-muted/60 rounded-md px-2.5 py-1 min-w-[120px]">
+    <div className="flex items-center gap-1.5 bg-secondary/60 rounded-full px-2.5 py-1 min-w-[100px]">
       <Search className="h-3 w-3 text-muted-foreground/60" />
-      <span className="text-[10px] text-muted-foreground/50">Buscar produtos...</span>
+      <span className="text-[10px] text-muted-foreground/50">Buscar...</span>
     </div>
   );
   const hamburger = (
@@ -415,6 +424,7 @@ function LayoutPreview({ layout }: { layout: string }) {
             <div className="flex items-center justify-center relative py-2.5 px-4">
               <div className="absolute left-4">{icons}</div>
               {logoEl}
+              <div className="absolute right-4">{iconsNoSearch}</div>
             </div>
             <div className="flex items-center justify-center gap-5 pb-2 border-t border-border/30 pt-2 px-4">
               {navItems.map((item, i) => (
@@ -451,7 +461,7 @@ function LayoutPreview({ layout }: { layout: string }) {
         return (
           <div className="flex items-center justify-between px-4 py-2.5">
             <div className="flex items-center gap-5">{logoEl}{nav}</div>
-            {icons}
+            <div className="flex items-center gap-3">{searchBar}{iconsNoSearch}</div>
           </div>
         );
       case 'double-row':
@@ -460,7 +470,7 @@ function LayoutPreview({ layout }: { layout: string }) {
             <div className="flex items-center justify-between px-4 py-2">
               {logoEl}
               {searchBar}
-              {icons}
+              {iconsNoSearch}
             </div>
             <div className="flex items-center justify-center gap-5 pb-2 border-t border-border/30 pt-2 px-4">
               {navItems.map((item, i) => (
@@ -483,15 +493,15 @@ function LayoutPreview({ layout }: { layout: string }) {
           <div className="flex items-center justify-between px-4 py-2.5 bg-gradient-to-b from-foreground/5 to-transparent">
             {logoEl}
             {nav}
-            {icons}
+            <div className="flex items-center gap-3">{searchBar}{iconsNoSearch}</div>
           </div>
         );
-      default:
+      default: // classic
         return (
           <div className="flex items-center justify-between px-4 py-2.5">
             {logoEl}
             {nav}
-            {icons}
+            <div className="flex items-center gap-3">{searchBar}{iconsNoSearch}</div>
           </div>
         );
     }
@@ -502,10 +512,10 @@ function LayoutPreview({ layout }: { layout: string }) {
       <div className="rounded-lg bg-background border border-border shadow-sm overflow-hidden relative">
         {renderLayout()}
       </div>
-      <div className="mt-1.5 rounded-b-lg bg-muted/30 px-4 py-2 space-y-1.5">
-        <div className="h-2 bg-muted/60 rounded w-2/3" />
-        <div className="h-2 bg-muted/60 rounded w-1/2" />
-        <div className="h-2 bg-muted/60 rounded w-3/4" />
+      <div className="mt-1.5 rounded-b-lg bg-muted/20 px-4 py-2 space-y-1.5">
+        <div className="h-2 bg-muted/40 rounded w-2/3" />
+        <div className="h-2 bg-muted/40 rounded w-1/2" />
+        <div className="h-2 bg-muted/40 rounded w-3/4" />
       </div>
     </PreviewWrapper>
   );
@@ -674,7 +684,7 @@ function IconsPreview({ iconSize, showSearch, showAccount, showWishlist, showCar
         <div className="flex items-center justify-between px-5 py-3">
           <div className="flex items-center gap-1.5">
             <div className="w-4 h-4 rounded bg-foreground/80" />
-            <span className="text-[11px] font-bold text-foreground tracking-tight">Marca</span>
+            <div className="w-12 h-2.5 rounded bg-foreground/60" />
           </div>
           <div className="flex items-center gap-3 text-[11px] text-muted-foreground">
             <span>Início</span>
