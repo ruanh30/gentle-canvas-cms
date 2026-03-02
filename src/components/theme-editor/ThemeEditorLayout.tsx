@@ -53,10 +53,10 @@ const sections: EditorSectionItem[] = [
   // Início Rápido
   { id: 'presets', label: 'Temas Prontos', icon: Sparkles, group: 'Início Rápido' },
   // Design & Estilo
-  { id: 'colors', label: 'Cores', icon: Palette, group: 'Design & Estilo' },
-  { id: 'typography', label: 'Tipografia', icon: Type, group: 'Design & Estilo' },
+  { id: 'colors', label: 'Cores Global', icon: Palette, group: 'Design & Estilo' },
+  { id: 'typography', label: 'Tipografia Global', icon: Type, group: 'Design & Estilo' },
   { id: 'global', label: 'Layout Global', icon: Layout, group: 'Design & Estilo' },
-  { id: 'buttons', label: 'Botões', icon: MousePointer, group: 'Design & Estilo' },
+  { id: 'buttons', label: 'Botões Global', icon: MousePointer, group: 'Design & Estilo' },
   
   // Estrutura
   { id: 'logo', label: 'Logo & Marca', icon: Image, group: 'Estrutura' },
