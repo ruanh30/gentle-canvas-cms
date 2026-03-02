@@ -1276,7 +1276,7 @@ function IconsSection() {
     <div className="space-y-5">
       <div>
         <h3 className="text-[15px] font-semibold text-foreground">Ícones & Ações</h3>
-        <p className="text-[12px] text-muted-foreground/60 mt-0.5">Controle quais ícones aparecem no cabeçalho, seu tamanho e espessura. Esses ícones são atalhos para busca, conta, favoritos e carrinho.</p>
+        <p className="text-[12px] text-muted-foreground/60 mt-0.5">Controle quais ícones aparecem no cabeçalho, seu tamanho e espessura. Esses ícones são atalhos para busca, conta e carrinho.</p>
       </div>
 
       <NumSlider label="Tamanho dos ícones" value={h.iconSize} onChange={v => set({ iconSize: v })} min={16} max={28} suffix="px" hint="Dimensão em pixels de cada ícone no cabeçalho" />
@@ -1290,7 +1290,7 @@ function IconsSection() {
       <ControlGroup title="Visibilidade" hint="Escolha quais ícones de ação serão exibidos no cabeçalho">
         <ToggleRow label="Busca" hint="Ícone de lupa — permite ao cliente buscar produtos" checked={h.showSearch} onChange={v => set({ showSearch: v })} />
         <ToggleRow label="Conta" hint="Ícone de perfil — leva para login ou área do cliente" checked={h.showAccount} onChange={v => set({ showAccount: v })} />
-        <ToggleRow label="Wishlist" hint="Ícone de coração — acessa a lista de produtos favoritos" checked={h.showWishlist} onChange={v => set({ showWishlist: v })} />
+        
         <ToggleRow label="Carrinho" hint="Ícone da sacola — mostra o carrinho de compras" checked={h.showCart} onChange={v => set({ showCart: v })} />
       </ControlGroup>
 

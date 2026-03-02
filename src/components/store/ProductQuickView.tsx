@@ -371,11 +371,6 @@ export function ProductQuickView({ product, open, onClose }: QuickViewProps) {
         {/* ── 6. Social actions (icon buttons) ── */}
         {qv?.showSocialActions !== false && (
           <div className="flex items-center justify-center gap-3 pt-1">
-            {qv?.socialActions?.wishlist !== false && (
-              <IconBtn aria-label="Favoritar">
-                <Heart className="h-[18px] w-[18px] text-muted-foreground" />
-              </IconBtn>
-            )}
             {qv?.socialActions?.share !== false && (
               <IconBtn aria-label="Compartilhar">
                 <Share2 className="h-[18px] w-[18px] text-muted-foreground" />

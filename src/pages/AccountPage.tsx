@@ -4,7 +4,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { LogOut, User, MapPin, Package, Heart } from 'lucide-react';
+import { LogOut, User, MapPin, Package } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
 
 const AccountPage = () => {
@@ -32,10 +32,6 @@ const AccountPage = () => {
           <CardDescription className="font-body">{user.email}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-3">
-          <NavLink to="/wishlist" className="flex items-center gap-3 p-3 rounded-lg hover:bg-secondary transition-colors font-body text-sm">
-            <Heart className="h-4 w-4 text-muted-foreground" />
-            Meus Favoritos
-          </NavLink>
           <NavLink to="/orders" className="flex items-center gap-3 p-3 rounded-lg hover:bg-secondary transition-colors font-body text-sm">
             <Package className="h-4 w-4 text-muted-foreground" />
             Meus Pedidos
