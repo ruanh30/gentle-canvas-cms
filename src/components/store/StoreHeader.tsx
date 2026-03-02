@@ -379,13 +379,11 @@ export function StoreHeader() {
     const padded = h.menuItemPadding ?? true;
     const itemStyle: React.CSSProperties = {
       fontSize: h.menuFontSize,
-      textTransform: h.menuDesktopModel === 'model2' ? 'lowercase' : h.menuUppercase ? 'uppercase' : 'none',
+      textTransform: h.menuUppercase ? 'uppercase' : 'none',
       letterSpacing: `${h.menuLetterSpacing}em`,
     };
     const itemClass = cn(
       'font-medium text-muted-foreground hover:text-foreground transition-all duration-150 tracking-wider',
-      h.menuDesktopModel === 'model3' && 'font-bold tracking-widest',
-      h.menuDesktopModel === 'model4' && 'border-b-2 border-transparent hover:border-foreground pb-0.5',
       extraClass,
     );
 
@@ -486,10 +484,7 @@ export function StoreHeader() {
             </Link>
 
             {h.layout !== 'hamburger-only' && h.layout !== 'centered' && (
-              <nav className={cn(
-                'hidden lg:flex items-center gap-1',
-                h.menuDesktopModel === 'model4' && 'border-b-2 border-border pb-1',
-              )}>
+              <nav className="hidden lg:flex items-center gap-1">
                 {renderNavItems()}
               </nav>
             )}
