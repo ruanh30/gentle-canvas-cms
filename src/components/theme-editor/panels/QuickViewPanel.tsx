@@ -60,14 +60,12 @@ export function QuickViewPanel() {
           {activeTab === 'modelo' && (
             <>
               <OptionPicker label="Tipo de Quick View" value={qv.model || 'drawer-right'} onChange={v => set({ model: v as any })} options={[
-                { value: 'drawer-right', label: 'Drawer Right', description: 'Padrão premium — abre da direita com overlay' },
-                { value: 'drawer-left', label: 'Drawer Left', description: 'Alternativo — abre pela esquerda' },
-                { value: 'modal-center', label: 'Modal Center', description: 'Modal centralizado com galeria + info lado a lado' },
-                { value: 'bottom-sheet', label: 'Bottom Sheet', description: 'Mobile: sobe por baixo / Desktop: drawer right' },
+                { value: 'drawer-right', label: 'Painel Lateral', description: 'Abre um painel pela direita com overlay — ideal para navegação rápida' },
+                { value: 'modal-center', label: 'Janela Central', description: 'Modal centralizado com galeria + informações lado a lado' },
               ]} />
 
-              {(qv.model === 'drawer-right' || qv.model === 'drawer-left' || qv.model === 'bottom-sheet') && (
-                <NumberSlider label="Largura do drawer (px)" value={qv.drawerWidth || 480} onChange={v => set({ drawerWidth: v })} min={420} max={520} />
+              {qv.model !== 'modal-center' && (
+                <NumberSlider label="Largura do painel (px)" value={qv.drawerWidth || 480} onChange={v => set({ drawerWidth: v })} min={420} max={520} />
               )}
               {qv.model === 'modal-center' && (
                 <NumberSlider label="Largura do modal (px)" value={qv.modalWidth || 860} onChange={v => set({ modalWidth: v })} min={720} max={920} />
