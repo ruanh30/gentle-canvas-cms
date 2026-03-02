@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { ShoppingBag, Search, User, Menu, Heart, ShoppingCart, Plus, PackagePlus, Store, type LucideIcon } from 'lucide-react';
+import { ShoppingBag, Search, User, Menu, Heart, ShoppingCart, Plus, PackagePlus, Store, ChevronDown, type LucideIcon } from 'lucide-react';
 import { useCart } from '@/contexts/CartContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { mockCategories } from '@/data/mock';
 import { cn } from '@/lib/utils';
+import type { ThemeMenuItem } from '@/types/theme';
 
 function AnnouncementBar() {
   const { theme } = useTheme();
@@ -143,6 +144,71 @@ function BannerBelow() {
 
 const headerCartIconMap: Record<string, LucideIcon> = { ShoppingBag, ShoppingCart, Plus, PackagePlus, Heart, Store };
 
+function NavItem({ item, className, style, openNewTab }: {
+  item: ThemeMenuItem;
+  className?: string;
+  style?: React.CSSProperties;
+  openNewTab?: boolean;
+}) {
+  const [open, setOpen] = useState(false);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout>>();
+  const hasChildren = item.children && item.children.length > 0;
+
+  const handleEnter = () => {
+    clearTimeout(timeoutRef.current);
+    setOpen(true);
+  };
+  const handleLeave = () => {
+    timeoutRef.current = setTimeout(() => setOpen(false), 150);
+  };
+
+  if (!hasChildren) {
+    return (
+      <Link
+        to={item.link || '#'}
+        className={className}
+        style={style}
+        {...(openNewTab ? { target: '_blank', rel: 'noopener' } : {})}
+      >
+        {item.label}
+      </Link>
+    );
+  }
+
+  return (
+    <div className="relative" onMouseEnter={handleEnter} onMouseLeave={handleLeave}>
+      <Link
+        to={item.link || '#'}
+        className={cn(className, 'inline-flex items-center gap-1')}
+        style={style}
+        {...(openNewTab ? { target: '_blank', rel: 'noopener' } : {})}
+      >
+        {item.label}
+        <ChevronDown className={cn('h-3 w-3 transition-transform', open && 'rotate-180')} />
+      </Link>
+      {open && (
+        <div className="absolute top-full left-0 pt-2 z-50">
+          <div className="bg-background border border-border rounded-md shadow-lg py-1.5 min-w-[180px]">
+            {item.children.map(child => (
+              <Link
+                key={child.id}
+                to={child.link || '#'}
+                className="block px-4 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+                {...(child.openNewTab ? { target: '_blank', rel: 'noopener' } : {})}
+              >
+                {child.label}
+                {child.badge && (
+                  <span className="ml-2 text-[10px] font-bold px-1.5 py-0.5 rounded" style={{ backgroundColor: child.badgeColor, color: '#fff' }}>{child.badge}</span>
+                )}
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export function StoreHeader() {
   const { itemCount } = useCart();
   const { user } = useAuth();
@@ -222,9 +288,9 @@ export function StoreHeader() {
               h.menuDesktopModel === 'model4' && 'border-b-2 border-border pb-1',
             )}>
               {hasCustomMenu ? mm!.items.map(mi => (
-                <Link
+                <NavItem
                   key={mi.id}
-                  to={mi.link || '#'}
+                  item={mi}
                   className={cn(
                     'font-medium text-muted-foreground hover:text-foreground transition-colors tracking-wider',
                     h.menuDesktopModel === 'model3' && 'font-bold tracking-widest',
@@ -235,10 +301,8 @@ export function StoreHeader() {
                     textTransform: h.menuDesktopModel === 'model2' ? 'lowercase' : h.menuUppercase ? 'uppercase' : 'none',
                     letterSpacing: `${h.menuLetterSpacing}em`,
                   }}
-                  {...(mi.openNewTab ? { target: '_blank', rel: 'noopener' } : {})}
-                >
-                  {mi.label}
-                </Link>
+                  openNewTab={mi.openNewTab}
+                />
               )) : mockCategories.slice(0, 5).map(cat => (
                 <Link
                   key={cat.id}
@@ -296,18 +360,16 @@ export function StoreHeader() {
         {h.layout === 'centered' && (
           <nav className="hidden lg:flex items-center justify-center gap-8 pb-3">
             {hasCustomMenu ? mm!.items.map(mi => (
-              <Link
+              <NavItem
                 key={mi.id}
-                to={mi.link || '#'}
+                item={mi}
                 className="font-medium text-muted-foreground hover:text-foreground transition-colors tracking-wider"
                 style={{
                   fontSize: h.menuFontSize,
                   textTransform: h.menuUppercase ? 'uppercase' : 'none',
                 }}
-                {...(mi.openNewTab ? { target: '_blank', rel: 'noopener' } : {})}
-              >
-                {mi.label}
-              </Link>
+                openNewTab={mi.openNewTab}
+              />
             )) : mockCategories.slice(0, 5).map(cat => (
               <Link
                 key={cat.id}
