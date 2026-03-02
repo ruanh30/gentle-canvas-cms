@@ -6,7 +6,7 @@ import {
   Menu, ExternalLink, Tag, Settings2, PanelTop, Megaphone, ImageIcon,
   Eye, EyeOff, Home, Search, User, Heart, ShoppingBag, AlignLeft, AlignCenter, Minus
 } from 'lucide-react';
-import flashLojaLogo from '@/assets/flashloja-logo.png';
+
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
@@ -365,7 +365,8 @@ function PreviewWrapper({ children, label = 'Pré-Visualização' }: { children:
 function LayoutPreview({ layout }: { layout: string }) {
   const logoEl = (
     <div className="flex items-center gap-1.5">
-      <img src={flashLojaLogo} alt="FlashLoja" className="h-5 object-contain bg-background rounded" />
+      <div className="w-4 h-4 rounded bg-foreground/80" />
+      <span className="text-[11px] font-bold text-foreground tracking-tight">MarcaXYZ</span>
     </div>
   );
   const navItems = ['Início', 'Novidades', 'Masculino', 'Feminino', 'Sale'];
@@ -526,7 +527,7 @@ function BehaviorPreview({ sticky, shrinkOnScroll, shadowOnScroll, borderBottom,
               'bg-background px-3 flex items-center justify-between',
               borderBottom && 'border-b border-border',
             )} style={{ height: normalH }}>
-              <img src={flashLojaLogo} alt="FlashLoja" className="h-4 object-contain bg-background rounded" />
+              <div className="flex items-center gap-1"><div className="w-3 h-3 rounded bg-foreground/80" /><span className="text-[9px] font-bold text-foreground">Marca</span></div>
             </div>
             <div className="px-3 py-2 space-y-1.5">
               <div className="h-1.5 bg-muted/40 rounded w-4/5" />
@@ -541,7 +542,7 @@ function BehaviorPreview({ sticky, shrinkOnScroll, shadowOnScroll, borderBottom,
               shadowOnScroll && 'shadow-md',
               !sticky && 'opacity-20',
             )} style={{ height: shrunkH }}>
-              <img src={flashLojaLogo} alt="FlashLoja" className={cn('object-contain bg-background rounded', shrinkOnScroll ? 'h-3' : 'h-4')} />
+              <div className="flex items-center gap-1"><div className={cn('rounded bg-foreground/80', shrinkOnScroll ? 'w-2.5 h-2.5' : 'w-3 h-3')} /><span className={cn('font-bold text-foreground', shrinkOnScroll ? 'text-[8px]' : 'text-[9px]')}>Marca</span></div>
             </div>
             {!sticky && (
               <div className="flex items-center justify-center py-2">
@@ -567,15 +568,16 @@ function MenuStylePreview({ menuStyle, menuFontSize, menuUppercase, menuFontWeig
   const fontSize = Math.max(10, Math.min(menuFontSize * 0.9, 14));
   const transform = menuUppercase ? 'uppercase' as const : 'none' as const;
   const weight = menuFontWeight || 500;
-  const gap = menuItemGap ?? 4;
+  const gap = menuItemGap ?? 8;
   const sep = menuSeparator || 'none';
   const sepChar = sep === 'line' ? '|' : sep === 'dot' ? '•' : sep === 'slash' ? '/' : '';
   const hover = menuHoverStyle || 'underline';
   const useUnderline = hover === 'underline' || hover === 'both';
 
   const logoSmall = (
-    <div className="flex items-center gap-1.5">
-      <img src={flashLojaLogo} alt="FlashLoja" className="h-5 object-contain bg-background rounded" />
+    <div className="flex items-center gap-1">
+      <div className="w-3.5 h-3.5 rounded bg-foreground/80" />
+      <span className="text-[10px] font-bold text-foreground tracking-tight">Marca</span>
     </div>
   );
   const iconsSmall = (
@@ -689,7 +691,8 @@ function IconsPreview({ iconSize, showSearch, showAccount, showWishlist, showCar
       <div className="rounded-lg bg-background border border-border shadow-sm overflow-hidden">
         <div className="flex items-center justify-between px-5 py-3">
           <div className="flex items-center gap-1.5">
-            <img src={flashLojaLogo} alt="FlashLoja" className="h-5 object-contain bg-background rounded" />
+            <div className="w-4 h-4 rounded bg-foreground/80" />
+            <span className="text-[11px] font-bold text-foreground tracking-tight">Marca</span>
           </div>
           <div className="flex items-center gap-3 text-[11px] text-muted-foreground">
             <span>Início</span>
@@ -779,7 +782,7 @@ function HeaderTab() {
           { value: 'background', label: 'Fundo', description: 'Fundo sutil ao passar o mouse' },
           { value: 'both', label: 'Ambos', description: 'Sublinhado + fundo ao mesmo tempo' },
         ]} />
-        <NumberSlider label="Espaçamento entre itens" value={h.menuItemGap ?? 4} onChange={v => set({ menuItemGap: v })} min={0} max={32} suffix="px" />
+        <NumberSlider label="Espaçamento entre itens" value={h.menuItemGap ?? 8} onChange={v => set({ menuItemGap: v })} min={0} max={80} suffix="px" />
         <OptionPicker label="Separador" value={h.menuSeparator || 'none'} onChange={v => set({ menuSeparator: v })} options={[
           { value: 'none', label: 'Nenhum' },
           { value: 'line', label: '| Linha' },
