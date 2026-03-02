@@ -351,11 +351,11 @@ const PREVIEW_ITEMS = [
 
 function PreviewWrapper({ children, label = 'Pré-Visualização' }: { children: React.ReactNode; label?: string }) {
   return (
-    <div className="mt-4 rounded-xl border border-border/60 bg-muted/20 overflow-hidden">
-      <div className="px-3 py-1.5 border-b border-border/40 bg-muted/30">
+    <div className="mt-4 rounded-xl border border-border/60 bg-background overflow-hidden">
+      <div className="px-3 py-1.5 border-b border-border/40 bg-muted/20">
         <p className="text-[10px] font-medium text-muted-foreground/60 uppercase tracking-wider">{label}</p>
       </div>
-      <div className="p-3">
+      <div className="p-3 bg-background">
         {children}
       </div>
     </div>
@@ -365,7 +365,7 @@ function PreviewWrapper({ children, label = 'Pré-Visualização' }: { children:
 function LayoutPreview({ layout }: { layout: string }) {
   const logoEl = (
     <div className="flex items-center gap-1.5">
-      <img src={flashLojaLogo} alt="FlashLoja" className="h-5 object-contain" />
+      <img src={flashLojaLogo} alt="FlashLoja" className="h-5 object-contain bg-background rounded" />
     </div>
   );
   const navItems = ['Início', 'Novidades', 'Masculino', 'Feminino', 'Sale'];
@@ -526,7 +526,7 @@ function BehaviorPreview({ sticky, shrinkOnScroll, shadowOnScroll, borderBottom,
               'bg-background px-3 flex items-center justify-between',
               borderBottom && 'border-b border-border',
             )} style={{ height: normalH }}>
-              <img src={flashLojaLogo} alt="FlashLoja" className="h-4 object-contain" />
+              <img src={flashLojaLogo} alt="FlashLoja" className="h-4 object-contain bg-background rounded" />
             </div>
             <div className="px-3 py-2 space-y-1.5">
               <div className="h-1.5 bg-muted/40 rounded w-4/5" />
@@ -541,7 +541,7 @@ function BehaviorPreview({ sticky, shrinkOnScroll, shadowOnScroll, borderBottom,
               shadowOnScroll && 'shadow-md',
               !sticky && 'opacity-20',
             )} style={{ height: shrunkH }}>
-              <img src={flashLojaLogo} alt="FlashLoja" className={cn('object-contain', shrinkOnScroll ? 'h-3' : 'h-4')} />
+              <img src={flashLojaLogo} alt="FlashLoja" className={cn('object-contain bg-background rounded', shrinkOnScroll ? 'h-3' : 'h-4')} />
             </div>
             {!sticky && (
               <div className="flex items-center justify-center py-2">
@@ -575,7 +575,7 @@ function MenuStylePreview({ menuStyle, menuFontSize, menuUppercase, menuFontWeig
 
   const logoSmall = (
     <div className="flex items-center gap-1.5">
-      <img src={flashLojaLogo} alt="FlashLoja" className="h-5 object-contain" />
+      <img src={flashLojaLogo} alt="FlashLoja" className="h-5 object-contain bg-background rounded" />
     </div>
   );
   const iconsSmall = (
@@ -689,7 +689,7 @@ function IconsPreview({ iconSize, showSearch, showAccount, showWishlist, showCar
       <div className="rounded-lg bg-background border border-border shadow-sm overflow-hidden">
         <div className="flex items-center justify-between px-5 py-3">
           <div className="flex items-center gap-1.5">
-            <img src={flashLojaLogo} alt="FlashLoja" className="h-5 object-contain" />
+            <img src={flashLojaLogo} alt="FlashLoja" className="h-5 object-contain bg-background rounded" />
           </div>
           <div className="flex items-center gap-3 text-[11px] text-muted-foreground">
             <span>Início</span>
