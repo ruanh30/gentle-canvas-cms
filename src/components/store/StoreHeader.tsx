@@ -547,6 +547,41 @@ function SearchDrawer({ placeholder, onSearch, onClose }: {
 }
 
 /* ================================================================== */
+/*  MOBILE DRAWER SEARCH                                                */
+/* ================================================================== */
+
+function MobileDrawerSearch({ placeholder, onSearch }: { placeholder: string; onSearch: (q: string) => void }) {
+  const [query, setQuery] = useState('');
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && query.trim()) onSearch(query.trim());
+  };
+
+  return (
+    <div className="relative mt-4 mb-2">
+      <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/50" />
+      <input
+        value={query}
+        onChange={e => setQuery(e.target.value)}
+        onKeyDown={handleKeyDown}
+        placeholder={placeholder}
+        className="w-full pl-9 pr-3 h-9 text-sm rounded-lg border border-border/60 outline-none focus:ring-1 focus:ring-border bg-muted/30 placeholder:text-muted-foreground/40"
+      />
+      {query.trim().length >= 2 && (
+        <div className="mt-2">
+          <SearchSuggestions
+            query={query}
+            maxResults={5}
+            onSelect={() => setQuery('')}
+            onViewAll={() => onSearch(query.trim())}
+          />
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ================================================================== */
 /*  MAIN HEADER                                                         */
 /* ================================================================== */
 
@@ -845,13 +880,7 @@ export function StoreHeader() {
         <SheetContent side={mobile.drawerPosition} className="w-72 flex flex-col">
           {/* Search in drawer */}
           {mobile.showSearchInDrawer && h.showSearch && (
-            <div className="relative mt-4 mb-2">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/50" />
-              <input
-                placeholder={placeholder}
-                className="w-full pl-9 pr-3 h-9 text-sm rounded-lg border border-border/60 outline-none focus:ring-1 focus:ring-border bg-muted/30 placeholder:text-muted-foreground/40"
-              />
-            </div>
+            <MobileDrawerSearch placeholder={placeholder} onSearch={handleSearch} />
           )}
 
           {/* Nav items */}
