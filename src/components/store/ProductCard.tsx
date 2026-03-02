@@ -185,8 +185,7 @@ export function ProductCard({ product }: Props) {
   return (
     <>
       <div className={cn(
-        'group relative',
-        shadowMap[c.shadow],
+        'group relative pm-global-shadow',
         c.hoverShadow && 'hover:shadow-lg transition-shadow',
         c.border && 'border border-border',
         radiusMap[c.imageBorderRadius],
