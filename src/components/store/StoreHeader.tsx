@@ -17,6 +17,7 @@ import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { mockCategories } from '@/data/mock';
 import { cn } from '@/lib/utils';
 import type { ThemeMenuItem } from '@/types/theme';
+import { SearchSuggestions } from '@/components/store/SearchSuggestions';
 
 /* ================================================================== */
 /*  ANNOUNCEMENT BAR                                                    */
@@ -181,6 +182,8 @@ function InlineSearchField({ placeholder, headerBg, headerText, className, onSea
   onSearch: (q: string) => void;
 }) {
   const [query, setQuery] = useState('');
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const wrapperRef = useRef<HTMLFormElement>(null);
   const isDark = React.useMemo(() => {
     if (!headerBg || headerBg === 'transparent') return false;
     const c = headerBg.replace(/\s/g, '');
@@ -198,13 +201,21 @@ function InlineSearchField({ placeholder, headerBg, headerText, className, onSea
     return false;
   }, [headerBg]);
 
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (wrapperRef.current && !wrapperRef.current.contains(e.target as Node)) setShowSuggestions(false);
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (query.trim()) onSearch(query.trim());
+    if (query.trim()) { setShowSuggestions(false); onSearch(query.trim()); }
   };
 
   return (
-    <form onSubmit={handleSubmit} className={cn('hidden lg:block relative w-52 xl:w-72 group', className)}>
+    <form ref={wrapperRef} onSubmit={handleSubmit} className={cn('hidden lg:block relative w-52 xl:w-72 group', className)}>
       <div className={cn(
         'flex items-center gap-2 h-10 px-3.5 rounded-full border transition-all duration-200',
         'focus-within:ring-2 focus-within:ring-offset-1',
@@ -220,7 +231,8 @@ function InlineSearchField({ placeholder, headerBg, headerText, className, onSea
         )} />
         <input
           value={query}
-          onChange={e => setQuery(e.target.value)}
+          onChange={e => { setQuery(e.target.value); setShowSuggestions(true); }}
+          onFocus={() => query.trim().length >= 2 && setShowSuggestions(true)}
           placeholder={placeholder}
           className={cn(
             'flex-1 bg-transparent text-sm outline-none',
@@ -230,6 +242,16 @@ function InlineSearchField({ placeholder, headerBg, headerText, className, onSea
           )}
         />
       </div>
+      {showSuggestions && (
+        <div className="absolute top-full left-0 right-0 mt-2 z-50">
+          <SearchSuggestions
+            query={query}
+            maxResults={5}
+            onSelect={() => setShowSuggestions(false)}
+            onViewAll={() => { setShowSuggestions(false); onSearch(query.trim()); }}
+          />
+        </div>
+      )}
     </form>
   );
 }
@@ -413,6 +435,118 @@ function MegaMenuItem({ item, className, style, openNewTab, padded, hoverStyle, 
 }
 
 /* ================================================================== */
+/*  SEARCH MODAL                                                        */
+/* ================================================================== */
+
+function SearchModal({ open, onOpenChange, placeholder, onSearch, shortcutEnabled }: {
+  open: boolean;
+  onOpenChange: (v: boolean) => void;
+  placeholder: string;
+  onSearch: (q: string) => void;
+  shortcutEnabled?: boolean;
+}) {
+  const [query, setQuery] = useState('');
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Escape') onOpenChange(false);
+    if (e.key === 'Enter' && query.trim()) { onOpenChange(false); onSearch(query.trim()); }
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-lg p-0 overflow-hidden rounded-xl border-border/50 shadow-[0_16px_70px_-12px_hsl(var(--foreground)/0.2)]">
+        <div className="p-4">
+          <div className="relative">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground/50" />
+            <input
+              value={query}
+              onChange={e => setQuery(e.target.value)}
+              placeholder={placeholder}
+              className="w-full pl-12 pr-4 h-14 text-base bg-transparent border-0 outline-none placeholder:text-muted-foreground/40"
+              autoFocus
+              onKeyDown={handleKeyDown}
+            />
+          </div>
+
+          {query.trim().length >= 2 ? (
+            <div className="border-t border-border/40 mt-2 pt-2 max-h-[360px] overflow-y-auto">
+              <SearchSuggestions
+                query={query}
+                maxResults={5}
+                flat
+                onSelect={() => onOpenChange(false)}
+                onViewAll={() => { onOpenChange(false); onSearch(query.trim()); }}
+              />
+            </div>
+          ) : (
+            <div className="border-t border-border/40 mt-2 pt-3">
+              <p className="text-[11px] text-muted-foreground/50 uppercase tracking-wider font-medium px-1">Sugestões populares</p>
+              <div className="flex flex-wrap gap-1.5 mt-2">
+                {['Novidades', 'Promoções', 'Vestidos', 'Camisetas'].map(tag => (
+                  <button key={tag} onClick={() => { onOpenChange(false); onSearch(tag); }}
+                    className="px-3 py-1.5 text-xs text-muted-foreground bg-secondary/80 hover:bg-secondary rounded-full cursor-pointer transition-colors">
+                    {tag}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {shortcutEnabled && (
+            <div className="border-t border-border/30 mt-3 pt-2 flex justify-end">
+              <span className="text-[10px] text-muted-foreground/40">Esc para fechar • Ctrl+K para abrir</span>
+            </div>
+          )}
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+/* ================================================================== */
+/*  SEARCH DRAWER                                                       */
+/* ================================================================== */
+
+function SearchDrawer({ placeholder, onSearch, onClose }: {
+  placeholder: string;
+  onSearch: (q: string) => void;
+  onClose: () => void;
+}) {
+  const [query, setQuery] = useState('');
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Escape') onClose();
+    if (e.key === 'Enter' && query.trim()) { onClose(); onSearch(query.trim()); }
+  };
+
+  return (
+    <div className="pb-4 pt-2 animate-in slide-in-from-top-2 duration-300">
+      <div className="relative max-w-lg mx-auto">
+        <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/50" />
+        <input
+          value={query}
+          onChange={e => setQuery(e.target.value)}
+          placeholder={placeholder}
+          className="w-full pl-11 pr-4 h-11 text-sm bg-secondary/60 rounded-full border-0 outline-none ring-1 ring-border/40 focus:ring-border focus:bg-background transition-all duration-200 placeholder:text-muted-foreground/40"
+          autoFocus
+          onKeyDown={handleKeyDown}
+        />
+        {query.trim().length >= 2 && (
+          <div className="absolute top-full left-0 right-0 mt-2 z-50">
+            <SearchSuggestions
+              query={query}
+              maxResults={5}
+              onSelect={onClose}
+              onViewAll={() => { onClose(); onSearch(query.trim()); }}
+            />
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/* ================================================================== */
 /*  MAIN HEADER                                                         */
 /* ================================================================== */
 
@@ -547,55 +681,11 @@ export function StoreHeader() {
     const handleSuggestionClick = (tag: string) => handleSearch(tag);
 
     if (h.searchStyle === 'modal') {
-      return (
-        <Dialog open={searchOpen} onOpenChange={setSearchOpen}>
-          <DialogContent className="sm:max-w-lg p-0 overflow-hidden rounded-xl border-border/50 shadow-[0_16px_70px_-12px_hsl(var(--foreground)/0.2)]">
-            <div className="p-4">
-              <div className="relative">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground/50" />
-                <input
-                  placeholder={placeholder}
-                  className="w-full pl-12 pr-4 h-14 text-base bg-transparent border-0 outline-none placeholder:text-muted-foreground/40"
-                  autoFocus
-                  onKeyDown={handleModalSearch}
-                />
-              </div>
-              <div className="border-t border-border/40 mt-2 pt-3">
-                <p className="text-[11px] text-muted-foreground/50 uppercase tracking-wider font-medium px-1">Sugestões populares</p>
-                <div className="flex flex-wrap gap-1.5 mt-2">
-                  {['Novidades', 'Promoções', 'Vestidos', 'Camisetas'].map(tag => (
-                    <button key={tag} onClick={() => handleSuggestionClick(tag)}
-                      className="px-3 py-1.5 text-xs text-muted-foreground bg-secondary/80 hover:bg-secondary rounded-full cursor-pointer transition-colors">
-                      {tag}
-                    </button>
-                  ))}
-                </div>
-              </div>
-              {searchConfig.shortcutEnabled && (
-                <div className="border-t border-border/30 mt-3 pt-2 flex justify-end">
-                  <span className="text-[10px] text-muted-foreground/40">Esc para fechar • Ctrl+K para abrir</span>
-                </div>
-              )}
-            </div>
-          </DialogContent>
-        </Dialog>
-      );
+      return <SearchModal open={searchOpen} onOpenChange={setSearchOpen} placeholder={placeholder} onSearch={handleSearch} shortcutEnabled={searchConfig.shortcutEnabled} />;
     }
 
     // drawer — slides from top
-    return (
-      <div className="pb-4 pt-2 animate-in slide-in-from-top-2 duration-300">
-        <div className="relative max-w-lg mx-auto">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/50" />
-          <input
-            placeholder={placeholder}
-            className="w-full pl-11 pr-4 h-11 text-sm bg-secondary/60 rounded-full border-0 outline-none ring-1 ring-border/40 focus:ring-border focus:bg-background transition-all duration-200 placeholder:text-muted-foreground/40"
-            autoFocus
-            onKeyDown={handleModalSearch}
-          />
-        </div>
-      </div>
-    );
+    return <SearchDrawer placeholder={placeholder} onSearch={handleSearch} onClose={() => setSearchOpen(false)} />;
   };
 
   const separatorChar = h.menuSeparator === 'line' ? '|' : h.menuSeparator === 'dot' ? '•' : h.menuSeparator === 'slash' ? '/' : '';
