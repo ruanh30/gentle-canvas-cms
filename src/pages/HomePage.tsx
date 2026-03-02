@@ -597,26 +597,6 @@ const HomePage = () => {
   return (
     <>
       {sections.filter(s => s.enabled).map(renderSection)}
-
-      {/* Collections */}
-      {activeCollections.map(collection => {
-        const collectionProducts = mockProducts.filter(p => collection.productIds.includes(p.id));
-        if (collectionProducts.length === 0) return null;
-        return (
-          <section key={collection.id} className="container mx-auto px-4 py-16">
-            <div className="flex items-center justify-between mb-8">
-              <h2 className="text-2xl font-display font-bold">{collection.name}</h2>
-            </div>
-            <SectionCarousel speed={5}>
-              {collectionProducts.map(product => (
-                <div key={product.id} className="min-w-[260px] max-w-[280px] snap-start flex-shrink-0">
-                  <ProductCard product={product} />
-                </div>
-              ))}
-            </SectionCarousel>
-          </section>
-        );
-      })}
     </>
   );
 };
