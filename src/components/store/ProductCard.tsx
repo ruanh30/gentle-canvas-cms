@@ -96,9 +96,8 @@ function BuyButton({ label, btnStyle, color, hoverColor, sideBySide, onClick, bu
     <button
       onClick={onClick}
       className={cn(
-        'pm-theme-btn font-medium transition-all hover:opacity-90 inline-flex items-center justify-center w-full',
+        'pm-theme-btn font-medium transition-all hover:opacity-90 inline-flex items-center justify-center',
         btnStyleMap[btnStyle] || 'rounded-md',
-        sideBySide && 'flex-1 min-w-0',
       )}
       style={{
         ...btnDimensions,
@@ -138,9 +137,8 @@ function CartButton({ label, btnStyle, sideBySide, compact, onClick, cartIcon }:
     <button
       onClick={onClick}
       className={cn(
-        'pm-theme-btn font-medium transition-all hover:opacity-90 inline-flex items-center justify-center w-full',
+        'pm-theme-btn font-medium transition-all hover:opacity-90 inline-flex items-center justify-center',
         btnStyleMap[btnStyle] || 'rounded-md',
-        compact ? '' : sideBySide && 'flex-1 min-w-0',
         isOutline && 'border-2 border-foreground text-foreground bg-transparent',
         isUnderline && 'border-b-2 border-foreground text-foreground bg-transparent',
         isGradient && 'bg-gradient-to-r from-foreground/90 to-foreground text-background',
@@ -269,7 +267,7 @@ export function ProductCard({ product }: Props) {
         </Link>
 
         {/* Action buttons */}
-        <div className={cn('mt-2 flex w-full', c.buttonLayout === 'side-by-side' ? 'flex-row gap-1' : 'flex-col gap-1')}>
+        <div className={cn('mt-2 flex items-center justify-center', c.buttonLayout === 'side-by-side' ? 'flex-row gap-2' : 'flex-col gap-1')}>
           {showBuy && (
             <BuyButton
               label={c.buyNowText || 'Comprar Agora'}
