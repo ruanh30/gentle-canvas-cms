@@ -235,7 +235,7 @@ export const defaultThemeConfig: ThemeConfig = {
 
   hero: {
     enabled: true,
-    height: 'large',
+    height: '500',
     autoplay: false,
     autoplaySpeed: 5,
     showDots: true,
