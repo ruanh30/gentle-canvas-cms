@@ -133,6 +133,7 @@ export const defaultThemeConfig: ThemeConfig = {
     menuFontSize: 13,
     menuUppercase: true,
     menuLetterSpacing: 0.1,
+    menuDesktopModel: 'model1' as const,
     iconSize: 20,
     showSearch: true,
     searchStyle: 'modal',
