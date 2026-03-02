@@ -150,7 +150,8 @@ export function StoreHeader() {
   const [searchOpen, setSearchOpen] = useState(false);
   const CartIconComponent = headerCartIconMap[theme.productCard?.addToCartIcon || ''] || ShoppingBag;
 
-  const navLinks = mockCategories.slice(0, 5);
+  const mm = theme.megaMenu;
+  const hasCustomMenu = mm && mm.items && mm.items.length > 0;
   const h = theme.header ?? {} as any;
   const isMinimal = h.layout === 'minimal' || h.layout === 'hamburger-only';
   const isCentered = h.layout === 'centered' || h.layout === 'logo-center-nav-left';
@@ -177,7 +178,25 @@ export function StoreHeader() {
             <SheetContent side="left" className="w-72">
               <nav className="flex flex-col gap-4 mt-8">
                 <Link to="/" className="text-lg font-display font-semibold">Início</Link>
-                {navLinks.map(cat => (
+                {hasCustomMenu ? mm!.items.map(mi => (
+                  <div key={mi.id}>
+                    <Link to={mi.link || '#'} className="text-base hover:text-foreground/80 transition-colors" {...(mi.openNewTab ? { target: '_blank', rel: 'noopener' } : {})}>
+                      {mi.label}
+                      {mm!.showBadges && mi.badge && (
+                        <span className="ml-2 text-[10px] font-bold px-1.5 py-0.5 rounded" style={{ backgroundColor: mi.badgeColor, color: '#fff' }}>{mi.badge}</span>
+                      )}
+                    </Link>
+                    {mi.children.length > 0 && (
+                      <div className="ml-4 mt-2 flex flex-col gap-2">
+                        {mi.children.map(sub => (
+                          <Link key={sub.id} to={sub.link || '#'} className="text-sm text-muted-foreground hover:text-foreground transition-colors" {...(sub.openNewTab ? { target: '_blank', rel: 'noopener' } : {})}>
+                            {sub.label}
+                          </Link>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )) : mockCategories.slice(0, 5).map(cat => (
                   <Link key={cat.id} to={`/products?category=${cat.slug}`} className="text-base hover:text-foreground/80 transition-colors">
                     {cat.name}
                   </Link>
@@ -199,7 +218,21 @@ export function StoreHeader() {
 
           {h.layout !== 'hamburger-only' && h.layout !== 'centered' && (
             <nav className="hidden lg:flex items-center gap-8">
-              {navLinks.map(cat => (
+              {hasCustomMenu ? mm!.items.map(mi => (
+                <Link
+                  key={mi.id}
+                  to={mi.link || '#'}
+                  className="font-medium text-muted-foreground hover:text-foreground transition-colors tracking-wider"
+                  style={{
+                    fontSize: h.menuFontSize,
+                    textTransform: h.menuUppercase ? 'uppercase' : 'none',
+                    letterSpacing: `${h.menuLetterSpacing}em`,
+                  }}
+                  {...(mi.openNewTab ? { target: '_blank', rel: 'noopener' } : {})}
+                >
+                  {mi.label}
+                </Link>
+              )) : mockCategories.slice(0, 5).map(cat => (
                 <Link
                   key={cat.id}
                   to={`/products?category=${cat.slug}`}
@@ -251,7 +284,20 @@ export function StoreHeader() {
 
         {h.layout === 'centered' && (
           <nav className="hidden lg:flex items-center justify-center gap-8 pb-3">
-            {navLinks.map(cat => (
+            {hasCustomMenu ? mm!.items.map(mi => (
+              <Link
+                key={mi.id}
+                to={mi.link || '#'}
+                className="font-medium text-muted-foreground hover:text-foreground transition-colors tracking-wider"
+                style={{
+                  fontSize: h.menuFontSize,
+                  textTransform: h.menuUppercase ? 'uppercase' : 'none',
+                }}
+                {...(mi.openNewTab ? { target: '_blank', rel: 'noopener' } : {})}
+              >
+                {mi.label}
+              </Link>
+            )) : mockCategories.slice(0, 5).map(cat => (
               <Link
                 key={cat.id}
                 to={`/products?category=${cat.slug}`}
