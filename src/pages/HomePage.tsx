@@ -10,7 +10,7 @@ import { cn } from '@/lib/utils';
 import { ThemeHomepageSection } from '@/types/theme';
 import { AnimatePresence, motion } from 'framer-motion';
 
-function SectionCarousel({ children, speed, showArrows = true, centered = false }: { children: React.ReactNode[]; speed: number; showArrows?: boolean; centered?: boolean }) {
+function SectionCarousel({ children, speed, showArrows = true, centered = false, gap = 16 }: { children: React.ReactNode[]; speed: number; showArrows?: boolean; centered?: boolean; gap?: number }) {
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -38,7 +38,7 @@ function SectionCarousel({ children, speed, showArrows = true, centered = false 
           <ChevronLeft className="h-5 w-5" />
         </button>
       )}
-      <div ref={scrollRef} className={cn("flex gap-4 overflow-x-auto scroll-smooth pb-4 snap-x snap-mandatory", showArrows ? "px-8" : "px-2", centered && "justify-center")} style={{ scrollbarWidth: 'none' }}>
+      <div ref={scrollRef} className={cn("flex overflow-x-auto scroll-smooth pb-4 snap-x snap-mandatory", showArrows ? "px-8" : "px-2", centered && "justify-center")} style={{ scrollbarWidth: 'none', gap: `${gap}px` }}>
         {children}
       </div>
       {showArrows && (
@@ -323,11 +323,11 @@ const HomePage = () => {
               <h2 className="text-2xl font-display font-bold mb-8 text-center">{section.title}</h2>
             )}
             {isCarousel ? (
-              <SectionCarousel speed={carouselSpeed} showArrows={carouselShowArrows} centered>
+              <SectionCarousel speed={carouselSpeed} showArrows={carouselShowArrows} centered gap={(section.settings?.carouselGap as number) ?? 16}>
                 {filteredCategories.map(categoryCard)}
               </SectionCarousel>
             ) : (
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6" style={{ gap: `${(section.settings?.gridGap as number) ?? 16}px` }}>
                 {filteredCategories.map(categoryCard)}
               </div>
             )}
