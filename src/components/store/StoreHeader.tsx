@@ -870,9 +870,10 @@ export function StoreHeader() {
           className="hidden lg:block"
           style={{
             ...(h.menuDividerLine
-              ? { boxShadow: '0 -1px 3px 0 rgba(0,0,0,0.06)' }
+              ? { borderTopWidth: '1px', borderTopStyle: 'solid' as const, borderTopColor: `color-mix(in srgb, ${activeState?.textColor || 'currentColor'} 12%, transparent)` }
               : {}
             ),
+            boxShadow: '0 1px 3px 0 rgba(0,0,0,0.05)',
           }}
         >
           <div style={containerStyle}>
@@ -892,9 +893,10 @@ export function StoreHeader() {
           className="hidden lg:block"
           style={{
             ...(h.menuDividerLine
-              ? { boxShadow: '0 -1px 3px 0 rgba(0,0,0,0.06)' }
+              ? { borderTopWidth: '1px', borderTopStyle: 'solid' as const, borderTopColor: `color-mix(in srgb, ${activeState?.textColor || 'currentColor'} 12%, transparent)` }
               : {}
             ),
+            boxShadow: '0 1px 3px 0 rgba(0,0,0,0.05)',
           }}
         >
           <div style={containerStyle}>
