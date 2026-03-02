@@ -112,6 +112,7 @@ const HomePage = () => {
   };
 
   const heroHeightMap: Record<string, string> = {
+    'extra-small': 'min-h-[200px]',
     small: 'min-h-[300px]',
     medium: 'min-h-[450px]',
     large: 'min-h-[600px]',
