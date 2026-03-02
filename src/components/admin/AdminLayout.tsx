@@ -1,12 +1,13 @@
 import React from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import { NavLink } from 'react-router-dom';
-import { Palette, Package, ImageIcon, ChevronLeft } from 'lucide-react';
+import { Palette, Package, Menu, ImageIcon, ChevronLeft } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const navItems = [
   { to: '/admin/customization', label: 'Personalização', icon: Palette },
   { to: '/admin/products', label: 'Catálogo', icon: Package },
+  { to: '/admin/menu', label: 'Menu', icon: Menu },
   { to: '/admin/media', label: 'Mídia', icon: ImageIcon },
 ];
 

@@ -25,6 +25,7 @@ import WishlistPage from "@/pages/WishlistPage";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import AdminCustomization from "@/pages/admin/AdminCustomization";
 import AdminProducts from "@/pages/admin/AdminProducts";
+import AdminMenu from "@/pages/admin/AdminMenu";
 import AdminMedia from "@/pages/admin/AdminMedia";
 
 import NotFound from "./pages/NotFound";
@@ -61,7 +62,7 @@ const App = () => (
               <Route path="/admin" element={<AdminLayout />}>
                 <Route path="customization" element={<AdminCustomization />} />
                 <Route path="products" element={<AdminProducts />} />
-                <Route path="menu" element={<AdminProducts />} />
+                <Route path="menu" element={<AdminMenu />} />
                 <Route path="media" element={<AdminMedia />} />
               </Route>
 

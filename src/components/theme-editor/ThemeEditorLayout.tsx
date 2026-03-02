@@ -9,7 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 
 // Sections config
 import {
-  Palette, Type, Layout, PanelTop, PanelBottom, Image, Package,
+  Palette, Type, Layout, PanelBottom, Image, Package,
   CreditCard, MessageCircle, Globe, Code,
   Layers, MousePointer, FormInput, Sparkles, LayoutGrid,
   SlidersHorizontal, ShoppingCart, FileText, Eye, Award,
@@ -23,7 +23,7 @@ import { GlobalPanel } from './panels/GlobalPanel';
 import { ButtonsPanel } from './panels/ButtonsPanel';
 import { InputsPanel } from './panels/InputsPanel';
 import { LogoPanel } from './panels/LogoPanel';
-import { HeaderPanel } from './panels/HeaderPanel';
+
 import { HeroPanel } from './panels/HeroPanel';
 import { HomeSectionsPanel } from './panels/HomeSectionsPanel';
 import { ProductCardPanel } from './panels/ProductCardPanel';
@@ -60,7 +60,7 @@ const sections: EditorSectionItem[] = [
   { id: 'inputs', label: 'Formulários', icon: FormInput, group: 'Design & Estilo' },
   // Estrutura
   { id: 'logo', label: 'Logo & Marca', icon: Image, group: 'Estrutura' },
-  { id: 'header', label: 'Cabeçalho', icon: PanelTop, group: 'Estrutura' },
+  
   { id: 'hero', label: 'Hero / Banner', icon: Layers, group: 'Estrutura' },
   { id: 'home-sections', label: 'Seções da Home', icon: LayoutGrid, group: 'Estrutura' },
   { id: 'footer', label: 'Rodapé', icon: PanelBottom, group: 'Estrutura' },
@@ -92,7 +92,7 @@ function renderPanel(sectionId: string) {
     case 'buttons': return <ButtonsPanel />;
     case 'inputs': return <InputsPanel />;
     case 'logo': return <LogoPanel />;
-    case 'header': return <HeaderPanel />;
+    
     case 'hero': return <HeroPanel />;
     case 'home-sections': return <HomeSectionsPanel />;
     case 'product-card': return <ProductCardPanel />;
