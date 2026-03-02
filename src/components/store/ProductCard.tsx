@@ -93,7 +93,7 @@ function BuyButton({ label, btnStyle, color, hoverColor, sideBySide, onClick, bu
     <button
       onClick={onClick}
       className={cn(
-        'pm-theme-btn font-medium transition-all hover:opacity-90 inline-flex items-center justify-center w-full overflow-hidden',
+        'pm-theme-btn font-medium transition-all hover:opacity-90 inline-flex items-center justify-center overflow-hidden',
         btnStyleMap[btnStyle] || 'rounded-md',
       )}
       style={{
@@ -131,7 +131,7 @@ function CartButton({ label, btnStyle, sideBySide, compact, onClick, cartIcon }:
     <button
       onClick={onClick}
       className={cn(
-        'pm-theme-btn font-medium transition-all hover:opacity-90 inline-flex items-center justify-center w-full overflow-hidden',
+        'pm-theme-btn font-medium transition-all hover:opacity-90 inline-flex items-center justify-center overflow-hidden',
         btnStyleMap[btnStyle] || 'rounded-md',
         isOutline && 'border-2 border-foreground text-foreground bg-transparent',
         isUnderline && 'border-b-2 border-foreground text-foreground bg-transparent',
