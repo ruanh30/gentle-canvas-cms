@@ -754,7 +754,7 @@ export function StoreHeader() {
       activeState?.blur && 'backdrop-blur-md',
       !activeState && 'bg-background/95 backdrop-blur-md supports-[backdrop-filter]:bg-background/80',
       activeState?.borderBottom && 'border-b',
-      !activeState && (h.headerSurface ?? true) && 'border-b border-border/20',
+      !activeState && (h.headerSurface ?? true) && 'border-b border-border/10',
       !activeState && !(h.headerSurface ?? true) && h.borderBottom && 'border-b border-border',
       activeState ? shadowMap[activeState.shadow] : (h.shadowOnScroll && scrolled ? 'shadow-md' : ''),
       h.sticky && 'sticky top-0'
