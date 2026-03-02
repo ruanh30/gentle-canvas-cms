@@ -114,6 +114,8 @@ export interface ThemeHeader {
   menuLetterSpacing: number;
   menuFontWeight: number;          // 400-700
   menuHoverStyle: 'underline' | 'background' | 'both';
+  menuItemGap: number;             // px gap between items
+  menuSeparator: 'none' | 'line' | 'dot' | 'slash';
   iconSize: number;
   iconStrokeWidth: number;         // 1-3
   showSearch: boolean;
