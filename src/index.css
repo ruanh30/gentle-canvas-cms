@@ -256,3 +256,15 @@
 .dropdown-animate {
   animation: dropdown-enter 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
+
+/* Global shadow applied to cards and elevated elements */
+.group[class*="shadow"],
+.bg-card,
+[data-radix-popper-content-wrapper] > div {
+  box-shadow: var(--pm-shadow, none);
+}
+
+/* Product card shadow from global setting */
+.pm-global-shadow {
+  box-shadow: var(--pm-shadow, none);
+}

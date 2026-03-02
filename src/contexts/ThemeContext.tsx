@@ -163,6 +163,15 @@ function applyThemeCSS(t: ThemeConfig) {
   root.style.setProperty('--pm-radius', getRadiusPx(t.global.borderRadius));
   root.style.setProperty('--pm-container-width', t.global.containerWidth === 'full' ? '100%' : (t.global.containerMaxPx ? `${t.global.containerMaxPx}px` : '1280px'));
 
+  // Shadow level
+  const shadowMap: Record<string, string> = {
+    none: 'none',
+    subtle: '0 1px 3px 0 rgba(0,0,0,0.06), 0 1px 2px -1px rgba(0,0,0,0.06)',
+    medium: '0 4px 6px -1px rgba(0,0,0,0.08), 0 2px 4px -2px rgba(0,0,0,0.06)',
+    strong: '0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -4px rgba(0,0,0,0.08)',
+  };
+  root.style.setProperty('--pm-shadow', shadowMap[t.global.shadowLevel] || 'none');
+
   // Header
   root.style.setProperty('--pm-header-height', `${t.header?.height ?? 64}px`);
   root.style.setProperty('--pm-icon-size', `${t.header?.iconSize ?? 20}px`);
