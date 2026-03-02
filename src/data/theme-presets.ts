@@ -260,6 +260,7 @@ export const defaultThemeConfig: ThemeConfig = {
     showWishlist: false,
     showAddToCart: true,
     showBuyNow: true,
+    buyNowHoverReveal: true,
     buyNowText: 'Comprar Agora',
     buyNowIcon: 'Zap',
     addToCartText: 'Adicionar ao Carrinho',
