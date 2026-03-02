@@ -159,14 +159,14 @@ function NavItem({ item, className, style, openNewTab }: {
     setOpen(true);
   };
   const handleLeave = () => {
-    timeoutRef.current = setTimeout(() => setOpen(false), 150);
+    timeoutRef.current = setTimeout(() => setOpen(false), 200);
   };
 
   if (!hasChildren) {
     return (
       <Link
         to={item.link || '#'}
-        className={className}
+        className={cn(className, 'px-3 py-2 rounded-md hover:bg-accent/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1')}
         style={style}
         {...(openNewTab ? { target: '_blank', rel: 'noopener' } : {})}
       >
@@ -179,21 +179,23 @@ function NavItem({ item, className, style, openNewTab }: {
     <div className="relative" onMouseEnter={handleEnter} onMouseLeave={handleLeave}>
       <Link
         to={item.link || '#'}
-        className={cn(className, 'inline-flex items-center gap-1')}
+        className={cn(className, 'inline-flex items-center gap-1.5 px-3 py-2 rounded-md hover:bg-accent/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1')}
         style={style}
         {...(openNewTab ? { target: '_blank', rel: 'noopener' } : {})}
       >
         {item.label}
-        <ChevronDown className={cn('h-3 w-3 transition-transform', open && 'rotate-180')} />
+        <ChevronDown className={cn('h-3.5 w-3.5 transition-transform duration-200', open && 'rotate-180')} />
       </Link>
       {open && (
-        <div className="absolute top-full left-0 pt-2 z-50">
-          <div className="bg-background border border-border rounded-md shadow-lg py-1.5 min-w-[180px]">
+        <div className="absolute top-full left-1/2 -translate-x-1/2 pt-3 z-50">
+          {/* Arrow indicator */}
+          <div className="absolute top-[6px] left-1/2 -translate-x-1/2 w-3 h-3 rotate-45 bg-popover border-l border-t border-border z-10" />
+          <div className="bg-popover border border-border rounded-lg shadow-xl py-2 min-w-[200px] relative">
             {item.children.map(child => (
               <Link
                 key={child.id}
                 to={child.link || '#'}
-                className="block px-4 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+                className="block px-4 py-2.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/70 transition-colors mx-1.5 rounded-md"
                 {...(child.openNewTab ? { target: '_blank', rel: 'noopener' } : {})}
               >
                 {child.label}
@@ -224,8 +226,8 @@ export function StoreHeader() {
 
   return (
     <header className={cn(
-      'z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80',
-      h.borderBottom && 'border-b',
+      'z-50 bg-background/95 backdrop-blur-md supports-[backdrop-filter]:bg-background/80',
+      'border-b border-border/60 shadow-[0_1px_3px_0_hsl(var(--foreground)/0.04),0_1px_2px_-1px_hsl(var(--foreground)/0.06)]',
       h.sticky && 'sticky top-0'
     )}>
       {!isMinimal && <AnnouncementBar />}
@@ -283,8 +285,8 @@ export function StoreHeader() {
           </Link>
 
           {h.layout !== 'hamburger-only' && h.layout !== 'centered' && (
-            <nav className={cn(
-              'hidden lg:flex items-center gap-8',
+          <nav className={cn(
+              'hidden lg:flex items-center gap-1',
               h.menuDesktopModel === 'model4' && 'border-b-2 border-border pb-1',
             )}>
               {hasCustomMenu ? mm!.items.map(mi => (
@@ -292,7 +294,7 @@ export function StoreHeader() {
                   key={mi.id}
                   item={mi}
                   className={cn(
-                    'font-medium text-muted-foreground hover:text-foreground transition-colors tracking-wider',
+                    'font-medium text-muted-foreground hover:text-foreground transition-all duration-150 tracking-wider',
                     h.menuDesktopModel === 'model3' && 'font-bold tracking-widest',
                     h.menuDesktopModel === 'model4' && 'border-b-2 border-transparent hover:border-foreground pb-0.5',
                   )}
@@ -308,7 +310,7 @@ export function StoreHeader() {
                   key={cat.id}
                   to={`/products?category=${cat.slug}`}
                   className={cn(
-                    'font-medium text-muted-foreground hover:text-foreground transition-colors tracking-wider',
+                    'font-medium text-muted-foreground hover:text-foreground transition-all duration-150 tracking-wider px-3 py-2 rounded-md hover:bg-accent/80',
                     h.menuDesktopModel === 'model3' && 'font-bold tracking-widest',
                     h.menuDesktopModel === 'model4' && 'border-b-2 border-transparent hover:border-foreground pb-0.5',
                   )}
@@ -324,7 +326,7 @@ export function StoreHeader() {
             </nav>
           )}
 
-          <div className={cn('flex items-center gap-1', isCentered && 'absolute right-0')}>
+          <div className={cn('flex items-center gap-0.5', isCentered && 'absolute right-0')}>
             {h.showSearch && (
               <Button variant="ghost" size="icon" onClick={() => setSearchOpen(!searchOpen)}>
                 <Search style={{ width: h.iconSize, height: h.iconSize }} />
@@ -358,12 +360,12 @@ export function StoreHeader() {
         </div>
 
         {h.layout === 'centered' && (
-          <nav className="hidden lg:flex items-center justify-center gap-8 pb-3">
+          <nav className="hidden lg:flex items-center justify-center gap-1 pb-3">
             {hasCustomMenu ? mm!.items.map(mi => (
               <NavItem
                 key={mi.id}
                 item={mi}
-                className="font-medium text-muted-foreground hover:text-foreground transition-colors tracking-wider"
+                className="font-medium text-muted-foreground hover:text-foreground transition-all duration-150 tracking-wider"
                 style={{
                   fontSize: h.menuFontSize,
                   textTransform: h.menuUppercase ? 'uppercase' : 'none',
@@ -374,7 +376,7 @@ export function StoreHeader() {
               <Link
                 key={cat.id}
                 to={`/products?category=${cat.slug}`}
-                className="font-medium text-muted-foreground hover:text-foreground transition-colors tracking-wider"
+                className="font-medium text-muted-foreground hover:text-foreground transition-all duration-150 tracking-wider px-3 py-2 rounded-md hover:bg-accent/80"
                 style={{
                   fontSize: h.menuFontSize,
                   textTransform: h.menuUppercase ? 'uppercase' : 'none',
