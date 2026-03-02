@@ -11,9 +11,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import {
   Palette, Type, Layout, PanelBottom, Image, Package,
   CreditCard, MessageCircle, Globe, Code,
-  Layers, MousePointer, FormInput, Sparkles, LayoutGrid,
-  SlidersHorizontal, ShoppingCart, FileText, Eye, Award,
-  TrendingUp, FlaskConical
+  Layers, MousePointer, Sparkles, LayoutGrid,
+  SlidersHorizontal, ShoppingCart, FileText, Eye,
+  TrendingUp
 } from 'lucide-react';
 
 // Editor panels
@@ -21,7 +21,7 @@ import { ColorsPanel } from './panels/ColorsPanel';
 import { TypographyPanel } from './panels/TypographyPanel';
 import { GlobalPanel } from './panels/GlobalPanel';
 import { ButtonsPanel } from './panels/ButtonsPanel';
-import { InputsPanel } from './panels/InputsPanel';
+
 import { LogoPanel } from './panels/LogoPanel';
 
 import { HeroPanel } from './panels/HeroPanel';
@@ -40,7 +40,7 @@ import { QuickViewPanel } from './panels/QuickViewPanel';
 import { BadgesPanel } from './panels/BadgesPanel';
 import { MicrocopyPanel } from './panels/MicrocopyPanel';
 import { ConversionPanel } from './panels/ConversionPanel';
-import { ABTestPanel } from './panels/ABTestPanel';
+
 
 export interface EditorSectionItem {
   id: string;
@@ -57,7 +57,7 @@ const sections: EditorSectionItem[] = [
   { id: 'typography', label: 'Tipografia', icon: Type, group: 'Design & Estilo' },
   { id: 'global', label: 'Layout Global', icon: Layout, group: 'Design & Estilo' },
   { id: 'buttons', label: 'Botões', icon: MousePointer, group: 'Design & Estilo' },
-  { id: 'inputs', label: 'Formulários', icon: FormInput, group: 'Design & Estilo' },
+  
   // Estrutura
   { id: 'logo', label: 'Logo & Marca', icon: Image, group: 'Estrutura' },
   
@@ -78,7 +78,7 @@ const sections: EditorSectionItem[] = [
   { id: 'conversion', label: 'Conversão', icon: TrendingUp, group: 'Conversão & Textos' },
   { id: 'whatsapp', label: 'WhatsApp', icon: MessageCircle, group: 'Conversão & Textos' },
   // Avançado
-  { id: 'ab-test', label: 'Teste A/B', icon: FlaskConical, group: 'Avançado' },
+  
   { id: 'seo', label: 'SEO', icon: Globe, group: 'Avançado' },
   { id: 'custom-code', label: 'Código Custom', icon: Code, group: 'Avançado' },
 ];
@@ -90,7 +90,7 @@ function renderPanel(sectionId: string) {
     case 'typography': return <TypographyPanel />;
     case 'global': return <GlobalPanel />;
     case 'buttons': return <ButtonsPanel />;
-    case 'inputs': return <InputsPanel />;
+    
     case 'logo': return <LogoPanel />;
     
     case 'hero': return <HeroPanel />;
@@ -104,7 +104,7 @@ function renderPanel(sectionId: string) {
     case 'badges': return <BadgesPanel />;
     case 'microcopy': return <MicrocopyPanel />;
     case 'conversion': return <ConversionPanel />;
-    case 'ab-test': return <ABTestPanel />;
+    
     case 'footer': return <FooterPanel />;
     case 'whatsapp': return <WhatsAppPanel />;
     case 'seo': return <SEOPanel />;
