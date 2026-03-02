@@ -11,6 +11,8 @@ const defaultSlide = {
   description: 'Descubra peças únicas com design atemporal e qualidade premium.',
   ctaText: 'Ver coleção',
   ctaLink: '/products',
+  ctaLinkType: 'url' as const,
+  ctaCategory: '',
   ctaStyle: 'filled' as const,
   backgroundImage: '',
   backgroundVideo: '',
@@ -18,6 +20,12 @@ const defaultSlide = {
   overlayOpacity: 0,
   contentAlign: 'left' as const,
   textColor: '#1a1a1a',
+  showText: true,
+  showButton: true,
+  contentOffsetX: 0,
+  contentOffsetY: 0,
+  buttonOffsetX: 0,
+  buttonOffsetY: 0,
 };
 
 const defaultFooterColumns = [
