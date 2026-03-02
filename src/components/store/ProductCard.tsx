@@ -33,12 +33,6 @@ const radiusMap: Record<string, string> = {
   large: 'rounded-xl',
 };
 
-const shadowMap: Record<string, string> = {
-  none: '',
-  subtle: 'shadow-sm',
-  medium: 'shadow-md',
-  strong: 'shadow-lg',
-};
 
 const badgeRadiusMap: Record<string, string> = {
   square: 'rounded-none',
@@ -184,12 +178,18 @@ export function ProductCard({ product }: Props) {
 
   return (
     <>
-      <div className={cn(
-        'group relative pm-global-shadow pm-global-border',
-        c.hoverShadow && 'hover:shadow-lg transition-shadow',
-        radiusMap[c.imageBorderRadius],
-        c.contentAlign === 'center' && 'text-center',
-      )}>
+      <div
+        className={cn(
+          'group relative pm-global-border transition-all duration-300',
+          radiusMap[c.imageBorderRadius],
+          c.contentAlign === 'center' && 'text-center',
+        )}
+        style={{
+          boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
+        }}
+        onMouseEnter={e => { e.currentTarget.style.boxShadow = '0 8px 25px rgba(0,0,0,0.15)'; }}
+        onMouseLeave={e => { e.currentTarget.style.boxShadow = '0 4px 8px rgba(0,0,0,0.1)'; }}
+      >
         <Link to={`/product/${product.slug}`} className="block" onClick={handleClick}>
           <div className={cn(
             'overflow-hidden bg-secondary relative',

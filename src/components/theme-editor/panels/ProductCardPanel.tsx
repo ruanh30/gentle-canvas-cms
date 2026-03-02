@@ -193,13 +193,6 @@ export function ProductCardPanel() {
         { value: 'normal', label: 'Normal', description: 'Espaçamento padrão equilibrado' },
         { value: 'spacious', label: 'Espaçoso', description: 'Mais ar entre os elementos' },
       ]} />
-      <SelectField label="Sombra do card" value={c.shadow} onChange={v => set({ shadow: v })} options={[
-        { value: 'none', label: 'Nenhuma — card sem sombra' },
-        { value: 'subtle', label: 'Suave — sombra sutil e discreta' },
-        { value: 'medium', label: 'Média — sombra moderada' },
-        { value: 'strong', label: 'Forte — sombra bem destacada' },
-      ]} />
-      <ToggleRow label="Sombra ao passar o mouse" hint="Adiciona uma sombra elevada quando o cursor passa sobre o card, criando efeito de profundidade" checked={c.hoverShadow} onChange={v => set({ hoverShadow: v })} />
       <ToggleRow label="Borda ao redor do card" hint="Adiciona uma borda sutil ao redor de cada card de produto para delimitá-lo visualmente" checked={c.border} onChange={v => set({ border: v })} />
       
       <SectionDivider label="Atalhos" />
