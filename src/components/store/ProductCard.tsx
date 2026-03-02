@@ -258,53 +258,34 @@ export function ProductCard({ product }: Props) {
           </div>
         </Link>
 
-        {/* Action buttons */}
-        <div className={cn('mt-2 flex w-full', c.buttonLayout === 'side-by-side' ? 'flex-row gap-2' : 'flex-col gap-1')}>
+        {/* Buy button — appears on hover with slide-up animation */}
+        <div className="px-3 pb-3 mt-2 opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 ease-out">
           {showBuy && (
             <BuyButton
               label={c.buyNowText || 'Comprar Agora'}
               btnStyle={c.buttonStyle || 'solid'}
               color={theme.colors.buyNow}
               hoverColor={theme.colors.buyNowHover}
-              sideBySide={c.buttonLayout === 'side-by-side'}
+              sideBySide={false}
               onClick={handleBuyNow}
               buyNowIcon={c.buyNowIcon}
             />
           )}
-          {showAdd && (
-            c.addToCartStyle === 'full-width' || c.buttonLayout === 'side-by-side' ? (
-              <CartButton
-                label={c.addToCartText || 'Adicionar ao Carrinho'}
-                btnStyle={c.buttonStyle || 'solid'}
-                sideBySide={c.buttonLayout === 'side-by-side'}
-                onClick={(e) => { e.preventDefault(); addItem(product); }}
-                cartIcon={c.addToCartIcon}
-              />
-            ) : c.addToCartStyle === 'button' ? (
-              <CartButton
-                label={c.addToCartText || 'Adicionar'}
-                btnStyle={c.buttonStyle || 'solid'}
-                sideBySide={false}
-                compact
-                onClick={(e) => { e.preventDefault(); addItem(product); }}
-                cartIcon={c.addToCartIcon}
-              />
-            ) : (
-              (() => {
-                const FloatingIcon = iconMap[c.addToCartIcon || ''] || ShoppingBag;
-                return (
-                  <button
-                    onClick={(e) => { e.preventDefault(); addItem(product); }}
-                    className="absolute top-3 right-3 bg-background/90 backdrop-blur-sm p-2 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-200 hover:bg-background shadow-sm"
-                    aria-label={c.addToCartText || 'Adicionar ao carrinho'}
-                  >
-                    <FloatingIcon className="h-4 w-4" />
-                  </button>
-                );
-              })()
-            )
-          )}
         </div>
+
+        {/* Floating cart icon — appears on hover */}
+        {showAdd && (() => {
+          const FloatingIcon = iconMap[c.addToCartIcon || ''] || ShoppingBag;
+          return (
+            <button
+              onClick={(e) => { e.preventDefault(); e.stopPropagation(); addItem(product); }}
+              className="absolute bottom-[72px] right-3 bg-background/95 backdrop-blur-sm p-2.5 rounded-full opacity-0 group-hover:opacity-100 scale-90 group-hover:scale-100 transition-all duration-300 ease-out hover:bg-foreground hover:text-background shadow-md"
+              aria-label={c.addToCartText || 'Adicionar ao carrinho'}
+            >
+              <FloatingIcon className="h-4 w-4" />
+            </button>
+          );
+        })()}
       </div>
 
       {showPreview && (
