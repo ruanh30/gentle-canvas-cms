@@ -255,8 +255,11 @@ export function ProductCard({ product }: Props) {
           </div>
         </Link>
 
-        {/* Buy button — appears on hover with slide-up animation */}
-        <div className="px-3 pb-3 mt-2 opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 ease-out">
+        {/* Buy button — optionally appears on hover with slide-up animation */}
+        <div className={cn(
+          'px-3 pb-3 mt-2 transition-all duration-300 ease-out',
+          c.buyNowHoverReveal !== false && 'opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0',
+        )}>
           {showBuy && (
             <BuyButton
               label={c.buyNowText || 'Comprar Agora'}

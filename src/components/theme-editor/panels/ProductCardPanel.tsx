@@ -103,6 +103,9 @@ export function ProductCardPanel() {
       <SectionDivider label="Botões de Ação" />
       <ToggleRow label="Botão Comprar Agora" hint="Exibe o botão de compra rápida que leva direto ao carrinho. A cor é configurada em Cores > Ação de Compra" checked={c.showBuyNow} onChange={v => set({ showBuyNow: v })} />
       {c.showBuyNow && (
+        <ToggleRow label="Revelar ao passar o mouse" hint="Quando ativo, o botão de compra só aparece ao passar o mouse sobre o card. Quando desativado, fica sempre visível." checked={c.buyNowHoverReveal !== false} onChange={v => set({ buyNowHoverReveal: v })} />
+      )}
+      {c.showBuyNow && (
         <>
           <TextField label="Texto do botão Comprar" value={c.buyNowText || 'Comprar Agora'} onChange={v => set({ buyNowText: v })} placeholder="Comprar Agora" />
           <IconPicker label="Ícone do Comprar Agora" value={c.buyNowIcon || 'Zap'} onChange={v => set({ buyNowIcon: v })} icons={buyNowIcons} />

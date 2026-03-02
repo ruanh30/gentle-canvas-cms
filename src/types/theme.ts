@@ -250,6 +250,7 @@ export interface ThemeProductCard {
   showWishlist: boolean;
   showAddToCart: boolean;
   showBuyNow: boolean;
+  buyNowHoverReveal: boolean;
   buyNowText: string;
   buyNowIcon: string;
   addToCartText: string;
