@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import {
   Plus, Trash2, ChevronDown, ChevronRight, GripVertical, Palette, Save,
   Menu, ExternalLink, Tag, Settings2, PanelTop, Megaphone, ImageIcon,
-  Eye, EyeOff, Home
+  Eye, EyeOff, Home, Search, User, Heart, ShoppingBag, AlignLeft, AlignCenter, Minus
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -436,6 +436,270 @@ function MenuDesktopModelPicker({ value, onChange }: { value: string; onChange: 
 }
 
 /* ================================================================== */
+/*  HEADER PREVIEW COMPONENTS                                          */
+/* ================================================================== */
+
+function PreviewWrapper({ children, label = 'Pré-Visualização' }: { children: React.ReactNode; label?: string }) {
+  return (
+    <div className="border-2 border-dashed border-border/50 rounded-lg p-1 mt-3">
+      <p className="text-[10px] text-muted-foreground/50 mb-1.5 px-2">{label}</p>
+      {children}
+    </div>
+  );
+}
+
+function LayoutPreview({ layout }: { layout: string }) {
+  const logo = <span className="font-bold text-[11px] text-foreground">LOGO</span>;
+  const nav = (
+    <div className="flex items-center gap-3">
+      <span className="text-[10px] text-muted-foreground">Início</span>
+      <span className="text-[10px] text-muted-foreground">Produtos</span>
+      <span className="text-[10px] text-muted-foreground">Promoções</span>
+    </div>
+  );
+  const icons = (
+    <div className="flex items-center gap-1.5">
+      <Search className="h-3 w-3 text-muted-foreground" />
+      <User className="h-3 w-3 text-muted-foreground" />
+      <ShoppingBag className="h-3 w-3 text-muted-foreground" />
+    </div>
+  );
+  const hamburger = <Menu className="h-3.5 w-3.5 text-muted-foreground" />;
+
+  const renderLayout = () => {
+    switch (layout) {
+      case 'centered':
+        return (
+          <div className="space-y-1">
+            <div className="flex items-center justify-center relative py-1.5">
+              <div className="absolute left-3">{icons}</div>
+              {logo}
+            </div>
+            <div className="flex items-center justify-center gap-4 pb-1 border-t border-border/30 pt-1">
+              {nav}
+            </div>
+          </div>
+        );
+      case 'minimal':
+        return (
+          <div className="flex items-center justify-between px-3 py-2">
+            {logo}
+            {icons}
+          </div>
+        );
+      case 'logo-center-nav-left':
+        return (
+          <div className="flex items-center justify-between px-3 py-2">
+            {nav}
+            {logo}
+            {icons}
+          </div>
+        );
+      case 'hamburger-only':
+        return (
+          <div className="flex items-center justify-between px-3 py-2">
+            <div className="flex items-center gap-2">{hamburger}{logo}</div>
+            {icons}
+          </div>
+        );
+      case 'top-bar-split':
+        return (
+          <div className="flex items-center justify-between px-3 py-2">
+            <div className="flex items-center gap-4">{logo}{nav}</div>
+            {icons}
+          </div>
+        );
+      case 'double-row':
+        return (
+          <div className="space-y-1">
+            <div className="flex items-center justify-between px-3 py-1.5">
+              {logo}
+              <div className="flex items-center gap-1.5 bg-muted/50 rounded px-2 py-0.5">
+                <Search className="h-2.5 w-2.5 text-muted-foreground" />
+                <span className="text-[9px] text-muted-foreground">Buscar...</span>
+              </div>
+              {icons}
+            </div>
+            <div className="flex items-center justify-center gap-4 pb-1 border-t border-border/30 pt-1">
+              {nav}
+            </div>
+          </div>
+        );
+      case 'sidebar-nav':
+        return (
+          <div className="flex items-center justify-between px-3 py-2">
+            <div className="flex items-center gap-2">{hamburger}{logo}</div>
+            {icons}
+          </div>
+        );
+      case 'transparent':
+        return (
+          <div className="flex items-center justify-between px-3 py-2 bg-gradient-to-b from-foreground/5 to-transparent">
+            {logo}
+            {nav}
+            {icons}
+          </div>
+        );
+      default: // classic
+        return (
+          <div className="flex items-center justify-between px-3 py-2">
+            {logo}
+            {nav}
+            {icons}
+          </div>
+        );
+    }
+  };
+
+  return (
+    <PreviewWrapper>
+      <div className="rounded-md bg-background border border-border overflow-hidden">
+        {renderLayout()}
+      </div>
+    </PreviewWrapper>
+  );
+}
+
+function BehaviorPreview({ sticky, shrinkOnScroll, shadowOnScroll, borderBottom, height }: {
+  sticky: boolean; shrinkOnScroll: boolean; shadowOnScroll: boolean; borderBottom: boolean; height: number;
+}) {
+  return (
+    <PreviewWrapper>
+      <div className="rounded-md bg-muted/30 overflow-hidden h-24 relative">
+        <div className={cn(
+          'bg-background px-3 py-1.5 flex items-center justify-between transition-all',
+          borderBottom && 'border-b border-border',
+          shadowOnScroll && 'shadow-md',
+          sticky && 'sticky top-0 z-10',
+        )} style={{ height: Math.min(height * 0.5, 32) }}>
+          <span className="font-bold text-[10px] text-foreground">LOGO</span>
+          <div className="flex gap-2 text-[9px] text-muted-foreground">
+            <span>Menu</span>
+            <Search className="h-2.5 w-2.5" />
+          </div>
+        </div>
+        <div className="px-3 pt-2 space-y-1.5">
+          <div className="h-1.5 bg-muted rounded w-3/4" />
+          <div className="h-1.5 bg-muted rounded w-1/2" />
+          <div className="h-1.5 bg-muted rounded w-2/3" />
+        </div>
+        <div className="absolute bottom-1 right-2 flex gap-1">
+          {sticky && <span className="text-[8px] bg-primary/10 text-primary px-1 rounded">fixo</span>}
+          {shrinkOnScroll && <span className="text-[8px] bg-primary/10 text-primary px-1 rounded">encolhe</span>}
+          {shadowOnScroll && <span className="text-[8px] bg-primary/10 text-primary px-1 rounded">sombra</span>}
+        </div>
+      </div>
+    </PreviewWrapper>
+  );
+}
+
+function MenuStylePreview({ menuStyle, menuFontSize, menuUppercase }: {
+  menuStyle: string; menuFontSize: number; menuUppercase: boolean;
+}) {
+  const items = ['Início', 'Produtos', 'Masculino', 'Feminino'];
+  const fontSize = Math.max(10, Math.min(menuFontSize * 0.85, 14));
+  const transform = menuUppercase ? 'uppercase' as const : 'none' as const;
+
+  if (menuStyle === 'mega-menu') {
+    return (
+      <PreviewWrapper>
+        <div className="rounded-md bg-background border border-border overflow-hidden">
+          <div className="flex items-center gap-4 px-4 py-2">
+            {items.map((item, i) => (
+              <span key={i} className="text-muted-foreground font-medium" style={{ fontSize, textTransform: transform }}>
+                {item} {i > 1 && <ChevronDown className="inline h-2.5 w-2.5 opacity-50" />}
+              </span>
+            ))}
+          </div>
+          <div className="border-t border-border bg-muted/20 px-4 py-3 grid grid-cols-3 gap-3">
+            <div className="space-y-1">
+              <p className="text-[10px] font-bold text-foreground">Categoria</p>
+              <p className="text-[9px] text-muted-foreground">Subcategoria 1</p>
+              <p className="text-[9px] text-muted-foreground">Subcategoria 2</p>
+            </div>
+            <div className="space-y-1">
+              <p className="text-[10px] font-bold text-foreground">Categoria</p>
+              <p className="text-[9px] text-muted-foreground">Subcategoria 1</p>
+              <p className="text-[9px] text-muted-foreground">Subcategoria 2</p>
+            </div>
+            <div className="bg-muted/50 rounded h-12 flex items-center justify-center">
+              <span className="text-[9px] text-muted-foreground">Banner</span>
+            </div>
+          </div>
+        </div>
+      </PreviewWrapper>
+    );
+  }
+
+  if (menuStyle === 'dropdown') {
+    return (
+      <PreviewWrapper>
+        <div className="rounded-md bg-background border border-border overflow-hidden relative">
+          <div className="flex items-center gap-4 px-4 py-2">
+            {items.map((item, i) => (
+              <span key={i} className={cn('font-medium', i === 2 ? 'text-foreground' : 'text-muted-foreground')} style={{ fontSize, textTransform: transform }}>
+                {item} {i > 1 && <ChevronDown className="inline h-2.5 w-2.5 opacity-50" />}
+              </span>
+            ))}
+          </div>
+          <div className="absolute left-[45%] top-full -mt-0.5 w-28 bg-background border border-border rounded-md shadow-lg py-1 z-10">
+            <p className="text-[9px] text-muted-foreground px-2.5 py-1 hover:bg-muted">Camisetas</p>
+            <p className="text-[9px] text-muted-foreground px-2.5 py-1 hover:bg-muted">Calças</p>
+            <p className="text-[9px] text-muted-foreground px-2.5 py-1 hover:bg-muted">Acessórios</p>
+          </div>
+          <div className="h-10" />
+        </div>
+      </PreviewWrapper>
+    );
+  }
+
+  // horizontal
+  return (
+    <PreviewWrapper>
+      <div className="rounded-md bg-background border border-border px-4 py-2 flex items-center gap-4">
+        {items.map((item, i) => (
+          <span key={i} className="text-muted-foreground font-medium" style={{ fontSize, textTransform: transform }}>
+            {item}
+          </span>
+        ))}
+      </div>
+    </PreviewWrapper>
+  );
+}
+
+function IconsPreview({ iconSize, showSearch, showAccount, showWishlist, showCart, cartBadgeStyle }: {
+  iconSize: number; showSearch: boolean; showAccount: boolean; showWishlist: boolean; showCart: boolean; cartBadgeStyle: string;
+}) {
+  const sz = Math.max(12, Math.min(iconSize * 0.7, 20));
+  return (
+    <PreviewWrapper>
+      <div className="rounded-md bg-background border border-border px-4 py-3 flex items-center justify-between">
+        <span className="font-bold text-[11px] text-foreground">LOGO</span>
+        <div className="flex items-center gap-2.5">
+          {showSearch && <Search style={{ width: sz, height: sz }} className="text-muted-foreground" />}
+          {showWishlist && <Heart style={{ width: sz, height: sz }} className="text-muted-foreground" />}
+          {showAccount && <User style={{ width: sz, height: sz }} className="text-muted-foreground" />}
+          {showCart && (
+            <div className="relative">
+              <ShoppingBag style={{ width: sz, height: sz }} className="text-muted-foreground" />
+              {cartBadgeStyle === 'count' && (
+                <span className="absolute -top-1.5 -right-1.5 bg-foreground text-background text-[7px] font-bold rounded-full h-3.5 w-3.5 flex items-center justify-center">3</span>
+              )}
+              {cartBadgeStyle === 'dot' && (
+                <span className="absolute -top-0.5 -right-0.5 bg-foreground rounded-full h-1.5 w-1.5" />
+              )}
+            </div>
+          )}
+          {!showSearch && !showAccount && !showWishlist && !showCart && (
+            <span className="text-[10px] text-muted-foreground/50 italic">Nenhum ícone visível</span>
+          )}
+        </div>
+      </div>
+    </PreviewWrapper>
+  );
+}
+
+/* ================================================================== */
 /*  TAB: CABEÇALHO                                                     */
 /* ================================================================== */
 
@@ -461,6 +725,7 @@ function HeaderTab() {
           { value: 'sidebar-nav', label: 'Nav Lateral', description: 'Menu abre como painel lateral' },
           { value: 'transparent', label: 'Transparente', description: 'Sem fundo, sobrepõe o hero' },
         ]} />
+        <LayoutPreview layout={h.layout} />
       </div>
 
       {/* Behavior */}
@@ -472,6 +737,7 @@ function HeaderTab() {
         <ToggleRow label="Sombra ao rolar" hint="Sombra sutil quando a página é rolada" checked={h.shadowOnScroll} onChange={v => set({ shadowOnScroll: v })} />
         <ToggleRow label="Borda inferior" hint="Linha fina na parte inferior do cabeçalho" checked={h.borderBottom} onChange={v => set({ borderBottom: v })} />
         <NumberSlider label="Altura" value={h.height} onChange={v => set({ height: v })} min={48} max={96} suffix="px" />
+        <BehaviorPreview sticky={h.sticky} shrinkOnScroll={h.shrinkOnScroll} shadowOnScroll={h.shadowOnScroll} borderBottom={h.borderBottom} height={h.height} />
       </div>
 
       {/* Desktop Menu Model */}
@@ -492,6 +758,7 @@ function HeaderTab() {
         ]} />
         <NumberSlider label="Tamanho da fonte" value={h.menuFontSize} onChange={v => set({ menuFontSize: v })} min={10} max={18} suffix="px" />
         <ToggleRow label="Texto em maiúsculas" hint="Transforma os links em letras maiúsculas" checked={h.menuUppercase} onChange={v => set({ menuUppercase: v })} />
+        <MenuStylePreview menuStyle={h.menuStyle} menuFontSize={h.menuFontSize} menuUppercase={h.menuUppercase} />
       </div>
 
       {/* Icons */}
@@ -515,6 +782,7 @@ function HeaderTab() {
           { value: 'dot', label: 'Ponto' },
           { value: 'none', label: 'Nenhum' },
         ]} />
+        <IconsPreview iconSize={h.iconSize} showSearch={h.showSearch} showAccount={h.showAccount} showWishlist={h.showWishlist} showCart={h.showCart} cartBadgeStyle={h.cartBadgeStyle} />
       </div>
     </div>
   );
