@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { ShoppingBag, Search, User, Menu, Heart, ShoppingCart, Plus, PackagePlus, Store, ChevronDown, type LucideIcon } from 'lucide-react';
+import { ShoppingBag, Search, User, Menu, Heart, ShoppingCart, Plus, PackagePlus, Store, ChevronDown, ChevronLeft, type LucideIcon } from 'lucide-react';
 import { useCart } from '@/contexts/CartContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -11,6 +11,10 @@ import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { mockCategories } from '@/data/mock';
 import { cn } from '@/lib/utils';
 import type { ThemeMenuItem } from '@/types/theme';
+
+/* ================================================================== */
+/*  ANNOUNCEMENT BAR                                                    */
+/* ================================================================== */
 
 function AnnouncementBar() {
   const { theme } = useTheme();
@@ -83,6 +87,10 @@ function AnnouncementBar() {
   );
 }
 
+/* ================================================================== */
+/*  BANNER BELOW                                                        */
+/* ================================================================== */
+
 function BannerBelow() {
   const { theme } = useTheme();
   const bb = theme.header?.bannerBelow;
@@ -100,26 +108,30 @@ function BannerBelow() {
 
   if (!bb?.enabled) return null;
 
+  const containerClass = bb.fullWidth ? '' : 'container mx-auto px-4';
+
   if (bb?.carousel && allImages.length > 1) {
     return (
-      <div className="relative overflow-hidden" style={{ height: bb.height }}>
-        {allImages.map((img, i) => (
-          <div
-            key={i}
-            className={cn(
-              'absolute inset-0 transition-opacity duration-700',
-              i === currentImg ? 'opacity-100' : 'opacity-0'
-            )}
-          >
-            {img ? (
-              <img src={img} alt="Banner" className="w-full h-full object-cover" />
-            ) : (
-              <div className="w-full h-full bg-secondary flex items-center justify-center">
-                <span className="text-muted-foreground text-sm">Banner {i + 1}</span>
-              </div>
-            )}
-          </div>
-        ))}
+      <div className={containerClass}>
+        <div className="relative overflow-hidden" style={{ height: bb.height }}>
+          {allImages.map((img, i) => (
+            <div
+              key={i}
+              className={cn(
+                'absolute inset-0 transition-opacity duration-700',
+                i === currentImg ? 'opacity-100' : 'opacity-0'
+              )}
+            >
+              {img ? (
+                <img src={img} alt="Banner" className="w-full h-full object-cover" />
+              ) : (
+                <div className="w-full h-full bg-secondary flex items-center justify-center">
+                  <span className="text-muted-foreground text-sm">Banner {i + 1}</span>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
       </div>
     );
   }
@@ -137,13 +149,20 @@ function BannerBelow() {
     </div>
   );
 
-  if (bb?.link) {
-    return <Link to={bb.link} className="block">{content}</Link>;
-  }
-  return <div>{content}</div>;
+  const wrapped = bb?.link ? <Link to={bb.link} className="block">{content}</Link> : <div>{content}</div>;
+
+  return <div className={containerClass}>{wrapped}</div>;
 }
 
+/* ================================================================== */
+/*  ICON MAP                                                            */
+/* ================================================================== */
+
 const headerCartIconMap: Record<string, LucideIcon> = { ShoppingBag, ShoppingCart, Plus, PackagePlus, Heart, Store };
+
+/* ================================================================== */
+/*  NAV ITEM (dropdown)                                                 */
+/* ================================================================== */
 
 function NavItem({ item, className, style, openNewTab, elevated, padded, hoverStyle }: {
   item: ThemeMenuItem;
@@ -158,13 +177,8 @@ function NavItem({ item, className, style, openNewTab, elevated, padded, hoverSt
   const timeoutRef = useRef<ReturnType<typeof setTimeout>>();
   const hasChildren = item.children && item.children.length > 0;
 
-  const handleEnter = () => {
-    clearTimeout(timeoutRef.current);
-    setOpen(true);
-  };
-  const handleLeave = () => {
-    timeoutRef.current = setTimeout(() => setOpen(false), 200);
-  };
+  const handleEnter = () => { clearTimeout(timeoutRef.current); setOpen(true); };
+  const handleLeave = () => { timeoutRef.current = setTimeout(() => setOpen(false), 200); };
 
   const useUnderline = hoverStyle === 'underline' || hoverStyle === 'both';
   const useBgHover = hoverStyle === 'background' || hoverStyle === 'both';
@@ -234,14 +248,18 @@ function NavItem({ item, className, style, openNewTab, elevated, padded, hoverSt
   );
 }
 
-/* Mega Menu dropdown for mega-menu style */
-function MegaMenuItem({ item, className, style, openNewTab, padded, hoverStyle }: {
+/* ================================================================== */
+/*  MEGA MENU ITEM                                                      */
+/* ================================================================== */
+
+function MegaMenuItem({ item, className, style, openNewTab, padded, hoverStyle, megaConfig }: {
   item: ThemeMenuItem;
   className?: string;
   style?: React.CSSProperties;
   openNewTab?: boolean;
   padded?: boolean;
   hoverStyle?: string;
+  megaConfig?: { columns?: number; width?: string; showImages?: boolean; showBanner?: boolean; bannerImageUrl?: string; bannerLink?: string };
 }) {
   const [open, setOpen] = useState(false);
   const timeoutRef = useRef<ReturnType<typeof setTimeout>>();
@@ -270,6 +288,10 @@ function MegaMenuItem({ item, className, style, openNewTab, padded, hoverStyle }
     );
   }
 
+  const cols = megaConfig?.columns || 3;
+  const megaWidth = megaConfig?.width === 'full' ? '100vw' : megaConfig?.width === 'container' ? '100%' : '480px';
+  const showBanner = megaConfig?.showBanner && megaConfig?.bannerImageUrl;
+
   return (
     <div className="relative" onMouseEnter={handleEnter} onMouseLeave={handleLeave}>
       <Link to={item.link || '#'} className={cn(className, 'inline-flex items-center gap-1.5', paddingCls, underlineCls)} style={style}
@@ -278,26 +300,41 @@ function MegaMenuItem({ item, className, style, openNewTab, padded, hoverStyle }
         <ChevronDown className={cn('h-3.5 w-3.5 transition-transform duration-200', open && 'rotate-180')} />
       </Link>
       {open && (
-        <div className="absolute top-full left-0 pt-3 z-50 dropdown-animate" style={{ minWidth: '480px' }}>
+        <div className="absolute top-full left-0 pt-3 z-50 dropdown-animate" style={{ minWidth: megaWidth === '100vw' ? '90vw' : megaWidth }}>
           <div className="absolute top-[6px] left-8 w-3 h-3 rotate-45 bg-popover border-l border-t border-border z-10" />
-          <div className="bg-popover border border-border rounded-xl shadow-[0_8px_30px_-6px_hsl(var(--foreground)/0.12)] p-5 grid grid-cols-3 gap-4 relative">
-            {item.children.map(child => (
-              <Link key={child.id} to={child.link || '#'}
-                className="block text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 px-3 py-2.5 rounded-lg transition-all duration-150"
-                style={style ? { fontSize: style.fontSize, letterSpacing: style.letterSpacing } : undefined}
-                {...(child.openNewTab ? { target: '_blank', rel: 'noopener' } : {})}>
-                <span className="font-medium text-foreground">{child.label}</span>
-                {child.badge && (
-                  <span className="ml-2 text-[10px] font-bold px-1.5 py-0.5 rounded" style={{ backgroundColor: child.badgeColor, color: '#fff' }}>{child.badge}</span>
-                )}
-              </Link>
-            ))}
+          <div className="bg-popover border border-border rounded-xl shadow-[0_8px_30px_-6px_hsl(var(--foreground)/0.12)] p-5 relative">
+            <div className="flex gap-4">
+              <div className="flex-1 grid gap-4" style={{ gridTemplateColumns: `repeat(${cols}, 1fr)` }}>
+                {item.children.map(child => (
+                  <Link key={child.id} to={child.link || '#'}
+                    className="block text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 px-3 py-2.5 rounded-lg transition-all duration-150"
+                    style={style ? { fontSize: style.fontSize, letterSpacing: style.letterSpacing } : undefined}
+                    {...(child.openNewTab ? { target: '_blank', rel: 'noopener' } : {})}>
+                    <span className="font-medium text-foreground">{child.label}</span>
+                    {child.badge && (
+                      <span className="ml-2 text-[10px] font-bold px-1.5 py-0.5 rounded" style={{ backgroundColor: child.badgeColor, color: '#fff' }}>{child.badge}</span>
+                    )}
+                  </Link>
+                ))}
+              </div>
+              {showBanner && (
+                <div className="w-48 shrink-0">
+                  <Link to={megaConfig?.bannerLink || '#'} className="block rounded-lg overflow-hidden hover:opacity-90 transition-opacity">
+                    <img src={megaConfig!.bannerImageUrl!} alt="Promo" className="w-full h-full object-cover rounded-lg" />
+                  </Link>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       )}
     </div>
   );
 }
+
+/* ================================================================== */
+/*  MAIN HEADER                                                         */
+/* ================================================================== */
 
 export function StoreHeader() {
   const { itemCount } = useCart();
@@ -312,32 +349,77 @@ export function StoreHeader() {
   const h = theme.header ?? {} as any;
   const isMinimal = h.layout === 'minimal' || h.layout === 'hamburger-only';
   const isCentered = h.layout === 'centered' || h.layout === 'logo-center-nav-left';
+  const isDoubleRow = h.layout === 'double-row';
 
-  // Scroll listener for shrink/shadow behaviors
+  // Container settings
+  const container = h.container ?? { width: 'container', maxWidth: 1400, paddingX: 16, gap: 16, verticalAlign: 'center' };
+  const containerStyle: React.CSSProperties = {
+    maxWidth: container.width === 'full' ? '100%' : `${container.maxWidth}px`,
+    paddingLeft: `${container.paddingX}px`,
+    paddingRight: `${container.paddingX}px`,
+    margin: '0 auto',
+  };
+
+  // Mobile settings
+  const mobile = h.mobile ?? { drawerPosition: 'left', showSearchInDrawer: true, showAccountInDrawer: true, showCartInDrawer: true, fixedFooterItems: [], maxLevels: 2, groupStyle: 'accordion' };
+
+  // Mega menu config
+  const megaConfig = h.megaMenuConfig ?? { columns: 4, width: 'container', showImages: false, showBanner: false, bannerImageUrl: '', bannerLink: '' };
+
+  // Search config
+  const searchConfig = h.search ?? { placeholder: 'Buscar produtos...', showOnDesktop: true, showOnMobile: true, autoSuggest: false, maxResults: 6, shortcutEnabled: false };
+
+  // Scroll listener
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 10);
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
+  // Keyboard shortcut for search (Ctrl+K or /)
+  useEffect(() => {
+    if (!searchConfig.shortcutEnabled || !h.showSearch) return;
+    const handler = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        setSearchOpen(true);
+      }
+      if (e.key === '/' && !['INPUT', 'TEXTAREA'].includes((e.target as HTMLElement)?.tagName)) {
+        e.preventDefault();
+        setSearchOpen(true);
+      }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [searchConfig.shortcutEnabled, h.showSearch]);
+
   const baseHeight = h.height || 64;
   const shrinkActive = h.shrinkOnScroll && scrolled;
-  const currentHeight = shrinkActive ? 44 : baseHeight;
+
+  // Resolve state-based styling
+  const states = h.states;
+  const isTransparentLayout = h.layout === 'transparent';
+  const activeState = isTransparentLayout && !scrolled
+    ? states?.transparent
+    : h.sticky && scrolled
+    ? states?.sticky
+    : states?.normal;
+
+  const currentHeight = shrinkActive ? 44 : (activeState?.height || baseHeight);
 
   // Choose NavItemComponent based on menuStyle
   const isMegaMenu = h.menuStyle === 'mega-menu';
-  const MenuItemComponent = isMegaMenu ? MegaMenuItem : NavItem;
 
-  // Search modal open
-  const handleSearchClick = () => {
-    setSearchOpen(!searchOpen);
-  };
+  const handleSearchClick = () => setSearchOpen(!searchOpen);
+
+  const placeholder = searchConfig.placeholder || 'Buscar produtos...';
 
   const renderSearchBar = () => {
     if (!h.showSearch) return null;
+    // Respect device visibility
+    if (!searchConfig.showOnDesktop) return null;
 
     if (h.searchStyle === 'inline') {
-      const placeholder = h.search?.placeholder || 'Buscar produtos...';
       return (
         <div className="hidden lg:block relative w-52 xl:w-72 group">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/60 group-focus-within:text-foreground transition-colors" />
@@ -351,8 +433,8 @@ export function StoreHeader() {
     }
 
     return (
-      <Button variant="ghost" size="icon" onClick={handleSearchClick}>
-        <Search style={{ width: h.iconSize, height: h.iconSize }} />
+      <Button variant="ghost" size="icon" className="h-10 w-10" onClick={handleSearchClick}>
+        <Search style={{ width: h.iconSize, height: h.iconSize }} strokeWidth={h.iconStrokeWidth || 1.5} />
       </Button>
     );
   };
@@ -368,7 +450,7 @@ export function StoreHeader() {
               <div className="relative">
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground/50" />
                 <input
-                  placeholder="O que você está procurando?"
+                  placeholder={placeholder}
                   className="w-full pl-12 pr-4 h-14 text-base bg-transparent border-0 outline-none placeholder:text-muted-foreground/40"
                   autoFocus
                   onKeyDown={(e) => { if (e.key === 'Escape') setSearchOpen(false); }}
@@ -384,6 +466,11 @@ export function StoreHeader() {
                   ))}
                 </div>
               </div>
+              {searchConfig.shortcutEnabled && (
+                <div className="border-t border-border/30 mt-3 pt-2 flex justify-end">
+                  <span className="text-[10px] text-muted-foreground/40">Esc para fechar • Ctrl+K para abrir</span>
+                </div>
+              )}
             </div>
           </DialogContent>
         </Dialog>
@@ -396,7 +483,7 @@ export function StoreHeader() {
         <div className="relative max-w-lg mx-auto">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/50" />
           <input
-            placeholder="O que você está procurando?"
+            placeholder={placeholder}
             className="w-full pl-11 pr-4 h-11 text-sm bg-secondary/60 rounded-full border-0 outline-none ring-1 ring-border/40 focus:ring-border focus:bg-background transition-all duration-200 placeholder:text-muted-foreground/40"
             autoFocus
             onKeyDown={(e) => { if (e.key === 'Escape') setSearchOpen(false); }}
@@ -441,16 +528,29 @@ export function StoreHeader() {
 
     if (hasCustomMenu) {
       return buildItems(mm!.items.map(mi => (
-        <MenuItemComponent
-          key={mi.id}
-          item={mi}
-          elevated={elevated}
-          padded={padded}
-          hoverStyle={hoverStyle}
-          className={itemClass}
-          style={itemStyle}
-          openNewTab={mi.openNewTab}
-        />
+        isMegaMenu ? (
+          <MegaMenuItem
+            key={mi.id}
+            item={mi}
+            padded={padded}
+            hoverStyle={hoverStyle}
+            className={itemClass}
+            style={itemStyle}
+            openNewTab={mi.openNewTab}
+            megaConfig={megaConfig}
+          />
+        ) : (
+          <NavItem
+            key={mi.id}
+            item={mi}
+            elevated={elevated}
+            padded={padded}
+            hoverStyle={hoverStyle}
+            className={itemClass}
+            style={itemStyle}
+            openNewTab={mi.openNewTab}
+          />
+        )
       )));
     }
 
@@ -474,15 +574,6 @@ export function StoreHeader() {
     )));
   };
 
-  // Resolve state-based styling
-  const states = h.states;
-  const isTransparentLayout = h.layout === 'transparent';
-  const activeState = isTransparentLayout && !scrolled
-    ? states?.transparent
-    : h.sticky && scrolled
-    ? states?.sticky
-    : states?.normal;
-
   const headerStyle: React.CSSProperties = activeState ? {
     backgroundColor: activeState.backgroundColor === 'transparent' ? 'transparent' : activeState.backgroundColor,
     color: activeState.textColor,
@@ -496,6 +587,97 @@ export function StoreHeader() {
     strong: 'shadow-lg',
   };
 
+  // Render action icons
+  const renderActions = (forMobile = false) => {
+    const iconStyle = { width: h.iconSize, height: h.iconSize };
+    const sw = h.iconStrokeWidth || 1.5;
+
+    return (
+      <div className={cn('flex items-center gap-1', isCentered && !forMobile && 'absolute right-0')}>
+        {h.showSearch && h.searchStyle !== 'inline' && (!forMobile || searchConfig.showOnMobile) && (
+          <Button variant="ghost" size="icon" className="h-10 w-10" onClick={handleSearchClick}>
+            <Search style={iconStyle} strokeWidth={sw} />
+          </Button>
+        )}
+        {h.showWishlist && (
+          <Button variant="ghost" size="icon" className="h-10 w-10">
+            <Heart style={iconStyle} strokeWidth={sw} />
+          </Button>
+        )}
+        {h.showAccount && (
+          <Link to={user ? '/account' : '/login'}>
+            <Button variant="ghost" size="icon" className="h-10 w-10">
+              <User style={iconStyle} strokeWidth={sw} />
+            </Button>
+          </Link>
+        )}
+        {h.showCart && (
+          <Link to="/cart" className="relative">
+            <Button variant="ghost" size="icon" className="h-10 w-10">
+              <CartIconComponent style={iconStyle} strokeWidth={sw} />
+              {itemCount > 0 && h.cartBadgeStyle !== 'none' && (
+                <span className="absolute -top-0.5 -right-0.5 bg-foreground text-background text-[10px] font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                  {h.cartBadgeStyle === 'count' ? itemCount : '●'}
+                </span>
+              )}
+            </Button>
+          </Link>
+        )}
+      </div>
+    );
+  };
+
+  // Mobile drawer content
+  const renderMobileDrawer = () => {
+    return (
+      <Sheet>
+        <SheetTrigger asChild>
+          <Button variant="ghost" size="icon" className={cn('lg:hidden', isCentered && 'absolute left-0')}>
+            <Menu className="h-5 w-5" />
+          </Button>
+        </SheetTrigger>
+        <SheetContent side={mobile.drawerPosition} className="w-72 flex flex-col">
+          {/* Search in drawer */}
+          {mobile.showSearchInDrawer && h.showSearch && (
+            <div className="relative mt-4 mb-2">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/50" />
+              <input
+                placeholder={placeholder}
+                className="w-full pl-9 pr-3 h-9 text-sm rounded-lg border border-border/60 outline-none focus:ring-1 focus:ring-border bg-muted/30 placeholder:text-muted-foreground/40"
+              />
+            </div>
+          )}
+
+          {/* Nav items */}
+          <nav className="flex flex-col gap-4 mt-4 flex-1">
+            <Link to="/" className="text-lg font-display font-semibold">Início</Link>
+            {hasCustomMenu ? mm!.items.map(mi => (
+              <MobileNavItem key={mi.id} item={mi} showBadges={mm!.showBadges} maxLevels={mobile.maxLevels} groupStyle={mobile.groupStyle} />
+            )) : mockCategories.slice(0, 5).map(cat => (
+              <Link key={cat.id} to={`/products?category=${cat.slug}`} className="text-base hover:text-foreground/80 transition-colors">
+                {cat.name}
+              </Link>
+            ))}
+          </nav>
+
+          {/* Actions in drawer footer */}
+          <div className="border-t border-border/40 pt-4 pb-2 mt-auto space-y-2">
+            {mobile.showAccountInDrawer && (
+              <Link to={user ? '/account' : '/login'} className="flex items-center gap-3 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
+                <User className="h-4 w-4" /> {user ? 'Minha Conta' : 'Entrar'}
+              </Link>
+            )}
+            {mobile.showCartInDrawer && (
+              <Link to="/cart" className="flex items-center gap-3 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
+                <ShoppingBag className="h-4 w-4" /> Carrinho {itemCount > 0 && `(${itemCount})`}
+              </Link>
+            )}
+          </div>
+        </SheetContent>
+      </Sheet>
+    );
+  };
+
   return (
     <header className={cn(
       'z-50 transition-all duration-300',
@@ -507,53 +689,54 @@ export function StoreHeader() {
       activeState ? shadowMap[activeState.shadow] : (h.shadowOnScroll && scrolled ? 'shadow-md' : ''),
       h.sticky && 'sticky top-0'
     )} style={headerStyle}>
-      {/* Announcement bar: hide when shrunk */}
+      {/* Announcement bar */}
       {!isMinimal && !shrinkActive && <AnnouncementBar />}
 
-      <div className="container mx-auto px-4">
-        {/* Main row with logo + icons: hide when shrunk */}
-        {!shrinkActive && (
+      <div style={containerStyle}>
+        {/* DOUBLE ROW LAYOUT */}
+        {isDoubleRow && !shrinkActive ? (
+          <>
+            {/* Row 1: Logo + Search + Actions */}
+            <div className="flex items-center justify-between" style={{ height: currentHeight, gap: `${container.gap}px` }}>
+              <Link to="/" className="flex items-center gap-2 shrink-0">
+                {theme.logo.imageUrl && (
+                  <img src={theme.logo.imageUrl} alt="Logo" style={{ maxHeight: theme.logo.maxHeight }} className="object-contain" />
+                )}
+                {theme.logo.showText && (
+                  <span className="font-display text-xl md:text-2xl font-bold tracking-tight">
+                    {theme.logo.text}
+                  </span>
+                )}
+              </Link>
+
+              {h.searchStyle === 'inline' && h.showSearch && (
+                <div className="hidden lg:block relative flex-1 max-w-md group">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/60 group-focus-within:text-foreground transition-colors" />
+                  <input
+                    placeholder={placeholder}
+                    className="w-full pl-9 pr-3 h-9 text-sm rounded-full border border-border/60 outline-none focus:ring-1 focus:ring-border transition-all duration-200 placeholder:text-muted-foreground/50"
+                    style={{ backgroundColor: '#ffffff' }}
+                  />
+                </div>
+              )}
+
+              {renderActions()}
+            </div>
+
+            {/* Row 2: Navigation */}
+            <nav className="hidden lg:flex items-center border-t border-border/30 py-2" style={{ gap: `${h.menuItemGap ?? 4}px` }}>
+              {renderNavItems()}
+            </nav>
+          </>
+        ) : !shrinkActive ? (
+          /* ALL OTHER LAYOUTS */
           <div className={cn(
             'flex items-center transition-all duration-300',
             isCentered ? 'justify-center relative' : 'justify-between'
-          )} style={{ height: currentHeight }}>
-            <Sheet>
-              <SheetTrigger asChild>
-                <Button variant="ghost" size="icon" className={cn('lg:hidden', isCentered && 'absolute left-0')}>
-                  <Menu className="h-5 w-5" />
-                </Button>
-              </SheetTrigger>
-              <SheetContent side="left" className="w-72">
-                <nav className="flex flex-col gap-4 mt-8">
-                  <Link to="/" className="text-lg font-display font-semibold">Início</Link>
-                  {hasCustomMenu ? mm!.items.map(mi => (
-                    <div key={mi.id}>
-                      <Link to={mi.link || '#'} className="text-base hover:text-foreground/80 transition-colors" {...(mi.openNewTab ? { target: '_blank', rel: 'noopener' } : {})}>
-                        {mi.label}
-                        {mm!.showBadges && mi.badge && (
-                          <span className="ml-2 text-[10px] font-bold px-1.5 py-0.5 rounded" style={{ backgroundColor: mi.badgeColor, color: '#fff' }}>{mi.badge}</span>
-                        )}
-                      </Link>
-                      {mi.children.length > 0 && (
-                        <div className="ml-4 mt-2 flex flex-col gap-2">
-                          {mi.children.map(sub => (
-                            <Link key={sub.id} to={sub.link || '#'} className="text-sm text-muted-foreground hover:text-foreground transition-colors" {...(sub.openNewTab ? { target: '_blank', rel: 'noopener' } : {})}>
-                              {sub.label}
-                            </Link>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  )) : mockCategories.slice(0, 5).map(cat => (
-                    <Link key={cat.id} to={`/products?category=${cat.slug}`} className="text-base hover:text-foreground/80 transition-colors">
-                      {cat.name}
-                    </Link>
-                  ))}
-                </nav>
-              </SheetContent>
-            </Sheet>
+          )} style={{ height: currentHeight, gap: `${container.gap}px` }}>
+            {renderMobileDrawer()}
 
-            <Link to="/" className="flex items-center gap-2">
+            <Link to="/" className="flex items-center gap-2 shrink-0">
               {theme.logo.imageUrl && (
                 <img src={theme.logo.imageUrl} alt="Logo" style={{ maxHeight: theme.logo.maxHeight }} className="object-contain" />
               )}
@@ -570,50 +753,20 @@ export function StoreHeader() {
               </nav>
             )}
 
-            {h.searchStyle === 'inline' && h.showSearch && h.layout !== 'hamburger-only' && (
+            {h.searchStyle === 'inline' && h.showSearch && h.layout !== 'hamburger-only' && h.layout !== 'double-row' && (
               <div className="hidden lg:block relative w-52 xl:w-72 group">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/60 group-focus-within:text-foreground transition-colors" />
                 <input
-                  placeholder="Buscar produtos..."
+                  placeholder={placeholder}
                   className="w-full pl-9 pr-3 h-9 text-sm rounded-full border border-border/60 outline-none focus:ring-1 focus:ring-border transition-all duration-200 placeholder:text-muted-foreground/50"
                   style={{ backgroundColor: '#ffffff' }}
                 />
               </div>
             )}
 
-            <div className={cn('flex items-center gap-1', isCentered && 'absolute right-0')}>
-              {h.showSearch && h.searchStyle !== 'inline' && (
-                <Button variant="ghost" size="icon" className="h-10 w-10" onClick={handleSearchClick}>
-                  <Search style={{ width: h.iconSize, height: h.iconSize }} strokeWidth={h.iconStrokeWidth || 1.5} />
-                </Button>
-              )}
-              {h.showWishlist && (
-                <Button variant="ghost" size="icon" className="h-10 w-10">
-                  <Heart style={{ width: h.iconSize, height: h.iconSize }} strokeWidth={h.iconStrokeWidth || 1.5} />
-                </Button>
-              )}
-              {h.showAccount && (
-                <Link to={user ? '/account' : '/login'}>
-                  <Button variant="ghost" size="icon" className="h-10 w-10">
-                    <User style={{ width: h.iconSize, height: h.iconSize }} strokeWidth={h.iconStrokeWidth || 1.5} />
-                  </Button>
-                </Link>
-              )}
-              {h.showCart && (
-                <Link to="/cart" className="relative">
-                  <Button variant="ghost" size="icon" className="h-10 w-10">
-                    <CartIconComponent style={{ width: h.iconSize, height: h.iconSize }} strokeWidth={h.iconStrokeWidth || 1.5} />
-                    {itemCount > 0 && h.cartBadgeStyle !== 'none' && (
-                      <span className="absolute -top-0.5 -right-0.5 bg-foreground text-background text-[10px] font-bold rounded-full h-5 w-5 flex items-center justify-center">
-                        {h.cartBadgeStyle === 'count' ? itemCount : '●'}
-                      </span>
-                    )}
-                  </Button>
-                </Link>
-              )}
-            </div>
+            {renderActions()}
           </div>
-        )}
+        ) : null}
 
         {/* When shrunk: show ONLY the nav menu bar */}
         {shrinkActive && (
@@ -634,5 +787,76 @@ export function StoreHeader() {
 
       {!shrinkActive && <BannerBelow />}
     </header>
+  );
+}
+
+/* ================================================================== */
+/*  MOBILE NAV ITEM (with accordion / list support)                     */
+/* ================================================================== */
+
+function MobileNavItem({ item, showBadges, maxLevels, groupStyle, level = 0 }: {
+  item: ThemeMenuItem;
+  showBadges: boolean;
+  maxLevels: number;
+  groupStyle: 'accordion' | 'list';
+  level?: number;
+}) {
+  const [open, setOpen] = useState(false);
+  const hasChildren = item.children && item.children.length > 0 && level < maxLevels - 1;
+
+  if (!hasChildren) {
+    return (
+      <Link to={item.link || '#'} className={cn('text-base hover:text-foreground/80 transition-colors', level > 0 && 'text-sm text-muted-foreground ml-4')}
+        {...(item.openNewTab ? { target: '_blank', rel: 'noopener' } : {})}>
+        {item.label}
+        {showBadges && item.badge && (
+          <span className="ml-2 text-[10px] font-bold px-1.5 py-0.5 rounded" style={{ backgroundColor: item.badgeColor, color: '#fff' }}>{item.badge}</span>
+        )}
+      </Link>
+    );
+  }
+
+  if (groupStyle === 'list') {
+    return (
+      <div>
+        <Link to={item.link || '#'} className="text-base hover:text-foreground/80 transition-colors"
+          {...(item.openNewTab ? { target: '_blank', rel: 'noopener' } : {})}>
+          {item.label}
+          {showBadges && item.badge && (
+            <span className="ml-2 text-[10px] font-bold px-1.5 py-0.5 rounded" style={{ backgroundColor: item.badgeColor, color: '#fff' }}>{item.badge}</span>
+          )}
+        </Link>
+        <div className="ml-4 mt-2 flex flex-col gap-2">
+          {item.children.map(sub => (
+            <MobileNavItem key={sub.id} item={sub} showBadges={showBadges} maxLevels={maxLevels} groupStyle={groupStyle} level={level + 1} />
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  // accordion
+  return (
+    <div>
+      <button onClick={() => setOpen(!open)} className="w-full flex items-center justify-between text-base hover:text-foreground/80 transition-colors">
+        <span>
+          {item.label}
+          {showBadges && item.badge && (
+            <span className="ml-2 text-[10px] font-bold px-1.5 py-0.5 rounded" style={{ backgroundColor: item.badgeColor, color: '#fff' }}>{item.badge}</span>
+          )}
+        </span>
+        <ChevronDown className={cn('h-4 w-4 transition-transform', open && 'rotate-180')} />
+      </button>
+      {open && (
+        <div className="ml-4 mt-2 flex flex-col gap-2">
+          <Link to={item.link || '#'} className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+            Ver todos
+          </Link>
+          {item.children.map(sub => (
+            <MobileNavItem key={sub.id} item={sub} showBadges={showBadges} maxLevels={maxLevels} groupStyle={groupStyle} level={level + 1} />
+          ))}
+        </div>
+      )}
+    </div>
   );
 }
