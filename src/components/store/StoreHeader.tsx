@@ -145,13 +145,14 @@ function BannerBelow() {
 
 const headerCartIconMap: Record<string, LucideIcon> = { ShoppingBag, ShoppingCart, Plus, PackagePlus, Heart, Store };
 
-function NavItem({ item, className, style, openNewTab, elevated, padded }: {
+function NavItem({ item, className, style, openNewTab, elevated, padded, hoverStyle }: {
   item: ThemeMenuItem;
   className?: string;
   style?: React.CSSProperties;
   openNewTab?: boolean;
   elevated?: boolean;
   padded?: boolean;
+  hoverStyle?: string;
 }) {
   const [open, setOpen] = useState(false);
   const timeoutRef = useRef<ReturnType<typeof setTimeout>>();
@@ -165,15 +166,22 @@ function NavItem({ item, className, style, openNewTab, elevated, padded }: {
     timeoutRef.current = setTimeout(() => setOpen(false), 200);
   };
 
-  const paddingCls = padded
+  const useUnderline = hoverStyle === 'underline' || hoverStyle === 'both';
+  const useBgHover = hoverStyle === 'background' || hoverStyle === 'both';
+
+  const paddingCls = padded && useBgHover
     ? 'px-3 py-2 rounded-md hover:bg-accent/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1'
+    : padded
+    ? 'px-3 py-2 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1'
     : '';
+
+  const underlineCls = useUnderline ? 'nav-link-underline' : '';
 
   if (!hasChildren) {
     return (
       <Link
         to={item.link || '#'}
-        className={cn(className, paddingCls)}
+        className={cn(className, paddingCls, underlineCls)}
         style={style}
         {...(openNewTab ? { target: '_blank', rel: 'noopener' } : {})}
       >
@@ -186,7 +194,7 @@ function NavItem({ item, className, style, openNewTab, elevated, padded }: {
     <div className="relative" onMouseEnter={handleEnter} onMouseLeave={handleLeave}>
       <Link
         to={item.link || '#'}
-        className={cn(className, 'inline-flex items-center gap-1.5', paddingCls)}
+        className={cn(className, 'inline-flex items-center gap-1.5', paddingCls, underlineCls)}
         style={style}
         {...(openNewTab ? { target: '_blank', rel: 'noopener' } : {})}
       >
@@ -194,22 +202,23 @@ function NavItem({ item, className, style, openNewTab, elevated, padded }: {
         <ChevronDown className={cn('h-3.5 w-3.5 transition-transform duration-200', open && 'rotate-180')} />
       </Link>
       {open && (
-        <div className={cn('absolute top-full z-50', elevated ? 'left-1/2 -translate-x-1/2 pt-3' : 'left-0 pt-2')}>
+        <div className={cn('absolute top-full z-50 dropdown-animate', elevated ? 'left-1/2 -translate-x-1/2 pt-3' : 'left-0 pt-2')}>
           {elevated && (
             <div className="absolute top-[6px] left-1/2 -translate-x-1/2 w-3 h-3 rotate-45 bg-popover border-l border-t border-border z-10" />
           )}
           <div className={cn(
-            'bg-popover border border-border py-2 min-w-[200px] relative',
-            elevated ? 'rounded-lg shadow-xl' : 'rounded-md shadow-md'
+            'bg-popover border border-border py-1.5 min-w-[180px] relative',
+            elevated ? 'rounded-xl shadow-[0_8px_30px_-6px_hsl(var(--foreground)/0.12)]' : 'rounded-lg shadow-lg'
           )}>
             {item.children.map(child => (
               <Link
                 key={child.id}
                 to={child.link || '#'}
                 className={cn(
-                  'block px-4 py-2.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/70 transition-colors',
-                  elevated && 'mx-1.5 rounded-md'
+                  'block px-4 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/60 transition-all duration-150',
+                  elevated && 'mx-1.5 rounded-lg'
                 )}
+                style={style ? { fontSize: style.fontSize, letterSpacing: style.letterSpacing } : undefined}
                 {...(child.openNewTab ? { target: '_blank', rel: 'noopener' } : {})}
               >
                 {child.label}
@@ -226,12 +235,13 @@ function NavItem({ item, className, style, openNewTab, elevated, padded }: {
 }
 
 /* Mega Menu dropdown for mega-menu style */
-function MegaMenuItem({ item, className, style, openNewTab, padded }: {
+function MegaMenuItem({ item, className, style, openNewTab, padded, hoverStyle }: {
   item: ThemeMenuItem;
   className?: string;
   style?: React.CSSProperties;
   openNewTab?: boolean;
   padded?: boolean;
+  hoverStyle?: string;
 }) {
   const [open, setOpen] = useState(false);
   const timeoutRef = useRef<ReturnType<typeof setTimeout>>();
@@ -240,13 +250,20 @@ function MegaMenuItem({ item, className, style, openNewTab, padded }: {
   const handleEnter = () => { clearTimeout(timeoutRef.current); setOpen(true); };
   const handleLeave = () => { timeoutRef.current = setTimeout(() => setOpen(false), 200); };
 
-  const paddingCls = padded
+  const useUnderline = hoverStyle === 'underline' || hoverStyle === 'both';
+  const useBgHover = hoverStyle === 'background' || hoverStyle === 'both';
+
+  const paddingCls = padded && useBgHover
     ? 'px-3 py-2 rounded-md hover:bg-accent/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1'
+    : padded
+    ? 'px-3 py-2 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1'
     : '';
+
+  const underlineCls = useUnderline ? 'nav-link-underline' : '';
 
   if (!hasChildren) {
     return (
-      <Link to={item.link || '#'} className={cn(className, paddingCls)} style={style}
+      <Link to={item.link || '#'} className={cn(className, paddingCls, underlineCls)} style={style}
         {...(openNewTab ? { target: '_blank', rel: 'noopener' } : {})}>
         {item.label}
       </Link>
@@ -255,18 +272,19 @@ function MegaMenuItem({ item, className, style, openNewTab, padded }: {
 
   return (
     <div className="relative" onMouseEnter={handleEnter} onMouseLeave={handleLeave}>
-      <Link to={item.link || '#'} className={cn(className, 'inline-flex items-center gap-1.5', paddingCls)} style={style}
+      <Link to={item.link || '#'} className={cn(className, 'inline-flex items-center gap-1.5', paddingCls, underlineCls)} style={style}
         {...(openNewTab ? { target: '_blank', rel: 'noopener' } : {})}>
         {item.label}
         <ChevronDown className={cn('h-3.5 w-3.5 transition-transform duration-200', open && 'rotate-180')} />
       </Link>
       {open && (
-        <div className="absolute top-full left-0 pt-3 z-50" style={{ minWidth: '500px' }}>
+        <div className="absolute top-full left-0 pt-3 z-50 dropdown-animate" style={{ minWidth: '480px' }}>
           <div className="absolute top-[6px] left-8 w-3 h-3 rotate-45 bg-popover border-l border-t border-border z-10" />
-          <div className="bg-popover border border-border rounded-lg shadow-xl p-5 grid grid-cols-3 gap-6 relative">
+          <div className="bg-popover border border-border rounded-xl shadow-[0_8px_30px_-6px_hsl(var(--foreground)/0.12)] p-5 grid grid-cols-3 gap-4 relative">
             {item.children.map(child => (
               <Link key={child.id} to={child.link || '#'}
-                className="block text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 px-3 py-2 rounded-md transition-colors"
+                className="block text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 px-3 py-2.5 rounded-lg transition-all duration-150"
+                style={style ? { fontSize: style.fontSize, letterSpacing: style.letterSpacing } : undefined}
                 {...(child.openNewTab ? { target: '_blank', rel: 'noopener' } : {})}>
                 <span className="font-medium text-foreground">{child.label}</span>
                 {child.badge && (
@@ -377,13 +395,15 @@ export function StoreHeader() {
   const renderNavItems = (extraClass?: string) => {
     const elevated = h.dropdownElevated ?? true;
     const padded = h.menuItemPadding ?? true;
+    const hoverStyle = h.menuHoverStyle || 'underline';
     const itemStyle: React.CSSProperties = {
       fontSize: h.menuFontSize,
+      fontWeight: h.menuFontWeight || 500,
       textTransform: h.menuUppercase ? 'uppercase' : 'none',
       letterSpacing: `${h.menuLetterSpacing}em`,
     };
     const itemClass = cn(
-      'font-medium text-muted-foreground hover:text-foreground transition-all duration-150 tracking-wider',
+      'text-muted-foreground hover:text-foreground transition-all duration-150',
       extraClass,
     );
 
@@ -394,12 +414,16 @@ export function StoreHeader() {
           item={mi}
           elevated={elevated}
           padded={padded}
+          hoverStyle={hoverStyle}
           className={itemClass}
           style={itemStyle}
           openNewTab={mi.openNewTab}
         />
       ));
     }
+
+    const useUnderline = hoverStyle === 'underline' || hoverStyle === 'both';
+    const useBgHover = hoverStyle === 'background' || hoverStyle === 'both';
 
     return mockCategories.slice(0, 5).map(cat => {
       return (
@@ -408,7 +432,9 @@ export function StoreHeader() {
           to={`/products?category=${cat.slug}`}
           className={cn(
             itemClass,
-            padded && 'px-3 py-2 rounded-md hover:bg-accent/80',
+            useUnderline && 'nav-link-underline',
+            padded && useBgHover && 'px-3 py-2 rounded-md hover:bg-accent/80',
+            padded && !useBgHover && 'px-3 py-2 rounded-md',
           )}
           style={itemStyle}
         >
@@ -496,30 +522,30 @@ export function StoreHeader() {
               </div>
             )}
 
-            <div className={cn('flex items-center gap-0.5', isCentered && 'absolute right-0')}>
+            <div className={cn('flex items-center gap-1', isCentered && 'absolute right-0')}>
               {h.showSearch && h.searchStyle !== 'inline' && (
-                <Button variant="ghost" size="icon" onClick={handleSearchClick}>
-                  <Search style={{ width: h.iconSize, height: h.iconSize }} />
+                <Button variant="ghost" size="icon" className="h-10 w-10" onClick={handleSearchClick}>
+                  <Search style={{ width: h.iconSize, height: h.iconSize }} strokeWidth={h.iconStrokeWidth || 1.5} />
                 </Button>
               )}
               {h.showWishlist && (
-                <Button variant="ghost" size="icon">
-                  <Heart style={{ width: h.iconSize, height: h.iconSize }} />
+                <Button variant="ghost" size="icon" className="h-10 w-10">
+                  <Heart style={{ width: h.iconSize, height: h.iconSize }} strokeWidth={h.iconStrokeWidth || 1.5} />
                 </Button>
               )}
               {h.showAccount && (
                 <Link to={user ? '/account' : '/login'}>
-                  <Button variant="ghost" size="icon">
-                    <User style={{ width: h.iconSize, height: h.iconSize }} />
+                  <Button variant="ghost" size="icon" className="h-10 w-10">
+                    <User style={{ width: h.iconSize, height: h.iconSize }} strokeWidth={h.iconStrokeWidth || 1.5} />
                   </Button>
                 </Link>
               )}
               {h.showCart && (
                 <Link to="/cart" className="relative">
-                  <Button variant="ghost" size="icon">
-                    <CartIconComponent style={{ width: h.iconSize, height: h.iconSize }} />
+                  <Button variant="ghost" size="icon" className="h-10 w-10">
+                    <CartIconComponent style={{ width: h.iconSize, height: h.iconSize }} strokeWidth={h.iconStrokeWidth || 1.5} />
                     {itemCount > 0 && h.cartBadgeStyle !== 'none' && (
-                      <span className="absolute -top-1 -right-1 bg-foreground text-background text-[10px] font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                      <span className="absolute -top-0.5 -right-0.5 bg-foreground text-background text-[10px] font-bold rounded-full h-5 w-5 flex items-center justify-center">
                         {h.cartBadgeStyle === 'count' ? itemCount : '●'}
                       </span>
                     )}

@@ -136,8 +136,11 @@ export const defaultThemeConfig: ThemeConfig = {
     menuFontSize: 13,
     menuUppercase: true,
     menuLetterSpacing: 0.1,
+    menuFontWeight: 500,
+    menuHoverStyle: 'underline' as const,
     
     iconSize: 20,
+    iconStrokeWidth: 1.5,
     showSearch: true,
     searchStyle: 'modal',
     showAccount: true,

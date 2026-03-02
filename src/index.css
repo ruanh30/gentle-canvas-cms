@@ -222,3 +222,37 @@
 .qv-scrollbar-h::-webkit-scrollbar-track { background: transparent; }
 .qv-scrollbar-h::-webkit-scrollbar-thumb { background: hsl(var(--border)); border-radius: 999px; }
 .qv-scrollbar-h { scrollbar-width: thin; scrollbar-color: hsl(var(--border)) transparent; }
+
+/* Header nav underline animation */
+@keyframes nav-underline-in {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+.nav-link-underline {
+  position: relative;
+}
+.nav-link-underline::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: hsl(var(--foreground));
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.nav-link-underline:hover::after,
+.nav-link-underline:focus-visible::after {
+  transform: scaleX(1);
+}
+
+/* Dropdown enter animation */
+@keyframes dropdown-enter {
+  from { opacity: 0; transform: translateY(-4px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+.dropdown-animate {
+  animation: dropdown-enter 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
