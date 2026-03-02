@@ -569,9 +569,6 @@ const HomePage = () => {
               {section.showTitle !== false && (
                 <h2 className="text-2xl font-display font-bold">{section.title}</h2>
               )}
-              <Link to="/products" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1 ml-auto">
-                Ver todos <ArrowRight className="h-4 w-4" />
-              </Link>
             </div>
             {isCarousel ? (
               <SectionCarousel speed={carouselSpeed} showArrows={carouselShowArrows}>
@@ -609,9 +606,6 @@ const HomePage = () => {
           <section key={collection.id} className="container mx-auto px-4 py-16">
             <div className="flex items-center justify-between mb-8">
               <h2 className="text-2xl font-display font-bold">{collection.name}</h2>
-              <Link to="/products" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1 ml-auto">
-                Ver todos <ArrowRight className="h-4 w-4" />
-              </Link>
             </div>
             <SectionCarousel speed={5}>
               {collectionProducts.map(product => (
