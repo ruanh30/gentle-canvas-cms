@@ -304,7 +304,7 @@ const HEADER_PRESETS: HeaderPreset[] = [
       menuFontSize: 13, menuHoverStyle: 'underline', menuSeparator: 'none', menuItemGap: 28,
       headerSurface: false, borderBottom: false, shadowOnScroll: false, iconStrokeWidth: 1.5,
       height: 52, sticky: true, shrinkOnScroll: false, iconSize: 18,
-      showSearch: true, searchStyle: 'modal', showAccount: true, showWishlist: false, showCart: true, cartBadgeStyle: 'dot',
+      showSearch: true, searchStyle: 'modal', showAccount: true, showCart: true, cartBadgeStyle: 'dot',
       states: {
         normal: { backgroundColor: 'rgba(255,255,255,0.8)', textColor: '#1d1d1f', borderBottom: false, borderColor: 'transparent', shadow: 'none', blur: true, height: 52 },
         sticky: { backgroundColor: 'rgba(255,255,255,0.9)', textColor: '#1d1d1f', borderBottom: true, borderColor: '#d2d2d7', shadow: 'none', blur: true, height: 48 },
@@ -323,7 +323,7 @@ const HEADER_PRESETS: HeaderPreset[] = [
       menuFontSize: 14, menuHoverStyle: 'background', menuSeparator: 'none', menuItemGap: 4,
       menuItemPadding: true, headerSurface: true, dropdownElevated: true, borderBottom: true,
       shadowOnScroll: true, iconStrokeWidth: 1.5, height: 60, sticky: true, shrinkOnScroll: true, iconSize: 22,
-      showSearch: true, searchStyle: 'inline', showAccount: true, showWishlist: true, showCart: true, cartBadgeStyle: 'count',
+      showSearch: true, searchStyle: 'inline', showAccount: true, showCart: true, cartBadgeStyle: 'count',
       states: {
         normal: { backgroundColor: '#ffffff', textColor: '#0f1111', borderBottom: true, borderColor: '#ddd', shadow: 'subtle', blur: false, height: 60 },
         sticky: { backgroundColor: '#f7f7f7', textColor: '#0f1111', borderBottom: true, borderColor: '#ddd', shadow: 'medium', blur: true, height: 52 },
@@ -342,7 +342,7 @@ const HEADER_PRESETS: HeaderPreset[] = [
       menuFontSize: 10, menuHoverStyle: 'underline', menuSeparator: 'none', menuItemGap: 40,
       menuLetterSpacing: 0.25, headerSurface: false, borderBottom: true, shadowOnScroll: false,
       iconStrokeWidth: 1, height: 80, sticky: true, shrinkOnScroll: true, iconSize: 18,
-      showSearch: true, searchStyle: 'modal', showAccount: true, showWishlist: true, showCart: true, cartBadgeStyle: 'dot',
+      showSearch: true, searchStyle: 'modal', showAccount: true, showCart: true, cartBadgeStyle: 'dot',
       states: {
         normal: { backgroundColor: '#faf8f5', textColor: '#2c2418', borderBottom: true, borderColor: '#e0d5c5', shadow: 'none', blur: false, height: 80 },
         sticky: { backgroundColor: '#faf8f5', textColor: '#2c2418', borderBottom: true, borderColor: '#d4c8b0', shadow: 'subtle', blur: true, height: 56 },
@@ -361,7 +361,7 @@ const HEADER_PRESETS: HeaderPreset[] = [
       menuFontSize: 12, menuHoverStyle: 'underline', menuSeparator: 'none', menuItemGap: 24,
       menuLetterSpacing: 0.1, headerSurface: false, borderBottom: false, shadowOnScroll: false,
       iconStrokeWidth: 2, height: 60, sticky: true, shrinkOnScroll: true, iconSize: 20,
-      showSearch: true, searchStyle: 'modal', showAccount: true, showWishlist: true, showCart: true, cartBadgeStyle: 'count',
+      showSearch: true, searchStyle: 'modal', showAccount: true, showCart: true, cartBadgeStyle: 'count',
       states: {
         normal: { backgroundColor: '#000000', textColor: '#ffffff', borderBottom: false, borderColor: 'transparent', shadow: 'none', blur: false, height: 60 },
         sticky: { backgroundColor: '#000000', textColor: '#ffffff', borderBottom: false, borderColor: 'transparent', shadow: 'strong', blur: false, height: 52 },
@@ -380,7 +380,7 @@ const HEADER_PRESETS: HeaderPreset[] = [
       menuFontSize: 13, menuHoverStyle: 'underline', menuSeparator: 'none', menuItemGap: 20,
       menuLetterSpacing: 0.3, headerSurface: false, borderBottom: false, shadowOnScroll: false,
       iconStrokeWidth: 1, height: 72, sticky: true, shrinkOnScroll: true, iconSize: 20,
-      showSearch: true, searchStyle: 'modal', showAccount: false, showWishlist: false, showCart: true, cartBadgeStyle: 'dot',
+      showSearch: true, searchStyle: 'modal', showAccount: false, showCart: true, cartBadgeStyle: 'dot',
       mobile: { drawerPosition: 'left', showSearchInDrawer: true, showAccountInDrawer: true, showCartInDrawer: false, maxLevels: 3, groupStyle: 'list' },
       states: {
         normal: { backgroundColor: '#ffffff', textColor: '#000000', borderBottom: false, borderColor: 'transparent', shadow: 'none', blur: false, height: 72 },
@@ -401,7 +401,7 @@ const HEADER_PRESETS: HeaderPreset[] = [
       menuItemPadding: true, menuLetterSpacing: 0.04, headerSurface: false, dropdownElevated: true,
       borderBottom: false, shadowOnScroll: false, iconStrokeWidth: 1.5, height: 56, sticky: true,
       shrinkOnScroll: true, iconSize: 20,
-      showSearch: true, searchStyle: 'inline', showAccount: true, showWishlist: true, showCart: true, cartBadgeStyle: 'count',
+      showSearch: true, searchStyle: 'inline', showAccount: true, showCart: true, cartBadgeStyle: 'count',
       states: {
         normal: { backgroundColor: '#2d2d2d', textColor: '#ffffff', borderBottom: false, borderColor: 'transparent', shadow: 'none', blur: false, height: 56 },
         sticky: { backgroundColor: '#1a1a1a', textColor: '#ffffff', borderBottom: false, borderColor: 'transparent', shadow: 'strong', blur: false, height: 48 },
@@ -420,7 +420,7 @@ const HEADER_PRESETS: HeaderPreset[] = [
       menuFontSize: 13, menuHoverStyle: 'both', menuSeparator: 'none', menuItemGap: 16,
       headerSurface: true, dropdownElevated: true, borderBottom: true, shadowOnScroll: true,
       iconStrokeWidth: 1.5, height: 52, sticky: true, shrinkOnScroll: false, iconSize: 20,
-      showSearch: true, searchStyle: 'modal', showAccount: true, showWishlist: false, showCart: true, cartBadgeStyle: 'count',
+      showSearch: true, searchStyle: 'modal', showAccount: true, showCart: true, cartBadgeStyle: 'count',
       states: {
         normal: { backgroundColor: '#ffffff', textColor: '#1a1a1a', borderBottom: true, borderColor: '#e0e0e0', shadow: 'none', blur: false, height: 52 },
         sticky: { backgroundColor: '#ffffff', textColor: '#1a1a1a', borderBottom: true, borderColor: '#d0d0d0', shadow: 'subtle', blur: true, height: 48 },
@@ -439,7 +439,7 @@ const HEADER_PRESETS: HeaderPreset[] = [
       menuFontSize: 12, menuHoverStyle: 'underline', menuSeparator: 'none', menuItemGap: 24,
       menuLetterSpacing: 0.08, headerSurface: false, borderBottom: true, shadowOnScroll: false,
       iconStrokeWidth: 1.5, height: 64, sticky: true, shrinkOnScroll: true, iconSize: 20,
-      showSearch: true, searchStyle: 'drawer', showAccount: true, showWishlist: true, showCart: true, cartBadgeStyle: 'count',
+      showSearch: true, searchStyle: 'drawer', showAccount: true, showCart: true, cartBadgeStyle: 'count',
       states: {
         normal: { backgroundColor: '#000000', textColor: '#ffffff', borderBottom: true, borderColor: '#333333', shadow: 'none', blur: false, height: 64 },
         sticky: { backgroundColor: '#000000', textColor: '#ffffff', borderBottom: true, borderColor: '#222222', shadow: 'medium', blur: false, height: 52 },
@@ -458,7 +458,7 @@ const HEADER_PRESETS: HeaderPreset[] = [
       menuFontSize: 13, menuHoverStyle: 'background', menuSeparator: 'none', menuItemGap: 20,
       headerSurface: false, borderBottom: true, shadowOnScroll: false, iconStrokeWidth: 1.5,
       height: 56, sticky: true, shrinkOnScroll: true, iconSize: 20,
-      showSearch: true, searchStyle: 'modal', showAccount: true, showWishlist: false, showCart: true, cartBadgeStyle: 'dot',
+      showSearch: true, searchStyle: 'modal', showAccount: true, showCart: true, cartBadgeStyle: 'dot',
       states: {
         normal: { backgroundColor: 'rgba(255,255,255,0.65)', textColor: '#1a1a1a', borderBottom: true, borderColor: 'rgba(255,255,255,0.35)', shadow: 'subtle', blur: true, height: 56 },
         sticky: { backgroundColor: 'rgba(255,255,255,0.85)', textColor: '#1a1a1a', borderBottom: true, borderColor: 'rgba(255,255,255,0.5)', shadow: 'medium', blur: true, height: 48 },
@@ -477,7 +477,7 @@ const HEADER_PRESETS: HeaderPreset[] = [
       menuFontSize: 14, menuHoverStyle: 'underline', menuSeparator: 'slash', menuItemGap: 16,
       menuLetterSpacing: 0, headerSurface: false, borderBottom: true, shadowOnScroll: false,
       iconStrokeWidth: 2.5, height: 64, sticky: true, shrinkOnScroll: false, iconSize: 22,
-      showSearch: true, searchStyle: 'modal', showAccount: true, showWishlist: false, showCart: true, cartBadgeStyle: 'count',
+      showSearch: true, searchStyle: 'modal', showAccount: true, showCart: true, cartBadgeStyle: 'count',
       states: {
         normal: { backgroundColor: '#ffffff', textColor: '#000000', borderBottom: true, borderColor: '#000000', shadow: 'none', blur: false, height: 64 },
         sticky: { backgroundColor: '#000000', textColor: '#ffffff', borderBottom: true, borderColor: '#ffffff', shadow: 'none', blur: false, height: 56 },
@@ -496,7 +496,7 @@ const HEADER_PRESETS: HeaderPreset[] = [
       menuFontSize: 11, menuHoverStyle: 'background', menuSeparator: 'none', menuItemGap: 16,
       menuLetterSpacing: 0.12, headerSurface: false, dropdownElevated: true, borderBottom: true,
       shadowOnScroll: false, iconStrokeWidth: 2, height: 56, sticky: true, shrinkOnScroll: true, iconSize: 18,
-      showSearch: true, searchStyle: 'modal', showAccount: true, showWishlist: false, showCart: true, cartBadgeStyle: 'count',
+      showSearch: true, searchStyle: 'modal', showAccount: true, showCart: true, cartBadgeStyle: 'count',
       states: {
         normal: { backgroundColor: '#0a0a0a', textColor: '#00ff88', borderBottom: true, borderColor: '#00ff8825', shadow: 'none', blur: false, height: 56 },
         sticky: { backgroundColor: '#050505', textColor: '#00ff88', borderBottom: true, borderColor: '#00ff8835', shadow: 'medium', blur: false, height: 48 },
@@ -515,7 +515,7 @@ const HEADER_PRESETS: HeaderPreset[] = [
       menuFontSize: 10, menuHoverStyle: 'underline', menuSeparator: 'dot', menuItemGap: 32,
       menuLetterSpacing: 0.2, headerSurface: false, dropdownElevated: true, borderBottom: true,
       shadowOnScroll: false, iconStrokeWidth: 1, height: 72, sticky: true, shrinkOnScroll: true, iconSize: 18,
-      showSearch: true, searchStyle: 'modal', showAccount: true, showWishlist: true, showCart: true, cartBadgeStyle: 'dot',
+      showSearch: true, searchStyle: 'modal', showAccount: true, showCart: true, cartBadgeStyle: 'dot',
       states: {
         normal: { backgroundColor: '#0c1a3a', textColor: '#d4a853', borderBottom: true, borderColor: '#1a2d5a', shadow: 'none', blur: false, height: 72 },
         sticky: { backgroundColor: '#091430', textColor: '#d4a853', borderBottom: true, borderColor: '#1a2d5a', shadow: 'subtle', blur: false, height: 56 },
@@ -534,7 +534,7 @@ const HEADER_PRESETS: HeaderPreset[] = [
       menuFontSize: 13, menuHoverStyle: 'underline', menuSeparator: 'none', menuItemGap: 28,
       headerSurface: false, borderBottom: true, shadowOnScroll: false, iconStrokeWidth: 1,
       height: 68, sticky: true, shrinkOnScroll: true, iconSize: 18,
-      showSearch: true, searchStyle: 'modal', showAccount: true, showWishlist: true, showCart: true, cartBadgeStyle: 'dot',
+      showSearch: true, searchStyle: 'modal', showAccount: true, showCart: true, cartBadgeStyle: 'dot',
       states: {
         normal: { backgroundColor: '#fdf2f8', textColor: '#831843', borderBottom: true, borderColor: '#fbcfe8', shadow: 'none', blur: false, height: 68 },
         sticky: { backgroundColor: '#fdf2f8', textColor: '#831843', borderBottom: true, borderColor: '#f9a8d4', shadow: 'subtle', blur: true, height: 56 },
@@ -553,7 +553,7 @@ const HEADER_PRESETS: HeaderPreset[] = [
       menuFontSize: 14, menuHoverStyle: 'underline', menuSeparator: 'none', menuItemGap: 28,
       headerSurface: false, borderBottom: true, shadowOnScroll: false, iconStrokeWidth: 1.5,
       height: 60, sticky: true, shrinkOnScroll: true, iconSize: 20,
-      showSearch: true, searchStyle: 'drawer', showAccount: true, showWishlist: false, showCart: true, cartBadgeStyle: 'count',
+      showSearch: true, searchStyle: 'drawer', showAccount: true, showCart: true, cartBadgeStyle: 'count',
       states: {
         normal: { backgroundColor: '#1a2f23', textColor: '#c8dcc9', borderBottom: true, borderColor: '#2a4a33', shadow: 'none', blur: false, height: 60 },
         sticky: { backgroundColor: '#142a1d', textColor: '#c8dcc9', borderBottom: true, borderColor: '#2a4a33', shadow: 'subtle', blur: false, height: 52 },
@@ -572,7 +572,7 @@ const HEADER_PRESETS: HeaderPreset[] = [
       menuFontSize: 11, menuHoverStyle: 'underline', menuSeparator: 'none', menuItemGap: 36,
       menuLetterSpacing: 0.22, headerSurface: false, borderBottom: false, shadowOnScroll: false,
       iconStrokeWidth: 1, height: 80, sticky: true, shrinkOnScroll: true, iconSize: 18,
-      showSearch: true, searchStyle: 'modal', showAccount: true, showWishlist: true, showCart: true, cartBadgeStyle: 'dot',
+      showSearch: true, searchStyle: 'modal', showAccount: true, showCart: true, cartBadgeStyle: 'dot',
       states: {
         normal: { backgroundColor: 'transparent', textColor: '#ffffff', borderBottom: false, borderColor: 'transparent', shadow: 'none', blur: false, height: 80 },
         sticky: { backgroundColor: 'rgba(255,255,255,0.95)', textColor: '#1a1a1a', borderBottom: true, borderColor: '#e5e7eb', shadow: 'subtle', blur: true, height: 52 },
@@ -591,7 +591,7 @@ const HEADER_PRESETS: HeaderPreset[] = [
       menuFontSize: 14, menuHoverStyle: 'background', menuSeparator: 'none', menuItemGap: 8,
       menuItemPadding: true, headerSurface: true, dropdownElevated: true, borderBottom: true,
       shadowOnScroll: true, iconStrokeWidth: 1.5, height: 64, sticky: true, shrinkOnScroll: true, iconSize: 20,
-      showSearch: true, searchStyle: 'inline', showAccount: true, showWishlist: false, showCart: true, cartBadgeStyle: 'count',
+      showSearch: true, searchStyle: 'inline', showAccount: true, showCart: true, cartBadgeStyle: 'count',
       states: {
         normal: { backgroundColor: '#ffffff', textColor: '#0f172a', borderBottom: true, borderColor: '#e2e8f0', shadow: 'none', blur: false, height: 64 },
         sticky: { backgroundColor: '#f8fafc', textColor: '#0f172a', borderBottom: true, borderColor: '#e2e8f0', shadow: 'subtle', blur: true, height: 56 },
@@ -610,7 +610,7 @@ const HEADER_PRESETS: HeaderPreset[] = [
       menuFontSize: 11, menuHoverStyle: 'underline', menuSeparator: 'line', menuItemGap: 20,
       menuLetterSpacing: 0.14, headerSurface: false, borderBottom: true, shadowOnScroll: false,
       iconStrokeWidth: 1.5, height: 56, sticky: true, shrinkOnScroll: true, iconSize: 18,
-      showSearch: true, searchStyle: 'modal', showAccount: true, showWishlist: false, showCart: true, cartBadgeStyle: 'count',
+      showSearch: true, searchStyle: 'modal', showAccount: true, showCart: true, cartBadgeStyle: 'count',
       states: {
         normal: { backgroundColor: '#f5f5f5', textColor: '#262626', borderBottom: true, borderColor: '#d4d4d4', shadow: 'none', blur: false, height: 56 },
         sticky: { backgroundColor: '#e5e5e5', textColor: '#171717', borderBottom: true, borderColor: '#a3a3a3', shadow: 'subtle', blur: true, height: 48 },
@@ -629,7 +629,7 @@ const HEADER_PRESETS: HeaderPreset[] = [
       menuFontSize: 14, menuHoverStyle: 'underline', menuSeparator: 'dot', menuItemGap: 24,
       headerSurface: false, dropdownElevated: true, borderBottom: true, shadowOnScroll: false,
       iconStrokeWidth: 1.5, height: 64, sticky: true, shrinkOnScroll: true, iconSize: 20,
-      showSearch: true, searchStyle: 'drawer', showAccount: true, showWishlist: true, showCart: true, cartBadgeStyle: 'count',
+      showSearch: true, searchStyle: 'drawer', showAccount: true, showCart: true, cartBadgeStyle: 'count',
       states: {
         normal: { backgroundColor: '#f5ebe0', textColor: '#5c3d2e', borderBottom: true, borderColor: '#ddb892', shadow: 'none', blur: false, height: 64 },
         sticky: { backgroundColor: '#f5ebe0', textColor: '#5c3d2e', borderBottom: true, borderColor: '#c8a27c', shadow: 'subtle', blur: true, height: 52 },
@@ -648,7 +648,7 @@ const HEADER_PRESETS: HeaderPreset[] = [
       menuFontSize: 11, menuHoverStyle: 'underline', menuSeparator: 'none', menuItemGap: 36,
       menuLetterSpacing: 0.18, headerSurface: false, borderBottom: false, shadowOnScroll: false,
       iconStrokeWidth: 1, height: 72, sticky: true, shrinkOnScroll: true, iconSize: 18,
-      showSearch: true, searchStyle: 'modal', showAccount: true, showWishlist: true, showCart: true, cartBadgeStyle: 'dot',
+      showSearch: true, searchStyle: 'modal', showAccount: true, showCart: true, cartBadgeStyle: 'dot',
       states: {
         normal: { backgroundColor: '#1e1b4b', textColor: '#c7d2fe', borderBottom: false, borderColor: 'transparent', shadow: 'none', blur: false, height: 72 },
         sticky: { backgroundColor: '#1e1b4b', textColor: '#c7d2fe', borderBottom: true, borderColor: '#312e81', shadow: 'medium', blur: true, height: 52 },
@@ -667,7 +667,7 @@ const HEADER_PRESETS: HeaderPreset[] = [
       menuFontSize: 14, menuHoverStyle: 'both', menuSeparator: 'none', menuItemGap: 8,
       menuItemPadding: true, headerSurface: true, dropdownElevated: true, borderBottom: true,
       shadowOnScroll: true, iconStrokeWidth: 1.5, height: 64, sticky: true, shrinkOnScroll: true, iconSize: 20,
-      showSearch: true, searchStyle: 'inline', showAccount: true, showWishlist: true, showCart: true, cartBadgeStyle: 'count',
+      showSearch: true, searchStyle: 'inline', showAccount: true, showCart: true, cartBadgeStyle: 'count',
       announcement: { enabled: true, messages: ['Frete grátis acima de R$ 199', '10% OFF na primeira compra'], speed: 4, backgroundColor: '#000000', textColor: '#ffffff', style: 'ticker', direction: 'rtl' },
       states: {
         normal: { backgroundColor: '#ffffff', textColor: '#1a1a1a', borderBottom: true, borderColor: '#e5e7eb', shadow: 'subtle', blur: false, height: 64 },
@@ -761,7 +761,7 @@ const FIXED_PAGES = [
   { value: '/', label: 'Início' },
   { value: '/products', label: 'Todos os Produtos' },
   { value: '/cart', label: 'Carrinho' },
-  { value: '/wishlist', label: 'Lista de Desejos' },
+  
   { value: '/login', label: 'Login / Conta' },
   { value: '/orders', label: 'Meus Pedidos' },
 ];
@@ -1306,7 +1306,7 @@ function IconsSection() {
       <div className="rounded-xl border border-border/40 bg-[hsl(var(--flash-surface))] p-4 flex items-center justify-center gap-4">
         <p className="text-[9px] text-muted-foreground/40 uppercase tracking-wider mr-2">Preview</p>
         {h.showSearch && <Search style={{ width: h.iconSize, height: h.iconSize }} strokeWidth={h.iconStrokeWidth || 1.5} className="text-foreground/70" />}
-        {h.showWishlist && <Heart style={{ width: h.iconSize, height: h.iconSize }} strokeWidth={h.iconStrokeWidth || 1.5} className="text-foreground/70" />}
+        
         {h.showAccount && <User style={{ width: h.iconSize, height: h.iconSize }} strokeWidth={h.iconStrokeWidth || 1.5} className="text-foreground/70" />}
         {h.showCart && (
           <div className="relative">
@@ -1719,10 +1719,6 @@ function IconPickerSection() {
               <span className="text-[8px] text-muted-foreground/40">Conta</span>
             </div>;
           })()}
-          {h.showWishlist && <div className="flex flex-col items-center gap-1">
-            <Heart style={{ width: iconSize, height: iconSize }} strokeWidth={sw} className="text-foreground/70" />
-            <span className="text-[8px] text-muted-foreground/40">Wishlist</span>
-          </div>}
           {h.showCart && (() => {
             const ci = CART_ICONS.find(i => i.id === (h.cartIcon || 'ShoppingBag')) || CART_ICONS[0];
             return <div className="flex flex-col items-center gap-1 relative">

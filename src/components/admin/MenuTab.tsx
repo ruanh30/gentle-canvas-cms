@@ -17,7 +17,7 @@ const FIXED_PAGES = [
   { value: '/', label: 'Início' },
   { value: '/products', label: 'Todos os Produtos' },
   { value: '/cart', label: 'Carrinho' },
-  { value: '/wishlist', label: 'Lista de Desejos' },
+  
   { value: '/login', label: 'Login / Conta' },
   { value: '/orders', label: 'Meus Pedidos' },
 ];
