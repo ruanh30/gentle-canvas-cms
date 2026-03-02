@@ -96,7 +96,7 @@ function BuyButton({ label, btnStyle, color, hoverColor, sideBySide, onClick, bu
     <button
       onClick={onClick}
       className={cn(
-        'pm-theme-btn font-medium transition-all hover:opacity-90 inline-flex items-center justify-center',
+        'pm-theme-btn font-medium transition-all hover:opacity-90 inline-flex items-center justify-center w-full overflow-hidden',
         btnStyleMap[btnStyle] || 'rounded-md',
       )}
       style={{
@@ -111,7 +111,7 @@ function BuyButton({ label, btnStyle, color, hoverColor, sideBySide, onClick, bu
       }}
     >
       <BuyIcon className="h-3.5 w-3.5 mr-1.5 shrink-0" />
-      {label}
+      <span className="truncate">{label}</span>
     </button>
   );
 }
@@ -137,7 +137,7 @@ function CartButton({ label, btnStyle, sideBySide, compact, onClick, cartIcon }:
     <button
       onClick={onClick}
       className={cn(
-        'pm-theme-btn font-medium transition-all hover:opacity-90 inline-flex items-center justify-center',
+        'pm-theme-btn font-medium transition-all hover:opacity-90 inline-flex items-center justify-center w-full overflow-hidden',
         btnStyleMap[btnStyle] || 'rounded-md',
         isOutline && 'border-2 border-foreground text-foreground bg-transparent',
         isUnderline && 'border-b-2 border-foreground text-foreground bg-transparent',
@@ -147,7 +147,7 @@ function CartButton({ label, btnStyle, sideBySide, compact, onClick, cartIcon }:
       style={btnDimensions}
     >
       <CartIcon className="h-3.5 w-3.5 mr-1.5 shrink-0" />
-      {label}
+      <span className="truncate">{label}</span>
     </button>
   );
 }
