@@ -337,12 +337,14 @@ export function StoreHeader() {
     if (!h.showSearch) return null;
 
     if (h.searchStyle === 'inline') {
+      const placeholder = h.search?.placeholder || 'Buscar produtos...';
       return (
         <div className="hidden lg:block relative w-52 xl:w-72 group">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/60 group-focus-within:text-foreground transition-colors" />
           <input
-            placeholder="Buscar produtos..."
-            className="w-full pl-9 pr-3 h-9 text-sm bg-secondary/60 hover:bg-secondary rounded-full border-0 outline-none ring-1 ring-transparent focus:ring-border focus:bg-background transition-all duration-200 placeholder:text-muted-foreground/50"
+            placeholder={placeholder}
+            className="w-full pl-9 pr-3 h-9 text-sm rounded-full border border-border/60 outline-none focus:ring-1 focus:ring-border transition-all duration-200 placeholder:text-muted-foreground/50"
+            style={{ backgroundColor: '#ffffff' }}
           />
         </div>
       );
@@ -472,14 +474,39 @@ export function StoreHeader() {
     )));
   };
 
+  // Resolve state-based styling
+  const states = h.states;
+  const isTransparentLayout = h.layout === 'transparent';
+  const activeState = isTransparentLayout && !scrolled
+    ? states?.transparent
+    : h.sticky && scrolled
+    ? states?.sticky
+    : states?.normal;
+
+  const headerStyle: React.CSSProperties = activeState ? {
+    backgroundColor: activeState.backgroundColor === 'transparent' ? 'transparent' : activeState.backgroundColor,
+    color: activeState.textColor,
+    borderColor: activeState.borderBottom ? activeState.borderColor : 'transparent',
+  } : {};
+
+  const shadowMap: Record<string, string> = {
+    none: '',
+    subtle: 'shadow-sm',
+    medium: 'shadow-md',
+    strong: 'shadow-lg',
+  };
+
   return (
     <header className={cn(
-      'z-50 bg-background/95 backdrop-blur-md supports-[backdrop-filter]:bg-background/80 transition-all duration-300',
-      (h.headerSurface ?? true) && 'border-b border-border/60 shadow-[0_1px_3px_0_hsl(var(--foreground)/0.04),0_1px_2px_-1px_hsl(var(--foreground)/0.06)]',
-      !(h.headerSurface ?? true) && h.borderBottom && 'border-b border-border',
-      h.shadowOnScroll && scrolled && 'shadow-md',
+      'z-50 transition-all duration-300',
+      activeState?.blur && 'backdrop-blur-md',
+      !activeState && 'bg-background/95 backdrop-blur-md supports-[backdrop-filter]:bg-background/80',
+      activeState?.borderBottom && 'border-b',
+      !activeState && (h.headerSurface ?? true) && 'border-b border-border/60 shadow-[0_1px_3px_0_hsl(var(--foreground)/0.04),0_1px_2px_-1px_hsl(var(--foreground)/0.06)]',
+      !activeState && !(h.headerSurface ?? true) && h.borderBottom && 'border-b border-border',
+      activeState ? shadowMap[activeState.shadow] : (h.shadowOnScroll && scrolled ? 'shadow-md' : ''),
       h.sticky && 'sticky top-0'
-    )}>
+    )} style={headerStyle}>
       {/* Announcement bar: hide when shrunk */}
       {!isMinimal && !shrinkActive && <AnnouncementBar />}
 
