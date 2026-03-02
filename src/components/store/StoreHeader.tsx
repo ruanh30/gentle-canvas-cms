@@ -338,11 +338,11 @@ export function StoreHeader() {
 
     if (h.searchStyle === 'inline') {
       return (
-        <div className="hidden lg:block relative w-48 xl:w-64">
-          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
-          <Input
+        <div className="hidden lg:block relative w-52 xl:w-72 group">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/60 group-focus-within:text-foreground transition-colors" />
+          <input
             placeholder="Buscar produtos..."
-            className="pl-8 h-8 text-sm bg-secondary border-0"
+            className="w-full pl-9 pr-3 h-9 text-sm bg-secondary/60 hover:bg-secondary rounded-full border-0 outline-none ring-1 ring-transparent focus:ring-border focus:bg-background transition-all duration-200 placeholder:text-muted-foreground/50"
           />
         </div>
       );
@@ -361,29 +361,41 @@ export function StoreHeader() {
     if (h.searchStyle === 'modal') {
       return (
         <Dialog open={searchOpen} onOpenChange={setSearchOpen}>
-          <DialogContent className="sm:max-w-lg">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Buscar produtos..."
-                className="pl-10 bg-secondary border-0 h-12 text-base"
-                autoFocus
-                onKeyDown={(e) => { if (e.key === 'Escape') setSearchOpen(false); }}
-              />
+          <DialogContent className="sm:max-w-lg p-0 overflow-hidden rounded-xl border-border/50 shadow-[0_16px_70px_-12px_hsl(var(--foreground)/0.2)]">
+            <div className="p-4">
+              <div className="relative">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground/50" />
+                <input
+                  placeholder="O que você está procurando?"
+                  className="w-full pl-12 pr-4 h-14 text-base bg-transparent border-0 outline-none placeholder:text-muted-foreground/40"
+                  autoFocus
+                  onKeyDown={(e) => { if (e.key === 'Escape') setSearchOpen(false); }}
+                />
+              </div>
+              <div className="border-t border-border/40 mt-2 pt-3">
+                <p className="text-[11px] text-muted-foreground/50 uppercase tracking-wider font-medium px-1">Sugestões populares</p>
+                <div className="flex flex-wrap gap-1.5 mt-2">
+                  {['Camisetas', 'Vestidos', 'Promoções', 'Novidades'].map(tag => (
+                    <span key={tag} className="px-3 py-1.5 text-xs text-muted-foreground bg-secondary/80 hover:bg-secondary rounded-full cursor-pointer transition-colors">
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              </div>
             </div>
           </DialogContent>
         </Dialog>
       );
     }
 
-    // drawer (default) — slides from top
+    // drawer — slides from top
     return (
-      <div className="pb-4 animate-in slide-in-from-top-2">
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Buscar produtos..."
-            className="pl-10 bg-secondary border-0"
+      <div className="pb-4 pt-2 animate-in slide-in-from-top-2 duration-300">
+        <div className="relative max-w-lg mx-auto">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/50" />
+          <input
+            placeholder="O que você está procurando?"
+            className="w-full pl-11 pr-4 h-11 text-sm bg-secondary/60 rounded-full border-0 outline-none ring-1 ring-border/40 focus:ring-border focus:bg-background transition-all duration-200 placeholder:text-muted-foreground/40"
             autoFocus
             onKeyDown={(e) => { if (e.key === 'Escape') setSearchOpen(false); }}
           />
@@ -516,9 +528,12 @@ export function StoreHeader() {
             )}
 
             {h.searchStyle === 'inline' && h.showSearch && h.layout !== 'hamburger-only' && (
-              <div className="hidden lg:block relative w-48 xl:w-64">
-                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
-                <Input placeholder="Buscar produtos..." className="pl-8 h-8 text-sm bg-secondary border-0" />
+              <div className="hidden lg:block relative w-52 xl:w-72 group">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/60 group-focus-within:text-foreground transition-colors" />
+                <input
+                  placeholder="Buscar produtos..."
+                  className="w-full pl-9 pr-3 h-9 text-sm bg-secondary/60 hover:bg-secondary rounded-full border-0 outline-none ring-1 ring-transparent focus:ring-border focus:bg-background transition-all duration-200 placeholder:text-muted-foreground/50"
+                />
               </div>
             )}
 
