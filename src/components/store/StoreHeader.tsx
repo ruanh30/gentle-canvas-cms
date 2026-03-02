@@ -818,18 +818,6 @@ export function StoreHeader() {
               {renderActions()}
             </div>
 
-            {/* Row 2: Navigation (only if not separated) */}
-            {!isMenuBarSeparated && (
-              <nav
-                className={cn('hidden lg:flex items-center py-2 border-t', h.menuDividerLine ? '' : 'border-border/30')}
-                style={{
-                  gap: `${h.menuItemGap ?? 4}px`,
-                  ...(h.menuDividerLine ? { borderTopColor: `color-mix(in srgb, ${activeState?.textColor || 'currentColor'} 12%, transparent)` } : {}),
-                }}
-              >
-                {renderNavItems()}
-              </nav>
-            )}
           </>
         ) : !shrinkActive ? (
           /* ALL OTHER LAYOUTS */
@@ -871,22 +859,55 @@ export function StoreHeader() {
           </nav>
         )}
 
-        {/* Centered layout sub-nav */}
-        {h.layout === 'centered' && !shrinkActive && !isMenuBarSeparated && (
-          <>
-            {h.menuDividerLine && (
-              <div className="hidden lg:block" style={{ borderTopWidth: '1px', borderTopStyle: 'solid', borderColor: `color-mix(in srgb, ${activeState?.textColor || 'currentColor'} 12%, transparent)`, width: '100%' }} />
-            )}
-            <nav className="hidden lg:flex items-center justify-center pb-3" style={{ gap: `${h.menuItemGap ?? 4}px` }}>
-              {renderNavItems()}
-            </nav>
-          </>
-        )}
+        {/* Centered nav moved outside container below */}
 
         {!shrinkActive && renderSearchOverlay()}
       </div>
 
-      {/* Separated Menu Bar */}
+      {/* Double-row nav bar (full-width divider line) */}
+      {isDoubleRow && !shrinkActive && !isMenuBarSeparated && (
+        <div
+          className="hidden lg:block"
+          style={{
+            ...(h.menuDividerLine
+              ? { borderTopWidth: '1px', borderTopStyle: 'solid' as const, borderTopColor: `color-mix(in srgb, ${activeState?.textColor || 'currentColor'} 12%, transparent)` }
+              : { borderTopWidth: '1px', borderTopStyle: 'solid' as const, borderTopColor: 'transparent' }
+            ),
+          }}
+        >
+          <div style={containerStyle}>
+            <nav
+              className="flex items-center justify-center"
+              style={{ height: '40px', gap: `${h.menuItemGap ?? 4}px` }}
+            >
+              {renderNavItems()}
+            </nav>
+          </div>
+        </div>
+      )}
+
+      {/* Centered layout nav bar (full-width divider line) */}
+      {h.layout === 'centered' && !shrinkActive && !isMenuBarSeparated && (
+        <div
+          className="hidden lg:block"
+          style={{
+            ...(h.menuDividerLine
+              ? { borderTopWidth: '1px', borderTopStyle: 'solid' as const, borderTopColor: `color-mix(in srgb, ${activeState?.textColor || 'currentColor'} 12%, transparent)` }
+              : {}
+            ),
+          }}
+        >
+          <div style={containerStyle}>
+            <nav
+              className="flex items-center justify-center"
+              style={{ height: '40px', gap: `${h.menuItemGap ?? 4}px` }}
+            >
+              {renderNavItems()}
+            </nav>
+          </div>
+        </div>
+      )}
+
       {isMenuBarSeparated && !shrinkActive && (
         <div
           className={cn(
