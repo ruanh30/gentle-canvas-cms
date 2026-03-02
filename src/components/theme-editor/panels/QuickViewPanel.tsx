@@ -94,10 +94,9 @@ export function QuickViewPanel() {
           <p className="text-[10px] text-muted-foreground/60 leading-relaxed -mt-2">
             Ícones de ação abaixo do botão de compra.
           </p>
-          <ToggleRow label="Exibir ações sociais" hint="Mostra ícones de favorito, chat, compartilhar e WhatsApp" checked={qv.showSocialActions} onChange={v => set({ showSocialActions: v })} />
+          <ToggleRow label="Exibir ações sociais" hint="Mostra ícones de chat, compartilhar e WhatsApp" checked={qv.showSocialActions} onChange={v => set({ showSocialActions: v })} />
           {qv.showSocialActions && (
             <>
-              <ToggleRow label="❤️ Favoritar" checked={qv.socialActions.wishlist} onChange={v => setSocial({ wishlist: v })} />
               <ToggleRow label="💬 Chat" checked={qv.socialActions.chat} onChange={v => setSocial({ chat: v })} />
               <ToggleRow label="🔗 Compartilhar" checked={qv.socialActions.share} onChange={v => setSocial({ share: v })} />
               <ToggleRow label="📱 WhatsApp" checked={qv.socialActions.whatsapp} onChange={v => setSocial({ whatsapp: v })} />

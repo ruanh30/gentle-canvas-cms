@@ -215,11 +215,6 @@ export function ProductCard({ product }: Props) {
               'absolute top-3 flex flex-col gap-1 opacity-0 group-hover:opacity-100 transition-all duration-200',
               c.badgePosition === 'top-right' ? 'left-3' : 'right-3',
             )}>
-              {c.showWishlist && (
-                <button className="bg-background/90 backdrop-blur-sm p-2 rounded-full hover:bg-background shadow-sm">
-                  <Heart className="h-4 w-4" />
-                </button>
-              )}
               {c.showQuickView && (
                 <button
                   className="bg-background/90 backdrop-blur-sm p-2 rounded-full hover:bg-background shadow-sm"

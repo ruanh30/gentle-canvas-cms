@@ -701,11 +701,6 @@ export function StoreHeader() {
             <SearchIconComp style={iconStyle} strokeWidth={sw} />
           </Button>
         )}
-        {h.showWishlist && (
-          <Button variant="ghost" size="icon" className="h-10 w-10">
-            <Heart style={iconStyle} strokeWidth={sw} />
-          </Button>
-        )}
         {h.showAccount && (
           <Link to={user ? '/account' : '/login'}>
             <Button variant="ghost" size="icon" className="h-10 w-10">

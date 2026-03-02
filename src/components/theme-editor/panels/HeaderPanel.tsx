@@ -75,7 +75,7 @@ export function HeaderPanel() {
         ]} />
       )}
       <ToggleRow label="Ícone de conta" hint="Exibe ícone de perfil/login do usuário no cabeçalho" checked={h.showAccount} onChange={v => set({ showAccount: v })} />
-      <ToggleRow label="Ícone de wishlist" hint="Exibe ícone de coração para lista de desejos" checked={h.showWishlist} onChange={v => set({ showWishlist: v })} />
+      
       <ToggleRow label="Ícone do carrinho" hint="Exibe ícone da sacola/carrinho de compras" checked={h.showCart} onChange={v => set({ showCart: v })} />
       <OptionPicker label="Badge do carrinho" value={h.cartBadgeStyle} onChange={v => set({ cartBadgeStyle: v })} options={[
         { value: 'count', label: 'Contador', description: 'Exibe o número de itens no carrinho' },

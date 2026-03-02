@@ -20,7 +20,6 @@ import AccountPage from "@/pages/AccountPage";
 import OrdersPage from "@/pages/OrdersPage";
 import AddressesPage from "@/pages/AddressesPage";
 import PersonalDataPage from "@/pages/PersonalDataPage";
-import WishlistPage from "@/pages/WishlistPage";
 
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import AdminCustomization from "@/pages/admin/AdminCustomization";
@@ -55,7 +54,6 @@ const App = () => (
                 <Route path="/orders" element={<OrdersPage />} />
                 <Route path="/addresses" element={<AddressesPage />} />
                 <Route path="/personal-data" element={<PersonalDataPage />} />
-                <Route path="/wishlist" element={<WishlistPage />} />
               </Route>
 
               {/* Admin */}
