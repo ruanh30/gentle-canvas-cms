@@ -6,6 +6,7 @@ import {
   Menu, ExternalLink, Tag, Settings2, PanelTop, Megaphone, ImageIcon,
   Eye, EyeOff, Home, Search, User, Heart, ShoppingBag, AlignLeft, AlignCenter, Minus
 } from 'lucide-react';
+import flashLojaLogo from '@/assets/flashloja-logo.png';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
@@ -364,10 +365,7 @@ function PreviewWrapper({ children, label = 'Pré-Visualização' }: { children:
 function LayoutPreview({ layout }: { layout: string }) {
   const logoEl = (
     <div className="flex items-center gap-1.5">
-      <div className="w-5 h-5 rounded bg-foreground/10 flex items-center justify-center">
-        <span className="text-[8px] font-bold text-foreground/60">L</span>
-      </div>
-      <span className="font-bold text-xs text-foreground tracking-tight">MinhaMarca</span>
+      <img src={flashLojaLogo} alt="FlashLoja" className="h-5 object-contain" />
     </div>
   );
   const navItems = ['Início', 'Novidades', 'Masculino', 'Feminino', 'Sale'];
@@ -528,11 +526,7 @@ function BehaviorPreview({ sticky, shrinkOnScroll, shadowOnScroll, borderBottom,
               'bg-background px-3 flex items-center justify-between',
               borderBottom && 'border-b border-border',
             )} style={{ height: normalH }}>
-              <span className="font-bold text-[10px] text-foreground">LOGO</span>
-              <div className="flex gap-1.5 items-center">
-                <span className="text-[9px] text-muted-foreground">Menu</span>
-                <Search className="h-3 w-3 text-muted-foreground" />
-              </div>
+              <img src={flashLojaLogo} alt="FlashLoja" className="h-4 object-contain" />
             </div>
             <div className="px-3 py-2 space-y-1.5">
               <div className="h-1.5 bg-muted/40 rounded w-4/5" />
@@ -547,11 +541,7 @@ function BehaviorPreview({ sticky, shrinkOnScroll, shadowOnScroll, borderBottom,
               shadowOnScroll && 'shadow-md',
               !sticky && 'opacity-20',
             )} style={{ height: shrunkH }}>
-              <span className={cn('font-bold text-foreground', shrinkOnScroll ? 'text-[9px]' : 'text-[10px]')}>LOGO</span>
-              <div className="flex gap-1.5 items-center">
-                <span className={cn('text-muted-foreground', shrinkOnScroll ? 'text-[8px]' : 'text-[9px]')}>Menu</span>
-                <Search className={cn('text-muted-foreground', shrinkOnScroll ? 'h-2.5 w-2.5' : 'h-3 w-3')} />
-              </div>
+              <img src={flashLojaLogo} alt="FlashLoja" className={cn('object-contain', shrinkOnScroll ? 'h-3' : 'h-4')} />
             </div>
             {!sticky && (
               <div className="flex items-center justify-center py-2">
@@ -569,17 +559,23 @@ function BehaviorPreview({ sticky, shrinkOnScroll, shadowOnScroll, borderBottom,
   );
 }
 
-function MenuStylePreview({ menuStyle, menuFontSize, menuUppercase }: {
+function MenuStylePreview({ menuStyle, menuFontSize, menuUppercase, menuFontWeight, menuHoverStyle, menuItemGap, menuSeparator }: {
   menuStyle: string; menuFontSize: number; menuUppercase: boolean;
+  menuFontWeight?: number; menuHoverStyle?: string; menuItemGap?: number; menuSeparator?: string;
 }) {
   const items = ['Início', 'Produtos', 'Masculino', 'Feminino'];
   const fontSize = Math.max(10, Math.min(menuFontSize * 0.9, 14));
   const transform = menuUppercase ? 'uppercase' as const : 'none' as const;
-  
+  const weight = menuFontWeight || 500;
+  const gap = menuItemGap ?? 4;
+  const sep = menuSeparator || 'none';
+  const sepChar = sep === 'line' ? '|' : sep === 'dot' ? '•' : sep === 'slash' ? '/' : '';
+  const hover = menuHoverStyle || 'underline';
+  const useUnderline = hover === 'underline' || hover === 'both';
+
   const logoSmall = (
     <div className="flex items-center gap-1.5">
-      <div className="w-4 h-4 rounded bg-foreground/10" />
-      <span className="font-bold text-[10px] text-foreground">LOGO</span>
+      <img src={flashLojaLogo} alt="FlashLoja" className="h-5 object-contain" />
     </div>
   );
   const iconsSmall = (
@@ -589,22 +585,35 @@ function MenuStylePreview({ menuStyle, menuFontSize, menuUppercase }: {
     </div>
   );
 
+  const renderItems = (activeIdx: number) => {
+    const els: React.ReactNode[] = [];
+    items.forEach((item, i) => {
+      els.push(
+        <span key={i} className={cn(
+          i === activeIdx ? 'text-foreground' : 'text-muted-foreground',
+          useUnderline && i === activeIdx && 'border-b-2 border-foreground pb-0.5',
+        )} style={{ fontSize, textTransform: transform, fontWeight: weight }}>
+          {item}
+          {(menuStyle !== 'horizontal' && i > 1) && <ChevronDown className="inline h-2.5 w-2.5 ml-0.5 opacity-40" />}
+        </span>
+      );
+      if (sepChar && i < items.length - 1) {
+        els.push(
+          <span key={`sep-${i}`} className="text-muted-foreground/40 select-none" style={{ fontSize: fontSize * 0.85 }}>{sepChar}</span>
+        );
+      }
+    });
+    return els;
+  };
+
   if (menuStyle === 'mega-menu') {
     return (
       <PreviewWrapper>
         <div className="rounded-lg bg-background border border-border shadow-sm overflow-hidden">
           <div className="flex items-center justify-between px-4 py-2.5 border-b border-border/50">
             {logoSmall}
-            <div className="flex items-center gap-4">
-              {items.map((item, i) => (
-                <span key={i} className={cn(
-                  'font-medium',
-                  i === 2 ? 'text-foreground border-b-2 border-foreground pb-0.5' : 'text-muted-foreground'
-                )} style={{ fontSize, textTransform: transform }}>
-                  {item}
-                  {i > 1 && <ChevronDown className="inline h-2.5 w-2.5 ml-0.5 opacity-40" />}
-                </span>
-              ))}
+            <div className="flex items-center" style={{ gap }}>
+              {renderItems(2)}
             </div>
             {iconsSmall}
           </div>
@@ -635,26 +644,18 @@ function MenuStylePreview({ menuStyle, menuFontSize, menuUppercase }: {
         <div className="rounded-lg bg-background border border-border shadow-sm overflow-hidden">
           <div className="flex items-center justify-between px-4 py-2.5">
             {logoSmall}
-            <div className="flex items-center gap-4">
-              {items.map((item, i) => (
-                <span key={i} className={cn(
-                  'font-medium',
-                  i === 2 ? 'text-foreground' : 'text-muted-foreground'
-                )} style={{ fontSize, textTransform: transform }}>
-                  {item}
-                  {i > 1 && <ChevronDown className="inline h-2.5 w-2.5 ml-0.5 opacity-40" />}
-                </span>
-              ))}
+            <div className="flex items-center" style={{ gap }}>
+              {renderItems(2)}
             </div>
             {iconsSmall}
           </div>
           <div className="px-4 pb-3 flex justify-center">
-            <div className="w-32 bg-background border border-border rounded-lg shadow-lg py-1.5 ml-16">
+            <div className="w-32 bg-background border border-border rounded-xl shadow-[0_8px_30px_-6px_hsl(var(--foreground)/0.12)] py-1.5 ml-16">
               {['Camisetas', 'Calças', 'Acessórios', 'Bermudas'].map((sub, i) => (
                 <p key={i} className={cn(
-                  'text-[10px] px-3 py-1.5',
-                  i === 0 ? 'bg-muted/50 text-foreground font-medium' : 'text-muted-foreground'
-                )}>{sub}</p>
+                  'text-[10px] px-3 py-1.5 mx-1 rounded-lg',
+                  i === 0 ? 'bg-accent/60 text-foreground font-medium' : 'text-muted-foreground'
+                )} style={{ fontSize: fontSize * 0.9 }}>{sub}</p>
               ))}
             </div>
           </div>
@@ -668,15 +669,8 @@ function MenuStylePreview({ menuStyle, menuFontSize, menuUppercase }: {
       <div className="rounded-lg bg-background border border-border shadow-sm overflow-hidden">
         <div className="flex items-center justify-between px-4 py-2.5">
           {logoSmall}
-          <div className="flex items-center gap-4">
-            {items.map((item, i) => (
-              <span key={i} className={cn(
-                'font-medium',
-                i === 0 ? 'text-foreground' : 'text-muted-foreground'
-              )} style={{ fontSize, textTransform: transform }}>
-                {item}
-              </span>
-            ))}
+          <div className="flex items-center" style={{ gap }}>
+            {renderItems(0)}
           </div>
           {iconsSmall}
         </div>
@@ -685,31 +679,29 @@ function MenuStylePreview({ menuStyle, menuFontSize, menuUppercase }: {
   );
 }
 
-function IconsPreview({ iconSize, showSearch, showAccount, showWishlist, showCart, cartBadgeStyle }: {
-  iconSize: number; showSearch: boolean; showAccount: boolean; showWishlist: boolean; showCart: boolean; cartBadgeStyle: string;
+function IconsPreview({ iconSize, showSearch, showAccount, showWishlist, showCart, cartBadgeStyle, iconStrokeWidth }: {
+  iconSize: number; showSearch: boolean; showAccount: boolean; showWishlist: boolean; showCart: boolean; cartBadgeStyle: string; iconStrokeWidth?: number;
 }) {
   const sz = Math.max(14, Math.min(iconSize * 0.8, 22));
+  const sw = iconStrokeWidth || 1.5;
   return (
     <PreviewWrapper>
       <div className="rounded-lg bg-background border border-border shadow-sm overflow-hidden">
         <div className="flex items-center justify-between px-5 py-3">
           <div className="flex items-center gap-1.5">
-            <div className="w-5 h-5 rounded bg-foreground/10 flex items-center justify-center">
-              <span className="text-[8px] font-bold text-foreground/60">L</span>
-            </div>
-            <span className="font-bold text-xs text-foreground">MinhaMarca</span>
+            <img src={flashLojaLogo} alt="FlashLoja" className="h-5 object-contain" />
           </div>
           <div className="flex items-center gap-3 text-[11px] text-muted-foreground">
             <span>Início</span>
             <span>Produtos</span>
           </div>
           <div className="flex items-center gap-3 bg-primary/5 border border-primary/20 rounded-lg px-3 py-1.5">
-            {showSearch && <Search style={{ width: sz, height: sz }} className="text-foreground" />}
-            {showWishlist && <Heart style={{ width: sz, height: sz }} className="text-foreground" />}
-            {showAccount && <User style={{ width: sz, height: sz }} className="text-foreground" />}
+            {showSearch && <Search style={{ width: sz, height: sz }} strokeWidth={sw} className="text-foreground" />}
+            {showWishlist && <Heart style={{ width: sz, height: sz }} strokeWidth={sw} className="text-foreground" />}
+            {showAccount && <User style={{ width: sz, height: sz }} strokeWidth={sw} className="text-foreground" />}
             {showCart && (
               <div className="relative">
-                <ShoppingBag style={{ width: sz, height: sz }} className="text-foreground" />
+                <ShoppingBag style={{ width: sz, height: sz }} strokeWidth={sw} className="text-foreground" />
                 {cartBadgeStyle === 'count' && (
                   <span className="absolute -top-1.5 -right-2 bg-foreground text-background text-[8px] font-bold rounded-full h-4 w-4 flex items-center justify-center">3</span>
                 )}
@@ -794,7 +786,7 @@ function HeaderTab() {
           { value: 'dot', label: '• Ponto' },
           { value: 'slash', label: '/ Barra' },
         ]} />
-        <MenuStylePreview menuStyle={h.menuStyle} menuFontSize={h.menuFontSize} menuUppercase={h.menuUppercase} />
+        <MenuStylePreview menuStyle={h.menuStyle} menuFontSize={h.menuFontSize} menuUppercase={h.menuUppercase} menuFontWeight={h.menuFontWeight} menuHoverStyle={h.menuHoverStyle} menuItemGap={h.menuItemGap} menuSeparator={h.menuSeparator} />
       </div>
 
       {/* Icons */}
@@ -819,7 +811,7 @@ function HeaderTab() {
           { value: 'dot', label: 'Ponto' },
           { value: 'none', label: 'Nenhum' },
         ]} />
-        <IconsPreview iconSize={h.iconSize} showSearch={h.showSearch} showAccount={h.showAccount} showWishlist={h.showWishlist} showCart={h.showCart} cartBadgeStyle={h.cartBadgeStyle} />
+        <IconsPreview iconSize={h.iconSize} showSearch={h.showSearch} showAccount={h.showAccount} showWishlist={h.showWishlist} showCart={h.showCart} cartBadgeStyle={h.cartBadgeStyle} iconStrokeWidth={h.iconStrokeWidth} />
       </div>
     </div>
   );
