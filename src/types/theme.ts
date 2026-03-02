@@ -112,8 +112,10 @@ export interface ThemeHeader {
   menuFontSize: number;
   menuUppercase: boolean;
   menuLetterSpacing: number;
-  
+  menuFontWeight: number;          // 400-700
+  menuHoverStyle: 'underline' | 'background' | 'both';
   iconSize: number;
+  iconStrokeWidth: number;         // 1-3
   showSearch: boolean;
   searchStyle: 'inline' | 'modal' | 'drawer';
   showAccount: boolean;

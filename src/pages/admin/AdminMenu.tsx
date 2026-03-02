@@ -42,8 +42,8 @@ function ToggleRow({ label, hint, checked, onChange }: {
   );
 }
 
-function NumberSlider({ label, value, onChange, min, max, suffix = '' }: {
-  label: string; value: number; onChange: (v: number) => void; min: number; max: number; suffix?: string;
+function NumberSlider({ label, value, onChange, min, max, suffix = '', step = 1 }: {
+  label: string; value: number; onChange: (v: number) => void; min: number; max: number; suffix?: string; step?: number;
 }) {
   return (
     <div className="space-y-1.5">
@@ -51,7 +51,7 @@ function NumberSlider({ label, value, onChange, min, max, suffix = '' }: {
         <p className="text-sm font-medium text-foreground">{label}</p>
         <span className="text-xs text-muted-foreground tabular-nums">{value}{suffix}</span>
       </div>
-      <Slider value={[value]} onValueChange={v => onChange(v[0])} min={min} max={max} step={1} className="w-full" />
+      <Slider value={[value]} onValueChange={v => onChange(v[0])} min={min} max={max} step={step} className="w-full" />
     </div>
   );
 }
@@ -333,15 +333,8 @@ function ItemsTab() {
 }
 
 /* ================================================================== */
-/*  MENU DESKTOP MODEL PREVIEW                                         */
+/*  PREVIEWS                                                           */
 /* ================================================================== */
-
-const MENU_MODELS: { value: string; label: string; badge?: string }[] = [
-  { value: 'model1', label: 'Modelo 1', badge: 'Padrão' },
-  { value: 'model2', label: 'Modelo 2' },
-  { value: 'model3', label: 'Modelo 3' },
-  { value: 'model4', label: 'Modelo 4' },
-];
 
 const PREVIEW_ITEMS = [
   { label: 'INÍCIO', hasIcon: true, hasSub: false },
@@ -350,94 +343,6 @@ const PREVIEW_ITEMS = [
   { label: 'FEMININO', hasIcon: false, hasSub: true },
 ];
 
-function MenuDesktopModelPreview({ model }: { model: string }) {
-  const getItemStyle = (item: typeof PREVIEW_ITEMS[0]) => {
-    switch (model) {
-      case 'model1':
-        return {
-          text: item.label,
-          className: 'text-[13px] font-semibold uppercase tracking-wider flex items-center gap-1.5',
-        };
-      case 'model2':
-        return {
-          text: item.label.toLowerCase(),
-          className: 'text-[13px] font-medium lowercase tracking-wide flex items-center gap-1.5',
-        };
-      case 'model3':
-        return {
-          text: item.label,
-          className: 'text-[14px] font-bold uppercase tracking-widest flex items-center gap-1.5',
-        };
-      case 'model4':
-      default:
-        return {
-          text: item.label.charAt(0) + item.label.slice(1).toLowerCase(),
-          className: 'text-[13px] font-medium tracking-wide flex items-center gap-1.5 border-b-2 border-transparent hover:border-foreground pb-0.5',
-        };
-    }
-  };
-
-  return (
-    <div className="mt-4 rounded-xl border border-border/60 bg-muted/20 overflow-hidden">
-      <div className="px-3 py-1.5 border-b border-border/40 bg-muted/30">
-        <p className="text-[10px] font-medium text-muted-foreground/60 uppercase tracking-wider">Pré-Visualização</p>
-      </div>
-      <div className="p-3">
-        <div className={cn(
-          'rounded-lg bg-background flex items-center justify-around px-6 py-3.5',
-          model === 'model1' && 'shadow-sm border border-border',
-          model === 'model2' && 'border border-border/50',
-          model === 'model3' && 'shadow-sm border border-border',
-          model === 'model4' && 'border-b-2 border-border',
-        )}>
-          {PREVIEW_ITEMS.map((item, i) => {
-            const style = getItemStyle(item);
-            return (
-              <span key={i} className={cn(style.className, 'text-foreground/80 select-none')}>
-                {model === 'model1' && item.hasIcon && <Home className="h-3.5 w-3.5" />}
-                {style.text}
-                {item.hasSub && <ChevronDown className="h-3 w-3 opacity-50 ml-0.5" />}
-              </span>
-            );
-          })}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function MenuDesktopModelPicker({ value, onChange }: { value: string; onChange: (v: string) => void }) {
-  return (
-    <div className="space-y-3">
-      <div className="flex gap-2 flex-wrap">
-        {MENU_MODELS.map(m => (
-          <button
-            key={m.value}
-            onClick={() => onChange(m.value)}
-            className={cn(
-              'flex items-center gap-2 px-3 py-2 rounded-md text-sm border transition-colors',
-              value === m.value
-                ? 'border-primary bg-primary/5 text-foreground'
-                : 'border-border bg-card text-muted-foreground hover:bg-muted/50'
-            )}
-          >
-            <div className={cn(
-              'w-4 h-4 rounded-full border-2 flex items-center justify-center',
-              value === m.value ? 'border-primary' : 'border-muted-foreground/40'
-            )}>
-              {value === m.value && <div className="w-2 h-2 rounded-full bg-primary" />}
-            </div>
-            {m.label}
-            {m.badge && (
-              <span className="text-[9px] font-bold uppercase bg-muted text-muted-foreground px-1.5 py-0.5 rounded-sm">{m.badge}</span>
-            )}
-          </button>
-        ))}
-      </div>
-      <MenuDesktopModelPreview model={value} />
-    </div>
-  );
-}
 
 /* ================================================================== */
 /*  HEADER PREVIEW COMPONENTS                                          */
@@ -875,7 +780,13 @@ function HeaderTab() {
           { value: 'mega-menu', label: 'Mega Menu' },
         ]} />
         <NumberSlider label="Tamanho da fonte" value={h.menuFontSize} onChange={v => set({ menuFontSize: v })} min={10} max={18} suffix="px" />
+        <NumberSlider label="Peso da fonte" value={h.menuFontWeight || 500} onChange={v => set({ menuFontWeight: v })} min={300} max={700} suffix="" step={100} />
         <ToggleRow label="Texto em maiúsculas" hint="Transforma os links em letras maiúsculas" checked={h.menuUppercase} onChange={v => set({ menuUppercase: v })} />
+        <OptionPicker label="Efeito de hover" value={h.menuHoverStyle || 'underline'} onChange={v => set({ menuHoverStyle: v })} options={[
+          { value: 'underline', label: 'Sublinhado', description: 'Linha animada abaixo do link' },
+          { value: 'background', label: 'Fundo', description: 'Fundo sutil ao passar o mouse' },
+          { value: 'both', label: 'Ambos', description: 'Sublinhado + fundo ao mesmo tempo' },
+        ]} />
         <MenuStylePreview menuStyle={h.menuStyle} menuFontSize={h.menuFontSize} menuUppercase={h.menuUppercase} />
       </div>
 
@@ -884,6 +795,7 @@ function HeaderTab() {
         <SectionLabel>Ícones e Ações</SectionLabel>
         <p className="text-[11px] text-muted-foreground -mt-1">Quais ícones aparecem no cabeçalho.</p>
         <NumberSlider label="Tamanho dos ícones" value={h.iconSize} onChange={v => set({ iconSize: v })} min={10} max={30} suffix="px" />
+        <NumberSlider label="Espessura do traço" value={h.iconStrokeWidth || 1.5} onChange={v => set({ iconStrokeWidth: v })} min={1} max={3} suffix="" step={0.5} />
         <ToggleRow label="Ícone de busca" hint="Lupa para buscar produtos" checked={h.showSearch} onChange={v => set({ showSearch: v })} />
         {h.showSearch && (
           <OptionPicker label="Estilo da busca" value={h.searchStyle} onChange={v => set({ searchStyle: v })} options={[
