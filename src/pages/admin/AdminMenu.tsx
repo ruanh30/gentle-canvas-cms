@@ -240,7 +240,7 @@ export default function AdminMenu() {
       </div>
 
       <p className="text-xs text-muted-foreground/60 text-center">
-        Arraste os itens para reordenar. As alterações são sincronizadas com o Editor de Tema automaticamente.
+        As alterações são sincronizadas com o Editor de Tema automaticamente.
       </p>
     </div>
   );
