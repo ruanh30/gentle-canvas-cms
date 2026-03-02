@@ -16,14 +16,6 @@ const buyNowIcons: { value: string; label: string; Icon: LucideIcon }[] = [
   { value: 'Tag', label: 'Etiqueta', Icon: Tag },
 ];
 
-const cartIcons: { value: string; label: string; Icon: LucideIcon }[] = [
-  { value: 'ShoppingBag', label: 'Sacola', Icon: ShoppingBag },
-  { value: 'ShoppingCart', label: 'Carrinho', Icon: ShoppingCart },
-  { value: 'Plus', label: 'Mais', Icon: Plus },
-  { value: 'PackagePlus', label: 'Pacote+', Icon: PackagePlus },
-  { value: 'Heart', label: 'Coração', Icon: Heart },
-  { value: 'Store', label: 'Loja', Icon: Store },
-];
 
 function IconPicker({ label, value, onChange, icons }: { label: string; value: string; onChange: (v: string) => void; icons: { value: string; label: string; Icon: LucideIcon }[] }) {
   return (
@@ -92,10 +84,6 @@ export function ProductCardPanel() {
       <ToggleRow label="Marca" hint="Exibe o nome da marca/fabricante do produto no card" checked={c.showBrand} onChange={v => set({ showBrand: v })} />
       <ToggleRow label="Avaliação" hint="Mostra as estrelas de avaliação e número de reviews dos clientes" checked={c.showRating} onChange={v => set({ showRating: v })} />
       <NumberSlider label="Linhas do título" value={c.titleLines} onChange={v => set({ titleLines: v as 1 | 2 | 3 })} min={1} max={3} />
-      <OptionPicker label="Alinhamento do conteúdo" value={c.contentAlign} onChange={v => set({ contentAlign: v })} options={[
-        { value: 'left', label: 'Esquerda', description: 'Texto alinhado à esquerda' },
-        { value: 'center', label: 'Centro', description: 'Texto centralizado no card' },
-      ]} />
 
       <SectionDivider label="Preço" />
       <OptionPicker label="Tamanho do preço" value={c.priceSize} onChange={v => set({ priceSize: v })} options={[
@@ -122,25 +110,9 @@ export function ProductCardPanel() {
           <IconPicker label="Ícone do Comprar Agora" value={c.buyNowIcon || 'Zap'} onChange={v => set({ buyNowIcon: v })} icons={buyNowIcons} />
         </>
       )}
-      <ToggleRow label="Botão Adicionar ao Carrinho" hint="Exibe o botão para adicionar o produto ao carrinho sem sair da página atual. O ícone escolhido também será usado no cabeçalho da loja." checked={c.showAddToCart} onChange={v => set({ showAddToCart: v })} />
-      {c.showAddToCart && (
+      {c.showBuyNow && (
         <>
-          <TextField label="Texto do botão Carrinho" value={c.addToCartText || 'Adicionar ao Carrinho'} onChange={v => set({ addToCartText: v })} placeholder="Adicionar ao Carrinho" />
-          <IconPicker label="Ícone do Carrinho (também altera o cabeçalho)" value={c.addToCartIcon || 'ShoppingBag'} onChange={v => set({ addToCartIcon: v })} icons={cartIcons} />
-        </>
-      )}
-      {(c.showBuyNow || c.showAddToCart) && (
-        <>
-          <SelectField label="Visibilidade dos botões" value={c.buttonVisibility} onChange={v => set({ buttonVisibility: v })} options={[
-            { value: 'both', label: 'Ambos — mostra Comprar e Adicionar' },
-            { value: 'add-only', label: 'Só Adicionar — oculta Comprar Agora' },
-            { value: 'buy-only', label: 'Só Comprar — oculta Adicionar ao Carrinho' },
-          ]} />
-          <OptionPicker label="Layout dos botões" value={c.buttonLayout || 'stacked'} onChange={v => set({ buttonLayout: v })} options={[
-            { value: 'stacked', label: 'Empilhado', description: 'Um embaixo do outro' },
-            { value: 'side-by-side', label: 'Lado a lado', description: 'Na mesma linha' },
-          ]} />
-          <OptionPicker label="Estilo visual dos botões" value={c.buttonStyle || 'solid'} onChange={v => set({ buttonStyle: v })} options={[
+          <OptionPicker label="Estilo visual do botão" value={c.buttonStyle || 'solid'} onChange={v => set({ buttonStyle: v })} options={[
             { value: 'solid', label: 'Sólido', description: 'Fundo preenchido padrão' },
             { value: 'outline', label: 'Contorno', description: 'Apenas borda, sem fundo' },
             { value: 'pill', label: 'Pílula', description: 'Totalmente arredondado' },
@@ -151,29 +123,9 @@ export function ProductCardPanel() {
           ]} />
         </>
       )}
-      {c.showAddToCart && c.buttonLayout !== 'side-by-side' && (
-        <SelectField label="Tamanho do botão carrinho" value={c.addToCartStyle} onChange={v => set({ addToCartStyle: v })} options={[
-          { value: 'icon', label: 'Ícone — pequeno ícone no canto da imagem' },
-          { value: 'button', label: 'Botão compacto — tamanho reduzido' },
-          { value: 'full-width', label: 'Largura total — ocupa toda a largura do card' },
-        ]} />
-      )}
 
       <SectionDivider label="Interação" />
-      <ToggleRow label="Quick View (Pré-visualização)" hint="Permite ver detalhes do produto em um popup sem sair da listagem" checked={c.showQuickView} onChange={v => set({ showQuickView: v })} />
-      {c.showQuickView && (
-        <SelectField label="Estilo do Quick View" value={c.quickViewStyle} onChange={v => set({ quickViewStyle: v })} options={[
-          { value: 'modal', label: 'Modal — janela central sobre a página' },
-          { value: 'drawer', label: 'Drawer — painel que desliza da lateral' },
-          { value: 'expand', label: 'Expandir — abre detalhes no próprio card' },
-          { value: 'side-panel', label: 'Painel lateral — abre ao lado da listagem' },
-        ]} />
-      )}
       <ToggleRow label="Lista de Desejos (Wishlist)" hint="Exibe ícone de coração para o cliente salvar o produto como favorito" checked={c.showWishlist} onChange={v => set({ showWishlist: v })} />
-      <SelectField label="Clique no card" value={c.clickBehavior} onChange={v => set({ clickBehavior: v })} options={[
-        { value: 'navigate', label: 'Navegar — abre a página completa do produto' },
-        { value: 'modal', label: 'Modal — abre Quick View ao clicar no card' },
-      ]} />
 
       <SectionDivider label="Badges de Desconto" />
       <SelectField label="Posição do badge" value={c.badgePosition} onChange={v => set({ badgePosition: v })} options={[
@@ -193,7 +145,7 @@ export function ProductCardPanel() {
         { value: 'normal', label: 'Normal', description: 'Espaçamento padrão equilibrado' },
         { value: 'spacious', label: 'Espaçoso', description: 'Mais ar entre os elementos' },
       ]} />
-      <ToggleRow label="Borda ao redor do card" hint="Adiciona uma borda sutil ao redor de cada card de produto para delimitá-lo visualmente" checked={c.border} onChange={v => set({ border: v })} />
+      
       
       <SectionDivider label="Atalhos" />
       <AdminLink to="/admin/products" label="Gerenciar Produtos" icon={Package} />
