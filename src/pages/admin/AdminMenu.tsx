@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import {
   Plus, Trash2, ChevronDown, ChevronRight, GripVertical, Palette, Save,
   Menu, ExternalLink, Tag, Settings2, PanelTop, Megaphone, ImageIcon,
-  Eye, EyeOff
+  Eye, EyeOff, Home
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -333,6 +333,109 @@ function ItemsTab() {
 }
 
 /* ================================================================== */
+/*  MENU DESKTOP MODEL PREVIEW                                         */
+/* ================================================================== */
+
+const MENU_MODELS: { value: string; label: string; badge?: string }[] = [
+  { value: 'model1', label: 'Modelo 1', badge: 'Padrão' },
+  { value: 'model2', label: 'Modelo 2' },
+  { value: 'model3', label: 'Modelo 3' },
+  { value: 'model4', label: 'Modelo 4' },
+];
+
+const PREVIEW_ITEMS = [
+  { label: 'INÍCIO', hasIcon: true, hasSub: false },
+  { label: 'PROMOÇÃO', hasIcon: false, hasSub: false },
+  { label: 'MASCULINO', hasIcon: false, hasSub: true },
+  { label: 'FEMININO', hasIcon: false, hasSub: true },
+];
+
+function MenuDesktopModelPreview({ model }: { model: string }) {
+  const getItemStyle = (item: typeof PREVIEW_ITEMS[0]) => {
+    switch (model) {
+      case 'model1':
+        return {
+          text: item.label,
+          className: 'text-[13px] font-semibold uppercase tracking-wider flex items-center gap-1.5',
+        };
+      case 'model2':
+        return {
+          text: item.label.toLowerCase(),
+          className: 'text-[13px] font-medium lowercase tracking-wide flex items-center gap-1.5',
+        };
+      case 'model3':
+        return {
+          text: item.label,
+          className: 'text-[14px] font-bold uppercase tracking-widest flex items-center gap-1.5',
+        };
+      case 'model4':
+      default:
+        return {
+          text: item.label.charAt(0) + item.label.slice(1).toLowerCase(),
+          className: 'text-[13px] font-medium tracking-wide flex items-center gap-1.5 border-b-2 border-transparent hover:border-foreground pb-0.5',
+        };
+    }
+  };
+
+  return (
+    <div className="border-2 border-dashed border-border/50 rounded-lg p-1">
+      <p className="text-[10px] text-muted-foreground/50 mb-1.5 px-2">Pré-Visualização</p>
+      <div className={cn(
+        'rounded-md bg-background flex items-center justify-around px-6 py-3',
+        model === 'model1' && 'shadow-sm border border-border',
+        model === 'model2' && 'border border-border/50',
+        model === 'model3' && 'shadow-sm border border-border',
+        model === 'model4' && 'border-b-2 border-border',
+      )}>
+        {PREVIEW_ITEMS.map((item, i) => {
+          const style = getItemStyle(item);
+          return (
+            <span key={i} className={cn(style.className, 'text-foreground/80 select-none')}>
+              {model === 'model1' && item.hasIcon && <Home className="h-3.5 w-3.5" />}
+              {style.text}
+              {item.hasSub && <ChevronDown className="h-3 w-3 opacity-50 ml-0.5" />}
+            </span>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function MenuDesktopModelPicker({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  return (
+    <div className="space-y-3">
+      <div className="flex gap-2 flex-wrap">
+        {MENU_MODELS.map(m => (
+          <button
+            key={m.value}
+            onClick={() => onChange(m.value)}
+            className={cn(
+              'flex items-center gap-2 px-3 py-2 rounded-md text-sm border transition-colors',
+              value === m.value
+                ? 'border-primary bg-primary/5 text-foreground'
+                : 'border-border bg-card text-muted-foreground hover:bg-muted/50'
+            )}
+          >
+            <div className={cn(
+              'w-4 h-4 rounded-full border-2 flex items-center justify-center',
+              value === m.value ? 'border-primary' : 'border-muted-foreground/40'
+            )}>
+              {value === m.value && <div className="w-2 h-2 rounded-full bg-primary" />}
+            </div>
+            {m.label}
+            {m.badge && (
+              <span className="text-[9px] font-bold uppercase bg-muted text-muted-foreground px-1.5 py-0.5 rounded-sm">{m.badge}</span>
+            )}
+          </button>
+        ))}
+      </div>
+      <MenuDesktopModelPreview model={value} />
+    </div>
+  );
+}
+
+/* ================================================================== */
 /*  TAB: CABEÇALHO                                                     */
 /* ================================================================== */
 
@@ -369,6 +472,13 @@ function HeaderTab() {
         <ToggleRow label="Sombra ao rolar" hint="Sombra sutil quando a página é rolada" checked={h.shadowOnScroll} onChange={v => set({ shadowOnScroll: v })} />
         <ToggleRow label="Borda inferior" hint="Linha fina na parte inferior do cabeçalho" checked={h.borderBottom} onChange={v => set({ borderBottom: v })} />
         <NumberSlider label="Altura" value={h.height} onChange={v => set({ height: v })} min={48} max={96} suffix="px" />
+      </div>
+
+      {/* Desktop Menu Model */}
+      <div className="border border-border rounded-lg bg-card p-4 space-y-4">
+        <SectionLabel>Modelo do Menu Desktop</SectionLabel>
+        <p className="text-[11px] text-muted-foreground -mt-2">Escolha o estilo visual da barra de navegação principal.</p>
+        <MenuDesktopModelPicker value={h.menuDesktopModel || 'model1'} onChange={v => set({ menuDesktopModel: v })} />
       </div>
 
       {/* Navigation style */}

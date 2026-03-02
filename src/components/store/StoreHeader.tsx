@@ -217,15 +217,22 @@ export function StoreHeader() {
           </Link>
 
           {h.layout !== 'hamburger-only' && h.layout !== 'centered' && (
-            <nav className="hidden lg:flex items-center gap-8">
+            <nav className={cn(
+              'hidden lg:flex items-center gap-8',
+              h.menuDesktopModel === 'model4' && 'border-b-2 border-border pb-1',
+            )}>
               {hasCustomMenu ? mm!.items.map(mi => (
                 <Link
                   key={mi.id}
                   to={mi.link || '#'}
-                  className="font-medium text-muted-foreground hover:text-foreground transition-colors tracking-wider"
+                  className={cn(
+                    'font-medium text-muted-foreground hover:text-foreground transition-colors tracking-wider',
+                    h.menuDesktopModel === 'model3' && 'font-bold tracking-widest',
+                    h.menuDesktopModel === 'model4' && 'border-b-2 border-transparent hover:border-foreground pb-0.5',
+                  )}
                   style={{
                     fontSize: h.menuFontSize,
-                    textTransform: h.menuUppercase ? 'uppercase' : 'none',
+                    textTransform: h.menuDesktopModel === 'model2' ? 'lowercase' : h.menuUppercase ? 'uppercase' : 'none',
                     letterSpacing: `${h.menuLetterSpacing}em`,
                   }}
                   {...(mi.openNewTab ? { target: '_blank', rel: 'noopener' } : {})}
@@ -236,10 +243,14 @@ export function StoreHeader() {
                 <Link
                   key={cat.id}
                   to={`/products?category=${cat.slug}`}
-                  className="font-medium text-muted-foreground hover:text-foreground transition-colors tracking-wider"
+                  className={cn(
+                    'font-medium text-muted-foreground hover:text-foreground transition-colors tracking-wider',
+                    h.menuDesktopModel === 'model3' && 'font-bold tracking-widest',
+                    h.menuDesktopModel === 'model4' && 'border-b-2 border-transparent hover:border-foreground pb-0.5',
+                  )}
                   style={{
                     fontSize: h.menuFontSize,
-                    textTransform: h.menuUppercase ? 'uppercase' : 'none',
+                    textTransform: h.menuDesktopModel === 'model2' ? 'lowercase' : h.menuUppercase ? 'uppercase' : 'none',
                     letterSpacing: `${h.menuLetterSpacing}em`,
                   }}
                 >
