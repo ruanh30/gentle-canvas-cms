@@ -7,6 +7,7 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { mockCategories } from '@/data/mock';
 import { cn } from '@/lib/utils';
 import type { ThemeMenuItem } from '@/types/theme';
@@ -224,11 +225,68 @@ function NavItem({ item, className, style, openNewTab, elevated, padded }: {
   );
 }
 
+/* Mega Menu dropdown for mega-menu style */
+function MegaMenuItem({ item, className, style, openNewTab, padded }: {
+  item: ThemeMenuItem;
+  className?: string;
+  style?: React.CSSProperties;
+  openNewTab?: boolean;
+  padded?: boolean;
+}) {
+  const [open, setOpen] = useState(false);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout>>();
+  const hasChildren = item.children && item.children.length > 0;
+
+  const handleEnter = () => { clearTimeout(timeoutRef.current); setOpen(true); };
+  const handleLeave = () => { timeoutRef.current = setTimeout(() => setOpen(false), 200); };
+
+  const paddingCls = padded
+    ? 'px-3 py-2 rounded-md hover:bg-accent/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1'
+    : '';
+
+  if (!hasChildren) {
+    return (
+      <Link to={item.link || '#'} className={cn(className, paddingCls)} style={style}
+        {...(openNewTab ? { target: '_blank', rel: 'noopener' } : {})}>
+        {item.label}
+      </Link>
+    );
+  }
+
+  return (
+    <div className="relative" onMouseEnter={handleEnter} onMouseLeave={handleLeave}>
+      <Link to={item.link || '#'} className={cn(className, 'inline-flex items-center gap-1.5', paddingCls)} style={style}
+        {...(openNewTab ? { target: '_blank', rel: 'noopener' } : {})}>
+        {item.label}
+        <ChevronDown className={cn('h-3.5 w-3.5 transition-transform duration-200', open && 'rotate-180')} />
+      </Link>
+      {open && (
+        <div className="absolute top-full left-0 pt-3 z-50" style={{ minWidth: '500px' }}>
+          <div className="absolute top-[6px] left-8 w-3 h-3 rotate-45 bg-popover border-l border-t border-border z-10" />
+          <div className="bg-popover border border-border rounded-lg shadow-xl p-5 grid grid-cols-3 gap-6 relative">
+            {item.children.map(child => (
+              <Link key={child.id} to={child.link || '#'}
+                className="block text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 px-3 py-2 rounded-md transition-colors"
+                {...(child.openNewTab ? { target: '_blank', rel: 'noopener' } : {})}>
+                <span className="font-medium text-foreground">{child.label}</span>
+                {child.badge && (
+                  <span className="ml-2 text-[10px] font-bold px-1.5 py-0.5 rounded" style={{ backgroundColor: child.badgeColor, color: '#fff' }}>{child.badge}</span>
+                )}
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export function StoreHeader() {
   const { itemCount } = useCart();
   const { user } = useAuth();
   const { theme } = useTheme();
   const [searchOpen, setSearchOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const CartIconComponent = headerCartIconMap[theme.productCard?.addToCartIcon || ''] || ShoppingBag;
 
   const mm = theme.megaMenu;
@@ -237,20 +295,145 @@ export function StoreHeader() {
   const isMinimal = h.layout === 'minimal' || h.layout === 'hamburger-only';
   const isCentered = h.layout === 'centered' || h.layout === 'logo-center-nav-left';
 
+  // Scroll listener for shrink/shadow behaviors
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 10);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  const baseHeight = h.height || 64;
+  const currentHeight = (h.shrinkOnScroll && scrolled) ? Math.max(baseHeight - 16, 48) : baseHeight;
+
+  // Choose NavItemComponent based on menuStyle
+  const isMegaMenu = h.menuStyle === 'mega-menu';
+  const MenuItemComponent = isMegaMenu ? MegaMenuItem : NavItem;
+
+  // Search modal open
+  const handleSearchClick = () => {
+    setSearchOpen(!searchOpen);
+  };
+
+  const renderSearchBar = () => {
+    if (!h.showSearch) return null;
+
+    if (h.searchStyle === 'inline') {
+      return (
+        <div className="hidden lg:block relative w-48 xl:w-64">
+          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+          <Input
+            placeholder="Buscar produtos..."
+            className="pl-8 h-8 text-sm bg-secondary border-0"
+          />
+        </div>
+      );
+    }
+
+    return (
+      <Button variant="ghost" size="icon" onClick={handleSearchClick}>
+        <Search style={{ width: h.iconSize, height: h.iconSize }} />
+      </Button>
+    );
+  };
+
+  const renderSearchOverlay = () => {
+    if (!searchOpen || !h.showSearch || h.searchStyle === 'inline') return null;
+
+    if (h.searchStyle === 'modal') {
+      return (
+        <Dialog open={searchOpen} onOpenChange={setSearchOpen}>
+          <DialogContent className="sm:max-w-lg">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Buscar produtos..."
+                className="pl-10 bg-secondary border-0 h-12 text-base"
+                autoFocus
+                onKeyDown={(e) => { if (e.key === 'Escape') setSearchOpen(false); }}
+              />
+            </div>
+          </DialogContent>
+        </Dialog>
+      );
+    }
+
+    // drawer (default) — slides from top
+    return (
+      <div className="pb-4 animate-in slide-in-from-top-2">
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="Buscar produtos..."
+            className="pl-10 bg-secondary border-0"
+            autoFocus
+            onKeyDown={(e) => { if (e.key === 'Escape') setSearchOpen(false); }}
+          />
+        </div>
+      </div>
+    );
+  };
+
+  const renderNavItems = (extraClass?: string) => {
+    const elevated = h.dropdownElevated ?? true;
+    const padded = h.menuItemPadding ?? true;
+    const itemStyle: React.CSSProperties = {
+      fontSize: h.menuFontSize,
+      textTransform: h.menuDesktopModel === 'model2' ? 'lowercase' : h.menuUppercase ? 'uppercase' : 'none',
+      letterSpacing: `${h.menuLetterSpacing}em`,
+    };
+    const itemClass = cn(
+      'font-medium text-muted-foreground hover:text-foreground transition-all duration-150 tracking-wider',
+      h.menuDesktopModel === 'model3' && 'font-bold tracking-widest',
+      h.menuDesktopModel === 'model4' && 'border-b-2 border-transparent hover:border-foreground pb-0.5',
+      extraClass,
+    );
+
+    if (hasCustomMenu) {
+      return mm!.items.map(mi => (
+        <MenuItemComponent
+          key={mi.id}
+          item={mi}
+          elevated={elevated}
+          padded={padded}
+          className={itemClass}
+          style={itemStyle}
+          openNewTab={mi.openNewTab}
+        />
+      ));
+    }
+
+    return mockCategories.slice(0, 5).map(cat => {
+      return (
+        <Link
+          key={cat.id}
+          to={`/products?category=${cat.slug}`}
+          className={cn(
+            itemClass,
+            padded && 'px-3 py-2 rounded-md hover:bg-accent/80',
+          )}
+          style={itemStyle}
+        >
+          {cat.name}
+        </Link>
+      );
+    });
+  };
+
   return (
     <header className={cn(
-      'z-50 bg-background/95 backdrop-blur-md supports-[backdrop-filter]:bg-background/80',
+      'z-50 bg-background/95 backdrop-blur-md supports-[backdrop-filter]:bg-background/80 transition-all duration-300',
       (h.headerSurface ?? true) && 'border-b border-border/60 shadow-[0_1px_3px_0_hsl(var(--foreground)/0.04),0_1px_2px_-1px_hsl(var(--foreground)/0.06)]',
-      !(h.headerSurface ?? true) && h.borderBottom && 'border-b',
+      !(h.headerSurface ?? true) && h.borderBottom && 'border-b border-border',
+      h.shadowOnScroll && scrolled && 'shadow-md',
       h.sticky && 'sticky top-0'
     )}>
       {!isMinimal && <AnnouncementBar />}
 
       <div className="container mx-auto px-4">
         <div className={cn(
-          'flex items-center',
+          'flex items-center transition-all duration-300',
           isCentered ? 'justify-center relative' : 'justify-between'
-        )} style={{ height: h.height }}>
+        )} style={{ height: currentHeight }}>
           <Sheet>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon" className={cn('lg:hidden', isCentered && 'absolute left-0')}>
@@ -299,56 +482,25 @@ export function StoreHeader() {
           </Link>
 
           {h.layout !== 'hamburger-only' && h.layout !== 'centered' && (
-          <nav className={cn(
+            <nav className={cn(
               'hidden lg:flex items-center gap-1',
               h.menuDesktopModel === 'model4' && 'border-b-2 border-border pb-1',
             )}>
-              {hasCustomMenu ? mm!.items.map(mi => (
-                <NavItem
-                  key={mi.id}
-                  item={mi}
-                  elevated={h.dropdownElevated ?? true}
-                  padded={h.menuItemPadding ?? true}
-                  className={cn(
-                    'font-medium text-muted-foreground hover:text-foreground transition-all duration-150 tracking-wider',
-                    h.menuDesktopModel === 'model3' && 'font-bold tracking-widest',
-                    h.menuDesktopModel === 'model4' && 'border-b-2 border-transparent hover:border-foreground pb-0.5',
-                  )}
-                  style={{
-                    fontSize: h.menuFontSize,
-                    textTransform: h.menuDesktopModel === 'model2' ? 'lowercase' : h.menuUppercase ? 'uppercase' : 'none',
-                    letterSpacing: `${h.menuLetterSpacing}em`,
-                  }}
-                  openNewTab={mi.openNewTab}
-                />
-              )) : mockCategories.slice(0, 5).map(cat => {
-                const padded = h.menuItemPadding ?? true;
-                return (
-                <Link
-                  key={cat.id}
-                  to={`/products?category=${cat.slug}`}
-                  className={cn(
-                    'font-medium text-muted-foreground hover:text-foreground transition-all duration-150 tracking-wider',
-                    padded && 'px-3 py-2 rounded-md hover:bg-accent/80',
-                    h.menuDesktopModel === 'model3' && 'font-bold tracking-widest',
-                    h.menuDesktopModel === 'model4' && 'border-b-2 border-transparent hover:border-foreground pb-0.5',
-                  )}
-                  style={{
-                    fontSize: h.menuFontSize,
-                    textTransform: h.menuDesktopModel === 'model2' ? 'lowercase' : h.menuUppercase ? 'uppercase' : 'none',
-                    letterSpacing: `${h.menuLetterSpacing}em`,
-                  }}
-                >
-                  {cat.name}
-                </Link>
-                );
-              })}
+              {renderNavItems()}
             </nav>
           )}
 
+          {/* Inline search for layouts that support it */}
+          {h.searchStyle === 'inline' && h.showSearch && h.layout !== 'hamburger-only' && (
+            <div className="hidden lg:block relative w-48 xl:w-64">
+              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+              <Input placeholder="Buscar produtos..." className="pl-8 h-8 text-sm bg-secondary border-0" />
+            </div>
+          )}
+
           <div className={cn('flex items-center gap-0.5', isCentered && 'absolute right-0')}>
-            {h.showSearch && (
-              <Button variant="ghost" size="icon" onClick={() => setSearchOpen(!searchOpen)}>
+            {h.showSearch && h.searchStyle !== 'inline' && (
+              <Button variant="ghost" size="icon" onClick={handleSearchClick}>
                 <Search style={{ width: h.iconSize, height: h.iconSize }} />
               </Button>
             )}
@@ -381,54 +533,12 @@ export function StoreHeader() {
 
         {h.layout === 'centered' && (
           <nav className="hidden lg:flex items-center justify-center gap-1 pb-3">
-            {hasCustomMenu ? mm!.items.map(mi => (
-              <NavItem
-                key={mi.id}
-                item={mi}
-                elevated={h.dropdownElevated ?? true}
-                padded={h.menuItemPadding ?? true}
-                className="font-medium text-muted-foreground hover:text-foreground transition-all duration-150 tracking-wider"
-                style={{
-                  fontSize: h.menuFontSize,
-                  textTransform: h.menuUppercase ? 'uppercase' : 'none',
-                }}
-                openNewTab={mi.openNewTab}
-              />
-            )) : mockCategories.slice(0, 5).map(cat => {
-              const padded = h.menuItemPadding ?? true;
-              return (
-              <Link
-                key={cat.id}
-                to={`/products?category=${cat.slug}`}
-                className={cn(
-                  'font-medium text-muted-foreground hover:text-foreground transition-all duration-150 tracking-wider',
-                  padded && 'px-3 py-2 rounded-md hover:bg-accent/80'
-                )}
-                style={{
-                  fontSize: h.menuFontSize,
-                  textTransform: h.menuUppercase ? 'uppercase' : 'none',
-                }}
-              >
-                {cat.name}
-              </Link>
-              );
-            })}
+            {renderNavItems()}
           </nav>
         )}
 
-        {searchOpen && (
-          <div className="pb-4 animate-in slide-in-from-top-2">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Buscar produtos..."
-                className="pl-10 bg-secondary border-0"
-                autoFocus
-                onKeyDown={(e) => { if (e.key === 'Escape') setSearchOpen(false); }}
-              />
-            </div>
-          </div>
-        )}
+        {/* Search overlay (drawer style) */}
+        {renderSearchOverlay()}
       </div>
 
       <BannerBelow />

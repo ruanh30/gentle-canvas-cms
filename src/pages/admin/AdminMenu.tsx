@@ -889,7 +889,7 @@ function HeaderTab() {
       <div className="border border-border rounded-lg bg-card p-4 space-y-3">
         <SectionLabel>Ícones e Ações</SectionLabel>
         <p className="text-[11px] text-muted-foreground -mt-1">Quais ícones aparecem no cabeçalho.</p>
-        <NumberSlider label="Tamanho dos ícones" value={h.iconSize} onChange={v => set({ iconSize: v })} min={16} max={28} suffix="px" />
+        <NumberSlider label="Tamanho dos ícones" value={h.iconSize} onChange={v => set({ iconSize: v })} min={10} max={30} suffix="px" />
         <ToggleRow label="Ícone de busca" hint="Lupa para buscar produtos" checked={h.showSearch} onChange={v => set({ showSearch: v })} />
         {h.showSearch && (
           <OptionPicker label="Estilo da busca" value={h.searchStyle} onChange={v => set({ searchStyle: v })} options={[
