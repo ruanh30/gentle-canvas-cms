@@ -568,7 +568,7 @@ function MobileDrawerSearch({ placeholder, onSearch }: { placeholder: string; on
         className="w-full pl-9 pr-3 h-9 text-sm rounded-lg border border-border/60 outline-none focus:ring-1 focus:ring-border bg-muted/30 placeholder:text-muted-foreground/40"
       />
       {query.trim().length >= 2 && (
-        <div className="mt-2">
+        <div className="absolute left-0 right-0 top-full mt-1 z-50">
           <SearchSuggestions
             query={query}
             maxResults={5}
