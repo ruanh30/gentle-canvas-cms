@@ -99,6 +99,13 @@ const HomePage = () => {
   const responsive = theme.responsive;
   const hiddenMobile = responsive?.hideSectionsMobile || [];
 
+  const spacingMap: Record<string, string> = {
+    compact: 'py-6',
+    normal: 'py-10',
+    spacious: 'py-16',
+  };
+  const sectionPy = spacingMap[theme.global?.sectionSpacing] || 'py-10';
+
   const gridCols: Record<number, string> = {
     2: 'grid-cols-1 md:grid-cols-2',
     3: 'grid-cols-2 md:grid-cols-3',
@@ -311,7 +318,7 @@ const HomePage = () => {
         );
 
         return (
-          <section key={section.id} className={cn('container mx-auto px-4 py-16', wrapperClass)}>
+          <section key={section.id} className={cn('container mx-auto px-4', sectionPy, wrapperClass)}>
             {section.showTitle !== false && (
               <h2 className="text-2xl font-display font-bold mb-8 text-center">{section.title}</h2>
             )}
@@ -330,7 +337,7 @@ const HomePage = () => {
 
       case 'featured-products':
         return (
-          <section key={section.id} className={cn('container mx-auto px-4 py-16', wrapperClass)}>
+          <section key={section.id} className={cn('container mx-auto px-4', sectionPy, wrapperClass)}>
             <div className="flex items-center justify-between mb-8">
               {section.showTitle !== false && (
                 <h2 className="text-2xl font-display font-bold">{section.title}</h2>
@@ -398,7 +405,7 @@ const HomePage = () => {
         const isYouTube = (s.provider || 'youtube') === 'youtube';
         const videoId = s.url?.match(/(?:v=|\/embed\/|youtu\.be\/)([\w-]+)/)?.[1];
         return (
-          <section key={section.id} className={cn('container mx-auto px-4 py-16', wrapperClass)}>
+          <section key={section.id} className={cn('container mx-auto px-4', sectionPy, wrapperClass)}>
             {section.showTitle !== false && (
               <h2 className="text-2xl font-display font-bold mb-8 text-center">{section.title}</h2>
             )}
@@ -461,7 +468,7 @@ const HomePage = () => {
         const s = section.settings as { imageUrl?: string; title?: string; description?: string; ctaText?: string; ctaLink?: string; imagePosition?: string };
         const imgLeft = (s.imagePosition || 'left') === 'left';
         return (
-          <section key={section.id} className={cn('container mx-auto px-4 py-16', wrapperClass)}>
+          <section key={section.id} className={cn('container mx-auto px-4', sectionPy, wrapperClass)}>
             <div className={cn('grid md:grid-cols-2 gap-8 items-center', !imgLeft && 'direction-rtl')}>
               <div className={cn('rounded-2xl overflow-hidden bg-secondary', !imgLeft && 'md:order-2')}>
                 {s.imageUrl ? (
@@ -491,7 +498,7 @@ const HomePage = () => {
       case 'faq': {
         const items = (section.settings?.items as { question: string; answer: string }[]) || [];
         return (
-          <section key={section.id} className={cn('container mx-auto px-4 py-16 max-w-3xl', wrapperClass)}>
+          <section key={section.id} className={cn('container mx-auto px-4 max-w-3xl', sectionPy, wrapperClass)}>
             {section.showTitle !== false && (
               <h2 className="text-2xl font-display font-bold mb-8 text-center">{section.title}</h2>
             )}
@@ -515,7 +522,7 @@ const HomePage = () => {
           { icon: CreditCard, label: '12x sem juros', desc: 'No cartão de crédito' },
         ];
         return (
-          <section key={section.id} className={cn('container mx-auto px-4 py-16', wrapperClass)}>
+          <section key={section.id} className={cn('container mx-auto px-4', sectionPy, wrapperClass)}>
             {section.showTitle !== false && (
               <h2 className="text-2xl font-display font-bold mb-8 text-center">{section.title}</h2>
             )}
@@ -564,7 +571,7 @@ const HomePage = () => {
         if (collectionProducts.length === 0) return null;
 
         return (
-          <section key={section.id} className={cn('container mx-auto px-4 py-16', wrapperClass)}>
+          <section key={section.id} className={cn('container mx-auto px-4', sectionPy, wrapperClass)}>
             {section.showTitle !== false && (
               <h2 className="text-2xl font-display font-bold text-center mb-8">{section.title}</h2>
             )}
