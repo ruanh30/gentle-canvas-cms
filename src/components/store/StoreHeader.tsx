@@ -303,7 +303,8 @@ export function StoreHeader() {
   }, []);
 
   const baseHeight = h.height || 64;
-  const currentHeight = (h.shrinkOnScroll && scrolled) ? Math.max(baseHeight - 16, 48) : baseHeight;
+  const shrinkActive = h.shrinkOnScroll && scrolled;
+  const currentHeight = shrinkActive ? 44 : baseHeight;
 
   // Choose NavItemComponent based on menuStyle
   const isMegaMenu = h.menuStyle === 'mega-menu';
@@ -427,121 +428,131 @@ export function StoreHeader() {
       h.shadowOnScroll && scrolled && 'shadow-md',
       h.sticky && 'sticky top-0'
     )}>
-      {!isMinimal && <AnnouncementBar />}
+      {/* Announcement bar: hide when shrunk */}
+      {!isMinimal && !shrinkActive && <AnnouncementBar />}
 
       <div className="container mx-auto px-4">
-        <div className={cn(
-          'flex items-center transition-all duration-300',
-          isCentered ? 'justify-center relative' : 'justify-between'
-        )} style={{ height: currentHeight }}>
-          <Sheet>
-            <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className={cn('lg:hidden', isCentered && 'absolute left-0')}>
-                <Menu className="h-5 w-5" />
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="left" className="w-72">
-              <nav className="flex flex-col gap-4 mt-8">
-                <Link to="/" className="text-lg font-display font-semibold">Início</Link>
-                {hasCustomMenu ? mm!.items.map(mi => (
-                  <div key={mi.id}>
-                    <Link to={mi.link || '#'} className="text-base hover:text-foreground/80 transition-colors" {...(mi.openNewTab ? { target: '_blank', rel: 'noopener' } : {})}>
-                      {mi.label}
-                      {mm!.showBadges && mi.badge && (
-                        <span className="ml-2 text-[10px] font-bold px-1.5 py-0.5 rounded" style={{ backgroundColor: mi.badgeColor, color: '#fff' }}>{mi.badge}</span>
+        {/* Main row with logo + icons: hide when shrunk */}
+        {!shrinkActive && (
+          <div className={cn(
+            'flex items-center transition-all duration-300',
+            isCentered ? 'justify-center relative' : 'justify-between'
+          )} style={{ height: currentHeight }}>
+            <Sheet>
+              <SheetTrigger asChild>
+                <Button variant="ghost" size="icon" className={cn('lg:hidden', isCentered && 'absolute left-0')}>
+                  <Menu className="h-5 w-5" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="left" className="w-72">
+                <nav className="flex flex-col gap-4 mt-8">
+                  <Link to="/" className="text-lg font-display font-semibold">Início</Link>
+                  {hasCustomMenu ? mm!.items.map(mi => (
+                    <div key={mi.id}>
+                      <Link to={mi.link || '#'} className="text-base hover:text-foreground/80 transition-colors" {...(mi.openNewTab ? { target: '_blank', rel: 'noopener' } : {})}>
+                        {mi.label}
+                        {mm!.showBadges && mi.badge && (
+                          <span className="ml-2 text-[10px] font-bold px-1.5 py-0.5 rounded" style={{ backgroundColor: mi.badgeColor, color: '#fff' }}>{mi.badge}</span>
+                        )}
+                      </Link>
+                      {mi.children.length > 0 && (
+                        <div className="ml-4 mt-2 flex flex-col gap-2">
+                          {mi.children.map(sub => (
+                            <Link key={sub.id} to={sub.link || '#'} className="text-sm text-muted-foreground hover:text-foreground transition-colors" {...(sub.openNewTab ? { target: '_blank', rel: 'noopener' } : {})}>
+                              {sub.label}
+                            </Link>
+                          ))}
+                        </div>
                       )}
+                    </div>
+                  )) : mockCategories.slice(0, 5).map(cat => (
+                    <Link key={cat.id} to={`/products?category=${cat.slug}`} className="text-base hover:text-foreground/80 transition-colors">
+                      {cat.name}
                     </Link>
-                    {mi.children.length > 0 && (
-                      <div className="ml-4 mt-2 flex flex-col gap-2">
-                        {mi.children.map(sub => (
-                          <Link key={sub.id} to={sub.link || '#'} className="text-sm text-muted-foreground hover:text-foreground transition-colors" {...(sub.openNewTab ? { target: '_blank', rel: 'noopener' } : {})}>
-                            {sub.label}
-                          </Link>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                )) : mockCategories.slice(0, 5).map(cat => (
-                  <Link key={cat.id} to={`/products?category=${cat.slug}`} className="text-base hover:text-foreground/80 transition-colors">
-                    {cat.name}
-                  </Link>
-                ))}
+                  ))}
+                </nav>
+              </SheetContent>
+            </Sheet>
+
+            <Link to="/" className="flex items-center gap-2">
+              {theme.logo.imageUrl && (
+                <img src={theme.logo.imageUrl} alt="Logo" style={{ maxHeight: theme.logo.maxHeight }} className="object-contain" />
+              )}
+              {theme.logo.showText && (
+                <span className="font-display text-xl md:text-2xl font-bold tracking-tight">
+                  {theme.logo.text}
+                </span>
+              )}
+            </Link>
+
+            {h.layout !== 'hamburger-only' && h.layout !== 'centered' && (
+              <nav className={cn(
+                'hidden lg:flex items-center gap-1',
+                h.menuDesktopModel === 'model4' && 'border-b-2 border-border pb-1',
+              )}>
+                {renderNavItems()}
               </nav>
-            </SheetContent>
-          </Sheet>
-
-          <Link to="/" className="flex items-center gap-2">
-            {theme.logo.imageUrl && (
-              <img src={theme.logo.imageUrl} alt="Logo" style={{ maxHeight: theme.logo.maxHeight }} className="object-contain" />
             )}
-            {theme.logo.showText && (
-              <span className="font-display text-xl md:text-2xl font-bold tracking-tight">
-                {theme.logo.text}
-              </span>
+
+            {h.searchStyle === 'inline' && h.showSearch && h.layout !== 'hamburger-only' && (
+              <div className="hidden lg:block relative w-48 xl:w-64">
+                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+                <Input placeholder="Buscar produtos..." className="pl-8 h-8 text-sm bg-secondary border-0" />
+              </div>
             )}
-          </Link>
 
-          {h.layout !== 'hamburger-only' && h.layout !== 'centered' && (
-            <nav className={cn(
-              'hidden lg:flex items-center gap-1',
-              h.menuDesktopModel === 'model4' && 'border-b-2 border-border pb-1',
-            )}>
-              {renderNavItems()}
-            </nav>
-          )}
-
-          {/* Inline search for layouts that support it */}
-          {h.searchStyle === 'inline' && h.showSearch && h.layout !== 'hamburger-only' && (
-            <div className="hidden lg:block relative w-48 xl:w-64">
-              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
-              <Input placeholder="Buscar produtos..." className="pl-8 h-8 text-sm bg-secondary border-0" />
+            <div className={cn('flex items-center gap-0.5', isCentered && 'absolute right-0')}>
+              {h.showSearch && h.searchStyle !== 'inline' && (
+                <Button variant="ghost" size="icon" onClick={handleSearchClick}>
+                  <Search style={{ width: h.iconSize, height: h.iconSize }} />
+                </Button>
+              )}
+              {h.showWishlist && (
+                <Button variant="ghost" size="icon">
+                  <Heart style={{ width: h.iconSize, height: h.iconSize }} />
+                </Button>
+              )}
+              {h.showAccount && (
+                <Link to={user ? '/account' : '/login'}>
+                  <Button variant="ghost" size="icon">
+                    <User style={{ width: h.iconSize, height: h.iconSize }} />
+                  </Button>
+                </Link>
+              )}
+              {h.showCart && (
+                <Link to="/cart" className="relative">
+                  <Button variant="ghost" size="icon">
+                    <CartIconComponent style={{ width: h.iconSize, height: h.iconSize }} />
+                    {itemCount > 0 && h.cartBadgeStyle !== 'none' && (
+                      <span className="absolute -top-1 -right-1 bg-foreground text-background text-[10px] font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                        {h.cartBadgeStyle === 'count' ? itemCount : '●'}
+                      </span>
+                    )}
+                  </Button>
+                </Link>
+              )}
             </div>
-          )}
-
-          <div className={cn('flex items-center gap-0.5', isCentered && 'absolute right-0')}>
-            {h.showSearch && h.searchStyle !== 'inline' && (
-              <Button variant="ghost" size="icon" onClick={handleSearchClick}>
-                <Search style={{ width: h.iconSize, height: h.iconSize }} />
-              </Button>
-            )}
-            {h.showWishlist && (
-              <Button variant="ghost" size="icon">
-                <Heart style={{ width: h.iconSize, height: h.iconSize }} />
-              </Button>
-            )}
-            {h.showAccount && (
-              <Link to={user ? '/account' : '/login'}>
-                <Button variant="ghost" size="icon">
-                  <User style={{ width: h.iconSize, height: h.iconSize }} />
-                </Button>
-              </Link>
-            )}
-            {h.showCart && (
-              <Link to="/cart" className="relative">
-                <Button variant="ghost" size="icon">
-                  <CartIconComponent style={{ width: h.iconSize, height: h.iconSize }} />
-                  {itemCount > 0 && h.cartBadgeStyle !== 'none' && (
-                    <span className="absolute -top-1 -right-1 bg-foreground text-background text-[10px] font-bold rounded-full h-5 w-5 flex items-center justify-center">
-                      {h.cartBadgeStyle === 'count' ? itemCount : '●'}
-                    </span>
-                  )}
-                </Button>
-              </Link>
-            )}
           </div>
-        </div>
+        )}
 
-        {h.layout === 'centered' && (
+        {/* When shrunk: show ONLY the nav menu bar */}
+        {shrinkActive && (
+          <nav className="flex items-center justify-center gap-1 py-2">
+            {renderNavItems()}
+          </nav>
+        )}
+
+        {/* Centered layout sub-nav */}
+        {h.layout === 'centered' && !shrinkActive && (
           <nav className="hidden lg:flex items-center justify-center gap-1 pb-3">
             {renderNavItems()}
           </nav>
         )}
 
-        {/* Search overlay (drawer style) */}
-        {renderSearchOverlay()}
+        {!shrinkActive && renderSearchOverlay()}
       </div>
 
-      <BannerBelow />
+      {!shrinkActive && <BannerBelow />}
     </header>
   );
 }
