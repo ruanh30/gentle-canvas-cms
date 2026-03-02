@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import {
   ShoppingBag, Search, User, Menu, Heart, ShoppingCart, Plus, PackagePlus, Store,
   ChevronDown, ChevronLeft, type LucideIcon,
@@ -173,16 +173,16 @@ const ICON_MAP: Record<string, LucideIcon> = {
 /* ================================================================== */
 /*  INLINE SEARCH FIELD — adaptive, always premium                      */
 
-function InlineSearchField({ placeholder, headerBg, headerText, className }: {
+function InlineSearchField({ placeholder, headerBg, headerText, className, onSearch }: {
   placeholder: string;
   headerBg?: string;
   headerText?: string;
   className?: string;
+  onSearch: (q: string) => void;
 }) {
-  // Detect if header is dark to adapt search field styling
+  const [query, setQuery] = useState('');
   const isDark = React.useMemo(() => {
     if (!headerBg || headerBg === 'transparent') return false;
-    // Simple luminance check from hex/rgb
     const c = headerBg.replace(/\s/g, '');
     if (c.startsWith('#')) {
       const hex = c.slice(1);
@@ -198,8 +198,13 @@ function InlineSearchField({ placeholder, headerBg, headerText, className }: {
     return false;
   }, [headerBg]);
 
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (query.trim()) onSearch(query.trim());
+  };
+
   return (
-    <div className={cn('hidden lg:block relative w-52 xl:w-72 group', className)}>
+    <form onSubmit={handleSubmit} className={cn('hidden lg:block relative w-52 xl:w-72 group', className)}>
       <div className={cn(
         'flex items-center gap-2 h-10 px-3.5 rounded-full border transition-all duration-200',
         'focus-within:ring-2 focus-within:ring-offset-1',
@@ -214,6 +219,8 @@ function InlineSearchField({ placeholder, headerBg, headerText, className }: {
             : 'text-muted-foreground/50 group-focus-within:text-foreground/70',
         )} />
         <input
+          value={query}
+          onChange={e => setQuery(e.target.value)}
           placeholder={placeholder}
           className={cn(
             'flex-1 bg-transparent text-sm outline-none',
@@ -223,7 +230,7 @@ function InlineSearchField({ placeholder, headerBg, headerText, className }: {
           )}
         />
       </div>
-    </div>
+    </form>
   );
 }
 
@@ -413,7 +420,7 @@ export function StoreHeader() {
   const { itemCount } = useCart();
   const { user } = useAuth();
   const { theme } = useTheme();
-
+  const navigate = useNavigate();
   // Menu typography config
   const mt = theme.header?.menuTypography ?? { fontFamily: 'Inter', fontWeight: 500, fontSizeDesktop: 14, fontSizeMobile: 14, letterSpacing: 0.02, textTransform: 'uppercase' as const, lineHeight: 1.2 };
   const [searchOpen, setSearchOpen] = useState(false);
@@ -507,6 +514,7 @@ export function StoreHeader() {
   const isMegaMenu = h.menuStyle === 'mega-menu';
 
   const handleSearchClick = () => setSearchOpen(!searchOpen);
+  const handleSearch = (q: string) => { setSearchOpen(false); navigate(`/products?q=${encodeURIComponent(q)}`); };
 
   const placeholder = searchConfig.placeholder || 'Buscar produtos...';
 
@@ -515,7 +523,7 @@ export function StoreHeader() {
     if (!searchConfig.showOnDesktop) return null;
 
     if (h.searchStyle === 'inline') {
-      return <InlineSearchField placeholder={placeholder} headerBg={activeState?.backgroundColor} headerText={activeState?.textColor} />;
+      return <InlineSearchField placeholder={placeholder} headerBg={activeState?.backgroundColor} headerText={activeState?.textColor} onSearch={handleSearch} />;
     }
 
     return (
@@ -528,6 +536,16 @@ export function StoreHeader() {
   const renderSearchOverlay = () => {
     if (!searchOpen || !h.showSearch || h.searchStyle === 'inline') return null;
 
+    const handleModalSearch = (e: React.KeyboardEvent<HTMLInputElement>) => {
+      if (e.key === 'Escape') setSearchOpen(false);
+      if (e.key === 'Enter') {
+        const val = (e.target as HTMLInputElement).value.trim();
+        if (val) handleSearch(val);
+      }
+    };
+
+    const handleSuggestionClick = (tag: string) => handleSearch(tag);
+
     if (h.searchStyle === 'modal') {
       return (
         <Dialog open={searchOpen} onOpenChange={setSearchOpen}>
@@ -539,16 +557,17 @@ export function StoreHeader() {
                   placeholder={placeholder}
                   className="w-full pl-12 pr-4 h-14 text-base bg-transparent border-0 outline-none placeholder:text-muted-foreground/40"
                   autoFocus
-                  onKeyDown={(e) => { if (e.key === 'Escape') setSearchOpen(false); }}
+                  onKeyDown={handleModalSearch}
                 />
               </div>
               <div className="border-t border-border/40 mt-2 pt-3">
                 <p className="text-[11px] text-muted-foreground/50 uppercase tracking-wider font-medium px-1">Sugestões populares</p>
                 <div className="flex flex-wrap gap-1.5 mt-2">
-                  {['Camisetas', 'Vestidos', 'Promoções', 'Novidades'].map(tag => (
-                    <span key={tag} className="px-3 py-1.5 text-xs text-muted-foreground bg-secondary/80 hover:bg-secondary rounded-full cursor-pointer transition-colors">
+                  {['Novidades', 'Promoções', 'Vestidos', 'Camisetas'].map(tag => (
+                    <button key={tag} onClick={() => handleSuggestionClick(tag)}
+                      className="px-3 py-1.5 text-xs text-muted-foreground bg-secondary/80 hover:bg-secondary rounded-full cursor-pointer transition-colors">
                       {tag}
-                    </span>
+                    </button>
                   ))}
                 </div>
               </div>
@@ -572,7 +591,7 @@ export function StoreHeader() {
             placeholder={placeholder}
             className="w-full pl-11 pr-4 h-11 text-sm bg-secondary/60 rounded-full border-0 outline-none ring-1 ring-border/40 focus:ring-border focus:bg-background transition-all duration-200 placeholder:text-muted-foreground/40"
             autoFocus
-            onKeyDown={(e) => { if (e.key === 'Escape') setSearchOpen(false); }}
+            onKeyDown={handleModalSearch}
           />
         </div>
       </div>
@@ -809,7 +828,7 @@ export function StoreHeader() {
               </Link>
 
               {h.searchStyle === 'inline' && h.showSearch && (
-                <InlineSearchField placeholder={placeholder} headerBg={activeState?.backgroundColor} headerText={activeState?.textColor} className="flex-1 max-w-md" />
+                <InlineSearchField placeholder={placeholder} headerBg={activeState?.backgroundColor} headerText={activeState?.textColor} className="flex-1 max-w-md" onSearch={handleSearch} />
               )}
 
               {renderActions()}
@@ -842,7 +861,7 @@ export function StoreHeader() {
             )}
 
             {h.searchStyle === 'inline' && h.showSearch && h.layout !== 'hamburger-only' && h.layout !== 'double-row' && (
-              <InlineSearchField placeholder={placeholder} headerBg={activeState?.backgroundColor} headerText={activeState?.textColor} />
+              <InlineSearchField placeholder={placeholder} headerBg={activeState?.backgroundColor} headerText={activeState?.textColor} onSearch={handleSearch} />
             )}
 
             {renderActions()}
