@@ -155,6 +155,64 @@ function BannerBelow() {
 }
 
 /* ================================================================== */
+/*  INLINE SEARCH FIELD — adaptive, always premium                      */
+/* ================================================================== */
+
+function InlineSearchField({ placeholder, headerBg, headerText, className }: {
+  placeholder: string;
+  headerBg?: string;
+  headerText?: string;
+  className?: string;
+}) {
+  // Detect if header is dark to adapt search field styling
+  const isDark = React.useMemo(() => {
+    if (!headerBg || headerBg === 'transparent') return false;
+    // Simple luminance check from hex/rgb
+    const c = headerBg.replace(/\s/g, '');
+    if (c.startsWith('#')) {
+      const hex = c.slice(1);
+      const r = parseInt(hex.substring(0, 2), 16);
+      const g = parseInt(hex.substring(2, 4), 16);
+      const b = parseInt(hex.substring(4, 6), 16);
+      return (r * 0.299 + g * 0.587 + b * 0.114) < 128;
+    }
+    if (c.startsWith('rgba') || c.startsWith('rgb')) {
+      const nums = c.match(/[\d.]+/g)?.map(Number) || [];
+      if (nums.length >= 3) return (nums[0] * 0.299 + nums[1] * 0.587 + nums[2] * 0.114) < 128;
+    }
+    return false;
+  }, [headerBg]);
+
+  return (
+    <div className={cn('hidden lg:block relative w-52 xl:w-72 group', className)}>
+      <div className={cn(
+        'flex items-center gap-2 h-10 px-3.5 rounded-full border transition-all duration-200',
+        'focus-within:ring-2 focus-within:ring-offset-1',
+        isDark
+          ? 'bg-white/[0.12] border-white/20 focus-within:bg-white/[0.18] focus-within:border-white/30 focus-within:ring-white/20 focus-within:ring-offset-transparent'
+          : 'bg-secondary/50 border-border/50 focus-within:bg-background focus-within:border-border focus-within:ring-ring/20 focus-within:ring-offset-background hover:bg-secondary/70 hover:border-border/70',
+      )}>
+        <Search className={cn(
+          'h-4 w-4 shrink-0 transition-colors duration-150',
+          isDark
+            ? 'text-white/40 group-focus-within:text-white/70'
+            : 'text-muted-foreground/50 group-focus-within:text-foreground/70',
+        )} />
+        <input
+          placeholder={placeholder}
+          className={cn(
+            'flex-1 bg-transparent text-sm outline-none',
+            isDark
+              ? 'text-white placeholder:text-white/35'
+              : 'text-foreground placeholder:text-muted-foreground/45',
+          )}
+        />
+      </div>
+    </div>
+  );
+}
+
+/* ================================================================== */
 /*  ICON MAP                                                            */
 /* ================================================================== */
 
@@ -416,20 +474,10 @@ export function StoreHeader() {
 
   const renderSearchBar = () => {
     if (!h.showSearch) return null;
-    // Respect device visibility
     if (!searchConfig.showOnDesktop) return null;
 
     if (h.searchStyle === 'inline') {
-      return (
-        <div className="hidden lg:block relative w-52 xl:w-72 group">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/60 group-focus-within:text-foreground transition-colors" />
-          <input
-            placeholder={placeholder}
-            className="w-full pl-9 pr-3 h-9 text-sm rounded-full border border-border/60 outline-none focus:ring-1 focus:ring-border transition-all duration-200 placeholder:text-muted-foreground/50"
-            style={{ backgroundColor: '#ffffff' }}
-          />
-        </div>
-      );
+      return <InlineSearchField placeholder={placeholder} headerBg={activeState?.backgroundColor} headerText={activeState?.textColor} />;
     }
 
     return (
@@ -710,14 +758,7 @@ export function StoreHeader() {
               </Link>
 
               {h.searchStyle === 'inline' && h.showSearch && (
-                <div className="hidden lg:block relative flex-1 max-w-md group">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/60 group-focus-within:text-foreground transition-colors" />
-                  <input
-                    placeholder={placeholder}
-                    className="w-full pl-9 pr-3 h-9 text-sm rounded-full border border-border/60 outline-none focus:ring-1 focus:ring-border transition-all duration-200 placeholder:text-muted-foreground/50"
-                    style={{ backgroundColor: '#ffffff' }}
-                  />
-                </div>
+                <InlineSearchField placeholder={placeholder} headerBg={activeState?.backgroundColor} headerText={activeState?.textColor} className="flex-1 max-w-md" />
               )}
 
               {renderActions()}
@@ -754,14 +795,7 @@ export function StoreHeader() {
             )}
 
             {h.searchStyle === 'inline' && h.showSearch && h.layout !== 'hamburger-only' && h.layout !== 'double-row' && (
-              <div className="hidden lg:block relative w-52 xl:w-72 group">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/60 group-focus-within:text-foreground transition-colors" />
-                <input
-                  placeholder={placeholder}
-                  className="w-full pl-9 pr-3 h-9 text-sm rounded-full border border-border/60 outline-none focus:ring-1 focus:ring-border transition-all duration-200 placeholder:text-muted-foreground/50"
-                  style={{ backgroundColor: '#ffffff' }}
-                />
-              </div>
+              <InlineSearchField placeholder={placeholder} headerBg={activeState?.backgroundColor} headerText={activeState?.textColor} />
             )}
 
             {renderActions()}
