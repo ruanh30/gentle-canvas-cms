@@ -94,7 +94,7 @@ const HomePage = () => {
     .filter(c => c.active)
     .sort((a, b) => a.order - b.order);
 
-  const slide = theme.hero.slides[0];
+  const heroSlides = theme.hero.slides || [];
   const responsive = theme.responsive;
   const hiddenMobile = responsive?.hideSectionsMobile || [];
 
@@ -111,6 +111,24 @@ const HomePage = () => {
     right: 'text-right items-end ml-auto',
   };
 
+  const heroHeightMap: Record<string, string> = {
+    small: 'min-h-[300px]',
+    medium: 'min-h-[450px]',
+    large: 'min-h-[600px]',
+    fullscreen: 'min-h-screen',
+  };
+
+  const [heroIdx, setHeroIdx] = React.useState(0);
+
+  // Autoplay
+  useEffect(() => {
+    if (!theme.hero.enabled || !theme.hero.autoplay || heroSlides.length <= 1) return;
+    const interval = setInterval(() => {
+      setHeroIdx(prev => (prev + 1) % heroSlides.length);
+    }, (theme.hero.autoplaySpeed || 5) * 1000);
+    return () => clearInterval(interval);
+  }, [theme.hero.enabled, theme.hero.autoplay, theme.hero.autoplaySpeed, heroSlides.length]);
+
   const renderSection = (section: ThemeHomepageSection) => {
     const isCarousel = (section.settings?.displayMode as string) === 'carousel';
     const carouselSpeed = (section.settings?.carouselSpeed as number) || 4;
@@ -120,12 +138,16 @@ const HomePage = () => {
     const wrapperClass = isHiddenMobile ? 'hidden md:block' : '';
 
     switch (section.type) {
-      case 'hero':
-        if (!theme.hero.enabled || !slide) return null;
+      case 'hero': {
+        if (!theme.hero.enabled || heroSlides.length === 0) return null;
+        const slide = heroSlides[heroIdx] || heroSlides[0];
+        if (!slide) return null;
+        const heightClass = heroHeightMap[theme.hero.height] || heroHeightMap.large;
+
         return (
           <section
             key={section.id}
-            className={cn('relative bg-secondary', wrapperClass)}
+            className={cn('relative bg-secondary overflow-hidden', heightClass, wrapperClass)}
             style={slide.backgroundImage ? {
               backgroundImage: `url(${slide.backgroundImage})`,
               backgroundSize: 'cover',
@@ -133,34 +155,88 @@ const HomePage = () => {
             } : undefined}
           >
             {slide.backgroundImage && (
-              <div className="absolute inset-0" style={{ backgroundColor: slide.overlayColor, opacity: slide.overlayOpacity }} />
+              <div className="absolute inset-0" style={{ backgroundColor: slide.overlayColor || '#000', opacity: slide.overlayOpacity ?? 0 }} />
             )}
-            <div className="container mx-auto px-4 py-20 md:py-32 relative z-10">
-              <div className={cn('max-w-xl flex flex-col', heroAlign[slide.contentAlign])}>
-                <p className="text-sm uppercase tracking-[0.3em] text-muted-foreground mb-4 font-body">
-                  {slide.subtitle}
-                </p>
-                <h1
-                  className="text-4xl md:text-6xl font-display font-bold leading-tight mb-6 whitespace-pre-line"
-                  style={{ fontSize: responsive?.heroTitleSizeMobile ? `clamp(${responsive.heroTitleSizeMobile}px, 5vw, 3.75rem)` : undefined }}
-                >
-                  {slide.title}
-                </h1>
-                <p className="text-muted-foreground mb-8 text-lg font-body">
-                  {slide.description}
-                </p>
-                <div className="flex gap-3">
-                  <Link to={slide.ctaLink}>
-                    <Button size="lg" className="rounded-full px-8 font-body">
-                      {slide.ctaText}
-                      <ArrowRight className="ml-2 h-4 w-4" />
-                    </Button>
-                  </Link>
-                </div>
+            <div
+              className="container mx-auto px-4 relative z-10 flex flex-col justify-center h-full"
+              style={{ minHeight: 'inherit' }}
+            >
+              <div
+                className={cn('max-w-xl flex flex-col', heroAlign[slide.contentAlign || 'left'])}
+                style={{
+                  transform: `translate(${slide.contentOffsetX ?? 0}%, ${slide.contentOffsetY ?? 0}%)`,
+                }}
+              >
+                {slide.showText !== false && (
+                  <>
+                    <p className="text-sm uppercase tracking-[0.3em] text-muted-foreground mb-4 font-body">
+                      {slide.subtitle}
+                    </p>
+                    <h1
+                      className="text-4xl md:text-6xl font-display font-bold leading-tight mb-6 whitespace-pre-line"
+                      style={{ fontSize: responsive?.heroTitleSizeMobile ? `clamp(${responsive.heroTitleSizeMobile}px, 5vw, 3.75rem)` : undefined }}
+                    >
+                      {slide.title}
+                    </h1>
+                    <p className="text-muted-foreground mb-8 text-lg font-body">
+                      {slide.description}
+                    </p>
+                  </>
+                )}
+                {slide.showButton !== false && slide.ctaText && (
+                  <div
+                    className="flex gap-3"
+                    style={{
+                      transform: `translate(${slide.buttonOffsetX ?? 0}%, ${slide.buttonOffsetY ?? 0}%)`,
+                    }}
+                  >
+                    <Link to={slide.ctaLink || '/products'}>
+                      <Button size="lg" className="rounded-full px-8 font-body">
+                        {slide.ctaText}
+                        <ArrowRight className="ml-2 h-4 w-4" />
+                      </Button>
+                    </Link>
+                  </div>
+                )}
               </div>
             </div>
+
+            {/* Dots */}
+            {theme.hero.showDots && heroSlides.length > 1 && (
+              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex gap-2">
+                {heroSlides.map((_, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setHeroIdx(i)}
+                    className={cn(
+                      'w-2.5 h-2.5 rounded-full transition-all',
+                      heroIdx === i ? 'bg-foreground scale-110' : 'bg-foreground/30 hover:bg-foreground/50'
+                    )}
+                  />
+                ))}
+              </div>
+            )}
+
+            {/* Arrows */}
+            {theme.hero.showArrows && heroSlides.length > 1 && (
+              <>
+                <button
+                  onClick={() => setHeroIdx(prev => (prev - 1 + heroSlides.length) % heroSlides.length)}
+                  className="absolute left-4 top-1/2 -translate-y-1/2 z-20 bg-background/60 backdrop-blur-sm p-2 rounded-full shadow hover:bg-background/90 transition-colors"
+                >
+                  <ChevronLeft className="h-5 w-5" />
+                </button>
+                <button
+                  onClick={() => setHeroIdx(prev => (prev + 1) % heroSlides.length)}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 z-20 bg-background/60 backdrop-blur-sm p-2 rounded-full shadow hover:bg-background/90 transition-colors"
+                >
+                  <ChevronRight className="h-5 w-5" />
+                </button>
+              </>
+            )}
           </section>
         );
+      }
 
       case 'categories': {
         const showImage = (section.settings?.showImage as boolean) !== false;

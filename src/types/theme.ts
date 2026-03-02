@@ -209,6 +209,8 @@ export interface ThemeHeroSlide {
   description: string;
   ctaText: string;
   ctaLink: string;
+  ctaLinkType: 'url' | 'category';
+  ctaCategory: string;
   ctaStyle: 'filled' | 'outline' | 'ghost';
   backgroundImage: string;
   backgroundVideo: string;
@@ -216,6 +218,12 @@ export interface ThemeHeroSlide {
   overlayOpacity: number;
   contentAlign: 'left' | 'center' | 'right';
   textColor: string;
+  showText: boolean;
+  showButton: boolean;
+  contentOffsetX: number;
+  contentOffsetY: number;
+  buttonOffsetX: number;
+  buttonOffsetY: number;
 }
 
 export interface ThemeHero {
