@@ -172,6 +172,16 @@ export const defaultThemeConfig: ThemeConfig = {
       textTransform: 'uppercase',
       lineHeight: 1.2,
     },
+    menuBar: {
+      enabled: false,
+      backgroundColor: '#1a1a1a',
+      textColor: '#ffffff',
+      height: 48,
+      fullWidth: true,
+      borderTop: false,
+      borderBottom: false,
+      shadow: 'none',
+    },
     menuColors: { linkColor: '', linkHoverColor: '', linkActiveColor: '', linkBg: '', linkHoverBg: '' },
     states: {
       normal: { backgroundColor: '#ffffff', textColor: '#1a1a1a', borderBottom: true, borderColor: '#e5e7eb', shadow: 'none', blur: false, height: 64 },
