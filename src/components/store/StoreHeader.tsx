@@ -600,6 +600,7 @@ export function StoreHeader() {
       extraClass,
     );
 
+    const separatorColor = mc.linkColor || (isMenuBarSeparated ? menuBar.textColor : undefined);
     const buildItems = (elements: React.ReactNode[]) => {
       if (!separatorChar || elements.length <= 1) return elements;
       const result: React.ReactNode[] = [];
@@ -607,7 +608,18 @@ export function StoreHeader() {
         result.push(el);
         if (i < elements.length - 1) {
           result.push(
-            <span key={`sep-${i}`} className="text-muted-foreground/40 select-none text-xs" style={{ fontSize: h.menuFontSize ? h.menuFontSize * 0.85 : 11 }}>
+            <span
+              key={`sep-${i}`}
+              className="select-none"
+              style={{
+                fontSize: mt.fontSizeDesktop ? mt.fontSizeDesktop * 0.75 : 11,
+                fontWeight: 300,
+                opacity: 0.35,
+                lineHeight: mt.lineHeight,
+                ...(separatorColor ? { color: separatorColor } : {}),
+              }}
+              aria-hidden="true"
+            >
               {separatorChar}
             </span>
           );
