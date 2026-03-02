@@ -527,7 +527,7 @@ function BehaviorPreview({ sticky, shrinkOnScroll, shadowOnScroll, borderBottom,
               'bg-background px-3 flex items-center justify-between',
               borderBottom && 'border-b border-border',
             )} style={{ height: normalH }}>
-              <div className="flex items-center gap-1"><div className="w-3 h-3 rounded bg-foreground/80" /><span className="text-[9px] font-bold text-foreground">Marca</span></div>
+              <div className="w-12 h-3 rounded bg-foreground/15" />
             </div>
             <div className="px-3 py-2 space-y-1.5">
               <div className="h-1.5 bg-muted/40 rounded w-4/5" />
@@ -542,7 +542,7 @@ function BehaviorPreview({ sticky, shrinkOnScroll, shadowOnScroll, borderBottom,
               shadowOnScroll && 'shadow-md',
               !sticky && 'opacity-20',
             )} style={{ height: shrunkH }}>
-              <div className="flex items-center gap-1"><div className={cn('rounded bg-foreground/80', shrinkOnScroll ? 'w-2.5 h-2.5' : 'w-3 h-3')} /><span className={cn('font-bold text-foreground', shrinkOnScroll ? 'text-[8px]' : 'text-[9px]')}>Marca</span></div>
+              <div className={cn('rounded bg-foreground/15', shrinkOnScroll ? 'w-8 h-2' : 'w-12 h-3')} />
             </div>
             {!sticky && (
               <div className="flex items-center justify-center py-2">
@@ -574,18 +574,6 @@ function MenuStylePreview({ menuStyle, menuFontSize, menuUppercase, menuFontWeig
   const hover = menuHoverStyle || 'underline';
   const useUnderline = hover === 'underline' || hover === 'both';
 
-  const logoSmall = (
-    <div className="flex items-center gap-1">
-      <div className="w-3.5 h-3.5 rounded bg-foreground/80" />
-      <span className="text-[10px] font-bold text-foreground tracking-tight">Marca</span>
-    </div>
-  );
-  const iconsSmall = (
-    <div className="flex gap-1.5">
-      <Search className="h-3.5 w-3.5 text-muted-foreground" />
-      <ShoppingBag className="h-3.5 w-3.5 text-muted-foreground" />
-    </div>
-  );
 
   const renderItems = (activeIdx: number) => {
     const els: React.ReactNode[] = [];
@@ -612,12 +600,10 @@ function MenuStylePreview({ menuStyle, menuFontSize, menuUppercase, menuFontWeig
     return (
       <PreviewWrapper>
         <div className="rounded-lg bg-background border border-border shadow-sm overflow-hidden">
-          <div className="flex items-center justify-between px-4 py-2.5 border-b border-border/50">
-            {logoSmall}
+          <div className="flex items-center justify-center px-4 py-2.5 border-b border-border/50">
             <div className="flex items-center" style={{ gap }}>
               {renderItems(2)}
             </div>
-            {iconsSmall}
           </div>
           <div className="bg-muted/10 px-5 py-4 grid grid-cols-4 gap-4 border-b border-border/30">
             {['Camisetas', 'Calças', 'Acessórios'].map((cat, i) => (
@@ -644,12 +630,10 @@ function MenuStylePreview({ menuStyle, menuFontSize, menuUppercase, menuFontWeig
     return (
       <PreviewWrapper>
         <div className="rounded-lg bg-background border border-border shadow-sm overflow-hidden">
-          <div className="flex items-center justify-between px-4 py-2.5">
-            {logoSmall}
+          <div className="flex items-center justify-center px-4 py-2.5">
             <div className="flex items-center" style={{ gap }}>
               {renderItems(2)}
             </div>
-            {iconsSmall}
           </div>
           <div className="px-4 pb-3 flex justify-center">
             <div className="w-32 bg-background border border-border rounded-xl shadow-[0_8px_30px_-6px_hsl(var(--foreground)/0.12)] py-1.5 ml-16">
@@ -669,12 +653,10 @@ function MenuStylePreview({ menuStyle, menuFontSize, menuUppercase, menuFontWeig
   return (
     <PreviewWrapper>
       <div className="rounded-lg bg-background border border-border shadow-sm overflow-hidden">
-        <div className="flex items-center justify-between px-4 py-2.5">
-          {logoSmall}
+        <div className="flex items-center justify-center px-4 py-2.5">
           <div className="flex items-center" style={{ gap }}>
             {renderItems(0)}
           </div>
-          {iconsSmall}
         </div>
       </div>
     </PreviewWrapper>
