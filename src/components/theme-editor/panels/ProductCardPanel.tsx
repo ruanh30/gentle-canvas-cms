@@ -49,15 +49,6 @@ export function ProductCardPanel() {
 
   return (
     <EditorSection icon={Package} title="Card de Produto" description="Visual e comportamento dos cards de produto nas listagens e destaques">
-      <OptionPicker label="Layout" value={c.layout} onChange={v => set({ layout: v })} options={[
-        { value: 'standard', label: 'Padrão', description: 'Imagem em cima e info embaixo' },
-        { value: 'minimal', label: 'Minimal', description: 'Apenas imagem, nome e preço' },
-        { value: 'detailed', label: 'Detalhado', description: 'Inclui descrição e mais info' },
-        { value: 'horizontal', label: 'Horizontal', description: 'Imagem ao lado do conteúdo' },
-        { value: 'overlay', label: 'Overlay', description: 'Texto sobreposto à imagem' },
-        { value: 'magazine', label: 'Magazine', description: 'Estilo editorial sofisticado' },
-      ]} />
-
       <SectionDivider label="Imagem" />
       <SelectField label="Proporção da imagem" value={c.imageAspect} onChange={v => set({ imageAspect: v })} options={[
         { value: '1:1', label: '1:1 Quadrado — altura igual à largura' },
