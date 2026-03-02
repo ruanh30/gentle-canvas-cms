@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -201,6 +201,30 @@ function OptionCards({ label, value, onChange, options, hint }: {
 }
 
 /* ================================================================== */
+/*  ANNOUNCEMENT CAROUSEL PREVIEW (mini)                                */
+/* ================================================================== */
+
+function AnnouncementCarouselPreview({ messages, bg, color, speed }: { messages: string[]; bg: string; color: string; speed: number }) {
+  const [idx, setIdx] = useState(0);
+  useEffect(() => {
+    if (messages.length <= 1) return;
+    const interval = setInterval(() => setIdx(p => (p + 1) % messages.length), speed * 1000);
+    return () => clearInterval(interval);
+  }, [messages.length, speed]);
+
+  return (
+    <div className="relative overflow-hidden py-1" style={{ backgroundColor: bg, color, height: 22 }}>
+      {messages.map((m, i) => (
+        <div key={i} className={cn(
+          'absolute inset-0 flex items-center justify-center text-[9px] font-medium tracking-wide transition-all duration-500',
+          i === idx ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-3'
+        )}>{m}</div>
+      ))}
+    </div>
+  );
+}
+
+/* ================================================================== */
 /*  LIVE HEADER PREVIEW                                                 */
 /* ================================================================== */
 
@@ -327,12 +351,39 @@ function LiveHeaderPreview() {
 
       <div className={cn('mx-auto mb-3 rounded-lg overflow-hidden border border-border/40 shadow-sm transition-all duration-300', isMobile ? 'max-w-[375px]' : 'max-w-full mx-4')}>
         {/* Announcement bar preview */}
-        {h.announcement?.enabled && (
-          <div className="text-center py-1 text-[9px] font-medium tracking-wide"
-            style={{ backgroundColor: h.announcement.backgroundColor || '#1a1a1a', color: h.announcement.textColor || '#fff' }}>
-            {h.announcement.messages?.[0] || 'Barra de anúncio'}
-          </div>
-        )}
+        {h.announcement?.enabled && (() => {
+          const ann = h.announcement;
+          const msgs = (ann.messages || []).filter(Boolean);
+          const displayMsg = msgs[0] || 'Barra de anúncio';
+          const annBg = ann.backgroundColor || '#1a1a1a';
+          const annColor = ann.textColor || '#fff';
+          const annStyle = ann.style || 'static';
+
+          if (annStyle === 'ticker' && msgs.length > 0) {
+            return (
+              <div className="overflow-hidden py-1" style={{ backgroundColor: annBg, color: annColor }}>
+                <div className={cn('whitespace-nowrap inline-block', ann.direction === 'ltr' ? 'animate-ticker-ltr' : 'animate-ticker')}
+                  style={{ animationDuration: `${(ann.speed || 5) * msgs.length * 3}s` }}>
+                  {msgs.map((m: string, i: number) => <span key={i} className="mx-6 text-[9px] font-medium tracking-wide">{m}</span>)}
+                  {msgs.map((m: string, i: number) => <span key={`d-${i}`} className="mx-6 text-[9px] font-medium tracking-wide">{m}</span>)}
+                </div>
+              </div>
+            );
+          }
+
+          if (annStyle === 'carousel' && msgs.length > 1) {
+            return (
+              <AnnouncementCarouselPreview messages={msgs} bg={annBg} color={annColor} speed={ann.speed || 5} />
+            );
+          }
+
+          return (
+            <div className="text-center py-1 text-[9px] font-medium tracking-wide"
+              style={{ backgroundColor: annBg, color: annColor }}>
+              {displayMsg}
+            </div>
+          );
+        })()}
 
         {/* Header preview */}
         <div
