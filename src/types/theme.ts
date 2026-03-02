@@ -104,6 +104,9 @@ export interface ThemeHeader {
   shadowOnScroll: boolean;
   backgroundColor: string;
   borderBottom: boolean;
+  headerSurface: boolean;          // elevated surface with shadow/border
+  dropdownElevated: boolean;       // elevated dropdown with arrow & shadow
+  menuItemPadding: boolean;        // larger click targets with bg hover
   height: number;             // px
   menuStyle: 'horizontal' | 'dropdown' | 'mega-menu';
   menuFontSize: number;

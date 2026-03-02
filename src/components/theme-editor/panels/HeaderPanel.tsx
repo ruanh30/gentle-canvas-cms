@@ -38,6 +38,15 @@ export function HeaderPanel() {
       <ToggleRow label="Encolher ao rolar" hint="O cabeçalho diminui de tamanho ao rolar para baixo, economizando espaço" checked={h.shrinkOnScroll} onChange={v => set({ shrinkOnScroll: v })} />
       <ToggleRow label="Sombra ao rolar" hint="Adiciona uma sombra sutil quando a página é rolada, criando profundidade" checked={h.shadowOnScroll} onChange={v => set({ shadowOnScroll: v })} />
       <ToggleRow label="Borda inferior" hint="Exibe uma linha fina na parte inferior do cabeçalho" checked={h.borderBottom} onChange={v => set({ borderBottom: v })} />
+
+      <SectionDivider label="Profundidade e Interação" />
+      <p className="text-[10px] text-muted-foreground/60 leading-relaxed -mt-2">
+        Controla a elevação visual do cabeçalho e a qualidade da interação com o menu.
+      </p>
+      <ToggleRow label="Superfície elevada" hint="Adiciona sombra e borda sutil permanentes, separando visualmente o cabeçalho do conteúdo" checked={h.headerSurface ?? true} onChange={v => set({ headerSurface: v })} />
+      <ToggleRow label="Dropdown elevado" hint="Submenus com sombra forte, seta de ancoragem e cantos arredondados (estilo popover)" checked={h.dropdownElevated ?? true} onChange={v => set({ dropdownElevated: v })} />
+      <ToggleRow label="Área clicável ampla" hint="Links do menu com padding maior e fundo no hover, facilitando a interação" checked={h.menuItemPadding ?? true} onChange={v => set({ menuItemPadding: v })} />
+
       <NumberSlider label="Altura" value={h.height} onChange={v => set({ height: v })} min={48} max={96} suffix="px" />
 
       <SectionDivider label="Menu de Navegação" />
