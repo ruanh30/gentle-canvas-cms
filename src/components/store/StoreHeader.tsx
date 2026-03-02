@@ -820,7 +820,13 @@ export function StoreHeader() {
 
             {/* Row 2: Navigation (only if not separated) */}
             {!isMenuBarSeparated && (
-              <nav className="hidden lg:flex items-center border-t border-border/30 py-2" style={{ gap: `${h.menuItemGap ?? 4}px` }}>
+              <nav
+                className={cn('hidden lg:flex items-center py-2 border-t', h.menuDividerLine ? '' : 'border-border/30')}
+                style={{
+                  gap: `${h.menuItemGap ?? 4}px`,
+                  ...(h.menuDividerLine ? { borderTopColor: `color-mix(in srgb, ${activeState?.textColor || 'currentColor'} 12%, transparent)` } : {}),
+                }}
+              >
                 {renderNavItems()}
               </nav>
             )}
@@ -867,9 +873,14 @@ export function StoreHeader() {
 
         {/* Centered layout sub-nav */}
         {h.layout === 'centered' && !shrinkActive && !isMenuBarSeparated && (
-          <nav className="hidden lg:flex items-center justify-center pb-3" style={{ gap: `${h.menuItemGap ?? 4}px` }}>
-            {renderNavItems()}
-          </nav>
+          <>
+            {h.menuDividerLine && (
+              <div className="hidden lg:block" style={{ borderTopWidth: '1px', borderTopStyle: 'solid', borderColor: `color-mix(in srgb, ${activeState?.textColor || 'currentColor'} 12%, transparent)`, width: '100%' }} />
+            )}
+            <nav className="hidden lg:flex items-center justify-center pb-3" style={{ gap: `${h.menuItemGap ?? 4}px` }}>
+              {renderNavItems()}
+            </nav>
+          </>
         )}
 
         {!shrinkActive && renderSearchOverlay()}
@@ -888,6 +899,7 @@ export function StoreHeader() {
           style={{
             backgroundColor: menuBar.backgroundColor,
             color: menuBar.textColor,
+            ...(!menuBar.borderTop && h.menuDividerLine ? { borderTopWidth: '1px', borderTopStyle: 'solid' as const, borderTopColor: `color-mix(in srgb, ${activeState?.textColor || menuBar.textColor || 'currentColor'} 12%, transparent)` } : {}),
           }}
         >
           <div style={menuBar.fullWidth ? { width: '100%' } : containerStyle}>

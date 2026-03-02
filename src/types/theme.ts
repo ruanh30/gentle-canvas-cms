@@ -183,6 +183,7 @@ export interface ThemeHeader {
   menuHoverStyle: 'underline' | 'background' | 'both';
   menuItemGap: number;
   menuSeparator: 'none' | 'line' | 'dot' | 'slash';
+  menuDividerLine: boolean;  // subtle horizontal line between logo area and nav area
   iconSize: number;
   iconStrokeWidth: number;
   showSearch: boolean;

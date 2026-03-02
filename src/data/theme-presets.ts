@@ -151,6 +151,7 @@ export const defaultThemeConfig: ThemeConfig = {
     menuHoverStyle: 'underline' as const,
     menuItemGap: 4,
     menuSeparator: 'none' as const,
+    menuDividerLine: false,
     iconSize: 20,
     iconStrokeWidth: 1.5,
     showSearch: true,

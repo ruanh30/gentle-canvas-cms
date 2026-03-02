@@ -1184,6 +1184,10 @@ function MenuStyleSection() {
         ]} />
       </ControlGroup>
 
+      <ControlGroup title="Linha Divisória do Menu" hint="Linha horizontal sutil entre a área do logo/ícones e os links de navegação, dentro do mesmo cabeçalho">
+        <ToggleRow label="Ativar linha divisória" hint="Exibe uma linha fina e sutil separando visualmente o topo (logo + ações) da navegação" checked={h.menuDividerLine ?? false} onChange={v => set({ menuDividerLine: v })} />
+      </ControlGroup>
+
       <ControlGroup title="Barra de Menu Separada" hint="Exibe o menu de navegação em uma barra independente abaixo do cabeçalho, com cor e altura próprias">
         {(() => {
           const mb = h.menuBar ?? { enabled: false, backgroundColor: '#1a1a1a', textColor: '#ffffff', height: 48, fullWidth: true, borderTop: false, borderBottom: false, shadow: 'none' };
