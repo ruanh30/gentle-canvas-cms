@@ -378,25 +378,29 @@ function MenuDesktopModelPreview({ model }: { model: string }) {
   };
 
   return (
-    <div className="border-2 border-dashed border-border/50 rounded-lg p-1">
-      <p className="text-[10px] text-muted-foreground/50 mb-1.5 px-2">Pré-Visualização</p>
-      <div className={cn(
-        'rounded-md bg-background flex items-center justify-around px-6 py-3',
-        model === 'model1' && 'shadow-sm border border-border',
-        model === 'model2' && 'border border-border/50',
-        model === 'model3' && 'shadow-sm border border-border',
-        model === 'model4' && 'border-b-2 border-border',
-      )}>
-        {PREVIEW_ITEMS.map((item, i) => {
-          const style = getItemStyle(item);
-          return (
-            <span key={i} className={cn(style.className, 'text-foreground/80 select-none')}>
-              {model === 'model1' && item.hasIcon && <Home className="h-3.5 w-3.5" />}
-              {style.text}
-              {item.hasSub && <ChevronDown className="h-3 w-3 opacity-50 ml-0.5" />}
-            </span>
-          );
-        })}
+    <div className="mt-4 rounded-xl border border-border/60 bg-muted/20 overflow-hidden">
+      <div className="px-3 py-1.5 border-b border-border/40 bg-muted/30">
+        <p className="text-[10px] font-medium text-muted-foreground/60 uppercase tracking-wider">Pré-Visualização</p>
+      </div>
+      <div className="p-3">
+        <div className={cn(
+          'rounded-lg bg-background flex items-center justify-around px-6 py-3.5',
+          model === 'model1' && 'shadow-sm border border-border',
+          model === 'model2' && 'border border-border/50',
+          model === 'model3' && 'shadow-sm border border-border',
+          model === 'model4' && 'border-b-2 border-border',
+        )}>
+          {PREVIEW_ITEMS.map((item, i) => {
+            const style = getItemStyle(item);
+            return (
+              <span key={i} className={cn(style.className, 'text-foreground/80 select-none')}>
+                {model === 'model1' && item.hasIcon && <Home className="h-3.5 w-3.5" />}
+                {style.text}
+                {item.hasSub && <ChevronDown className="h-3 w-3 opacity-50 ml-0.5" />}
+              </span>
+            );
+          })}
+        </div>
       </div>
     </div>
   );
@@ -441,109 +445,147 @@ function MenuDesktopModelPicker({ value, onChange }: { value: string; onChange: 
 
 function PreviewWrapper({ children, label = 'Pré-Visualização' }: { children: React.ReactNode; label?: string }) {
   return (
-    <div className="border-2 border-dashed border-border/50 rounded-lg p-1 mt-3">
-      <p className="text-[10px] text-muted-foreground/50 mb-1.5 px-2">{label}</p>
-      {children}
+    <div className="mt-4 rounded-xl border border-border/60 bg-muted/20 overflow-hidden">
+      <div className="px-3 py-1.5 border-b border-border/40 bg-muted/30">
+        <p className="text-[10px] font-medium text-muted-foreground/60 uppercase tracking-wider">{label}</p>
+      </div>
+      <div className="p-3">
+        {children}
+      </div>
     </div>
   );
 }
 
 function LayoutPreview({ layout }: { layout: string }) {
-  const logo = <span className="font-bold text-[11px] text-foreground">LOGO</span>;
+  const logoEl = (
+    <div className="flex items-center gap-1.5">
+      <div className="w-5 h-5 rounded bg-foreground/10 flex items-center justify-center">
+        <span className="text-[8px] font-bold text-foreground/60">L</span>
+      </div>
+      <span className="font-bold text-xs text-foreground tracking-tight">MinhaMarca</span>
+    </div>
+  );
+  const navItems = ['Início', 'Novidades', 'Masculino', 'Feminino', 'Sale'];
   const nav = (
-    <div className="flex items-center gap-3">
-      <span className="text-[10px] text-muted-foreground">Início</span>
-      <span className="text-[10px] text-muted-foreground">Produtos</span>
-      <span className="text-[10px] text-muted-foreground">Promoções</span>
+    <div className="flex items-center gap-4">
+      {navItems.map((item, i) => (
+        <span key={i} className={cn(
+          'text-[11px] font-medium',
+          i === 0 ? 'text-foreground' : 'text-muted-foreground'
+        )}>
+          {item}
+          {(i === 2 || i === 3) && <ChevronDown className="inline h-2.5 w-2.5 ml-0.5 opacity-40" />}
+        </span>
+      ))}
     </div>
   );
   const icons = (
-    <div className="flex items-center gap-1.5">
-      <Search className="h-3 w-3 text-muted-foreground" />
-      <User className="h-3 w-3 text-muted-foreground" />
-      <ShoppingBag className="h-3 w-3 text-muted-foreground" />
+    <div className="flex items-center gap-2">
+      <Search className="h-3.5 w-3.5 text-muted-foreground" />
+      <User className="h-3.5 w-3.5 text-muted-foreground" />
+      <div className="relative">
+        <ShoppingBag className="h-3.5 w-3.5 text-muted-foreground" />
+        <span className="absolute -top-1 -right-1 bg-foreground text-background text-[7px] font-bold rounded-full h-3 w-3 flex items-center justify-center">2</span>
+      </div>
     </div>
   );
-  const hamburger = <Menu className="h-3.5 w-3.5 text-muted-foreground" />;
+  const searchBar = (
+    <div className="flex items-center gap-1.5 bg-muted/60 rounded-md px-2.5 py-1 min-w-[120px]">
+      <Search className="h-3 w-3 text-muted-foreground/60" />
+      <span className="text-[10px] text-muted-foreground/50">Buscar produtos...</span>
+    </div>
+  );
+  const hamburger = (
+    <div className="flex flex-col gap-[2px]">
+      <div className="w-3.5 h-[2px] bg-foreground/70 rounded-full" />
+      <div className="w-3.5 h-[2px] bg-foreground/70 rounded-full" />
+      <div className="w-2.5 h-[2px] bg-foreground/70 rounded-full" />
+    </div>
+  );
 
   const renderLayout = () => {
     switch (layout) {
       case 'centered':
         return (
-          <div className="space-y-1">
-            <div className="flex items-center justify-center relative py-1.5">
-              <div className="absolute left-3">{icons}</div>
-              {logo}
+          <>
+            <div className="flex items-center justify-center relative py-2.5 px-4">
+              <div className="absolute left-4">{icons}</div>
+              {logoEl}
             </div>
-            <div className="flex items-center justify-center gap-4 pb-1 border-t border-border/30 pt-1">
-              {nav}
+            <div className="flex items-center justify-center gap-5 pb-2 border-t border-border/30 pt-2 px-4">
+              {navItems.map((item, i) => (
+                <span key={i} className={cn('text-[11px] font-medium', i === 0 ? 'text-foreground' : 'text-muted-foreground')}>
+                  {item}
+                </span>
+              ))}
             </div>
-          </div>
+          </>
         );
       case 'minimal':
         return (
-          <div className="flex items-center justify-between px-3 py-2">
-            {logo}
+          <div className="flex items-center justify-between px-4 py-2.5">
+            {logoEl}
             {icons}
           </div>
         );
       case 'logo-center-nav-left':
         return (
-          <div className="flex items-center justify-between px-3 py-2">
+          <div className="flex items-center justify-between px-4 py-2.5 relative">
             {nav}
-            {logo}
+            <div className="absolute left-1/2 -translate-x-1/2">{logoEl}</div>
             {icons}
           </div>
         );
       case 'hamburger-only':
         return (
-          <div className="flex items-center justify-between px-3 py-2">
-            <div className="flex items-center gap-2">{hamburger}{logo}</div>
+          <div className="flex items-center justify-between px-4 py-2.5">
+            <div className="flex items-center gap-3">{hamburger}{logoEl}</div>
             {icons}
           </div>
         );
       case 'top-bar-split':
         return (
-          <div className="flex items-center justify-between px-3 py-2">
-            <div className="flex items-center gap-4">{logo}{nav}</div>
+          <div className="flex items-center justify-between px-4 py-2.5">
+            <div className="flex items-center gap-5">{logoEl}{nav}</div>
             {icons}
           </div>
         );
       case 'double-row':
         return (
-          <div className="space-y-1">
-            <div className="flex items-center justify-between px-3 py-1.5">
-              {logo}
-              <div className="flex items-center gap-1.5 bg-muted/50 rounded px-2 py-0.5">
-                <Search className="h-2.5 w-2.5 text-muted-foreground" />
-                <span className="text-[9px] text-muted-foreground">Buscar...</span>
-              </div>
+          <>
+            <div className="flex items-center justify-between px-4 py-2">
+              {logoEl}
+              {searchBar}
               {icons}
             </div>
-            <div className="flex items-center justify-center gap-4 pb-1 border-t border-border/30 pt-1">
-              {nav}
+            <div className="flex items-center justify-center gap-5 pb-2 border-t border-border/30 pt-2 px-4">
+              {navItems.map((item, i) => (
+                <span key={i} className={cn('text-[11px] font-medium', i === 0 ? 'text-foreground' : 'text-muted-foreground')}>
+                  {item}
+                </span>
+              ))}
             </div>
-          </div>
+          </>
         );
       case 'sidebar-nav':
         return (
-          <div className="flex items-center justify-between px-3 py-2">
-            <div className="flex items-center gap-2">{hamburger}{logo}</div>
+          <div className="flex items-center justify-between px-4 py-2.5">
+            <div className="flex items-center gap-3">{hamburger}{logoEl}</div>
             {icons}
           </div>
         );
       case 'transparent':
         return (
-          <div className="flex items-center justify-between px-3 py-2 bg-gradient-to-b from-foreground/5 to-transparent">
-            {logo}
+          <div className="flex items-center justify-between px-4 py-2.5 bg-gradient-to-b from-foreground/5 to-transparent">
+            {logoEl}
             {nav}
             {icons}
           </div>
         );
-      default: // classic
+      default:
         return (
-          <div className="flex items-center justify-between px-3 py-2">
-            {logo}
+          <div className="flex items-center justify-between px-4 py-2.5">
+            {logoEl}
             {nav}
             {icons}
           </div>
@@ -553,8 +595,13 @@ function LayoutPreview({ layout }: { layout: string }) {
 
   return (
     <PreviewWrapper>
-      <div className="rounded-md bg-background border border-border overflow-hidden">
+      <div className="rounded-lg bg-background border border-border shadow-sm overflow-hidden relative">
         {renderLayout()}
+      </div>
+      <div className="mt-1.5 rounded-b-lg bg-muted/30 px-4 py-2 space-y-1.5">
+        <div className="h-2 bg-muted/60 rounded w-2/3" />
+        <div className="h-2 bg-muted/60 rounded w-1/2" />
+        <div className="h-2 bg-muted/60 rounded w-3/4" />
       </div>
     </PreviewWrapper>
   );
@@ -563,30 +610,54 @@ function LayoutPreview({ layout }: { layout: string }) {
 function BehaviorPreview({ sticky, shrinkOnScroll, shadowOnScroll, borderBottom, height }: {
   sticky: boolean; shrinkOnScroll: boolean; shadowOnScroll: boolean; borderBottom: boolean; height: number;
 }) {
+  const normalH = 36;
+  const shrunkH = shrinkOnScroll ? 26 : normalH;
+
   return (
     <PreviewWrapper>
-      <div className="rounded-md bg-muted/30 overflow-hidden h-24 relative">
-        <div className={cn(
-          'bg-background px-3 py-1.5 flex items-center justify-between transition-all',
-          borderBottom && 'border-b border-border',
-          shadowOnScroll && 'shadow-md',
-          sticky && 'sticky top-0 z-10',
-        )} style={{ height: Math.min(height * 0.5, 32) }}>
-          <span className="font-bold text-[10px] text-foreground">LOGO</span>
-          <div className="flex gap-2 text-[9px] text-muted-foreground">
-            <span>Menu</span>
-            <Search className="h-2.5 w-2.5" />
+      <div className="rounded-lg bg-muted/20 border border-border/40 overflow-hidden">
+        <div className="grid grid-cols-2 gap-0 divide-x divide-border/40">
+          <div>
+            <p className="text-[9px] text-muted-foreground/50 text-center py-1 bg-muted/30 font-medium uppercase tracking-wider">Topo da página</p>
+            <div className={cn(
+              'bg-background px-3 flex items-center justify-between',
+              borderBottom && 'border-b border-border',
+            )} style={{ height: normalH }}>
+              <span className="font-bold text-[10px] text-foreground">LOGO</span>
+              <div className="flex gap-1.5 items-center">
+                <span className="text-[9px] text-muted-foreground">Menu</span>
+                <Search className="h-3 w-3 text-muted-foreground" />
+              </div>
+            </div>
+            <div className="px-3 py-2 space-y-1.5">
+              <div className="h-1.5 bg-muted/40 rounded w-4/5" />
+              <div className="h-1.5 bg-muted/40 rounded w-3/5" />
+            </div>
           </div>
-        </div>
-        <div className="px-3 pt-2 space-y-1.5">
-          <div className="h-1.5 bg-muted rounded w-3/4" />
-          <div className="h-1.5 bg-muted rounded w-1/2" />
-          <div className="h-1.5 bg-muted rounded w-2/3" />
-        </div>
-        <div className="absolute bottom-1 right-2 flex gap-1">
-          {sticky && <span className="text-[8px] bg-primary/10 text-primary px-1 rounded">fixo</span>}
-          {shrinkOnScroll && <span className="text-[8px] bg-primary/10 text-primary px-1 rounded">encolhe</span>}
-          {shadowOnScroll && <span className="text-[8px] bg-primary/10 text-primary px-1 rounded">sombra</span>}
+          <div>
+            <p className="text-[9px] text-muted-foreground/50 text-center py-1 bg-muted/30 font-medium uppercase tracking-wider">Ao rolar ↓</p>
+            <div className={cn(
+              'bg-background px-3 flex items-center justify-between transition-all',
+              borderBottom && 'border-b border-border',
+              shadowOnScroll && 'shadow-md',
+              !sticky && 'opacity-20',
+            )} style={{ height: shrunkH }}>
+              <span className={cn('font-bold text-foreground', shrinkOnScroll ? 'text-[9px]' : 'text-[10px]')}>LOGO</span>
+              <div className="flex gap-1.5 items-center">
+                <span className={cn('text-muted-foreground', shrinkOnScroll ? 'text-[8px]' : 'text-[9px]')}>Menu</span>
+                <Search className={cn('text-muted-foreground', shrinkOnScroll ? 'h-2.5 w-2.5' : 'h-3 w-3')} />
+              </div>
+            </div>
+            {!sticky && (
+              <div className="flex items-center justify-center py-2">
+                <span className="text-[10px] text-muted-foreground/60 bg-muted/50 px-2 py-0.5 rounded">Header desaparece</span>
+              </div>
+            )}
+            <div className="px-3 py-2 space-y-1.5">
+              <div className="h-1.5 bg-muted/40 rounded w-4/5" />
+              <div className="h-1.5 bg-muted/40 rounded w-3/5" />
+            </div>
+          </div>
         </div>
       </div>
     </PreviewWrapper>
@@ -597,33 +668,55 @@ function MenuStylePreview({ menuStyle, menuFontSize, menuUppercase }: {
   menuStyle: string; menuFontSize: number; menuUppercase: boolean;
 }) {
   const items = ['Início', 'Produtos', 'Masculino', 'Feminino'];
-  const fontSize = Math.max(10, Math.min(menuFontSize * 0.85, 14));
+  const fontSize = Math.max(10, Math.min(menuFontSize * 0.9, 14));
   const transform = menuUppercase ? 'uppercase' as const : 'none' as const;
+  
+  const logoSmall = (
+    <div className="flex items-center gap-1.5">
+      <div className="w-4 h-4 rounded bg-foreground/10" />
+      <span className="font-bold text-[10px] text-foreground">LOGO</span>
+    </div>
+  );
+  const iconsSmall = (
+    <div className="flex gap-1.5">
+      <Search className="h-3.5 w-3.5 text-muted-foreground" />
+      <ShoppingBag className="h-3.5 w-3.5 text-muted-foreground" />
+    </div>
+  );
 
   if (menuStyle === 'mega-menu') {
     return (
       <PreviewWrapper>
-        <div className="rounded-md bg-background border border-border overflow-hidden">
-          <div className="flex items-center gap-4 px-4 py-2">
-            {items.map((item, i) => (
-              <span key={i} className="text-muted-foreground font-medium" style={{ fontSize, textTransform: transform }}>
-                {item} {i > 1 && <ChevronDown className="inline h-2.5 w-2.5 opacity-50" />}
-              </span>
-            ))}
+        <div className="rounded-lg bg-background border border-border shadow-sm overflow-hidden">
+          <div className="flex items-center justify-between px-4 py-2.5 border-b border-border/50">
+            {logoSmall}
+            <div className="flex items-center gap-4">
+              {items.map((item, i) => (
+                <span key={i} className={cn(
+                  'font-medium',
+                  i === 2 ? 'text-foreground border-b-2 border-foreground pb-0.5' : 'text-muted-foreground'
+                )} style={{ fontSize, textTransform: transform }}>
+                  {item}
+                  {i > 1 && <ChevronDown className="inline h-2.5 w-2.5 ml-0.5 opacity-40" />}
+                </span>
+              ))}
+            </div>
+            {iconsSmall}
           </div>
-          <div className="border-t border-border bg-muted/20 px-4 py-3 grid grid-cols-3 gap-3">
-            <div className="space-y-1">
-              <p className="text-[10px] font-bold text-foreground">Categoria</p>
-              <p className="text-[9px] text-muted-foreground">Subcategoria 1</p>
-              <p className="text-[9px] text-muted-foreground">Subcategoria 2</p>
-            </div>
-            <div className="space-y-1">
-              <p className="text-[10px] font-bold text-foreground">Categoria</p>
-              <p className="text-[9px] text-muted-foreground">Subcategoria 1</p>
-              <p className="text-[9px] text-muted-foreground">Subcategoria 2</p>
-            </div>
-            <div className="bg-muted/50 rounded h-12 flex items-center justify-center">
-              <span className="text-[9px] text-muted-foreground">Banner</span>
+          <div className="bg-muted/10 px-5 py-4 grid grid-cols-4 gap-4 border-b border-border/30">
+            {['Camisetas', 'Calças', 'Acessórios'].map((cat, i) => (
+              <div key={i} className="space-y-1.5">
+                <p className="text-[11px] font-bold text-foreground">{cat}</p>
+                <p className="text-[10px] text-muted-foreground/70">Slim Fit</p>
+                <p className="text-[10px] text-muted-foreground/70">Regular</p>
+                <p className="text-[10px] text-muted-foreground/70">Oversized</p>
+              </div>
+            ))}
+            <div className="bg-muted/40 rounded-md flex items-center justify-center">
+              <div className="text-center">
+                <ImageIcon className="h-4 w-4 text-muted-foreground/30 mx-auto mb-1" />
+                <span className="text-[9px] text-muted-foreground/40">Banner</span>
+              </div>
             </div>
           </div>
         </div>
@@ -634,34 +727,54 @@ function MenuStylePreview({ menuStyle, menuFontSize, menuUppercase }: {
   if (menuStyle === 'dropdown') {
     return (
       <PreviewWrapper>
-        <div className="rounded-md bg-background border border-border overflow-hidden relative">
-          <div className="flex items-center gap-4 px-4 py-2">
-            {items.map((item, i) => (
-              <span key={i} className={cn('font-medium', i === 2 ? 'text-foreground' : 'text-muted-foreground')} style={{ fontSize, textTransform: transform }}>
-                {item} {i > 1 && <ChevronDown className="inline h-2.5 w-2.5 opacity-50" />}
-              </span>
-            ))}
+        <div className="rounded-lg bg-background border border-border shadow-sm overflow-hidden">
+          <div className="flex items-center justify-between px-4 py-2.5">
+            {logoSmall}
+            <div className="flex items-center gap-4">
+              {items.map((item, i) => (
+                <span key={i} className={cn(
+                  'font-medium',
+                  i === 2 ? 'text-foreground' : 'text-muted-foreground'
+                )} style={{ fontSize, textTransform: transform }}>
+                  {item}
+                  {i > 1 && <ChevronDown className="inline h-2.5 w-2.5 ml-0.5 opacity-40" />}
+                </span>
+              ))}
+            </div>
+            {iconsSmall}
           </div>
-          <div className="absolute left-[45%] top-full -mt-0.5 w-28 bg-background border border-border rounded-md shadow-lg py-1 z-10">
-            <p className="text-[9px] text-muted-foreground px-2.5 py-1 hover:bg-muted">Camisetas</p>
-            <p className="text-[9px] text-muted-foreground px-2.5 py-1 hover:bg-muted">Calças</p>
-            <p className="text-[9px] text-muted-foreground px-2.5 py-1 hover:bg-muted">Acessórios</p>
+          <div className="px-4 pb-3 flex justify-center">
+            <div className="w-32 bg-background border border-border rounded-lg shadow-lg py-1.5 ml-16">
+              {['Camisetas', 'Calças', 'Acessórios', 'Bermudas'].map((sub, i) => (
+                <p key={i} className={cn(
+                  'text-[10px] px-3 py-1.5',
+                  i === 0 ? 'bg-muted/50 text-foreground font-medium' : 'text-muted-foreground'
+                )}>{sub}</p>
+              ))}
+            </div>
           </div>
-          <div className="h-10" />
         </div>
       </PreviewWrapper>
     );
   }
 
-  // horizontal
   return (
     <PreviewWrapper>
-      <div className="rounded-md bg-background border border-border px-4 py-2 flex items-center gap-4">
-        {items.map((item, i) => (
-          <span key={i} className="text-muted-foreground font-medium" style={{ fontSize, textTransform: transform }}>
-            {item}
-          </span>
-        ))}
+      <div className="rounded-lg bg-background border border-border shadow-sm overflow-hidden">
+        <div className="flex items-center justify-between px-4 py-2.5">
+          {logoSmall}
+          <div className="flex items-center gap-4">
+            {items.map((item, i) => (
+              <span key={i} className={cn(
+                'font-medium',
+                i === 0 ? 'text-foreground' : 'text-muted-foreground'
+              )} style={{ fontSize, textTransform: transform }}>
+                {item}
+              </span>
+            ))}
+          </div>
+          {iconsSmall}
+        </div>
       </div>
     </PreviewWrapper>
   );
@@ -670,29 +783,40 @@ function MenuStylePreview({ menuStyle, menuFontSize, menuUppercase }: {
 function IconsPreview({ iconSize, showSearch, showAccount, showWishlist, showCart, cartBadgeStyle }: {
   iconSize: number; showSearch: boolean; showAccount: boolean; showWishlist: boolean; showCart: boolean; cartBadgeStyle: string;
 }) {
-  const sz = Math.max(12, Math.min(iconSize * 0.7, 20));
+  const sz = Math.max(14, Math.min(iconSize * 0.8, 22));
   return (
     <PreviewWrapper>
-      <div className="rounded-md bg-background border border-border px-4 py-3 flex items-center justify-between">
-        <span className="font-bold text-[11px] text-foreground">LOGO</span>
-        <div className="flex items-center gap-2.5">
-          {showSearch && <Search style={{ width: sz, height: sz }} className="text-muted-foreground" />}
-          {showWishlist && <Heart style={{ width: sz, height: sz }} className="text-muted-foreground" />}
-          {showAccount && <User style={{ width: sz, height: sz }} className="text-muted-foreground" />}
-          {showCart && (
-            <div className="relative">
-              <ShoppingBag style={{ width: sz, height: sz }} className="text-muted-foreground" />
-              {cartBadgeStyle === 'count' && (
-                <span className="absolute -top-1.5 -right-1.5 bg-foreground text-background text-[7px] font-bold rounded-full h-3.5 w-3.5 flex items-center justify-center">3</span>
-              )}
-              {cartBadgeStyle === 'dot' && (
-                <span className="absolute -top-0.5 -right-0.5 bg-foreground rounded-full h-1.5 w-1.5" />
-              )}
+      <div className="rounded-lg bg-background border border-border shadow-sm overflow-hidden">
+        <div className="flex items-center justify-between px-5 py-3">
+          <div className="flex items-center gap-1.5">
+            <div className="w-5 h-5 rounded bg-foreground/10 flex items-center justify-center">
+              <span className="text-[8px] font-bold text-foreground/60">L</span>
             </div>
-          )}
-          {!showSearch && !showAccount && !showWishlist && !showCart && (
-            <span className="text-[10px] text-muted-foreground/50 italic">Nenhum ícone visível</span>
-          )}
+            <span className="font-bold text-xs text-foreground">MinhaMarca</span>
+          </div>
+          <div className="flex items-center gap-3 text-[11px] text-muted-foreground">
+            <span>Início</span>
+            <span>Produtos</span>
+          </div>
+          <div className="flex items-center gap-3 bg-primary/5 border border-primary/20 rounded-lg px-3 py-1.5">
+            {showSearch && <Search style={{ width: sz, height: sz }} className="text-foreground" />}
+            {showWishlist && <Heart style={{ width: sz, height: sz }} className="text-foreground" />}
+            {showAccount && <User style={{ width: sz, height: sz }} className="text-foreground" />}
+            {showCart && (
+              <div className="relative">
+                <ShoppingBag style={{ width: sz, height: sz }} className="text-foreground" />
+                {cartBadgeStyle === 'count' && (
+                  <span className="absolute -top-1.5 -right-2 bg-foreground text-background text-[8px] font-bold rounded-full h-4 w-4 flex items-center justify-center">3</span>
+                )}
+                {cartBadgeStyle === 'dot' && (
+                  <span className="absolute -top-0.5 -right-0.5 bg-primary rounded-full h-2 w-2" />
+                )}
+              </div>
+            )}
+            {!showSearch && !showAccount && !showWishlist && !showCart && (
+              <span className="text-[10px] text-muted-foreground/50 italic px-2">Nenhum ícone</span>
+            )}
+          </div>
         </div>
       </div>
     </PreviewWrapper>
