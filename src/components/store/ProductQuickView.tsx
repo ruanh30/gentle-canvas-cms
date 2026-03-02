@@ -285,6 +285,27 @@ function QuickViewVariants({ product, qv, quantities, onUpdateQty }: {
           </div>
         );
       })}
+      {/* Quantity stepper */}
+      <div>
+        <p className="text-xs font-semibold text-foreground uppercase tracking-wider mb-2">Quantidade</p>
+        <div className="flex items-center border border-border/60 rounded-lg w-fit">
+          <button
+            onClick={() => onUpdateQty('_single', -1)}
+            className="w-9 h-9 grid place-items-center hover:bg-muted transition-colors"
+          >
+            <Minus className="h-3.5 w-3.5" />
+          </button>
+          <span className="w-10 text-center text-sm font-semibold tabular-nums">
+            {quantities['_single'] || 1}
+          </span>
+          <button
+            onClick={() => onUpdateQty('_single', 1)}
+            className="w-9 h-9 grid place-items-center hover:bg-muted transition-colors"
+          >
+            <Plus className="h-3.5 w-3.5" />
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
