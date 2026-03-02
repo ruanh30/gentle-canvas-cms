@@ -85,10 +85,7 @@ function BuyButton({ label, btnStyle, color, hoverColor, sideBySide, onClick, bu
   const isGradient = btnStyle === 'gradient';
   const BuyIcon = iconMap[buyNowIcon || ''] || Zap;
 
-  const btnDimensions = {
-    padding: `${b?.paddingY ?? 10}px ${b?.paddingX ?? 16}px`,
-    fontSize: `${b?.fontSize ?? 14}px`,
-    fontWeight: b?.fontWeight ?? 600,
+  const btnColors: React.CSSProperties = {
     textTransform: (b?.uppercase ? 'uppercase' : 'none') as React.CSSProperties['textTransform'],
   };
 
@@ -100,7 +97,7 @@ function BuyButton({ label, btnStyle, color, hoverColor, sideBySide, onClick, bu
         btnStyleMap[btnStyle] || 'rounded-md',
       )}
       style={{
-        ...btnDimensions,
+        ...btnColors,
         ...(isOutline
           ? { border: `2px solid ${color}`, color, backgroundColor: 'transparent' }
           : isUnderline
@@ -126,10 +123,7 @@ function CartButton({ label, btnStyle, sideBySide, compact, onClick, cartIcon }:
   const isGradient = btnStyle === 'gradient';
   const CartIcon = iconMap[cartIcon || ''] || ShoppingBag;
 
-  const btnDimensions: React.CSSProperties = {
-    padding: `${b?.paddingY ?? 10}px ${b?.paddingX ?? 16}px`,
-    fontSize: `${b?.fontSize ?? 14}px`,
-    fontWeight: b?.fontWeight ?? 600,
+  const btnColors: React.CSSProperties = {
     textTransform: b?.uppercase ? 'uppercase' : 'none',
   };
 
@@ -144,7 +138,7 @@ function CartButton({ label, btnStyle, sideBySide, compact, onClick, cartIcon }:
         isGradient && 'bg-gradient-to-r from-foreground/90 to-foreground text-background',
         !isOutline && !isUnderline && !isGradient && 'bg-foreground text-background',
       )}
-      style={btnDimensions}
+      style={btnColors}
     >
       <CartIcon className="h-3.5 w-3.5 mr-1.5 shrink-0" />
       <span className="truncate">{label}</span>
