@@ -362,7 +362,7 @@ export function ThemeProvider({
     return () => clearTimeout(timer);
   }, [draft, isInertiaMode]);
 
-  const activeTheme = isPreviewMode && previewTheme ? previewTheme : published;
+  const activeTheme = isPreviewMode && previewTheme ? previewTheme : draft;
 
   // Check if we're on an admin route — if so, don't apply theme CSS to the root
   // to prevent storefront colors from leaking into the editor UI
