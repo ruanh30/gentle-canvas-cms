@@ -112,7 +112,7 @@ export interface ThemeHeader {
   menuFontSize: number;
   menuUppercase: boolean;
   menuLetterSpacing: number;
-  menuDesktopModel: 'model1' | 'model2' | 'model3' | 'model4';
+  
   iconSize: number;
   showSearch: boolean;
   searchStyle: 'inline' | 'modal' | 'drawer';

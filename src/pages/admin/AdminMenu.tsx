@@ -864,12 +864,6 @@ function HeaderTab() {
         <BehaviorPreview sticky={h.sticky} shrinkOnScroll={h.shrinkOnScroll} shadowOnScroll={h.shadowOnScroll} borderBottom={h.borderBottom} height={h.height} />
       </div>
 
-      {/* Desktop Menu Model */}
-      <div className="border border-border rounded-lg bg-card p-4 space-y-4">
-        <SectionLabel>Modelo do Menu Desktop</SectionLabel>
-        <p className="text-[11px] text-muted-foreground -mt-2">Escolha o estilo visual da barra de navegação principal.</p>
-        <MenuDesktopModelPicker value={h.menuDesktopModel || 'model1'} onChange={v => set({ menuDesktopModel: v })} />
-      </div>
 
       {/* Navigation style */}
       <div className="border border-border rounded-lg bg-card p-4 space-y-3">
