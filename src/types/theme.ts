@@ -545,29 +545,67 @@ export interface ThemeAccessibility {
 
 export interface ThemeQuickView {
   enabled: boolean;
+
+  // Tab 1 — Modelo
+  model: 'drawer-right' | 'drawer-left' | 'modal-center' | 'bottom-sheet';
+  drawerWidth: number;        // 420–520 for drawers
+  modalWidth: number;         // 720–920 for modal
+  overlayOpacity: number;     // 0.35–0.65
+  overlayBlur: 'off' | 'low' | 'medium';
+
+  // Tab 2 — Estrutura
+  showRating: boolean;
+  showShare: boolean;
+  showSKU: boolean;
+  showInstallments: boolean;
+  showViewProduct: boolean;
+  showShipping: boolean;
+  showDescription: boolean;
+  showSizeGuide: boolean;
+
+  // Tab 3 — Galeria
+  galleryThumbsLayout: 'left' | 'bottom' | 'hidden';
+  galleryMaxHeight: '45vh' | '55vh' | '60vh';
+  galleryShowArrows: boolean;
+  galleryZoom: 'off' | 'basic';
+  galleryFit: 'contain' | 'cover';
+
+  // Tab 4 — Variações
+  variationStyle: 'chips' | 'list-compact' | 'dropdown';
+  showStock: boolean;
+  allowMultiVariant: boolean;
+  stepperStyle: 'compact' | 'default';
+
+  // Tab 5 — CTAs
+  ctaText: string;
+  ctaSecondaryText: string;
+  showSecondaryCta: boolean;
+  ctaSize: 'normal' | 'large';
+
+  // Tab 6 — Aparência
+  containerRadius: 'sm' | 'md' | 'lg';
+  containerShadow: 'sm' | 'md';
+  containerBorder: boolean;
+  containerPadding: 16 | 20 | 24;
+  sectionSpacing: 12 | 16 | 20;
+
+  // Tab 7 — Animação
+  animationType: 'slide' | 'fade' | 'none';
+  animationDuration: number; // 150–300ms
+
+  // Legacy compat
   style: 'modal' | 'drawer' | 'side-panel';
   showGalleryThumbs: boolean;
   showVariations: boolean;
-  variationStyle: 'list' | 'buttons' | 'swatches';
   showQuantityPerVariation: boolean;
-  showDescription: boolean;
   descriptionStyle: 'inline' | 'accordion';
-  showShippingEstimate: boolean;
   showSocialActions: boolean;
-  socialActions: {
-    
-    chat: boolean;
-    share: boolean;
-    whatsapp: boolean;
-  };
+  socialActions: { chat: boolean; share: boolean; whatsapp: boolean };
   showRelatedProducts: boolean;
   relatedTitle: string;
   relatedCount: number;
   showTags: boolean;
   showSalesCount: boolean;
-  showSKU: boolean;
-  showRating: boolean;
-  ctaText: string;
   ctaStyle: 'filled' | 'outline';
   showBuyNow: boolean;
   buyNowText: string;
