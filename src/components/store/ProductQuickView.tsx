@@ -318,10 +318,10 @@ function AccordionSection({ icon: Icon, title, children, defaultOpen = false }: 
 /* ================================================================== */
 /*  QuickViewShipping                                                  */
 /* ================================================================== */
-function QuickViewShipping() {
+function QuickViewShipping({ defaultOpen = false }: { defaultOpen?: boolean }) {
   const [cep, setCep] = useState('');
   return (
-    <AccordionSection icon={Truck} title="Calcular Frete">
+    <AccordionSection icon={Truck} title="Calcular Frete" defaultOpen={defaultOpen}>
       <div className="flex items-center h-10 rounded-lg border border-border/60 overflow-hidden bg-background focus-within:ring-2 focus-within:ring-ring/25 transition-shadow">
         <div className="pl-3 pr-1 text-muted-foreground">
           <MapPin className="h-4 w-4" />
@@ -345,10 +345,10 @@ function QuickViewShipping() {
 /* ================================================================== */
 /*  QuickViewDescription                                               */
 /* ================================================================== */
-function QuickViewDescription({ product }: { product: Product }) {
+function QuickViewDescription({ product, defaultOpen = false }: { product: Product; defaultOpen?: boolean }) {
   if (!product.description) return null;
   return (
-    <AccordionSection icon={Package} title="Descrição do Produto">
+    <AccordionSection icon={Package} title="Descrição do Produto" defaultOpen={defaultOpen}>
       <p className="text-sm text-muted-foreground leading-relaxed">
         {product.description}
       </p>
@@ -545,8 +545,8 @@ export function ProductQuickView({ product, open, onClose }: QuickViewProps) {
                 <QuickViewVariants product={product} qv={qv} quantities={quantities} onUpdateQty={updateQty} />
               </div>
             )}
-            {qv?.showShipping !== false && <QuickViewShipping />}
-            {qv?.showDescription !== false && <QuickViewDescription product={product} />}
+            {qv?.showShipping !== false && <QuickViewShipping defaultOpen />}
+            {qv?.showDescription !== false && <QuickViewDescription product={product} defaultOpen />}
             {qv?.showSizeGuide && (
               <AccordionSection icon={Ruler} title="Tabela de Medidas">
                 <p className="text-sm text-muted-foreground">Consulte a tabela de medidas.</p>
