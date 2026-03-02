@@ -870,8 +870,8 @@ export function StoreHeader() {
           className="hidden lg:block"
           style={{
             ...(h.menuDividerLine
-              ? { borderTopWidth: '1px', borderTopStyle: 'solid' as const, borderTopColor: `color-mix(in srgb, ${activeState?.textColor || 'currentColor'} 12%, transparent)` }
-              : { borderTopWidth: '1px', borderTopStyle: 'solid' as const, borderTopColor: 'transparent' }
+              ? { boxShadow: '0 -1px 3px 0 rgba(0,0,0,0.06)' }
+              : {}
             ),
           }}
         >
@@ -892,7 +892,7 @@ export function StoreHeader() {
           className="hidden lg:block"
           style={{
             ...(h.menuDividerLine
-              ? { borderTopWidth: '1px', borderTopStyle: 'solid' as const, borderTopColor: `color-mix(in srgb, ${activeState?.textColor || 'currentColor'} 12%, transparent)` }
+              ? { boxShadow: '0 -1px 3px 0 rgba(0,0,0,0.06)' }
               : {}
             ),
           }}
