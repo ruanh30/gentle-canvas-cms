@@ -1,6 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { ShoppingBag, Search, User, Menu, Heart, ShoppingCart, Plus, PackagePlus, Store, ChevronDown, ChevronLeft, type LucideIcon } from 'lucide-react';
+import {
+  ShoppingBag, Search, User, Menu, Heart, ShoppingCart, Plus, PackagePlus, Store,
+  ChevronDown, ChevronLeft, type LucideIcon,
+  ScanSearch, SearchCheck, SearchCode, Telescope, Focus, ScanLine, Radar, ListFilter, Filter,
+  UserRound, UserCircle, UserCircle2, UserCheck, UserCog, CircleUser, Contact, BadgeCheck, Fingerprint, LogIn,
+  Package, Briefcase, HandCoins, Wallet, CreditCard, Receipt, Gem, Gift,
+} from 'lucide-react';
 import { useCart } from '@/contexts/CartContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -155,8 +161,17 @@ function BannerBelow() {
 }
 
 /* ================================================================== */
-/*  INLINE SEARCH FIELD — adaptive, always premium                      */
+/*  ICON MAP — resolves icon choices from admin                         */
 /* ================================================================== */
+
+const ICON_MAP: Record<string, LucideIcon> = {
+  Search, SearchIcon: Search, ScanSearch, SearchCheck, SearchCode, Telescope, Focus, ScanLine, Radar, ListFilter, Filter,
+  User, UserRound, UserCircle, UserCircle2, CircleUser, UserCheck, UserCog, Contact, BadgeCheck, Fingerprint, LogIn,
+  ShoppingBag, ShoppingCart, Store, Package, PackagePlus, Briefcase, HandCoins, Wallet, CreditCard, Receipt, Gem, Gift, Plus,
+};
+
+/* ================================================================== */
+/*  INLINE SEARCH FIELD — adaptive, always premium                      */
 
 function InlineSearchField({ placeholder, headerBg, headerText, className }: {
   placeholder: string;
@@ -400,11 +415,16 @@ export function StoreHeader() {
   const { theme } = useTheme();
   const [searchOpen, setSearchOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const CartIconComponent = headerCartIconMap[theme.productCard?.addToCartIcon || ''] || ShoppingBag;
 
   const mm = theme.megaMenu;
   const hasCustomMenu = mm && mm.items && mm.items.length > 0;
   const h = theme.header ?? {} as any;
+
+  // Resolve dynamic icons from admin config
+  const SearchIconComp = ICON_MAP[h.searchIcon || 'Search'] || Search;
+  const AccountIconComp = ICON_MAP[h.accountIcon || 'User'] || User;
+  const CartIconComponent = ICON_MAP[h.cartIcon || 'ShoppingBag'] || (headerCartIconMap[theme.productCard?.addToCartIcon || ''] || ShoppingBag);
+
   const isMinimal = h.layout === 'minimal' || h.layout === 'hamburger-only';
   const isCentered = h.layout === 'centered' || h.layout === 'logo-center-nav-left';
   const isDoubleRow = h.layout === 'double-row';
@@ -547,11 +567,13 @@ export function StoreHeader() {
     const elevated = h.dropdownElevated ?? true;
     const padded = h.menuItemPadding ?? true;
     const hoverStyle = h.menuHoverStyle || 'underline';
+    const mc = h.menuColors ?? {};
     const itemStyle: React.CSSProperties = {
       fontSize: h.menuFontSize,
       fontWeight: h.menuFontWeight || 500,
       textTransform: h.menuUppercase ? 'uppercase' : 'none',
       letterSpacing: `${h.menuLetterSpacing}em`,
+      ...(mc.linkColor ? { color: mc.linkColor } : {}),
     };
     const itemClass = cn(
       'text-muted-foreground hover:text-foreground transition-all duration-150',
@@ -644,7 +666,7 @@ export function StoreHeader() {
       <div className={cn('flex items-center gap-1', isCentered && !forMobile && 'absolute right-0')}>
         {h.showSearch && h.searchStyle !== 'inline' && (!forMobile || searchConfig.showOnMobile) && (
           <Button variant="ghost" size="icon" className="h-10 w-10" onClick={handleSearchClick}>
-            <Search style={iconStyle} strokeWidth={sw} />
+            <SearchIconComp style={iconStyle} strokeWidth={sw} />
           </Button>
         )}
         {h.showWishlist && (
@@ -655,7 +677,7 @@ export function StoreHeader() {
         {h.showAccount && (
           <Link to={user ? '/account' : '/login'}>
             <Button variant="ghost" size="icon" className="h-10 w-10">
-              <User style={iconStyle} strokeWidth={sw} />
+              <AccountIconComp style={iconStyle} strokeWidth={sw} />
             </Button>
           </Link>
         )}

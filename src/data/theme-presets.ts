@@ -149,6 +149,10 @@ export const defaultThemeConfig: ThemeConfig = {
     showCart: true,
     cartBadgeStyle: 'count',
     preset: 'custom',
+    searchIcon: 'Search',
+    accountIcon: 'User',
+    cartIcon: 'ShoppingBag',
+    menuColors: { linkColor: '', linkHoverColor: '', linkActiveColor: '', linkBg: '', linkHoverBg: '' },
     states: {
       normal: { backgroundColor: '#ffffff', textColor: '#1a1a1a', borderBottom: true, borderColor: '#e5e7eb', shadow: 'none', blur: false, height: 64 },
       sticky: { backgroundColor: '#ffffff', textColor: '#1a1a1a', borderBottom: true, borderColor: '#e5e7eb', shadow: 'subtle', blur: true, height: 56 },

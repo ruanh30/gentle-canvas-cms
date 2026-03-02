@@ -7,7 +7,16 @@ import {
   Eye, EyeOff, Search, User, Heart, ShoppingBag, ShoppingCart,
   Monitor, Smartphone, Layers, Sparkles, RotateCcw,
   Copy, MousePointer, Columns3, LayoutGrid, Navigation, Zap,
-  ArrowRight, Check, X, ChevronLeft, Image
+  ArrowRight, Check, X, ChevronLeft, Image,
+  // Icon picker — Search icons
+  SearchIcon, ScanSearch, SearchCheck, SearchCode, Telescope, Focus, ScanLine, Radar, ListFilter, Filter,
+  // Icon picker — Account icons
+  UserRound, UserCircle, UserCircle2, UserCheck, UserCog, CircleUser, Contact, BadgeCheck, Fingerprint, LogIn,
+  // Icon picker — Cart icons
+  Store, Package, PackagePlus, Briefcase, HandCoins, Wallet, CreditCard, Receipt, Gem, Gift,
+  // Menu colors
+  Paintbrush,
+  type LucideIcon
 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -31,7 +40,7 @@ import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 type SectionKey =
   | 'presets' | 'layout' | 'states' | 'container' | 'menu-style'
   | 'mega-menu' | 'icons' | 'search' | 'mobile' | 'items'
-  | 'banners';
+  | 'banners' | 'icon-picker' | 'menu-colors';
 
 interface SidebarItem {
   key: SectionKey;
@@ -55,8 +64,10 @@ const SIDEBAR_ITEMS: SidebarItem[] = [
   { key: 'mega-menu', label: 'Mega Menu', icon: LayoutGrid, group: 'NAVEGAÇÃO', hint: 'Painel com colunas e banners' },
   { key: 'mobile', label: 'Menu Mobile', icon: Smartphone, group: 'NAVEGAÇÃO', hint: 'Drawer e ações mobile' },
   { key: 'items', label: 'Itens do Menu', icon: Menu, group: 'NAVEGAÇÃO', hint: 'Links e subitens' },
-  { key: 'icons', label: 'Ícones', icon: MousePointer, group: 'ELEMENTOS', hint: 'Busca, conta, carrinho, wishlist' },
+  { key: 'icons', label: 'Ícones', icon: MousePointer, group: 'ELEMENTOS', hint: 'Tamanho, traço e visibilidade' },
+  { key: 'icon-picker', label: 'Estilo dos Ícones', icon: Sparkles, group: 'ELEMENTOS', badge: 'NOVO', hint: 'Escolha o visual de cada ícone' },
   { key: 'search', label: 'Busca', icon: Search, group: 'ELEMENTOS', hint: 'Estilo e comportamento da busca' },
+  { key: 'menu-colors', label: 'Cores do Menu', icon: Paintbrush, group: 'ELEMENTOS', badge: 'NOVO', hint: 'Cores dos links e hover' },
   { key: 'banners', label: 'Banners & Anúncios', icon: Megaphone, group: 'CONTEÚDO', hint: 'Barra de anúncio + banner' },
 ];
 
@@ -1704,6 +1715,218 @@ function BannersSection() {
 /*  SECTION MAP                                                         */
 /* ================================================================== */
 
+/* ================================================================== */
+/*  ICON PICKER — contextual icons for Search, Account, Cart            */
+/* ================================================================== */
+
+const SEARCH_ICONS: { id: string; icon: LucideIcon; label: string }[] = [
+  { id: 'Search', icon: Search, label: 'Lupa' },
+  { id: 'SearchIcon', icon: SearchIcon, label: 'Buscar' },
+  { id: 'ScanSearch', icon: ScanSearch, label: 'Scan' },
+  { id: 'SearchCheck', icon: SearchCheck, label: 'Busca OK' },
+  { id: 'SearchCode', icon: SearchCode, label: 'Busca Detalhada' },
+  { id: 'Telescope', icon: Telescope, label: 'Telescópio' },
+  { id: 'Focus', icon: Focus, label: 'Foco' },
+  { id: 'ScanLine', icon: ScanLine, label: 'Escanear' },
+  { id: 'Radar', icon: Radar, label: 'Radar' },
+  { id: 'ListFilter', icon: ListFilter, label: 'Filtrar' },
+  { id: 'Filter', icon: Filter, label: 'Funil' },
+];
+
+const ACCOUNT_ICONS: { id: string; icon: LucideIcon; label: string }[] = [
+  { id: 'User', icon: User, label: 'Pessoa' },
+  { id: 'UserRound', icon: UserRound, label: 'Pessoa Redonda' },
+  { id: 'UserCircle', icon: UserCircle, label: 'Círculo' },
+  { id: 'UserCircle2', icon: UserCircle2, label: 'Círculo 2' },
+  { id: 'CircleUser', icon: CircleUser, label: 'Usuário Circular' },
+  { id: 'UserCheck', icon: UserCheck, label: 'Verificado' },
+  { id: 'UserCog', icon: UserCog, label: 'Configurações' },
+  { id: 'Contact', icon: Contact, label: 'Contato' },
+  { id: 'BadgeCheck', icon: BadgeCheck, label: 'Badge' },
+  { id: 'Fingerprint', icon: Fingerprint, label: 'Biometria' },
+  { id: 'LogIn', icon: LogIn, label: 'Login' },
+];
+
+const CART_ICONS: { id: string; icon: LucideIcon; label: string }[] = [
+  { id: 'ShoppingBag', icon: ShoppingBag, label: 'Sacola' },
+  { id: 'ShoppingCart', icon: ShoppingCart, label: 'Carrinho' },
+  { id: 'Store', icon: Store, label: 'Loja' },
+  { id: 'Package', icon: Package, label: 'Pacote' },
+  { id: 'PackagePlus', icon: PackagePlus, label: 'Pacote +' },
+  { id: 'Briefcase', icon: Briefcase, label: 'Maleta' },
+  { id: 'HandCoins', icon: HandCoins, label: 'Compra' },
+  { id: 'Wallet', icon: Wallet, label: 'Carteira' },
+  { id: 'CreditCard', icon: CreditCard, label: 'Cartão' },
+  { id: 'Receipt', icon: Receipt, label: 'Recibo' },
+  { id: 'Gem', icon: Gem, label: 'Joia' },
+  { id: 'Gift', icon: Gift, label: 'Presente' },
+];
+
+function IconGrid({ icons, selected, onSelect, iconSize, strokeWidth }: {
+  icons: { id: string; icon: LucideIcon; label: string }[];
+  selected: string;
+  onSelect: (id: string) => void;
+  iconSize: number;
+  strokeWidth: number;
+}) {
+  return (
+    <div className="grid grid-cols-4 gap-2">
+      {icons.map(({ id, icon: Icon, label }) => (
+        <button
+          key={id}
+          onClick={() => onSelect(id)}
+          className={cn(
+            'flex flex-col items-center gap-1.5 py-3 px-2 rounded-xl border-2 transition-all duration-150',
+            'hover:bg-accent/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
+            selected === id
+              ? 'border-[hsl(var(--flash-brand-deep))] bg-[hsl(var(--flash-brand)/0.08)] shadow-sm'
+              : 'border-border/30 bg-card'
+          )}
+        >
+          <Icon style={{ width: iconSize, height: iconSize }} strokeWidth={strokeWidth} className={cn(
+            'transition-colors',
+            selected === id ? 'text-[hsl(var(--flash-brand-deep))]' : 'text-foreground/60'
+          )} />
+          <span className={cn('text-[9px] font-medium leading-tight text-center', selected === id ? 'text-[hsl(var(--flash-brand-deep))]' : 'text-muted-foreground/60')}>{label}</span>
+          {selected === id && <Check className="h-3 w-3 text-[hsl(var(--flash-brand-deep))]" />}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+function IconPickerSection() {
+  const { draft, updateDraftSection } = useTheme();
+  const h = draft.header ?? {} as any;
+  const set = (u: Partial<typeof h>) => updateDraftSection('header', u);
+  const iconSize = h.iconSize || 20;
+  const sw = h.iconStrokeWidth || 1.5;
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <h3 className="text-[15px] font-semibold text-foreground">Estilo dos Ícones</h3>
+        <p className="text-[12px] text-muted-foreground/60 mt-0.5">Escolha o visual de cada ícone de ação do cabeçalho. Todos os ícones são contextuais à sua função.</p>
+      </div>
+
+      {h.showSearch && (
+        <ControlGroup title="Ícone da Busca" hint="Escolha o ícone que representa a busca na sua loja">
+          <IconGrid icons={SEARCH_ICONS} selected={h.searchIcon || 'Search'} onSelect={v => set({ searchIcon: v })} iconSize={iconSize} strokeWidth={sw} />
+        </ControlGroup>
+      )}
+
+      {h.showAccount && (
+        <ControlGroup title="Ícone da Conta" hint="Escolha o ícone que leva o cliente para login ou perfil">
+          <IconGrid icons={ACCOUNT_ICONS} selected={h.accountIcon || 'User'} onSelect={v => set({ accountIcon: v })} iconSize={iconSize} strokeWidth={sw} />
+        </ControlGroup>
+      )}
+
+      {h.showCart && (
+        <ControlGroup title="Ícone do Carrinho" hint="Escolha o ícone que representa o carrinho de compras">
+          <IconGrid icons={CART_ICONS} selected={h.cartIcon || 'ShoppingBag'} onSelect={v => set({ cartIcon: v })} iconSize={iconSize} strokeWidth={sw} />
+        </ControlGroup>
+      )}
+
+      {/* Live preview */}
+      <div className="rounded-xl border border-border/40 bg-[hsl(var(--flash-surface))] p-4">
+        <p className="text-[9px] text-muted-foreground/40 uppercase tracking-wider mb-3 text-center">Preview ao vivo</p>
+        <div className="flex items-center justify-center gap-5">
+          {h.showSearch && (() => {
+            const si = SEARCH_ICONS.find(i => i.id === (h.searchIcon || 'Search')) || SEARCH_ICONS[0];
+            return <div className="flex flex-col items-center gap-1">
+              <si.icon style={{ width: iconSize, height: iconSize }} strokeWidth={sw} className="text-foreground/70" />
+              <span className="text-[8px] text-muted-foreground/40">Busca</span>
+            </div>;
+          })()}
+          {h.showAccount && (() => {
+            const ai = ACCOUNT_ICONS.find(i => i.id === (h.accountIcon || 'User')) || ACCOUNT_ICONS[0];
+            return <div className="flex flex-col items-center gap-1">
+              <ai.icon style={{ width: iconSize, height: iconSize }} strokeWidth={sw} className="text-foreground/70" />
+              <span className="text-[8px] text-muted-foreground/40">Conta</span>
+            </div>;
+          })()}
+          {h.showWishlist && <div className="flex flex-col items-center gap-1">
+            <Heart style={{ width: iconSize, height: iconSize }} strokeWidth={sw} className="text-foreground/70" />
+            <span className="text-[8px] text-muted-foreground/40">Wishlist</span>
+          </div>}
+          {h.showCart && (() => {
+            const ci = CART_ICONS.find(i => i.id === (h.cartIcon || 'ShoppingBag')) || CART_ICONS[0];
+            return <div className="flex flex-col items-center gap-1 relative">
+              <ci.icon style={{ width: iconSize, height: iconSize }} strokeWidth={sw} className="text-foreground/70" />
+              {h.cartBadgeStyle === 'count' && <span className="absolute -top-1.5 right-0 bg-foreground text-background text-[7px] font-bold rounded-full h-3.5 w-3.5 flex items-center justify-center">3</span>}
+              <span className="text-[8px] text-muted-foreground/40">Carrinho</span>
+            </div>;
+          })()}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ================================================================== */
+/*  MENU COLORS SECTION                                                 */
+/* ================================================================== */
+
+function MenuColorsSection() {
+  const { draft, updateDraftSection } = useTheme();
+  const h = draft.header ?? {} as any;
+  const mc = h.menuColors ?? { linkColor: '', linkHoverColor: '', linkActiveColor: '', linkBg: '', linkHoverBg: '' };
+  const setMC = (u: Partial<typeof mc>) => updateDraftSection('header', { menuColors: { ...mc, ...u } });
+
+  return (
+    <div className="space-y-5">
+      <div>
+        <h3 className="text-[15px] font-semibold text-foreground">Cores do Menu</h3>
+        <p className="text-[12px] text-muted-foreground/60 mt-0.5">Personalize as cores dos links de navegação. Deixe vazio para usar as cores do estado do cabeçalho.</p>
+      </div>
+
+      <ControlGroup title="Cores dos Links" hint="Cores aplicadas ao texto dos itens de navegação">
+        <ColorField label="Cor dos links" value={mc.linkColor} onChange={v => setMC({ linkColor: v })} />
+        <ColorField label="Cor no hover" value={mc.linkHoverColor} onChange={v => setMC({ linkHoverColor: v })} />
+        <ColorField label="Cor do ativo" value={mc.linkActiveColor} onChange={v => setMC({ linkActiveColor: v })} />
+      </ControlGroup>
+
+      <ControlGroup title="Fundos dos Links" collapsible hint="Fundo sutil aplicado atrás dos links (visível quando 'Área clicável ampla' está ativa)">
+        <ColorField label="Fundo padrão" value={mc.linkBg} onChange={v => setMC({ linkBg: v })} />
+        <ColorField label="Fundo no hover" value={mc.linkHoverBg} onChange={v => setMC({ linkHoverBg: v })} />
+      </ControlGroup>
+
+      {/* Preview */}
+      <div className="rounded-xl border border-border/40 bg-[hsl(var(--flash-surface))] p-4">
+        <p className="text-[9px] text-muted-foreground/40 uppercase tracking-wider mb-3 text-center">Preview</p>
+        <div className="flex items-center justify-center gap-4">
+          {['Início', 'Loja', 'Sobre'].map((label, i) => (
+            <span
+              key={label}
+              className={cn(
+                'text-[12px] px-3 py-1.5 rounded-md transition-colors cursor-default',
+                i === 0 ? 'font-semibold' : 'font-normal'
+              )}
+              style={{
+                color: i === 0 ? (mc.linkActiveColor || mc.linkColor || undefined) : (mc.linkColor || undefined),
+                backgroundColor: i === 0 ? (mc.linkHoverBg || undefined) : (mc.linkBg || undefined),
+              }}
+            >
+              {label}
+            </span>
+          ))}
+        </div>
+      </div>
+
+      <Button variant="outline" size="sm" className="w-full gap-1.5 text-xs" onClick={() => {
+        setMC({ linkColor: '', linkHoverColor: '', linkActiveColor: '', linkBg: '', linkHoverBg: '' });
+        toast.success('Cores do menu resetadas');
+      }}>
+        <RotateCcw className="h-3.5 w-3.5" /> Resetar Cores
+      </Button>
+    </div>
+  );
+}
+
+/* ================================================================== */
+/*  SECTION MAP                                                         */
+/* ================================================================== */
+
 const SECTION_COMPONENTS: Record<SectionKey, React.FC> = {
   'presets': PresetsSection,
   'layout': LayoutSection,
@@ -1712,7 +1935,9 @@ const SECTION_COMPONENTS: Record<SectionKey, React.FC> = {
   'menu-style': MenuStyleSection,
   'mega-menu': MegaMenuSection,
   'icons': IconsSection,
+  'icon-picker': IconPickerSection,
   'search': SearchSection,
+  'menu-colors': MenuColorsSection,
   'mobile': MobileSection,
   'items': ItemsSection,
   'banners': BannersSection,
