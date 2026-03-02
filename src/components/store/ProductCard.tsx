@@ -157,13 +157,10 @@ export function ProductCard({ product }: Props) {
     ? 'group-hover:translate-x-1'
     : '';
 
-  const visibility = c.buttonVisibility ?? 'both';
-  const showAdd = (c.showAddToCart !== false) && (visibility === 'both' || visibility === 'add-only');
-  const showBuy = (c.showBuyNow !== false) && (visibility === 'both' || visibility === 'buy-only');
+  const showBuy = c.showBuyNow !== false;
 
   const handleClick = (e: React.MouseEvent) => {
-    // Open Quick View if enabled (either via clickBehavior or quickView.enabled)
-    if (c.clickBehavior === 'modal' || theme.quickView?.enabled) {
+    if (theme.quickView?.enabled) {
       e.preventDefault();
       setShowPreview(true);
     }
@@ -182,7 +179,7 @@ export function ProductCard({ product }: Props) {
         className={cn(
           'group relative pm-global-border transition-all duration-300',
           radiusMap[c.imageBorderRadius],
-          c.contentAlign === 'center' && 'text-center',
+          'text-center',
         )}
         style={{
           boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
@@ -242,7 +239,7 @@ export function ProductCard({ product }: Props) {
               'text-sm font-medium leading-tight',
               c.titleLines === 1 ? 'line-clamp-1' : c.titleLines === 2 ? 'line-clamp-2' : 'line-clamp-3',
             )}>{product.name}</h3>
-            <div className={cn('flex items-center gap-2', c.contentAlign === 'center' && 'justify-center')}>
+            <div className={cn('flex items-center gap-2 justify-center')}>
               <span className={cn('font-semibold', priceTextMap[c.priceSize])}>{formatCurrency(product.price)}</span>
               {c.showComparePrice && product.compareAtPrice && (
                 <span className="text-xs text-muted-foreground line-through">
@@ -273,19 +270,6 @@ export function ProductCard({ product }: Props) {
           )}
         </div>
 
-        {/* Floating cart icon — appears on hover */}
-        {showAdd && (() => {
-          const FloatingIcon = iconMap[c.addToCartIcon || ''] || ShoppingBag;
-          return (
-            <button
-              onClick={(e) => { e.preventDefault(); e.stopPropagation(); addItem(product); }}
-              className="absolute bottom-[72px] right-3 bg-background/95 backdrop-blur-sm p-2.5 rounded-full opacity-0 group-hover:opacity-100 scale-90 group-hover:scale-100 transition-all duration-300 ease-out hover:bg-foreground hover:text-background shadow-md"
-              aria-label={c.addToCartText || 'Adicionar ao carrinho'}
-            >
-              <FloatingIcon className="h-4 w-4" />
-            </button>
-          );
-        })()}
       </div>
 
       {showPreview && (
