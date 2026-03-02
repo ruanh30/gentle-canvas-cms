@@ -50,9 +50,6 @@ const LoginPage = () => {
               {isRegister ? 'Já tem conta? Entrar' : 'Não tem conta? Cadastrar'}
             </button>
           </div>
-          <div className="mt-4 p-3 bg-secondary rounded-lg text-xs text-muted-foreground font-body text-center">
-            Admin: admin@modastore.com (qualquer senha)
-          </div>
         </CardContent>
       </Card>
     </div>
