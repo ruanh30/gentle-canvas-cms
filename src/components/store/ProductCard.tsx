@@ -185,9 +185,8 @@ export function ProductCard({ product }: Props) {
   return (
     <>
       <div className={cn(
-        'group relative pm-global-shadow',
+        'group relative pm-global-shadow pm-global-border',
         c.hoverShadow && 'hover:shadow-lg transition-shadow',
-        c.border && 'border border-border',
         radiusMap[c.imageBorderRadius],
         c.contentAlign === 'center' && 'text-center',
       )}>
