@@ -547,7 +547,7 @@ export interface ThemeQuickView {
   enabled: boolean;
 
   // Tab 1 — Modelo
-  model: 'drawer-right' | 'drawer-left' | 'modal-center' | 'bottom-sheet' | 'full-page';
+  model: 'drawer-right' | 'drawer-left' | 'modal-center' | 'bottom-sheet';
   drawerWidth: number;        // 420–520 for drawers
   modalWidth: number;         // 720–920 for modal
   overlayOpacity: number;     // 0.35–0.65
