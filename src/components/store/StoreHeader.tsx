@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import {
   ShoppingBag, Search, User, Menu, Heart, ShoppingCart, Plus, PackagePlus, Store,
   ChevronDown, ChevronLeft, type LucideIcon,
@@ -277,10 +277,26 @@ function NavItem({ item, className, style, openNewTab, elevated, padded, hoverSt
 }) {
   const [open, setOpen] = useState(false);
   const timeoutRef = useRef<ReturnType<typeof setTimeout>>();
+  const containerRef = useRef<HTMLDivElement>(null);
   const hasChildren = item.children && item.children.length > 0;
 
-  const handleEnter = () => { clearTimeout(timeoutRef.current); setOpen(true); };
-  const handleLeave = () => { timeoutRef.current = setTimeout(() => setOpen(false), 200); };
+  // Touch: toggle on click; Mouse: hover open/close
+  const isTouchDevice = typeof window !== 'undefined' && 'ontouchstart' in window;
+  const handleEnter = () => { if (!isTouchDevice) { clearTimeout(timeoutRef.current); setOpen(true); } };
+  const handleLeave = () => { if (!isTouchDevice) { timeoutRef.current = setTimeout(() => setOpen(false), 200); } };
+  const handleToggle = (e: React.MouseEvent) => {
+    if (isTouchDevice && hasChildren) { e.preventDefault(); setOpen(v => !v); }
+  };
+
+  // Close on outside tap (touch)
+  useEffect(() => {
+    if (!isTouchDevice || !open) return;
+    const handler = (e: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [open, isTouchDevice]);
 
   const useUnderline = hoverStyle === 'underline' || hoverStyle === 'both';
   const useBgHover = hoverStyle === 'background' || hoverStyle === 'both';
@@ -307,11 +323,12 @@ function NavItem({ item, className, style, openNewTab, elevated, padded, hoverSt
   }
 
   return (
-    <div className="relative" onMouseEnter={handleEnter} onMouseLeave={handleLeave}>
+    <div className="relative" ref={containerRef} onMouseEnter={handleEnter} onMouseLeave={handleLeave}>
       <Link
         to={item.link || '#'}
         className={cn(className, 'inline-flex items-center gap-1.5', paddingCls, underlineCls)}
         style={style}
+        onClick={handleToggle}
         {...(openNewTab ? { target: '_blank', rel: 'noopener' } : {})}
       >
         {item.label}
@@ -365,10 +382,24 @@ function MegaMenuItem({ item, className, style, openNewTab, padded, hoverStyle, 
 }) {
   const [open, setOpen] = useState(false);
   const timeoutRef = useRef<ReturnType<typeof setTimeout>>();
+  const containerRef = useRef<HTMLDivElement>(null);
   const hasChildren = item.children && item.children.length > 0;
 
-  const handleEnter = () => { clearTimeout(timeoutRef.current); setOpen(true); };
-  const handleLeave = () => { timeoutRef.current = setTimeout(() => setOpen(false), 200); };
+  const isTouchDevice = typeof window !== 'undefined' && 'ontouchstart' in window;
+  const handleEnter = () => { if (!isTouchDevice) { clearTimeout(timeoutRef.current); setOpen(true); } };
+  const handleLeave = () => { if (!isTouchDevice) { timeoutRef.current = setTimeout(() => setOpen(false), 200); } };
+  const handleToggle = (e: React.MouseEvent) => {
+    if (isTouchDevice && hasChildren) { e.preventDefault(); setOpen(v => !v); }
+  };
+
+  useEffect(() => {
+    if (!isTouchDevice || !open) return;
+    const handler = (e: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [open, isTouchDevice]);
 
   const useUnderline = hoverStyle === 'underline' || hoverStyle === 'both';
   const useBgHover = hoverStyle === 'background' || hoverStyle === 'both';
@@ -395,8 +426,9 @@ function MegaMenuItem({ item, className, style, openNewTab, padded, hoverStyle, 
   const showBanner = megaConfig?.showBanner && megaConfig?.bannerImageUrl;
 
   return (
-    <div className="relative" onMouseEnter={handleEnter} onMouseLeave={handleLeave}>
+    <div className="relative" ref={containerRef} onMouseEnter={handleEnter} onMouseLeave={handleLeave}>
       <Link to={item.link || '#'} className={cn(className, 'inline-flex items-center gap-1.5', paddingCls, underlineCls)} style={style}
+        onClick={handleToggle}
         {...(openNewTab ? { target: '_blank', rel: 'noopener' } : {})}>
         {item.label}
         <ChevronDown className={cn('h-3.5 w-3.5 transition-transform duration-200', open && 'rotate-180')} />
@@ -590,10 +622,14 @@ export function StoreHeader() {
   const { user } = useAuth();
   const { theme } = useTheme();
   const navigate = useNavigate();
+  const location = useLocation();
   // Menu typography config
   const mt = theme.header?.menuTypography ?? { fontFamily: 'Inter', fontWeight: 500, fontSizeDesktop: 14, fontSizeMobile: 14, letterSpacing: 0.02, textTransform: 'uppercase' as const, lineHeight: 1.2 };
   const [searchOpen, setSearchOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [headerHidden, setHeaderHidden] = useState(false);
+  const lastScrollY = useRef(0);
 
   // Dynamic Google Font loading for menu typography
   useEffect(() => {
@@ -641,12 +677,34 @@ export function StoreHeader() {
   // Search config
   const searchConfig = h.search ?? { placeholder: 'Buscar produtos...', showOnDesktop: true, showOnMobile: true, autoSuggest: false, maxResults: 6, shortcutEnabled: false };
 
-  // Scroll listener
+  // Scroll listener + hide-on-scroll for mobile
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 10);
+    const onScroll = () => {
+      const y = window.scrollY;
+      setScrolled(y > 10);
+
+      // Hide on scroll down, show on scroll up (mobile only)
+      const isMobileVp = window.innerWidth < 1024;
+      if (isMobileVp && h.sticky) {
+        const delta = y - lastScrollY.current;
+        if (delta > 8 && y > 80) {
+          setHeaderHidden(true);
+        } else if (delta < -5) {
+          setHeaderHidden(false);
+        }
+      } else {
+        setHeaderHidden(false);
+      }
+      lastScrollY.current = y;
+    };
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
-  }, []);
+  }, [h.sticky]);
+
+  // Auto-close drawer on navigation
+  useEffect(() => {
+    setDrawerOpen(false);
+  }, [location.pathname]);
 
   // Keyboard shortcut for search (Ctrl+K or /)
   useEffect(() => {
@@ -871,7 +929,7 @@ export function StoreHeader() {
   // Mobile drawer content
   const renderMobileDrawer = () => {
     return (
-      <Sheet>
+      <Sheet open={drawerOpen} onOpenChange={setDrawerOpen}>
         <SheetTrigger asChild>
           <Button variant="ghost" size="icon" className="lg:hidden h-10 w-10 shrink-0">
             <Menu className="h-5 w-5" />
@@ -924,8 +982,12 @@ export function StoreHeader() {
       !activeState && (h.headerSurface ?? true) && !hasNavBarBelow && 'border-b border-border/10',
       !activeState && !(h.headerSurface ?? true) && h.borderBottom && !hasNavBarBelow && 'border-b border-border',
       activeState ? shadowMap[activeState.shadow] : (h.shadowOnScroll && scrolled ? 'shadow-md' : ''),
-      h.sticky && 'sticky top-0'
-    )} style={headerStyle}>
+      h.sticky && 'sticky top-0',
+      headerHidden && 'lg:translate-y-0 -translate-y-full',
+    )} style={{
+      ...headerStyle,
+      paddingTop: 'env(safe-area-inset-top, 0px)',
+    }}>
       {/* Announcement bar */}
       {!isMinimal && !shrinkActive && <AnnouncementBar />}
 
