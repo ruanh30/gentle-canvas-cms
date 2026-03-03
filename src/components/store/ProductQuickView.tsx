@@ -457,32 +457,35 @@ function QuickViewDescription({ product, defaultOpen = false }: { product: Produ
 /* ================================================================== */
 /*  QuickViewFooter — sticky bottom                                    */
 /* ================================================================== */
-function QuickViewFooter({ onAddToCart, onBuyNow, qv, theme, installmentPrice }: {
-  onAddToCart: () => void; onBuyNow: () => void; qv: any; theme: any; installmentPrice?: string;
+function QuickViewFooter({ onAddToCart, onBuyNow, qv, theme, installmentPrice, disabled }: {
+  onAddToCart: () => void; onBuyNow: () => void; qv: any; theme: any; installmentPrice?: string; disabled?: boolean;
 }) {
   const ctaSize = qv?.ctaSize === 'large' ? 'h-12' : 'h-11';
   return (
     <div className="sticky bottom-0 z-10 bg-background/95 backdrop-blur-sm border-t border-border/40 px-5 py-4 space-y-2">
       <button
         onClick={onAddToCart}
+        disabled={disabled}
         className={cn(
           'w-full rounded-xl font-semibold text-sm inline-flex items-center justify-center gap-2',
-          'transition-all duration-150 hover:opacity-90 active:scale-[0.99]',
-          'focus:outline-none focus:ring-2 focus:ring-ring/25',
+          'transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-ring/25',
           ctaSize,
+          disabled ? 'opacity-50 cursor-not-allowed' : 'hover:opacity-90 active:scale-[0.99]',
         )}
         style={{ backgroundColor: theme.colors.primary, color: theme.colors.primaryForeground }}
       >
         <ShoppingCart className="h-4 w-4" />
-        {qv?.ctaText || 'Adicionar ao Carrinho'}
+        {disabled ? 'Esgotado' : (qv?.ctaText || 'Adicionar ao Carrinho')}
       </button>
       {qv?.showSecondaryCta !== false && (
         <button
           onClick={onBuyNow}
+          disabled={disabled}
           className={cn(
             'w-full rounded-xl font-medium text-sm inline-flex items-center justify-center gap-2',
-            'border border-border/60 text-foreground hover:bg-muted transition-colors',
+            'border border-border/60 text-foreground transition-colors',
             qv?.ctaSize === 'large' ? 'h-11' : 'h-10',
+            disabled ? 'opacity-50 cursor-not-allowed' : 'hover:bg-muted',
           )}
         >
           {qv?.ctaSecondaryText || 'Comprar Agora'}
@@ -521,7 +524,10 @@ export function ProductQuickView({ product, open, onClose }: QuickViewProps) {
       const keys = [...new Set(variants.flatMap(v => Object.keys(v.attributes)))];
       keys.forEach(k => {
         const vals = [...new Set(variants.map(v => v.attributes[k]))];
-        if (vals.length > 0) attrs[k] = vals[0];
+        // Prefer first in-stock value
+        const inStockVal = vals.find(val => variants.some(v => v.attributes[k] === val && v.stock > 0));
+        if (inStockVal) attrs[k] = inStockVal;
+        else if (vals.length > 0) attrs[k] = vals[0];
       });
     }
     return attrs;
@@ -532,11 +538,16 @@ export function ProductQuickView({ product, open, onClose }: QuickViewProps) {
   }, []);
 
   const updateQty = useCallback((id: string, delta: number) => {
+    // Block quantity changes for out-of-stock variants
+    if (id !== '_single') {
+      const v = product.variants.find(v => v.id === id);
+      if (v && v.stock <= 0) return;
+    }
     setQuantities(prev => ({
       ...prev,
       [id]: Math.max(id === '_single' ? 1 : 0, (prev[id] || (id === '_single' ? 1 : 0)) + delta),
     }));
-  }, []);
+  }, [product.variants]);
 
   // Find the variant matching selected attributes
   const matchedVariant = useMemo(() => {
@@ -545,6 +556,14 @@ export function ProductQuickView({ product, open, onClose }: QuickViewProps) {
       Object.entries(selectedAttrs).every(([k, val]) => v.attributes[k] === val)
     );
   }, [product.variants, selectedAttrs]);
+
+  // Check if current selection is out of stock
+  const isCurrentOutOfStock = useMemo(() => {
+    const style = qv?.variationStyle || 'chips';
+    if (style === 'list-compact') return false;
+    if (matchedVariant) return matchedVariant.stock <= 0;
+    return false;
+  }, [matchedVariant, qv?.variationStyle]);
 
   const totalQty = Object.entries(quantities).reduce((sum, [k, v]) => {
     if (k === '_single') return sum + v;
@@ -557,11 +576,13 @@ export function ProductQuickView({ product, open, onClose }: QuickViewProps) {
       Object.entries(quantities).forEach(([vid, qty]) => {
         if (vid === '_single' || qty <= 0) return;
         const variant = product.variants.find(v => v.id === vid);
+        if (variant && variant.stock <= 0) return;
         for (let i = 0; i < qty; i++) addItem(product, variant);
       });
       const hasAny = Object.entries(quantities).some(([k, v]) => k !== '_single' && v > 0);
-      if (!hasAny) addItem(product);
+      if (!hasAny) return;
     } else {
+      if (isCurrentOutOfStock) return;
       const singleQty = quantities._single || 1;
       for (let i = 0; i < singleQty; i++) addItem(product, matchedVariant);
     }
@@ -642,6 +663,7 @@ export function ProductQuickView({ product, open, onClose }: QuickViewProps) {
         qv={qv}
         theme={theme}
         installmentPrice={installmentPrice}
+        disabled={isCurrentOutOfStock}
       />
     </div>
   );
@@ -705,6 +727,7 @@ export function ProductQuickView({ product, open, onClose }: QuickViewProps) {
           qv={qv}
           theme={theme}
           installmentPrice={installmentPrice}
+          disabled={isCurrentOutOfStock}
         />
       </div>
     </div>
