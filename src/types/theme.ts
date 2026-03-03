@@ -506,7 +506,7 @@ export interface ThemeProductListing {
 export interface ThemeGlobal {
   containerWidth: 'narrow' | 'default' | 'wide' | 'full';
   containerMaxPx: number;
-  sectionSpacing: 'compact' | 'normal' | 'spacious';
+  sectionSpacing: 'minimal' | 'compact' | 'normal' | 'spacious';
   borderRadius: 'none' | 'small' | 'medium' | 'large' | 'full';
   shadowLevel: 'none' | 'subtle' | 'medium' | 'strong';
   borderStyle: 'none' | 'thin' | 'medium' | 'thick';

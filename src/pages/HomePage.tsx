@@ -100,6 +100,7 @@ const HomePage = () => {
   const hiddenMobile = responsive?.hideSectionsMobile || [];
 
   const spacingMap: Record<string, string> = {
+    minimal: 'py-2',
     compact: 'py-6',
     normal: 'py-10',
     spacious: 'py-16',
