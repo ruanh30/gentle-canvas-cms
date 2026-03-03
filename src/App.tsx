@@ -27,6 +27,7 @@ import AdminProducts from "@/pages/admin/AdminProducts";
 import AdminMenu from "@/pages/admin/AdminMenu";
 import AdminMedia from "@/pages/admin/AdminMedia";
 
+import PreviewHeader from "@/pages/PreviewHeader";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -63,6 +64,9 @@ const App = () => (
                 <Route path="menu" element={<AdminMenu />} />
                 <Route path="media" element={<AdminMedia />} />
               </Route>
+
+              {/* Isolated preview routes (used inside iframes) */}
+              <Route path="/preview/header" element={<PreviewHeader />} />
 
               <Route path="*" element={<NotFound />} />
             </Routes>

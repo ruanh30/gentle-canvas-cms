@@ -241,8 +241,39 @@ function AnnouncementCarouselPreview({ messages, bg, color, speed }: { messages:
 /* ================================================================== */
 
 function LiveHeaderPreview() {
+  const { draft } = useTheme();
   const desktopScale = 0.55;
-  const mobileScale = 0.85;
+  const mobileIframeRef = React.useRef<HTMLIFrameElement>(null);
+  const iframeReadyRef = React.useRef(false);
+  const [mobileHeight, setMobileHeight] = useState(80);
+
+  // Listen for iframe signals (ready + resize)
+  useEffect(() => {
+    const handler = (event: MessageEvent) => {
+      if (event.data?.type === 'header-preview-ready') {
+        iframeReadyRef.current = true;
+        mobileIframeRef.current?.contentWindow?.postMessage(
+          { type: 'admin-header-preview', theme: draft },
+          '*'
+        );
+      }
+      if (event.data?.type === 'header-preview-resize' && typeof event.data.height === 'number') {
+        setMobileHeight(event.data.height);
+      }
+    };
+    window.addEventListener('message', handler);
+    return () => window.removeEventListener('message', handler);
+  }, []);
+
+  // Sync draft changes to iframe
+  useEffect(() => {
+    if (iframeReadyRef.current && mobileIframeRef.current?.contentWindow) {
+      mobileIframeRef.current.contentWindow.postMessage(
+        { type: 'admin-header-preview', theme: draft },
+        '*'
+      );
+    }
+  }, [draft]);
 
   return (
     <div className="border-b border-border/50 bg-[hsl(var(--flash-surface))]">
@@ -250,7 +281,7 @@ function LiveHeaderPreview() {
         <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[hsl(var(--flash-brand-deep)/0.6)]">Preview ao vivo</p>
       </div>
 
-      {/* Desktop Preview */}
+      {/* Desktop Preview — scaled real component */}
       <div className="px-4 mb-2">
         <div className="flex items-center gap-1.5 mb-1.5">
           <Monitor className="h-3 w-3 text-muted-foreground/50" />
@@ -270,13 +301,13 @@ function LiveHeaderPreview() {
         </div>
       </div>
 
-      {/* Mobile Preview */}
+      {/* Mobile Preview — real iframe at 375px (breakpoints trigger naturally) */}
       <div className="px-4 mb-3">
         <div className="flex items-center gap-1.5 mb-1.5">
           <Smartphone className="h-3 w-3 text-muted-foreground/50" />
           <span className="text-[10px] font-medium text-muted-foreground/60 uppercase tracking-wider">Android / Mobile</span>
         </div>
-        <div className="max-w-[375px] mx-auto rounded-xl overflow-hidden border border-border/40 shadow-sm bg-background">
+        <div className="max-w-[375px] mx-auto rounded-xl overflow-hidden border border-border/40 shadow-sm bg-black">
           {/* Simulated status bar */}
           <div className="h-6 bg-black flex items-center justify-between px-4">
             <span className="text-[9px] text-white/70 font-medium">9:41</span>
@@ -286,19 +317,15 @@ function LiveHeaderPreview() {
               </div>
             </div>
           </div>
-          {/* Header at mobile scale */}
-          <div className="overflow-hidden">
-            <div
-              style={{
-                transform: `scale(${mobileScale})`,
-                transformOrigin: 'top left',
-                width: `${100 / mobileScale}%`,
-                pointerEvents: 'none',
-              }}
-            >
-              <StoreHeader />
-            </div>
-          </div>
+          {/* iframe — real 375px width, CSS breakpoints fire naturally */}
+          <iframe
+            ref={mobileIframeRef}
+            src="/preview/header"
+            title="Mobile Header Preview"
+            className="border-0 bg-background block"
+            style={{ width: 375, height: mobileHeight, transition: 'height 200ms ease' }}
+            sandbox="allow-same-origin allow-scripts"
+          />
         </div>
       </div>
     </div>
