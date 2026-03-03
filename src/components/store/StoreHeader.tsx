@@ -1121,7 +1121,7 @@ export function StoreHeader() {
           className="hidden lg:block"
           style={{
             ...(h.menuDividerLine
-              ? { borderTopWidth: '1px', borderTopStyle: 'solid' as const, borderTopColor: `color-mix(in srgb, ${activeState?.textColor || 'currentColor'} 12%, transparent)` }
+              ? { borderTopWidth: '1px', borderTopStyle: 'dashed' as const, borderTopColor: `color-mix(in srgb, ${activeState?.textColor || 'currentColor'} 12%, transparent)` }
               : {}
             ),
             boxShadow: '0 1px 3px 0 rgba(0,0,0,0.05)',
@@ -1144,7 +1144,7 @@ export function StoreHeader() {
           className="hidden lg:block"
           style={{
             ...(h.menuDividerLine
-              ? { borderTopWidth: '1px', borderTopStyle: 'solid' as const, borderTopColor: `color-mix(in srgb, ${activeState?.textColor || 'currentColor'} 12%, transparent)` }
+              ? { borderTopWidth: '1px', borderTopStyle: 'dashed' as const, borderTopColor: `color-mix(in srgb, ${activeState?.textColor || 'currentColor'} 12%, transparent)` }
               : {}
             ),
             boxShadow: '0 1px 3px 0 rgba(0,0,0,0.05)',
@@ -1173,7 +1173,7 @@ export function StoreHeader() {
           style={{
             backgroundColor: menuBar.backgroundColor,
             color: menuBar.textColor,
-            ...(!menuBar.borderTop && h.menuDividerLine ? { borderTopWidth: '1px', borderTopStyle: 'solid' as const, borderTopColor: `color-mix(in srgb, ${activeState?.textColor || menuBar.textColor || 'currentColor'} 12%, transparent)` } : {}),
+            ...(!menuBar.borderTop && h.menuDividerLine ? { borderTopWidth: '1px', borderTopStyle: 'dashed' as const, borderTopColor: `color-mix(in srgb, ${activeState?.textColor || menuBar.textColor || 'currentColor'} 12%, transparent)` } : {}),
           }}
         >
           <div style={menuBar.fullWidth ? { width: '100%' } : containerStyle}>
