@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Outlet } from 'react-router-dom';
 import { StoreHeader } from './StoreHeader';
 import { StoreFooter } from './StoreFooter';
+import { BottomNav } from './BottomNav';
 import { useTheme } from '@/contexts/ThemeContext';
 import { cn } from '@/lib/utils';
 
@@ -27,7 +28,7 @@ function WhatsAppButton() {
       rel="noopener noreferrer"
       className={cn(
         'fixed z-50 flex items-center gap-2 px-4 py-3 rounded-full shadow-lg text-white transition-all hover:scale-105',
-        w.position === 'bottom-left' ? 'bottom-6 left-6' : 'bottom-6 right-6',
+        w.position === 'bottom-left' ? 'bottom-20 left-4 lg:bottom-6 lg:left-6' : 'bottom-20 right-4 lg:bottom-6 lg:right-6',
       )}
       style={{ backgroundColor: w.backgroundColor }}
     >
@@ -43,10 +44,11 @@ export function StoreLayout() {
   return (
     <div className="min-h-screen flex flex-col">
       <StoreHeader />
-      <main className="flex-1">
+      <main className="flex-1 pb-16 lg:pb-0">
         <Outlet />
       </main>
       <StoreFooter />
+      <BottomNav />
       <WhatsAppButton />
     </div>
   );
