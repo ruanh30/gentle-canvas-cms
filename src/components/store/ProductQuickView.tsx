@@ -9,6 +9,7 @@ import { Sheet, SheetContent } from '@/components/ui/sheet';
 import { Drawer, DrawerContent } from '@/components/ui/drawer';
 import { cn } from '@/lib/utils';
 import { mockProducts } from '@/data/mock';
+import { SizeGuideDisplay } from './SizeGuideDisplay';
 import {
   X, Minus, Plus, Star, Truck, ShoppingCart,
   ChevronLeft, ChevronRight, ChevronDown,
@@ -639,9 +640,9 @@ export function ProductQuickView({ product, open, onClose }: QuickViewProps) {
         {/* Accordions */}
         {qv?.showShipping !== false && <QuickViewShipping />}
         {qv?.showDescription !== false && <QuickViewDescription product={product} />}
-        {qv?.showSizeGuide && (
+        {qv?.showSizeGuide && product.sizeGuideId && (
           <AccordionSection icon={Ruler} title="Tabela de Medidas">
-            <p className="text-sm text-muted-foreground">Consulte a tabela de medidas para escolher o tamanho ideal.</p>
+            <SizeGuideDisplay product={product} />
           </AccordionSection>
         )}
 
@@ -691,9 +692,9 @@ export function ProductQuickView({ product, open, onClose }: QuickViewProps) {
         <div className="flex-1 overflow-y-auto qv-scrollbar px-5 pb-5">
           <div className="mt-4">
             {qv?.showDescription !== false && <QuickViewDescription product={product} defaultOpen />}
-            {qv?.showSizeGuide && (
+            {qv?.showSizeGuide && product.sizeGuideId && (
               <AccordionSection icon={Ruler} title="Tabela de Medidas" defaultOpen>
-                <p className="text-sm text-muted-foreground">Consulte a tabela de medidas para escolher o tamanho ideal.</p>
+                <SizeGuideDisplay product={product} />
               </AccordionSection>
             )}
           </div>
@@ -717,10 +718,10 @@ export function ProductQuickView({ product, open, onClose }: QuickViewProps) {
             )}
             {qv?.showShipping !== false && <QuickViewShipping defaultOpen />}
             {qv?.showDescription !== false && <div className="md:hidden"><QuickViewDescription product={product} defaultOpen /></div>}
-            {qv?.showSizeGuide && (
+            {qv?.showSizeGuide && product.sizeGuideId && (
               <div className="md:hidden">
                 <AccordionSection icon={Ruler} title="Tabela de Medidas">
-                  <p className="text-sm text-muted-foreground">Consulte a tabela de medidas.</p>
+                  <SizeGuideDisplay product={product} />
                 </AccordionSection>
               </div>
             )}
