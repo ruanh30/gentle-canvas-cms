@@ -313,7 +313,7 @@ const HomePage = () => {
                 <img src={cat.image} alt={cat.name} className={cn('w-full h-full object-cover', shapeClass)} loading="lazy" />
               </div>
             )}
-            <p className="text-[13px] text-muted-foreground group-hover:text-foreground transition-colors uppercase tracking-wide font-body" style={{ fontWeight: 800 }}>{cat.name}</p>
+            <p className="text-[13px] text-muted-foreground group-hover:text-foreground transition-colors uppercase tracking-wide font-body font-semibold">{cat.name}</p>
           </Link>
         );
 
