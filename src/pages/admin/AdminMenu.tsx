@@ -272,38 +272,97 @@ function MobilePreviewFloat() {
     }
   }, [draft]);
 
-  const iframeScale = 280 / 375;
+  const iframeScale = 260 / 375;
+  const phoneHeight = 520;
+  const screenHeight = phoneHeight - 68; // top bezel + bottom bar
 
   return (
     <div className="sticky top-0 shrink-0 z-10 p-3">
-      <div className="w-[280px] rounded-xl overflow-hidden border border-border/40 shadow-lg bg-black">
-        {/* Simulated status bar */}
-        <div className="h-5 bg-black flex items-center justify-between px-3">
-          <span className="text-[8px] text-white/70 font-medium">9:41</span>
-          <div className="flex items-center gap-1">
-            <div className="w-3 h-1.5 rounded-sm border border-white/50 relative">
-              <div className="absolute inset-[1px] right-[2px] bg-white/70 rounded-[1px]" />
+      {/* Phone shell */}
+      <div className="relative w-[276px]">
+        {/* Outer phone body */}
+        <div
+          className="rounded-[32px] border-[3px] border-[#1a1a1a] bg-[#1a1a1a] shadow-2xl overflow-hidden"
+          style={{ height: phoneHeight }}
+        >
+          {/* Status bar with notch */}
+          <div className="h-7 bg-black relative flex items-center justify-between px-5">
+            <span className="text-[9px] text-white/80 font-semibold">9:41</span>
+            {/* Notch / Dynamic Island */}
+            <div className="absolute top-1 left-1/2 -translate-x-1/2 w-[72px] h-[18px] bg-black rounded-full flex items-center justify-center">
+              <div className="w-[8px] h-[8px] rounded-full bg-[#1a1a1a] border border-[#333] mr-1" />
+            </div>
+            {/* Right status icons */}
+            <div className="flex items-center gap-1">
+              {/* Signal */}
+              <div className="flex gap-[1px] items-end">
+                {[4, 6, 8, 10].map((h, i) => (
+                  <div key={i} className="w-[2px] rounded-sm bg-white/70" style={{ height: h }} />
+                ))}
+              </div>
+              {/* Wifi */}
+              <svg className="w-3 h-3 text-white/70" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M5 12.55a11 11 0 0 1 14.08 0" /><path d="M1.42 9a16 16 0 0 1 21.16 0" /><path d="M8.53 16.11a6 6 0 0 1 6.95 0" /><circle cx="12" cy="20" r="1" fill="currentColor" />
+              </svg>
+              {/* Battery */}
+              <div className="w-[18px] h-[9px] rounded-[2px] border border-white/60 relative ml-0.5">
+                <div className="absolute inset-[1.5px] right-[3px] bg-white/70 rounded-[1px]" />
+                <div className="absolute -right-[3px] top-[2px] w-[2px] h-[4px] bg-white/50 rounded-r-sm" />
+              </div>
             </div>
           </div>
+
+          {/* Screen area */}
+          <div className="bg-background overflow-hidden" style={{ height: screenHeight }}>
+            {/* Header iframe — real 375px scaled */}
+            <div className="overflow-hidden" style={{ height: mobileHeight * iframeScale, transition: 'height 200ms ease' }}>
+              <iframe
+                ref={mobileIframeRef}
+                src="/preview/header"
+                title="Mobile Header Preview"
+                className="border-0 bg-background block origin-top-left"
+                style={{
+                  width: 375,
+                  height: mobileHeight,
+                  transform: `scale(${iframeScale})`,
+                  transformOrigin: 'top left',
+                }}
+                sandbox="allow-same-origin allow-scripts"
+              />
+            </div>
+
+            {/* Fake page content below header */}
+            <div className="px-3 pt-3 space-y-2.5" style={{ transform: `scale(${iframeScale})`, transformOrigin: 'top left', width: 375 }}>
+              {/* Hero placeholder */}
+              <div className="w-full h-28 rounded-lg bg-muted/60 animate-pulse" />
+              {/* Product grid skeleton */}
+              <div className="grid grid-cols-2 gap-2">
+                {[1,2,3,4].map(i => (
+                  <div key={i} className="space-y-1.5">
+                    <div className="w-full aspect-square rounded-md bg-muted/50" />
+                    <div className="h-2.5 w-3/4 rounded bg-muted/40" />
+                    <div className="h-2 w-1/2 rounded bg-muted/30" />
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Bottom navigation bar (home indicator) */}
+          <div className="h-5 bg-background flex items-end justify-center pb-1">
+            <div className="w-24 h-1 rounded-full bg-foreground/20" />
+          </div>
         </div>
-        {/* iframe at real 375px, scaled down to fit 280px visually */}
-        <div className="overflow-hidden" style={{ height: mobileHeight * iframeScale, transition: 'height 200ms ease' }}>
-          <iframe
-            ref={mobileIframeRef}
-            src="/preview/header"
-            title="Mobile Header Preview"
-            className="border-0 bg-background block origin-top-left"
-            style={{
-              width: 375,
-              height: mobileHeight,
-              transform: `scale(${iframeScale})`,
-              transformOrigin: 'top left',
-            }}
-            sandbox="allow-same-origin allow-scripts"
-          />
-        </div>
+
+        {/* Side buttons */}
+        {/* Power button */}
+        <div className="absolute -right-[4px] top-[100px] w-[3px] h-[40px] rounded-r-sm bg-[#2a2a2a]" />
+        {/* Volume up */}
+        <div className="absolute -left-[4px] top-[80px] w-[3px] h-[24px] rounded-l-sm bg-[#2a2a2a]" />
+        {/* Volume down */}
+        <div className="absolute -left-[4px] top-[112px] w-[3px] h-[24px] rounded-l-sm bg-[#2a2a2a]" />
       </div>
-      <p className="text-[9px] text-muted-foreground/50 text-center mt-1.5 uppercase tracking-wider font-medium">Mobile Preview</p>
+      <p className="text-[9px] text-muted-foreground/50 text-center mt-2 uppercase tracking-wider font-medium">Mobile Preview</p>
     </div>
   );
 }
