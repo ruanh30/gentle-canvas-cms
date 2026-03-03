@@ -1121,9 +1121,6 @@ export function StoreHeader() {
 {h.menuDividerLine && <div className="hidden lg:block" style={{ height: '1px', backgroundColor: '#e5e5e5' }} />}
           <div
             className="hidden lg:block"
-            style={{
-              boxShadow: '0 2px 0 0 red',
-            }}
           >
             <div style={containerStyle}>
               <nav
@@ -1143,9 +1140,6 @@ export function StoreHeader() {
           {h.menuDividerLine && <div className="hidden lg:block" style={{ height: '1px', backgroundColor: '#e5e5e5' }} />}
           <div
             className="hidden lg:block"
-            style={{
-              boxShadow: '0 2px 0 0 red',
-            }}
           >
             <div style={containerStyle}>
               <nav
