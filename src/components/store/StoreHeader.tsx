@@ -839,13 +839,13 @@ export function StoreHeader() {
     const sw = h.iconStrokeWidth || 1.5;
 
     return (
-      <div className={cn('flex items-center gap-1', isCentered && !forMobile && 'lg:absolute lg:right-0')}>
+      <div className={cn('flex items-center gap-1', isCentered && 'lg:absolute lg:right-0')}>
         {h.showSearch && h.searchStyle !== 'inline' && (!forMobile || searchConfig.showOnMobile) && (
           <Button variant="ghost" size="icon" className="h-10 w-10" onClick={handleSearchClick}>
             <SearchIconComp style={iconStyle} strokeWidth={sw} />
           </Button>
         )}
-        {h.showAccount && (
+        {h.showAccount && !forMobile && (
           <Link to={user ? '/account' : '/login'}>
             <Button variant="ghost" size="icon" className="h-10 w-10">
               <AccountIconComp style={iconStyle} strokeWidth={sw} />
@@ -873,7 +873,7 @@ export function StoreHeader() {
     return (
       <Sheet>
         <SheetTrigger asChild>
-          <Button variant="ghost" size="icon" className={cn('lg:hidden', isCentered && 'absolute left-0')}>
+          <Button variant="ghost" size="icon" className="lg:hidden h-10 w-10 shrink-0">
             <Menu className="h-5 w-5" />
           </Button>
         </SheetTrigger>
@@ -933,8 +933,29 @@ export function StoreHeader() {
         {/* DOUBLE ROW LAYOUT */}
         {isDoubleRow && !shrinkActive ? (
           <>
-            {/* Row 1: Logo + Search + Actions */}
-            <div className="flex items-center justify-between" style={{ height: currentHeight, gap: `${container.gap}px` }}>
+            {/* ── MOBILE: same 3-column grid for double-row ── */}
+            <div
+              className="grid grid-cols-[auto_1fr_auto] items-center lg:hidden"
+              style={{ height: currentHeight, gap: `${Math.min(container.gap, 12)}px` }}
+            >
+              {renderMobileDrawer()}
+
+              <Link to="/" className="flex items-center gap-2 min-w-0 overflow-hidden justify-start">
+                {theme.logo.imageUrl && (
+                  <img src={theme.logo.imageUrl} alt="Logo" style={{ maxHeight: theme.logo.maxHeight }} className="object-contain shrink-0" />
+                )}
+                {theme.logo.showText && (
+                  <span className="font-display text-lg font-bold tracking-tight truncate">
+                    {theme.logo.text}
+                  </span>
+                )}
+              </Link>
+
+              {renderActions(true)}
+            </div>
+
+            {/* ── DESKTOP: Row 1: Logo + Search + Actions ── */}
+            <div className="hidden lg:flex items-center justify-between" style={{ height: currentHeight, gap: `${container.gap}px` }}>
               <Link to="/" className="flex items-center gap-2 shrink-0">
                 {theme.logo.imageUrl && (
                   <img src={theme.logo.imageUrl} alt="Logo" style={{ maxHeight: theme.logo.maxHeight }} className="object-contain" />
@@ -956,42 +977,66 @@ export function StoreHeader() {
           </>
         ) : !shrinkActive ? (
           /* ALL OTHER LAYOUTS */
-          <div className={cn(
-            'flex items-center transition-all duration-300',
-            isCentered ? 'justify-between lg:justify-center lg:relative' : 'justify-between'
-          )} style={{ height: currentHeight, gap: `${container.gap}px` }}>
-            {/* Mobile: hamburger left — on centered layout use flex instead of absolute to prevent overlap */}
-            {isCentered ? (
-              <div className="lg:absolute lg:left-0 shrink-0">
-                {renderMobileDrawer()}
-              </div>
-            ) : (
-              renderMobileDrawer()
-            )}
+          <>
+            {/* ── MOBILE: 3-column grid [hamburger | logo | actions] ── */}
+            <div
+              className="grid grid-cols-[auto_1fr_auto] items-center lg:hidden"
+              style={{ height: currentHeight, gap: `${Math.min(container.gap, 12)}px` }}
+            >
+              {renderMobileDrawer()}
 
-            <Link to="/" className="flex items-center gap-2 shrink-0 min-w-0">
-              {theme.logo.imageUrl && (
-                <img src={theme.logo.imageUrl} alt="Logo" style={{ maxHeight: theme.logo.maxHeight }} className="object-contain shrink-0" />
+              <Link to="/" className={cn(
+                'flex items-center gap-2 min-w-0 overflow-hidden',
+                isCentered ? 'justify-center' : 'justify-start',
+              )}>
+                {theme.logo.imageUrl && (
+                  <img src={theme.logo.imageUrl} alt="Logo" style={{ maxHeight: theme.logo.maxHeight }} className="object-contain shrink-0" />
+                )}
+                {theme.logo.showText && (
+                  <span className="font-display text-lg font-bold tracking-tight truncate">
+                    {theme.logo.text}
+                  </span>
+                )}
+              </Link>
+
+              {renderActions(true)}
+            </div>
+
+            {/* ── DESKTOP: original flex layout ── */}
+            <div className={cn(
+              'hidden lg:flex items-center transition-all duration-300',
+              isCentered ? 'justify-center relative' : 'justify-between'
+            )} style={{ height: currentHeight, gap: `${container.gap}px` }}>
+              {isCentered && (
+                <div className="absolute left-0 shrink-0">
+                  {/* Desktop doesn't need hamburger, it's hidden via lg:hidden */}
+                </div>
               )}
-              {theme.logo.showText && (
-                <span className="font-display text-xl md:text-2xl font-bold tracking-tight truncate">
-                  {theme.logo.text}
-                </span>
+
+              <Link to="/" className="flex items-center gap-2 shrink-0 min-w-0">
+                {theme.logo.imageUrl && (
+                  <img src={theme.logo.imageUrl} alt="Logo" style={{ maxHeight: theme.logo.maxHeight }} className="object-contain shrink-0" />
+                )}
+                {theme.logo.showText && (
+                  <span className="font-display text-xl md:text-2xl font-bold tracking-tight truncate">
+                    {theme.logo.text}
+                  </span>
+                )}
+              </Link>
+
+              {h.layout !== 'hamburger-only' && h.layout !== 'centered' && !isMenuBarSeparated && (
+                <nav className="flex items-center" style={{ gap: `${h.menuItemGap ?? 4}px` }}>
+                  {renderNavItems()}
+                </nav>
               )}
-            </Link>
 
-            {h.layout !== 'hamburger-only' && h.layout !== 'centered' && !isMenuBarSeparated && (
-              <nav className="hidden lg:flex items-center" style={{ gap: `${h.menuItemGap ?? 4}px` }}>
-                {renderNavItems()}
-              </nav>
-            )}
+              {h.searchStyle === 'inline' && h.showSearch && h.layout !== 'hamburger-only' && h.layout !== 'double-row' && (
+                <InlineSearchField placeholder={placeholder} headerBg={activeState?.backgroundColor} headerText={activeState?.textColor} onSearch={handleSearch} />
+              )}
 
-            {h.searchStyle === 'inline' && h.showSearch && h.layout !== 'hamburger-only' && h.layout !== 'double-row' && (
-              <InlineSearchField placeholder={placeholder} headerBg={activeState?.backgroundColor} headerText={activeState?.textColor} onSearch={handleSearch} />
-            )}
-
-            {renderActions()}
-          </div>
+              {renderActions()}
+            </div>
+          </>
         ) : null}
 
         {/* When shrunk: show ONLY the nav menu bar */}
