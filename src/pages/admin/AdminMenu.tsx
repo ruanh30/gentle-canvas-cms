@@ -241,39 +241,64 @@ function AnnouncementCarouselPreview({ messages, bg, color, speed }: { messages:
 /* ================================================================== */
 
 function LiveHeaderPreview() {
-  const [previewDevice, setPreviewDevice] = useState<'desktop' | 'mobile'>('desktop');
-  const isMobile = previewDevice === 'mobile';
-
-  // Scale factor to fit the real header into the admin panel preview area
-  const scale = isMobile ? 0.85 : 0.55;
-  const containerWidth = isMobile ? 375 : '100%';
+  const desktopScale = 0.55;
+  const mobileScale = 0.85;
 
   return (
     <div className="border-b border-border/50 bg-[hsl(var(--flash-surface))]">
-      <div className="flex items-center justify-between px-4 py-2">
+      <div className="px-4 py-2">
         <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[hsl(var(--flash-brand-deep)/0.6)]">Preview ao vivo</p>
-        <Tabs value={previewDevice} onValueChange={v => setPreviewDevice(v as any)}>
-          <TabsList className="h-7 bg-white/60 border border-border/30">
-            <TabsTrigger value="desktop" className="h-5 text-[10px] px-2 gap-1 data-[state=active]:bg-[hsl(var(--flash-brand-deep))] data-[state=active]:text-white">
-              <Monitor className="h-3 w-3" /> Desktop
-            </TabsTrigger>
-            <TabsTrigger value="mobile" className="h-5 text-[10px] px-2 gap-1 data-[state=active]:bg-[hsl(var(--flash-brand-deep))] data-[state=active]:text-white">
-              <Smartphone className="h-3 w-3" /> Mobile
-            </TabsTrigger>
-          </TabsList>
-        </Tabs>
       </div>
 
-      <div className={cn('mx-4 mb-3 rounded-lg overflow-hidden border border-border/40 shadow-sm transition-all duration-300', isMobile && 'max-w-[375px] mx-auto')}>
-        <div
-          style={{
-            transform: `scale(${scale})`,
-            transformOrigin: 'top left',
-            width: isMobile ? `${375}px` : `${100 / scale}%`,
-            pointerEvents: 'none',
-          }}
-        >
-          <StoreHeader />
+      {/* Desktop Preview */}
+      <div className="px-4 mb-2">
+        <div className="flex items-center gap-1.5 mb-1.5">
+          <Monitor className="h-3 w-3 text-muted-foreground/50" />
+          <span className="text-[10px] font-medium text-muted-foreground/60 uppercase tracking-wider">Desktop</span>
+        </div>
+        <div className="rounded-lg overflow-hidden border border-border/40 shadow-sm">
+          <div
+            style={{
+              transform: `scale(${desktopScale})`,
+              transformOrigin: 'top left',
+              width: `${100 / desktopScale}%`,
+              pointerEvents: 'none',
+            }}
+          >
+            <StoreHeader />
+          </div>
+        </div>
+      </div>
+
+      {/* Mobile Preview */}
+      <div className="px-4 mb-3">
+        <div className="flex items-center gap-1.5 mb-1.5">
+          <Smartphone className="h-3 w-3 text-muted-foreground/50" />
+          <span className="text-[10px] font-medium text-muted-foreground/60 uppercase tracking-wider">Android / Mobile</span>
+        </div>
+        <div className="max-w-[375px] mx-auto rounded-xl overflow-hidden border border-border/40 shadow-sm bg-background">
+          {/* Simulated status bar */}
+          <div className="h-6 bg-black flex items-center justify-between px-4">
+            <span className="text-[9px] text-white/70 font-medium">9:41</span>
+            <div className="flex items-center gap-1">
+              <div className="w-3.5 h-1.5 rounded-sm border border-white/50 relative">
+                <div className="absolute inset-[1px] right-[2px] bg-white/70 rounded-[1px]" />
+              </div>
+            </div>
+          </div>
+          {/* Header at mobile scale */}
+          <div className="overflow-hidden">
+            <div
+              style={{
+                transform: `scale(${mobileScale})`,
+                transformOrigin: 'top left',
+                width: `${100 / mobileScale}%`,
+                pointerEvents: 'none',
+              }}
+            >
+              <StoreHeader />
+            </div>
+          </div>
         </div>
       </div>
     </div>
