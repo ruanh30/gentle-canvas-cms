@@ -240,14 +240,12 @@ function AnnouncementCarouselPreview({ messages, bg, color, speed }: { messages:
 /*  LIVE HEADER PREVIEW                                                 */
 /* ================================================================== */
 
-function LiveHeaderPreview() {
+function MobilePreviewFloat() {
   const { draft } = useTheme();
-  const desktopScale = 0.55;
   const mobileIframeRef = React.useRef<HTMLIFrameElement>(null);
   const iframeReadyRef = React.useRef(false);
   const [mobileHeight, setMobileHeight] = useState(80);
 
-  // Listen for iframe signals (ready + resize)
   useEffect(() => {
     const handler = (event: MessageEvent) => {
       if (event.data?.type === 'header-preview-ready') {
@@ -265,7 +263,6 @@ function LiveHeaderPreview() {
     return () => window.removeEventListener('message', handler);
   }, []);
 
-  // Sync draft changes to iframe
   useEffect(() => {
     if (iframeReadyRef.current && mobileIframeRef.current?.contentWindow) {
       mobileIframeRef.current.contentWindow.postMessage(
@@ -275,18 +272,51 @@ function LiveHeaderPreview() {
     }
   }, [draft]);
 
+  const iframeScale = 280 / 375;
+
+  return (
+    <div className="sticky top-0 shrink-0 z-10 p-3">
+      <div className="w-[280px] rounded-xl overflow-hidden border border-border/40 shadow-lg bg-black">
+        {/* Simulated status bar */}
+        <div className="h-5 bg-black flex items-center justify-between px-3">
+          <span className="text-[8px] text-white/70 font-medium">9:41</span>
+          <div className="flex items-center gap-1">
+            <div className="w-3 h-1.5 rounded-sm border border-white/50 relative">
+              <div className="absolute inset-[1px] right-[2px] bg-white/70 rounded-[1px]" />
+            </div>
+          </div>
+        </div>
+        {/* iframe at real 375px, scaled down to fit 280px visually */}
+        <div className="overflow-hidden" style={{ height: mobileHeight * iframeScale, transition: 'height 200ms ease' }}>
+          <iframe
+            ref={mobileIframeRef}
+            src="/preview/header"
+            title="Mobile Header Preview"
+            className="border-0 bg-background block origin-top-left"
+            style={{
+              width: 375,
+              height: mobileHeight,
+              transform: `scale(${iframeScale})`,
+              transformOrigin: 'top left',
+            }}
+            sandbox="allow-same-origin allow-scripts"
+          />
+        </div>
+      </div>
+      <p className="text-[9px] text-muted-foreground/50 text-center mt-1.5 uppercase tracking-wider font-medium">Mobile Preview</p>
+    </div>
+  );
+}
+
+function LiveHeaderPreview() {
+  const desktopScale = 0.55;
+
   return (
     <div className="border-b border-border/50 bg-[hsl(var(--flash-surface))]">
       <div className="px-4 py-2">
         <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[hsl(var(--flash-brand-deep)/0.6)]">Preview ao vivo</p>
       </div>
-
-      {/* Desktop Preview — scaled real component */}
-      <div className="px-4 mb-2">
-        <div className="flex items-center gap-1.5 mb-1.5">
-          <Monitor className="h-3 w-3 text-muted-foreground/50" />
-          <span className="text-[10px] font-medium text-muted-foreground/60 uppercase tracking-wider">Desktop</span>
-        </div>
+      <div className="px-4 mb-3">
         <div className="rounded-lg overflow-hidden border border-border/40 shadow-sm">
           <div
             style={{
@@ -298,34 +328,6 @@ function LiveHeaderPreview() {
           >
             <StoreHeader />
           </div>
-        </div>
-      </div>
-
-      {/* Mobile Preview — real iframe at 375px (breakpoints trigger naturally) */}
-      <div className="px-4 mb-3">
-        <div className="flex items-center gap-1.5 mb-1.5">
-          <Smartphone className="h-3 w-3 text-muted-foreground/50" />
-          <span className="text-[10px] font-medium text-muted-foreground/60 uppercase tracking-wider">Android / Mobile</span>
-        </div>
-        <div className="max-w-[375px] mx-auto rounded-xl overflow-hidden border border-border/40 shadow-sm bg-black">
-          {/* Simulated status bar */}
-          <div className="h-6 bg-black flex items-center justify-between px-4">
-            <span className="text-[9px] text-white/70 font-medium">9:41</span>
-            <div className="flex items-center gap-1">
-              <div className="w-3.5 h-1.5 rounded-sm border border-white/50 relative">
-                <div className="absolute inset-[1px] right-[2px] bg-white/70 rounded-[1px]" />
-              </div>
-            </div>
-          </div>
-          {/* iframe — real 375px width, CSS breakpoints fire naturally */}
-          <iframe
-            ref={mobileIframeRef}
-            src="/preview/header"
-            title="Mobile Header Preview"
-            className="border-0 bg-background block"
-            style={{ width: 375, height: mobileHeight, transition: 'height 200ms ease' }}
-            sandbox="allow-same-origin allow-scripts"
-          />
         </div>
       </div>
     </div>
@@ -1960,13 +1962,17 @@ export default function AdminMenu() {
           </ScrollArea>
         </div>
 
-        {/* Edit Panel */}
-        <div className="flex-1 overflow-hidden">
-          <ScrollArea className="h-full">
-            <div className="max-w-xl mx-auto px-6 py-6">
-              <SectionComponent />
-            </div>
-          </ScrollArea>
+        {/* Edit Panel + Mobile Preview float */}
+        <div className="flex-1 flex overflow-hidden">
+          <div className="flex-1 overflow-hidden">
+            <ScrollArea className="h-full">
+              <div className="max-w-xl mx-auto px-6 py-6">
+                <SectionComponent />
+              </div>
+            </ScrollArea>
+          </div>
+          {/* Floating mobile preview on the right */}
+          <MobilePreviewFloat />
         </div>
       </div>
     </div>
