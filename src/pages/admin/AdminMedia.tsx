@@ -44,14 +44,14 @@ function getAllMedia(): MediaItem[] {
 }
 
 export default function AdminMedia() {
+  // Clean up corrupted localStorage from previous version
+  React.useEffect(() => { localStorage.removeItem('flashloja_uploaded_media'); }, []);
   const navigate = useNavigate();
   const [search, setSearch] = useState('');
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [filter, setFilter] = useState<'all' | 'Produto' | 'Categoria'>('all');
   const [sort, setSort] = useState<SortOption>('recent');
-  const [uploadedMedia, setUploadedMedia] = useState<MediaItem[]>(() => {
-    try { return JSON.parse(localStorage.getItem('flashloja_uploaded_media') || '[]'); } catch { return []; }
-  });
+  const [uploadedMedia, setUploadedMedia] = useState<MediaItem[]>([]);
   const [deletedIds, setDeletedIds] = useState<Set<string>>(() => {
     try { return new Set(JSON.parse(localStorage.getItem('flashloja_deleted_media') || '[]')); } catch { return new Set(); }
   });
@@ -90,7 +90,6 @@ export default function AdminMedia() {
 
     const nextUploaded = uploadedMedia.filter(m => !selected.has(m.id));
     setUploadedMedia(nextUploaded);
-    localStorage.setItem('flashloja_uploaded_media', JSON.stringify(nextUploaded));
 
     setSelected(new Set());
     toast({
@@ -107,11 +106,7 @@ export default function AdminMedia() {
       name: file.name.replace(/\.[^/.]+$/, ''),
       addedAt: Date.now(),
     };
-    setUploadedMedia(prev => {
-      const next = [newItem, ...prev];
-      localStorage.setItem('flashloja_uploaded_media', JSON.stringify(next));
-      return next;
-    });
+    setUploadedMedia(prev => [newItem, ...prev]);
     toast({
       title: 'Upload concluído',
       description: `"${newItem.name}" foi adicionada à biblioteca.`,
