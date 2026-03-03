@@ -122,22 +122,30 @@ const ProductDetailPage = () => {
                       const matching = product.variants.filter(v => v.attributes[key] === val);
                       const isSelected = matching.some(v => v.id === selectedVariant);
                       const isWhite = hex?.toLowerCase() === '#ffffff';
+                      const outOfStock = matching.every(v => v.stock <= 0);
                       return (
                         <button
                           key={val}
-                          onClick={() => setSelectedVariant(matching[0]?.id)}
-                          className="group relative"
-                          title={val}
+                          onClick={() => !outOfStock && setSelectedVariant(matching[0]?.id)}
+                          className={cn('group relative', outOfStock && 'cursor-not-allowed')}
+                          title={outOfStock ? `${val} — Esgotado` : val}
+                          disabled={outOfStock}
                         >
                           <span
                             className={cn(
                               'block w-10 h-10 rounded-full transition-all duration-150 ring-offset-2 ring-offset-background',
                               isSelected ? 'ring-2 ring-foreground scale-110' : 'ring-0 group-hover:ring-1 group-hover:ring-border',
                               isWhite && 'border border-border/50',
+                              outOfStock && 'opacity-30',
                             )}
                             style={{ backgroundColor: hex || '#ccc' }}
                           />
-                          {isSelected && (
+                          {outOfStock && (
+                            <span className="absolute inset-0 flex items-center justify-center">
+                              <span className="block w-[1px] h-11 bg-muted-foreground/60 rotate-45" />
+                            </span>
+                          )}
+                          {isSelected && !outOfStock && (
                             <Check className={cn(
                               'absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-4 w-4',
                               isWhite ? 'text-foreground' : 'text-white',
@@ -152,11 +160,20 @@ const ProductDetailPage = () => {
                     {values.map(val => {
                       const matching = product.variants.filter(v => v.attributes[key] === val);
                       const isSelected = matching.some(v => v.id === selectedVariant);
+                      const outOfStock = matching.every(v => v.stock <= 0);
                       return (
                         <button
                           key={val}
-                          onClick={() => setSelectedVariant(matching[0]?.id)}
-                          className={`px-4 py-2 text-sm border rounded-lg transition-colors font-body ${isSelected ? 'border-foreground bg-foreground text-background' : 'border-border hover:border-foreground'}`}
+                          onClick={() => !outOfStock && setSelectedVariant(matching[0]?.id)}
+                          disabled={outOfStock}
+                          className={cn(
+                            'px-4 py-2 text-sm border rounded-lg transition-colors font-body',
+                            outOfStock
+                              ? 'opacity-40 cursor-not-allowed line-through border-border/40 text-muted-foreground'
+                              : isSelected
+                                ? 'border-foreground bg-foreground text-background'
+                                : 'border-border hover:border-foreground',
+                          )}
                         >
                           {val}
                         </button>

@@ -57,9 +57,9 @@ export const mockProducts: Product[] = [
     categoryId: 'cat-3', stock: 45, sku: 'VES-001', featured: true, active: true,
     rating: 4.9, reviewCount: 67, createdAt: '2024-02-10', tags: ['floral', 'midi'],
     variants: [
-      { id: 'v8', productId: 'prod-3', name: 'P - Cinza', sku: 'VES-001-P-CI', price: 249.90, stock: 4, attributes: { tamanho: 'P', cor: 'Cinza' } },
+      { id: 'v8', productId: 'prod-3', name: 'P - Cinza', sku: 'VES-001-P-CI', price: 249.90, stock: 0, attributes: { tamanho: 'P', cor: 'Cinza' } },
       { id: 'v8b', productId: 'prod-3', name: 'P - Azul', sku: 'VES-001-P-AZ', price: 249.90, stock: 4, attributes: { tamanho: 'P', cor: 'Azul' } },
-      { id: 'v8c', productId: 'prod-3', name: 'P - Vermelha', sku: 'VES-001-P-VE', price: 249.90, stock: 4, attributes: { tamanho: 'P', cor: 'Vermelha' } },
+      { id: 'v8c', productId: 'prod-3', name: 'P - Vermelha', sku: 'VES-001-P-VE', price: 249.90, stock: 0, attributes: { tamanho: 'P', cor: 'Vermelha' } },
       { id: 'v9', productId: 'prod-3', name: 'M - Cinza', sku: 'VES-001-M-CI', price: 249.90, stock: 5, attributes: { tamanho: 'M', cor: 'Cinza' } },
       { id: 'v9b', productId: 'prod-3', name: 'M - Azul', sku: 'VES-001-M-AZ', price: 249.90, stock: 5, attributes: { tamanho: 'M', cor: 'Azul' } },
       { id: 'v9c', productId: 'prod-3', name: 'M - Vermelha', sku: 'VES-001-M-VE', price: 249.90, stock: 5, attributes: { tamanho: 'M', cor: 'Vermelha' } },

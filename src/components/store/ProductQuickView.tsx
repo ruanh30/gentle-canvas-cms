@@ -169,6 +169,10 @@ function QuickViewVariants({ product, qv, quantities, onUpdateQty, selectedAttrs
   const style = qv?.variationStyle || 'chips';
   const attrKeys = [...new Set(variants.flatMap(v => Object.keys(v.attributes)))];
 
+  // Check if a specific attribute value has ANY variant in stock
+  const isAttrValueInStock = (key: string, val: string) =>
+    variants.some(v => v.attributes[key] === val && v.stock > 0);
+
   // Color swatch renderer shared across styles
   const renderColorSwatches = (key: string, values: string[]) => (
     <div key={key}>
@@ -178,21 +182,29 @@ function QuickViewVariants({ product, qv, quantities, onUpdateQty, selectedAttrs
           const hex = colorHex[val];
           const isSelected = selectedAttrs[key] === val;
           const isWhite = hex?.toLowerCase() === '#ffffff' || hex?.toLowerCase() === '#fff';
+          const outOfStock = !isAttrValueInStock(key, val);
           return (
             <button
               key={val}
-              onClick={() => onSelectAttr(key, val)}
-              className="group"
-              title={val}
+              onClick={() => !outOfStock && onSelectAttr(key, val)}
+              className={cn('group relative', outOfStock && 'cursor-not-allowed')}
+              title={outOfStock ? `${val} — Esgotado` : val}
+              disabled={outOfStock}
             >
               <span
                 className={cn(
                   'block w-8 h-8 rounded-full transition-all duration-150 ring-offset-2 ring-offset-background',
                   isSelected ? 'ring-2 ring-foreground scale-110' : 'ring-0 group-hover:ring-1 group-hover:ring-border',
                   isWhite && 'border border-border/50',
+                  outOfStock && 'opacity-30',
                 )}
                 style={{ backgroundColor: hex || '#ccc' }}
               />
+              {outOfStock && (
+                <span className="absolute inset-0 flex items-center justify-center">
+                  <span className="block w-[1px] h-9 bg-muted-foreground/60 rotate-45" />
+                </span>
+              )}
             </button>
           );
         })}
@@ -213,15 +225,19 @@ function QuickViewVariants({ product, qv, quantities, onUpdateQty, selectedAttrs
               <div className="flex flex-wrap gap-2">
                 {values.map(val => {
                   const isSelected = selectedAttrs[key] === val;
+                  const outOfStock = !isAttrValueInStock(key, val);
                   return (
                     <button
                       key={val}
-                      onClick={() => onSelectAttr(key, val)}
+                      onClick={() => !outOfStock && onSelectAttr(key, val)}
+                      disabled={outOfStock}
                       className={cn(
                         'px-3 py-1.5 text-sm border rounded-lg transition-colors',
-                        isSelected
-                          ? 'border-foreground bg-foreground text-background'
-                          : 'border-border/60 hover:border-foreground text-foreground',
+                        outOfStock
+                          ? 'opacity-40 cursor-not-allowed line-through border-border/40 text-muted-foreground'
+                          : isSelected
+                            ? 'border-foreground bg-foreground text-background'
+                            : 'border-border/60 hover:border-foreground text-foreground',
                       )}
                     >
                       {val}
@@ -269,8 +285,12 @@ function QuickViewVariants({ product, qv, quantities, onUpdateQty, selectedAttrs
               const colorVal = colorKey ? v.attributes[colorKey] : null;
               const hex = colorVal ? (colorHex[colorVal] || '#ccc') : null;
               const isWhite = hex?.toLowerCase() === '#ffffff' || hex?.toLowerCase() === '#fff';
+              const outOfStock = v.stock <= 0;
               return (
-                <div key={v.id} className="flex items-center justify-between py-2.5 gap-3">
+                <div key={v.id} className={cn(
+                  'flex items-center justify-between py-2.5 gap-3',
+                  outOfStock && 'opacity-40',
+                )}>
                   <div className="flex items-center gap-2.5 min-w-0 flex-1">
                     {hex && (
                       <span
@@ -283,15 +303,19 @@ function QuickViewVariants({ product, qv, quantities, onUpdateQty, selectedAttrs
                       />
                     )}
                     <div className="min-w-0">
-                      <p className="text-sm font-medium text-foreground truncate">{v.name}</p>
+                      <p className={cn('text-sm font-medium text-foreground truncate', outOfStock && 'line-through')}>
+                        {v.name}
+                        {outOfStock && <span className="ml-1.5 text-[10px] text-muted-foreground no-underline font-normal">(Esgotado)</span>}
+                      </p>
                       {qv?.showSKU && (
                         <p className="text-[10px] text-muted-foreground font-mono">#{v.sku}</p>
                       )}
                     </div>
                   </div>
-                  <div className="flex items-center border border-border/60 rounded-lg">
+                  <div className={cn('flex items-center border border-border/60 rounded-lg', outOfStock && 'pointer-events-none')}>
                     <button
                       onClick={() => onUpdateQty(v.id, -1)}
+                      disabled={outOfStock}
                       className="w-8 h-8 grid place-items-center hover:bg-muted transition-colors"
                     >
                       <Minus className="h-3 w-3" />
@@ -301,6 +325,7 @@ function QuickViewVariants({ product, qv, quantities, onUpdateQty, selectedAttrs
                     </span>
                     <button
                       onClick={() => onUpdateQty(v.id, 1)}
+                      disabled={outOfStock}
                       className="w-8 h-8 grid place-items-center hover:bg-muted transition-colors"
                     >
                       <Plus className="h-3 w-3" />
