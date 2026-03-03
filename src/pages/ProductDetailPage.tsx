@@ -22,9 +22,11 @@ const ProductDetailPage = () => {
   const { addItem } = useCart();
   const product = mockProducts.find(p => p.slug === slug);
   const [selectedImage, setSelectedImage] = useState(0);
-  const [selectedVariant, setSelectedVariant] = useState<string | undefined>(
-    product?.variants[0]?.id
-  );
+  const [selectedVariant, setSelectedVariant] = useState<string | undefined>(() => {
+    // Pre-select first in-stock variant
+    const inStock = product?.variants.find(v => v.stock > 0);
+    return inStock?.id ?? product?.variants[0]?.id;
+  });
   const [quantity, setQuantity] = useState(1);
 
   if (!product) {
@@ -40,13 +42,16 @@ const ProductDetailPage = () => {
   const currentPrice = variant?.price ?? product.price;
   const discount = product.compareAtPrice ? Math.round((1 - product.price / product.compareAtPrice) * 100) : 0;
   const related = mockProducts.filter(p => p.categoryId === product.categoryId && p.id !== product.id).slice(0, 4);
+  const isOutOfStock = variant ? variant.stock <= 0 : false;
 
   const handleBuyNow = () => {
+    if (isOutOfStock) return;
     addItem(product, variant, quantity);
     navigate('/cart');
   };
 
   const handleAddToCart = () => {
+    if (isOutOfStock) return;
     addItem(product, variant, quantity);
   };
 
@@ -204,16 +209,18 @@ const ProductDetailPage = () => {
             <Button
               size="lg"
               onClick={handleBuyNow}
-              className="w-full rounded-lg text-base font-semibold font-body"
+              disabled={isOutOfStock}
+              className={cn('w-full rounded-lg text-base font-semibold font-body', isOutOfStock && 'opacity-50 cursor-not-allowed')}
               style={{ backgroundColor: 'hsl(0, 72%, 51%)', color: 'white' }}
             >
-              Comprar Agora
+              {isOutOfStock ? 'Esgotado' : 'Comprar Agora'}
             </Button>
             <Button
               size="lg"
               variant="outline"
               onClick={handleAddToCart}
-              className="w-full rounded-lg text-base font-body"
+              disabled={isOutOfStock}
+              className={cn('w-full rounded-lg text-base font-body', isOutOfStock && 'opacity-50 cursor-not-allowed')}
             >
               <ShoppingBag className="mr-2 h-5 w-5" />
               Adicionar ao Carrinho
