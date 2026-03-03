@@ -155,10 +155,12 @@ function QuickViewGallery({ product, qv }: { product: Product; qv: any }) {
 /* ================================================================== */
 /*  QuickViewVariants                                                  */
 /* ================================================================== */
-function QuickViewVariants({ product, qv, quantities, onUpdateQty }: {
+function QuickViewVariants({ product, qv, quantities, onUpdateQty, selectedAttrs, onSelectAttr }: {
   product: Product; qv: any;
   quantities: Record<string, number>;
   onUpdateQty: (id: string, delta: number) => void;
+  selectedAttrs: Record<string, string>;
+  onSelectAttr: (key: string, value: string) => void;
 }) {
   const variants = product.variants || [];
   if (variants.length === 0) return null;
@@ -177,12 +179,16 @@ function QuickViewVariants({ product, qv, quantities, onUpdateQty }: {
               <div className="flex flex-wrap gap-2">
                 {values.map(val => {
                   const isColor = key.toLowerCase() === 'cor';
+                  const isSelected = selectedAttrs[key] === val;
                   return (
                     <button
                       key={val}
+                      onClick={() => onSelectAttr(key, val)}
                       className={cn(
                         'px-3 py-1.5 text-sm border rounded-lg transition-colors',
-                        'border-border/60 hover:border-foreground text-foreground',
+                        isSelected
+                          ? 'border-foreground bg-foreground text-background'
+                          : 'border-border/60 hover:border-foreground text-foreground',
                       )}
                     >
                       {isColor && colorHex[val] && (
@@ -436,6 +442,23 @@ export function ProductQuickView({ product, open, onClose }: QuickViewProps) {
   const qv = theme.quickView;
 
   const [quantities, setQuantities] = useState<Record<string, number>>({ _single: 1 });
+  const [selectedAttrs, setSelectedAttrs] = useState<Record<string, string>>(() => {
+    // Pre-select first value for each attribute key
+    const attrs: Record<string, string> = {};
+    const variants = product.variants || [];
+    if (variants.length > 0) {
+      const keys = [...new Set(variants.flatMap(v => Object.keys(v.attributes)))];
+      keys.forEach(k => {
+        const vals = [...new Set(variants.map(v => v.attributes[k]))];
+        if (vals.length > 0) attrs[k] = vals[0];
+      });
+    }
+    return attrs;
+  });
+
+  const selectAttr = useCallback((key: string, value: string) => {
+    setSelectedAttrs(prev => ({ ...prev, [key]: value }));
+  }, []);
 
   const updateQty = useCallback((id: string, delta: number) => {
     setQuantities(prev => ({
@@ -443,6 +466,14 @@ export function ProductQuickView({ product, open, onClose }: QuickViewProps) {
       [id]: Math.max(id === '_single' ? 1 : 0, (prev[id] || (id === '_single' ? 1 : 0)) + delta),
     }));
   }, []);
+
+  // Find the variant matching selected attributes
+  const matchedVariant = useMemo(() => {
+    if (!product.variants.length) return undefined;
+    return product.variants.find(v =>
+      Object.entries(selectedAttrs).every(([k, val]) => v.attributes[k] === val)
+    );
+  }, [product.variants, selectedAttrs]);
 
   const totalQty = Object.entries(quantities).reduce((sum, [k, v]) => {
     if (k === '_single') return sum + v;
@@ -461,7 +492,7 @@ export function ProductQuickView({ product, open, onClose }: QuickViewProps) {
       if (!hasAny) addItem(product);
     } else {
       const singleQty = quantities._single || 1;
-      for (let i = 0; i < singleQty; i++) addItem(product);
+      for (let i = 0; i < singleQty; i++) addItem(product, matchedVariant);
     }
     onClose();
   };
@@ -496,7 +527,7 @@ export function ProductQuickView({ product, open, onClose }: QuickViewProps) {
         {/* Variants */}
         {product.variants.length > 0 && (
           <div style={{ marginBottom: spacing }}>
-            <QuickViewVariants product={product} qv={qv} quantities={quantities} onUpdateQty={updateQty} />
+            <QuickViewVariants product={product} qv={qv} quantities={quantities} onUpdateQty={updateQty} selectedAttrs={selectedAttrs} onSelectAttr={selectAttr} />
           </div>
         )}
 
@@ -575,7 +606,7 @@ export function ProductQuickView({ product, open, onClose }: QuickViewProps) {
             )}
             {product.variants.length > 0 && (
               <div style={{ marginBottom: spacing }}>
-                <QuickViewVariants product={product} qv={qv} quantities={quantities} onUpdateQty={updateQty} />
+                <QuickViewVariants product={product} qv={qv} quantities={quantities} onUpdateQty={updateQty} selectedAttrs={selectedAttrs} onSelectAttr={selectAttr} />
               </div>
             )}
             {qv?.showShipping !== false && <QuickViewShipping defaultOpen />}
