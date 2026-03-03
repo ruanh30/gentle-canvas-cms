@@ -4,7 +4,7 @@ import { Product } from '@/types';
 import { formatCurrency } from '@/lib/format';
 import { useCart } from '@/contexts/CartContext';
 import { useTheme } from '@/contexts/ThemeContext';
-import { ShoppingBag, Heart, Eye, X, Minus, Plus, Star, Truck, Zap, CreditCard, Sparkles, ArrowRight, Rocket, BadgeCheck, Tag, ShoppingCart, PackagePlus, Store, Flame, Send, type LucideIcon } from 'lucide-react';
+import { ShoppingBag, Heart, Eye, X, Minus, Plus, Star, Truck, Zap, CreditCard, Sparkles, ArrowRight, Rocket, BadgeCheck, Tag, ShoppingCart, PackagePlus, Store, Flame, Send, ChevronLeft, ChevronRight, type LucideIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const iconMap: Record<string, LucideIcon> = {
@@ -146,6 +146,8 @@ export function ProductCard({ product }: Props) {
   const navigate = useNavigate();
   const c = theme.productCard ?? {} as any;
   const [showPreview, setShowPreview] = useState(false);
+  const [imgIndex, setImgIndex] = useState(0);
+  const hasMultipleImages = product.images.length > 1;
 
   // Check if product is fully out of stock
   const isFullyOutOfStock = product.variants.length > 0
@@ -201,11 +203,29 @@ export function ProductCard({ product }: Props) {
             radiusMap[c.imageBorderRadius],
           )}>
             <img
-              src={product.images[0]}
+              src={product.images[imgIndex]}
               alt={product.name}
               className={cn('h-full w-full object-cover transition-transform duration-500', hoverClass, isFullyOutOfStock && 'grayscale-[30%]')}
               loading="lazy"
             />
+
+            {/* Image navigation arrows */}
+            {hasMultipleImages && (
+              <>
+                <button
+                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); setImgIndex(i => (i - 1 + product.images.length) % product.images.length); }}
+                  className="absolute left-2 top-1/2 -translate-y-1/2 bg-background/80 backdrop-blur-sm p-1.5 rounded-full shadow-sm opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:bg-background"
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </button>
+                <button
+                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); setImgIndex(i => (i + 1) % product.images.length); }}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 bg-background/80 backdrop-blur-sm p-1.5 rounded-full shadow-sm opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:bg-background"
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </button>
+              </>
+            )}
 
             {/* Out of stock badge — takes priority over discount */}
             {isFullyOutOfStock && (
