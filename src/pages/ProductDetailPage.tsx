@@ -4,9 +4,17 @@ import { mockProducts } from '@/data/mock';
 import { useCart } from '@/contexts/CartContext';
 import { formatCurrency } from '@/lib/format';
 import { Button } from '@/components/ui/button';
-import { ShoppingBag, Star, Minus, Plus, ArrowLeft, Truck } from 'lucide-react';
+import { ShoppingBag, Star, Minus, Plus, ArrowLeft, Truck, Check } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { ProductCard } from '@/components/store/ProductCard';
+import { cn } from '@/lib/utils';
+
+const colorHex: Record<string, string> = {
+  Branca: '#ffffff', Preta: '#111827', Azul: '#3b82f6',
+  Cinza: '#9ca3af', Verde: '#22c55e', Vermelha: '#ef4444',
+  Rosa: '#ec4899', Amarela: '#eab308', Laranja: '#f97316',
+  Marrom: '#92400e', Bege: '#d4a574',
+};
 
 const ProductDetailPage = () => {
   const { slug } = useParams();
@@ -103,24 +111,59 @@ const ProductDetailPage = () => {
           {/* Variants */}
           {attrKeys.map(key => {
             const values = [...new Set(product.variants.map(v => v.attributes[key]))];
+            const isColor = key.toLowerCase() === 'cor';
             return (
               <div key={key}>
                 <p className="text-sm font-medium mb-2 capitalize">{key}</p>
-                <div className="flex flex-wrap gap-2">
-                  {values.map(val => {
-                    const matching = product.variants.filter(v => v.attributes[key] === val);
-                    const isSelected = matching.some(v => v.id === selectedVariant);
-                    return (
-                      <button
-                        key={val}
-                        onClick={() => setSelectedVariant(matching[0]?.id)}
-                        className={`px-4 py-2 text-sm border rounded-lg transition-colors font-body ${isSelected ? 'border-foreground bg-foreground text-background' : 'border-border hover:border-foreground'}`}
-                      >
-                        {val}
-                      </button>
-                    );
-                  })}
-                </div>
+                {isColor ? (
+                  <div className="flex flex-wrap gap-3">
+                    {values.map(val => {
+                      const hex = colorHex[val];
+                      const matching = product.variants.filter(v => v.attributes[key] === val);
+                      const isSelected = matching.some(v => v.id === selectedVariant);
+                      const isWhite = hex?.toLowerCase() === '#ffffff';
+                      return (
+                        <button
+                          key={val}
+                          onClick={() => setSelectedVariant(matching[0]?.id)}
+                          className="group relative"
+                          title={val}
+                        >
+                          <span
+                            className={cn(
+                              'block w-10 h-10 rounded-full transition-all duration-150 ring-offset-2 ring-offset-background',
+                              isSelected ? 'ring-2 ring-foreground scale-110' : 'ring-0 group-hover:ring-1 group-hover:ring-border',
+                              isWhite && 'border border-border/50',
+                            )}
+                            style={{ backgroundColor: hex || '#ccc' }}
+                          />
+                          {isSelected && (
+                            <Check className={cn(
+                              'absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-4 w-4',
+                              isWhite ? 'text-foreground' : 'text-white',
+                            )} />
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <div className="flex flex-wrap gap-2">
+                    {values.map(val => {
+                      const matching = product.variants.filter(v => v.attributes[key] === val);
+                      const isSelected = matching.some(v => v.id === selectedVariant);
+                      return (
+                        <button
+                          key={val}
+                          onClick={() => setSelectedVariant(matching[0]?.id)}
+                          className={`px-4 py-2 text-sm border rounded-lg transition-colors font-body ${isSelected ? 'border-foreground bg-foreground text-background' : 'border-border hover:border-foreground'}`}
+                        >
+                          {val}
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
             );
           })}
