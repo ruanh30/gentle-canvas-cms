@@ -313,23 +313,34 @@ const HomePage = () => {
             key={cat.id}
             to={`/products?category=${cat.slug}`}
             className={cn(
-              'group text-center flex flex-col items-center gap-2 p-4 transition-colors min-w-[120px] flex-shrink-0 snap-start',
+              'group text-center flex flex-col items-center gap-3 p-5 transition-all duration-200 min-w-[130px] flex-shrink-0 snap-start rounded-2xl',
+              'hover:bg-accent/40',
               !showImage && 'p-6 rounded-xl bg-secondary hover:bg-accent',
             )}
           >
             {showImage && cat.image && (
-              <div
-                className={cn('overflow-hidden bg-secondary flex-shrink-0 transition-transform group-hover:scale-105', shapeClass)}
-                style={{
-                  width: imageSize,
-                  height: imageSize,
-                  ...(imageBorder ? { border: `${(section.settings?.imageBorderWidth as number) || 2}px solid ${imageBorderColor}` } : {}),
-                }}
-              >
-                <img src={cat.image} alt={cat.name} className={cn('w-full h-full object-cover', shapeClass)} loading="lazy" />
+              <div className="relative">
+                {/* Soft glow ring behind the image */}
+                <div
+                  className={cn('absolute inset-0 scale-110 opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-md bg-primary/15', shapeClass)}
+                />
+                <div
+                  className={cn(
+                    'relative overflow-hidden bg-secondary flex-shrink-0 transition-all duration-300',
+                    'ring-2 ring-border/50 group-hover:ring-primary/40 group-hover:shadow-lg group-hover:scale-105',
+                    shapeClass
+                  )}
+                  style={{
+                    width: imageSize,
+                    height: imageSize,
+                    ...(imageBorder ? { border: `${(section.settings?.imageBorderWidth as number) || 2}px solid ${imageBorderColor}` } : {}),
+                  }}
+                >
+                  <img src={cat.image} alt={cat.name} className={cn('w-full h-full object-cover transition-transform duration-500 group-hover:scale-110', shapeClass)} loading="lazy" />
+                </div>
               </div>
             )}
-            <p className="text-[13px] text-muted-foreground group-hover:text-foreground transition-colors uppercase tracking-wide font-body font-semibold">{cat.name}</p>
+            <p className="text-[13px] text-muted-foreground group-hover:text-foreground transition-colors duration-200 uppercase tracking-wider font-body font-semibold mt-1">{cat.name}</p>
           </Link>
         );
 
