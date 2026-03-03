@@ -1,15 +1,15 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Home, Grid3X3, ShoppingBag, User } from 'lucide-react';
+import { House, LayoutGrid, ShoppingBag, CircleUserRound } from 'lucide-react';
 import { useCart } from '@/contexts/CartContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { cn } from '@/lib/utils';
 
 const navItems = [
-  { label: 'Início', icon: Home, path: '/' },
-  { label: 'Categorias', icon: Grid3X3, path: '/products' },
+  { label: 'Início', icon: House, path: '/' },
+  { label: 'Categorias', icon: LayoutGrid, path: '/products' },
   { label: 'Carrinho', icon: ShoppingBag, path: '/cart' },
-  { label: 'Conta', icon: User, path: '/account' },
+  { label: 'Conta', icon: CircleUserRound, path: '/account' },
 ];
 
 export function BottomNav() {
