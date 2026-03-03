@@ -114,7 +114,7 @@ function QuickViewGallery({ product, qv }: { product: Product; qv: any }) {
       )}
 
       {/* Main image */}
-      <div className="flex-1 relative rounded-xl overflow-hidden bg-secondary border border-border/20">
+      <div className="group/gallery flex-1 relative rounded-xl overflow-hidden bg-secondary border border-border/20">
         <img
           src={product.images[idx]}
           alt={product.name}
@@ -124,13 +124,13 @@ function QuickViewGallery({ product, qv }: { product: Product; qv: any }) {
           <>
             <button
               onClick={() => setIdx(i => i > 0 ? i - 1 : product.images.length - 1)}
-              className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 grid place-items-center rounded-full bg-background/80 backdrop-blur-sm shadow-sm border border-border/30 hover:bg-background transition-colors"
+              className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 grid place-items-center rounded-full bg-background/80 backdrop-blur-sm shadow-sm border border-border/30 hover:bg-background transition-all opacity-0 group-hover/gallery:opacity-100"
             >
               <ChevronLeft className="h-4 w-4" />
             </button>
             <button
               onClick={() => setIdx(i => i < product.images.length - 1 ? i + 1 : 0)}
-              className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 grid place-items-center rounded-full bg-background/80 backdrop-blur-sm shadow-sm border border-border/30 hover:bg-background transition-colors"
+              className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 grid place-items-center rounded-full bg-background/80 backdrop-blur-sm shadow-sm border border-border/30 hover:bg-background transition-all opacity-0 group-hover/gallery:opacity-100"
             >
               <ChevronRight className="h-4 w-4" />
             </button>
