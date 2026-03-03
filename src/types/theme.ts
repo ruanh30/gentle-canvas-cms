@@ -219,6 +219,7 @@ export interface ThemeHeader {
   menuBar: ThemeMenuBar;
   announcement: ThemeAnnouncementBar;
   bannerBelow: ThemeBannerBelow;
+  socialBar: ThemeSocialBar;
 }
 
 export interface ThemeHeroSlide {
@@ -411,6 +412,23 @@ export interface ThemeHomepageSection {
   title: string;
   showTitle: boolean;
   settings: Record<string, unknown>;
+}
+
+// Social Bar
+export interface ThemeSocialLink {
+  platform: 'facebook' | 'whatsapp' | 'instagram' | 'tiktok' | 'kwai' | 'youtube' | 'linkedin' | 'twitter' | 'telegram';
+  url: string;
+  enabled: boolean;
+}
+
+export interface ThemeSocialBar {
+  enabled: boolean;
+  position: 'header-top' | 'header-actions';
+  links: ThemeSocialLink[];
+  iconSize: number;       // 14-24
+  iconColor: string;
+  iconHoverColor: string;
+  showLabels: boolean;
 }
 
 // Menu
