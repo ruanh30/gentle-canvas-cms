@@ -1118,7 +1118,7 @@ export function StoreHeader() {
       {/* Double-row nav bar (1px white gap divider) */}
       {isDoubleRow && !shrinkActive && !isMenuBarSeparated && (
         <>
-          {h.menuDividerLine && <div className="hidden lg:block" style={{ height: '1px', backgroundColor: '#e5e5e5' }} />}
+          {h.menuDividerLine && <div className="hidden lg:block" style={{ height: '2px', backgroundColor: 'red' }} />}
           <div
             className="hidden lg:block"
             style={{
@@ -1140,7 +1140,7 @@ export function StoreHeader() {
       {/* Centered layout nav bar (1px white gap divider) */}
       {h.layout === 'centered' && !shrinkActive && !isMenuBarSeparated && (
         <>
-          {h.menuDividerLine && <div className="hidden lg:block" style={{ height: '1px', backgroundColor: '#e5e5e5' }} />}
+          {h.menuDividerLine && <div className="hidden lg:block" style={{ height: '2px', backgroundColor: 'red' }} />}
           <div
             className="hidden lg:block"
             style={{
