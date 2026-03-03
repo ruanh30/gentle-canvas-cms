@@ -6,6 +6,7 @@ import {
   ScanSearch, SearchCheck, SearchCode, Telescope, Focus, ScanLine, Radar, ListFilter, Filter,
   UserRound, UserCircle, UserCircle2, UserCheck, UserCog, CircleUser, Contact, BadgeCheck, Fingerprint, LogIn,
   Package, Briefcase, HandCoins, Wallet, CreditCard, Receipt, Gem, Gift,
+  House, LayoutGrid, CircleUserRound,
 } from 'lucide-react';
 import { useCart } from '@/contexts/CartContext';
 import { useAuth } from '@/contexts/AuthContext';
@@ -165,10 +166,11 @@ function BannerBelow() {
 /*  ICON MAP — resolves icon choices from admin                         */
 /* ================================================================== */
 
-const ICON_MAP: Record<string, LucideIcon> = {
+export const ICON_MAP: Record<string, LucideIcon> = {
   Search, SearchIcon: Search, ScanSearch, SearchCheck, SearchCode, Telescope, Focus, ScanLine, Radar, ListFilter, Filter,
   User, UserRound, UserCircle, UserCircle2, CircleUser, UserCheck, UserCog, Contact, BadgeCheck, Fingerprint, LogIn,
   ShoppingBag, ShoppingCart, Store, Package, PackagePlus, Briefcase, HandCoins, Wallet, CreditCard, Receipt, Gem, Gift, Plus,
+  House, LayoutGrid, CircleUserRound,
 };
 
 /* ================================================================== */
