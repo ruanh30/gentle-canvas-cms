@@ -246,6 +246,25 @@ export const defaultThemeConfig: ThemeConfig = {
       carousel: false,
       carouselSpeed: 5,
     },
+    socialBar: {
+      enabled: false,
+      position: 'header-top',
+      links: [
+        { platform: 'facebook', url: '', enabled: true },
+        { platform: 'instagram', url: '', enabled: true },
+        { platform: 'whatsapp', url: '', enabled: true },
+        { platform: 'tiktok', url: '', enabled: false },
+        { platform: 'kwai', url: '', enabled: false },
+        { platform: 'youtube', url: '', enabled: false },
+        { platform: 'linkedin', url: '', enabled: false },
+        { platform: 'twitter', url: '', enabled: false },
+        { platform: 'telegram', url: '', enabled: false },
+      ],
+      iconSize: 16,
+      iconColor: '#737373',
+      iconHoverColor: '#1a1a1a',
+      showLabels: false,
+    },
   },
 
   hero: {
