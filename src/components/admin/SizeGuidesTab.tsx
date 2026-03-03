@@ -7,11 +7,11 @@ import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { Plus, Search, ChevronLeft, Trash2, Save, Star, Pencil, X, Grid3X3, ImageIcon } from 'lucide-react';
+import { Plus, Search, ChevronLeft, Trash2, Save, Star, Pencil, X, Grid3X3 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { mockSizeGuides } from '@/data/mock';
 import type { SizeGuide } from '@/types';
-import SecureFileUpload from '@/components/admin/SecureFileUpload';
+
 
 export default function SizeGuidesTab() {
   const [guides, setGuides] = useState<SizeGuide[]>(mockSizeGuides);
@@ -311,32 +311,6 @@ function SizeGuideForm({ guide, allGuides, onSave, onBack, onDelete, onSetDefaul
           </div>
         </div>
 
-        {/* Image fallback */}
-        <div>
-          <p className="text-sm font-medium text-foreground flex items-center gap-2 mb-2">
-            <ImageIcon className="h-4 w-4" /> Imagem alternativa <span className="text-xs text-muted-foreground font-normal">(opcional)</span>
-          </p>
-          <p className="text-xs text-muted-foreground mb-3">
-            Se preferir, faça upload de uma imagem pronta da tabela. A tabela editável tem prioridade quando ambas existem.
-          </p>
-          {form.image ? (
-            <div className="relative w-fit">
-              <img src={form.image} alt="Tabela de medidas" className="max-w-md rounded-lg border border-border" />
-              <button
-                onClick={() => setForm({ ...form, image: undefined })}
-                className="absolute top-2 right-2 w-6 h-6 rounded-full bg-destructive text-destructive-foreground grid place-items-center"
-              >
-                <X className="h-3 w-3" />
-              </button>
-            </div>
-          ) : (
-            <SecureFileUpload
-              accept="image/jpeg,image/png,image/webp"
-              onFileAccepted={(dataUrl) => setForm({ ...form, image: dataUrl })}
-              compact
-            />
-          )}
-        </div>
       </div>
 
       {onDelete && (
