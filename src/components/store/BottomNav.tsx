@@ -3,19 +3,28 @@ import { Link, useLocation } from 'react-router-dom';
 import { House, LayoutGrid, ShoppingBag, CircleUserRound } from 'lucide-react';
 import { useCart } from '@/contexts/CartContext';
 import { useAuth } from '@/contexts/AuthContext';
+import { useTheme } from '@/contexts/ThemeContext';
+import { ICON_MAP } from '@/components/store/StoreHeader';
 import { cn } from '@/lib/utils';
-
-const navItems = [
-  { label: 'Início', icon: House, path: '/' },
-  { label: 'Categorias', icon: LayoutGrid, path: '/products' },
-  { label: 'Carrinho', icon: ShoppingBag, path: '/cart' },
-  { label: 'Conta', icon: CircleUserRound, path: '/account' },
-];
 
 export function BottomNav() {
   const location = useLocation();
   const { itemCount } = useCart();
   const { user } = useAuth();
+  const { theme } = useTheme();
+
+  const h = theme.header as Record<string, any> || {};
+
+  // Herda ícones configurados pelo lojista no header
+  const CartIcon = ICON_MAP[h?.cartIcon || ''] || ShoppingBag;
+  const AccountIcon = ICON_MAP[h?.accountIcon || ''] || CircleUserRound;
+
+  const navItems = [
+    { label: 'Início', icon: House, path: '/' },
+    { label: 'Categorias', icon: LayoutGrid, path: '/products' },
+    { label: 'Carrinho', icon: CartIcon, path: '/cart' },
+    { label: 'Conta', icon: AccountIcon, path: '/account' },
+  ];
 
   return (
     <nav
