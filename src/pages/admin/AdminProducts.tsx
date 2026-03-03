@@ -34,15 +34,16 @@ import {
 import { cn } from '@/lib/utils';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from '@/contexts/ThemeContext';
-import { mockProducts, mockCategories, mockCollections } from '@/data/mock';
+import { mockProducts, mockCategories, mockCollections, mockSizeGuides } from '@/data/mock';
 import type { Product, Category, ProductCollection } from '@/types';
 import type { ThemeHomepageSection } from '@/types/theme';
+import SizeGuidesTab from '@/components/admin/SizeGuidesTab';
 
 /* ------------------------------------------------------------------ */
 /*  Types                                                              */
 /* ------------------------------------------------------------------ */
 
-type Tab = 'categories' | 'products' | 'collections';
+type Tab = 'categories' | 'products' | 'collections' | 'sizeguides';
 type ProductSection = 'info' | 'price' | 'stock' | 'images' | 'seo' | 'status';
 type CollectionSection = 'info' | 'products' | 'status';
 
@@ -1279,6 +1280,23 @@ function ProductForm({ product, allProducts, sidebarSearch, onSidebarSearch, onS
                 </div>
               </div>
 
+              {/* Size Guide */}
+              <hr className="border-border" />
+              <h4 className="text-sm font-semibold text-foreground flex items-center gap-2">
+                <Ruler className="h-4 w-4" /> Tabela de Medidas
+              </h4>
+              <p className="text-xs text-muted-foreground -mt-3">Vincule uma tabela de medidas a este produto.</p>
+              <Select value={form.sizeGuideId || 'none'} onValueChange={v => setForm({ ...form, sizeGuideId: v === 'none' ? undefined : v })}>
+                <SelectTrigger className="max-w-xs"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">Sem tabela</SelectItem>
+                  <SelectItem value="default">Usar padrão ({mockSizeGuides.find(g => g.isDefault)?.name || '—'})</SelectItem>
+                  {mockSizeGuides.map(g => (
+                    <SelectItem key={g.id} value={g.id}>{g.name}{g.isDefault ? ' ⭐' : ''}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
               {/* Weight & Dimensions */}
               <hr className="border-border" />
               <h4 className="text-sm font-semibold text-foreground flex items-center gap-2">
@@ -1754,6 +1772,7 @@ export default function AdminProducts() {
             { key: 'categories' as Tab, label: 'Categorias', count: mockCategories.length },
             { key: 'products' as Tab, label: 'Produtos', count: mockProducts.length },
             { key: 'collections' as Tab, label: 'Coleções', count: mockCollections.length },
+            { key: 'sizeguides' as Tab, label: 'Tabela de Medidas', count: mockSizeGuides.length },
           ]).map(t => (
             <button
               key={t.key}
@@ -1785,7 +1804,7 @@ export default function AdminProducts() {
         {tab === 'categories' && <CategoriesTab />}
         {tab === 'products' && <ProductsTab />}
         {tab === 'collections' && <CollectionsTab />}
-        
+        {tab === 'sizeguides' && <SizeGuidesTab />}
       </div>
     </div>
   );

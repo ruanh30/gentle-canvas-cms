@@ -30,6 +30,16 @@ export interface ProductVariant {
   attributes: Record<string, string>;
 }
 
+export interface SizeGuide {
+  id: string;
+  name: string;
+  columns: string[];
+  rows: { label: string; values: string[] }[];
+  image?: string;
+  isDefault: boolean;
+  createdAt: string;
+}
+
 export interface Product {
   id: string;
   name: string;
@@ -57,6 +67,7 @@ export interface Product {
   metaDescription?: string;
   variantImages?: Record<string, string>;
   manualBadges?: string[];
+  sizeGuideId?: string; // 'default' | specific ID | undefined (none)
 }
 
 export interface CartItem {

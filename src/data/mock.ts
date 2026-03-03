@@ -1,4 +1,37 @@
-import { Product, Category, Order, Customer, Coupon, StoreSettings, User, ProductCollection } from '@/types';
+import { Product, Category, Order, Customer, Coupon, StoreSettings, User, ProductCollection, SizeGuide } from '@/types';
+
+export const mockSizeGuides: SizeGuide[] = [
+  {
+    id: 'sg-1',
+    name: 'Roupas Femininas',
+    columns: ['Busto (cm)', 'Cintura (cm)', 'Quadril (cm)', 'Comprimento (cm)'],
+    rows: [
+      { label: 'PP', values: ['82-86', '62-66', '88-92', '60'] },
+      { label: 'P', values: ['86-90', '66-70', '92-96', '62'] },
+      { label: 'M', values: ['90-94', '70-74', '96-100', '64'] },
+      { label: 'G', values: ['94-98', '74-78', '100-104', '66'] },
+      { label: 'GG', values: ['98-102', '78-82', '104-108', '68'] },
+    ],
+    isDefault: true,
+    createdAt: '2024-01-10',
+  },
+  {
+    id: 'sg-2',
+    name: 'Calçados',
+    columns: ['Comprimento (cm)', 'Largura (cm)'],
+    rows: [
+      { label: '36', values: ['23.5', '9.0'] },
+      { label: '37', values: ['24.0', '9.2'] },
+      { label: '38', values: ['24.5', '9.4'] },
+      { label: '39', values: ['25.0', '9.6'] },
+      { label: '40', values: ['25.5', '9.8'] },
+      { label: '41', values: ['26.0', '10.0'] },
+      { label: '42', values: ['26.5', '10.2'] },
+    ],
+    isDefault: false,
+    createdAt: '2024-01-12',
+  },
+];
 
 export const mockCategories: Category[] = [
   { id: 'cat-1', name: 'Camisetas', slug: 'camisetas', description: 'Camisetas masculinas e femininas', image: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=300&h=300&fit=crop' },
@@ -30,7 +63,7 @@ export const mockProducts: Product[] = [
     description: 'Camiseta de algodão orgânico com caimento perfeito. Tecido macio e durável, ideal para o dia a dia.',
     price: 89.90, compareAtPrice: 129.90, images: [imgs[0], imgs[5], imgs[6]],
     categoryId: 'cat-1', stock: 150, sku: 'CAM-001', featured: true, active: true,
-    rating: 4.8, reviewCount: 124, createdAt: '2024-01-15', tags: ['básico', 'algodão'],
+    rating: 4.8, reviewCount: 124, createdAt: '2024-01-15', tags: ['básico', 'algodão'], sizeGuideId: 'default',
     variants: [
       { id: 'v1', productId: 'prod-1', name: 'P - Branca', sku: 'CAM-001-P-BR', price: 89.90, stock: 30, attributes: { tamanho: 'P', cor: 'Branca' } },
       { id: 'v2', productId: 'prod-1', name: 'M - Branca', sku: 'CAM-001-M-BR', price: 89.90, stock: 45, attributes: { tamanho: 'M', cor: 'Branca' } },
@@ -55,7 +88,7 @@ export const mockProducts: Product[] = [
     description: 'Vestido midi com estampa floral exclusiva. Tecido fluido e confortável para qualquer ocasião.',
     price: 249.90, images: [imgs[2], imgs[3]],
     categoryId: 'cat-3', stock: 45, sku: 'VES-001', featured: true, active: true,
-    rating: 4.9, reviewCount: 67, createdAt: '2024-02-10', tags: ['floral', 'midi'],
+    rating: 4.9, reviewCount: 67, createdAt: '2024-02-10', tags: ['floral', 'midi'], sizeGuideId: 'default',
     variants: [
       { id: 'v8', productId: 'prod-3', name: 'P - Cinza', sku: 'VES-001-P-CI', price: 249.90, stock: 0, attributes: { tamanho: 'P', cor: 'Cinza' } },
       { id: 'v8b', productId: 'prod-3', name: 'P - Azul', sku: 'VES-001-P-AZ', price: 249.90, stock: 4, attributes: { tamanho: 'P', cor: 'Azul' } },
@@ -81,7 +114,7 @@ export const mockProducts: Product[] = [
     description: 'Tênis casual com tecnologia de amortecimento. Confortável para uso diário.',
     price: 329.90, images: [imgs[5], imgs[0]],
     categoryId: 'cat-5', stock: 60, sku: 'TEN-001', featured: true, active: true,
-    rating: 4.5, reviewCount: 156, createdAt: '2024-03-15', tags: ['casual', 'conforto'],
+    rating: 4.5, reviewCount: 156, createdAt: '2024-03-15', tags: ['casual', 'conforto'], sizeGuideId: 'sg-2',
     variants: [
       { id: 'v11', productId: 'prod-5', name: '39', sku: 'TEN-001-39', price: 329.90, stock: 15, attributes: { tamanho: '39' } },
       { id: 'v12', productId: 'prod-5', name: '40', sku: 'TEN-001-40', price: 329.90, stock: 15, attributes: { tamanho: '40' } },
