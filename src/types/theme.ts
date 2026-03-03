@@ -46,12 +46,6 @@ export interface ThemeButtons {
   shadow: boolean;
 }
 
-export interface ThemeInputs {
-  radius: 'none' | 'small' | 'medium' | 'large';
-  borderWidth: 1 | 2;
-  focusRing: boolean;
-  style: 'default' | 'filled' | 'underline';
-}
 
 export interface ThemeLogo {
   text: string;
@@ -406,12 +400,6 @@ export interface ThemeWhatsApp {
   delay: number;              // seconds before showing
 }
 
-export interface ThemeSEO {
-  titleTemplate: string;
-  defaultDescription: string;
-  ogImage: string;
-  showBreadcrumbs: boolean;
-}
 
 export interface ThemeHomepageSection {
   id: string;
@@ -509,20 +497,6 @@ export interface ThemeResponsive {
   stickyHeaderMobile: boolean;
 }
 
-// A/B Test
-export interface ThemeABTest {
-  enabled: boolean;
-  tests: {
-    id: string;
-    name: string;
-    sectionId: string;
-    variantA: Record<string, unknown>;
-    variantB: Record<string, unknown>;
-    activeVariant: 'A' | 'B' | 'random';
-    clicksA: number;
-    clicksB: number;
-  }[];
-}
 
 export interface ThemeProductListing {
   limitDesktop: number;       // 0 = all
@@ -541,12 +515,6 @@ export interface ThemeGlobal {
   scrollBehavior: 'smooth' | 'auto';
 }
 
-export interface ThemeAccessibility {
-  minContrastRatio: number;
-  focusVisible: boolean;
-  minTouchTarget: number;     // px
-  reducedMotion: boolean;
-}
 
 export interface ThemeQuickView {
   enabled: boolean;
@@ -598,23 +566,6 @@ export interface ThemeQuickView {
   animationType: 'slide' | 'fade' | 'none';
   animationDuration: number; // 150–300ms
 
-  // Legacy compat
-  style: 'modal' | 'drawer' | 'side-panel';
-  showGalleryThumbs: boolean;
-  showVariations: boolean;
-  showQuantityPerVariation: boolean;
-  descriptionStyle: 'inline' | 'accordion';
-  showSocialActions: boolean;
-  socialActions: { chat: boolean; share: boolean; whatsapp: boolean };
-  showRelatedProducts: boolean;
-  relatedTitle: string;
-  relatedCount: number;
-  showTags: boolean;
-  showSalesCount: boolean;
-  ctaStyle: 'filled' | 'outline';
-  showBuyNow: boolean;
-  buyNowText: string;
-  showDownloadImage: boolean;
 }
 
 export interface ThemeCustomCode {
@@ -636,7 +587,6 @@ export interface ThemeConfig {
   colors: ThemeColors;
   typography: ThemeTypography;
   buttons: ThemeButtons;
-  inputs: ThemeInputs;
   global: ThemeGlobal;
 
   logo: ThemeLogo;
@@ -660,11 +610,8 @@ export interface ThemeConfig {
   microcopy: ThemeMicrocopy;
   conversion: ThemeConversion;
   responsive: ThemeResponsive;
-  abTest: ThemeABTest;
 
   whatsapp: ThemeWhatsApp;
-  seo: ThemeSEO;
-  accessibility: ThemeAccessibility;
   customCode: ThemeCustomCode;
 }
 
