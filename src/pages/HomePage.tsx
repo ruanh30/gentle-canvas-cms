@@ -319,7 +319,7 @@ const HomePage = () => {
         );
 
         return (
-          <section key={section.id} className={cn('container mx-auto px-4', sectionPy, wrapperClass)}>
+          <section key={section.id} className={cn('container mx-auto px-4 flex flex-col items-center justify-center', sectionPy, wrapperClass)}>
             {section.showTitle !== false && (
               <h2 className="text-2xl font-display font-bold mb-8 text-center">{section.title}</h2>
             )}
@@ -328,7 +328,7 @@ const HomePage = () => {
                 {filteredCategories.map(categoryCard)}
               </SectionCarousel>
             ) : (
-              <div className="flex flex-wrap justify-center" style={{ gap: `${(section.settings?.gridGap as number) ?? 16}px` }}>
+              <div className="flex flex-wrap justify-center w-full" style={{ gap: `${(section.settings?.gridGap as number) ?? 16}px` }}>
                 {filteredCategories.map(categoryCard)}
               </div>
             )}
