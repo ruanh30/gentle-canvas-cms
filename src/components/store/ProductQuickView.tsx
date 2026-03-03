@@ -24,6 +24,7 @@ const colorHex: Record<string, string> = {
   Branca: '#ffffff', Preta: '#111827', Azul: '#3b82f6',
   Cinza: '#9ca3af', Verde: '#22c55e', Vermelha: '#ef4444',
   Rosa: '#ec4899', Amarela: '#eab308', Laranja: '#f97316',
+  Marrom: '#92400e', Bege: '#d4a574',
 };
 
 /* ================================================================== */
@@ -181,21 +182,17 @@ function QuickViewVariants({ product, qv, quantities, onUpdateQty, selectedAttrs
             <button
               key={val}
               onClick={() => onSelectAttr(key, val)}
-              className="flex flex-col items-center gap-1 group"
+              className="group"
               title={val}
             >
               <span
                 className={cn(
-                  'w-8 h-8 rounded-full transition-all duration-150 ring-offset-2 ring-offset-background',
+                  'block w-8 h-8 rounded-full transition-all duration-150 ring-offset-2 ring-offset-background',
                   isSelected ? 'ring-2 ring-foreground scale-110' : 'ring-0 group-hover:ring-1 group-hover:ring-border',
                   isWhite && 'border border-border/50',
                 )}
                 style={{ backgroundColor: hex || '#ccc' }}
               />
-              <span className={cn(
-                'text-[10px] transition-colors',
-                isSelected ? 'text-foreground font-semibold' : 'text-muted-foreground',
-              )}>{val}</span>
             </button>
           );
         })}

@@ -780,9 +780,17 @@ function ImagesSectionContent({ form, setForm }: { form: Product; setForm: React
 
 const DEFAULT_SIZES = ['PP', 'P', 'M', 'G', 'GG', 'XG', '36', '37', '38', '39', '40', '41', '42', '43', '44'];
 const DEFAULT_COLORS = ['Branca', 'Preta', 'Cinza', 'Azul', 'Vermelha', 'Verde', 'Amarela', 'Rosa', 'Marrom', 'Bege'];
+const COLOR_HEX: Record<string, string> = {
+  Branca: '#ffffff', Preta: '#111827', Azul: '#3b82f6',
+  Cinza: '#9ca3af', Verde: '#22c55e', Vermelha: '#ef4444',
+  Rosa: '#ec4899', Amarela: '#eab308', Laranja: '#f97316',
+  Marrom: '#92400e', Bege: '#d4a574',
+};
 
 function StockSection({ form, setForm }: { form: Product; setForm: (f: Product) => void }) {
   const [customColor, setCustomColor] = useState('');
+  const [customColorHex, setCustomColorHex] = useState('#3b82f6');
+  const colorPickerRef = React.useRef<HTMLInputElement>(null);
   const [customSize, setCustomSize] = useState('');
   const [selectedSizes, setSelectedSizes] = useState<string[]>(() => {
     const sizes = new Set<string>();
@@ -896,29 +904,69 @@ function StockSection({ form, setForm }: { form: Product; setForm: (f: Product) 
         <p className="text-sm font-medium text-foreground mb-2 flex items-center gap-2">
           <Palette className="h-4 w-4" /> Cores disponíveis
         </p>
-        <div className="flex flex-wrap gap-1.5">
+        <div className="flex flex-wrap gap-3">
           {allColors.map(c => {
             const isCustom = userColors.includes(c);
+            const hex = COLOR_HEX[c];
+            const isSelected = selectedColors.includes(c);
+            const isWhite = hex?.toLowerCase() === '#ffffff';
             return (
-              <Badge key={c} variant={selectedColors.includes(c) ? 'default' : 'outline'}
-                className="cursor-pointer text-xs select-none gap-1 pr-1" onClick={() => toggleColor(c)}>
-                {selectedColors.includes(c) && <Check className="h-3 w-3" />}
-                {c}
-                <button type="button" className="ml-0.5 rounded-full hover:bg-destructive/20 p-0.5"
+              <div key={c} className="flex flex-col items-center gap-1 relative group">
+                <button
+                  type="button"
+                  onClick={() => toggleColor(c)}
+                  className="relative"
+                  title={c}
+                >
+                  <span
+                    className={cn(
+                      'block w-9 h-9 rounded-full transition-all duration-150 ring-offset-2 ring-offset-background',
+                      isSelected ? 'ring-2 ring-foreground scale-110' : 'ring-0 hover:ring-1 hover:ring-border',
+                      isWhite && 'border border-border/50',
+                    )}
+                    style={{ backgroundColor: hex || '#ccc' }}
+                  />
+                  {isSelected && (
+                    <Check className={cn(
+                      'absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-4 w-4',
+                      isWhite ? 'text-foreground' : 'text-white',
+                    )} />
+                  )}
+                </button>
+                <span className="text-[10px] text-muted-foreground">{c}</span>
+                <button
+                  type="button"
+                  className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-destructive/80 text-destructive-foreground grid place-items-center opacity-0 group-hover:opacity-100 transition-opacity"
                   onClick={e => {
                     e.stopPropagation();
                     if (isCustom) { setUserColors(prev => prev.filter(x => x !== c)); }
                     else { setHiddenColors(prev => [...prev, c]); }
                     setSelectedColors(prev => prev.filter(x => x !== c));
-                  }}>
-                  <X className="h-3 w-3" />
+                  }}
+                >
+                  <X className="h-2.5 w-2.5" />
                 </button>
-              </Badge>
+              </div>
             );
           })}
         </div>
-        <div className="flex items-center gap-2 mt-2">
-          <Input className="h-8 w-40 text-xs" placeholder="Nova cor personalizada..." value={customColor}
+        <div className="flex items-center gap-2 mt-3">
+          <button
+            type="button"
+            className="w-9 h-9 rounded-full border-2 border-dashed border-border hover:border-foreground/50 transition-colors overflow-hidden relative cursor-pointer shrink-0"
+            onClick={() => colorPickerRef.current?.click()}
+            style={{ backgroundColor: customColorHex }}
+            title="Escolher cor"
+          >
+            <input
+              ref={colorPickerRef}
+              type="color"
+              value={customColorHex}
+              onChange={e => setCustomColorHex(e.target.value)}
+              className="absolute inset-0 opacity-0 cursor-pointer"
+            />
+          </button>
+          <Input className="h-8 w-36 text-xs" placeholder="Nome da cor..." value={customColor}
             onChange={e => setCustomColor(e.target.value)}
             onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); addCustomColor(); } }} />
           <Button variant="outline" size="sm" className="h-8 text-xs gap-1" disabled={!customColor.trim()} onClick={addCustomColor}>
