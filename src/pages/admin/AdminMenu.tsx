@@ -1263,7 +1263,7 @@ function MenuStyleSection() {
           { value: 'background', label: 'Fundo', desc: 'Fundo sutil aparece' },
           { value: 'both', label: 'Ambos', desc: 'Sublinhado + fundo' },
         ]} />
-        <NumSlider label="Gap entre itens" value={h.menuItemGap ?? 8} onChange={v => set({ menuItemGap: v })} min={0} max={80} suffix="px" hint="Distância horizontal entre cada link do menu" />
+        
         <Pills label="Separador visual" value={h.menuSeparator || 'none'} onChange={v => set({ menuSeparator: v })} hint="Elemento visual que aparece entre cada link do menu" options={[
           { value: 'none', label: 'Nenhum' },
           { value: 'line', label: '| Linha' },
