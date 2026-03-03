@@ -95,52 +95,6 @@ function AnnouncementBar() {
   );
 }
 
-/* ================================================================== */
-/*  SOCIAL BAR                                                          */
-/* ================================================================== */
-
-const SOCIAL_SVGS: Record<string, (props: { size: number }) => React.ReactElement> = {
-  facebook: ({ size }) => <svg viewBox="0 0 24 24" width={size} height={size}><circle cx="12" cy="12" r="12" fill="#1877F2"/><path d="M16.671 15.469l.547-3.585h-3.44V9.59c0-.98.48-1.937 2.021-1.937h1.564V4.6s-1.42-.243-2.777-.243c-2.834 0-4.685 1.718-4.685 4.83v2.731H7.078v3.585h2.823v8.67a11.174 11.174 0 003.476 0v-8.67h2.894z" fill="#fff"/></svg>,
-  whatsapp: ({ size }) => <svg viewBox="0 0 24 24" width={size} height={size}><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91C21.95 6.45 17.5 2 12.04 2z" fill="#25D366"/><path d="M17.47 14.38c-.3-.15-1.76-.87-2.03-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.16-.17.2-.35.22-.64.07-.3-.15-1.26-.46-2.39-1.47-.88-.79-1.48-1.76-1.65-2.06-.17-.3-.02-.46.13-.61.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.08-.15-.67-1.61-.92-2.21-.24-.58-.49-.5-.67-.51-.17 0-.37-.01-.57-.01-.2 0-.52.07-.79.37-.27.3-1.04 1.02-1.04 2.48s1.07 2.88 1.21 3.07c.15.2 2.1 3.2 5.08 4.49.71.31 1.26.49 1.69.63.71.23 1.36.2 1.87.12.57-.09 1.76-.72 2.01-1.41.25-.69.25-1.29.17-1.41-.07-.12-.27-.2-.57-.35z" fill="#fff"/></svg>,
-  instagram: ({ size }) => <svg viewBox="0 0 24 24" width={size} height={size}><defs><linearGradient id="ig" x1="0%" y1="100%" x2="100%" y2="0%"><stop offset="0%" stopColor="#FFDC80"/><stop offset="25%" stopColor="#F77737"/><stop offset="50%" stopColor="#E1306C"/><stop offset="75%" stopColor="#C13584"/><stop offset="100%" stopColor="#833AB4"/></linearGradient></defs><rect width="24" height="24" rx="5.5" fill="url(#ig)"/><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="#fff" strokeWidth="1.5"/><circle cx="12" cy="12" r="4.5" fill="none" stroke="#fff" strokeWidth="1.5"/><circle cx="17.5" cy="6.5" r="1.2" fill="#fff"/></svg>,
-  tiktok: ({ size }) => <svg viewBox="0 0 24 24" width={size} height={size}><rect width="24" height="24" rx="5" fill="#010101"/><path d="M16.6 5.82s.51.64 1.57 1.08c.6.25 1.3.34 1.83.36v2.85c-.68-.03-1.34-.15-1.96-.38-.4-.15-.77-.35-1.09-.56v4.87c0 .59-.12 1.16-.35 1.7a4.3 4.3 0 01-2.46 2.37c-.53.21-1.1.32-1.69.32-1.17 0-2.24-.45-3.04-1.2a4.28 4.28 0 01-1.28-3.07c0-.57.11-1.12.33-1.64a4.3 4.3 0 014-2.72c.18 0 .36.01.54.04v2.9a1.69 1.69 0 00-.54-.09c-.94 0-1.7.76-1.7 1.7s.76 1.7 1.7 1.7c.94 0 1.7-.76 1.7-1.7V5.82h2.44z" fill="#25F4EE"/><path d="M17.2 6.42s.51.64 1.57 1.08c.6.25 1.3.34 1.83.36v2.85c-.68-.03-1.34-.15-1.96-.38-.4-.15-.77-.35-1.09-.56v4.87c0 .59-.12 1.16-.35 1.7a4.3 4.3 0 01-2.46 2.37c-.53.21-1.1.32-1.69.32-1.17 0-2.24-.45-3.04-1.2a4.28 4.28 0 01-1.28-3.07c0-.57.11-1.12.33-1.64a4.3 4.3 0 014-2.72c.18 0 .36.01.54.04v2.9a1.69 1.69 0 00-.54-.09c-.94 0-1.7.76-1.7 1.7s.76 1.7 1.7 1.7c.94 0 1.7-.76 1.7-1.7V6.42h2.44z" fill="#FE2C55"/></svg>,
-  kwai: ({ size }) => <svg viewBox="0 0 24 24" width={size} height={size}><rect width="24" height="24" rx="5" fill="#FF6B00"/><path d="M12 6c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6zm0 10.5c-2.49 0-4.5-2.01-4.5-4.5S9.51 7.5 12 7.5s4.5 2.01 4.5 4.5-2.01 4.5-4.5 4.5z" fill="#fff"/><path d="M12 9l1.5 2.6 2.6 1.5-2.6 1.5L12 17.2l-1.5-2.6L7.9 13.1l2.6-1.5z" fill="#fff"/></svg>,
-  youtube: ({ size }) => <svg viewBox="0 0 24 24" width={size} height={size}><rect width="24" height="24" rx="5" fill="#FF0000"/><path d="M9.545 15.568V8.432L15.818 12l-6.273 3.568z" fill="#fff"/></svg>,
-  linkedin: ({ size }) => <svg viewBox="0 0 24 24" width={size} height={size}><rect width="24" height="24" rx="3" fill="#0A66C2"/><path d="M7.5 9.5h-2v8h2v-8zm-1-3.5a1.25 1.25 0 100 2.5 1.25 1.25 0 000-2.5zm10 3.5h-2.1c-.1 0-.2 0-.3.01v-.01h-1.9v8h2v-4.5c0-1.1.5-1.7 1.4-1.7.8 0 1.2.5 1.2 1.5v4.7h2v-5.2c0-2.1-1.1-3.31-2.7-3.31-.9 0-1.5.3-1.9.71V9.5h2.3z" fill="#fff"/></svg>,
-  twitter: ({ size }) => <svg viewBox="0 0 24 24" width={size} height={size}><rect width="24" height="24" rx="5" fill="#000"/><path d="M16.244 6.25h2.308l-5.04 5.76 5.93 7.84h-4.64l-3.64-4.76-4.16 4.76H5.69l5.39-6.16L5.44 6.25h4.76l3.29 4.35zm-.81 12.22h1.28L9.6 7.56H8.22z" fill="#fff"/></svg>,
-  telegram: ({ size }) => <svg viewBox="0 0 24 24" width={size} height={size}><circle cx="12" cy="12" r="12" fill="#2AABEE"/><path d="M5.432 11.873l8.772-3.81c.41-.167.772.1.636.617l-1.494 7.04c-.112.49-.403.61-.817.38l-2.26-1.666-1.09 1.05c-.12.12-.22.22-.453.22l.16-2.3 4.2-3.8c.183-.16-.04-.25-.283-.09l-5.19 3.27-2.233-.7c-.486-.15-.495-.486.1-.72z" fill="#fff"/></svg>,
-};
-
-const SOCIAL_LABELS: Record<string, string> = {
-  facebook: 'Facebook', whatsapp: 'WhatsApp', instagram: 'Instagram', tiktok: 'TikTok',
-  kwai: 'Kwai', youtube: 'YouTube', linkedin: 'LinkedIn', twitter: 'X (Twitter)', telegram: 'Telegram',
-};
-
-function SocialBar() {
-  const { theme } = useTheme();
-  const sb = theme.header?.socialBar;
-  if (!sb?.enabled) return null;
-  const visibleLinks = sb.links.filter(l => l.enabled && l.url);
-  if (visibleLinks.length === 0) return null;
-
-  return (
-    <div className="flex items-center gap-2.5">
-      {visibleLinks.map(link => {
-        const SvgIcon = SOCIAL_SVGS[link.platform];
-        if (!SvgIcon) return null;
-        const href = link.platform === 'whatsapp' ? `https://wa.me/${link.url.replace(/\D/g, '')}` : link.url;
-        return (
-          <a key={link.platform} href={href} target="_blank" rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 transition-all duration-150 hover:scale-110 hover:opacity-80"
-            aria-label={SOCIAL_LABELS[link.platform]}>
-            <SvgIcon size={sb.iconSize} />
-            {sb.showLabels && <span className="text-[11px] font-medium text-muted-foreground">{SOCIAL_LABELS[link.platform]}</span>}
-          </a>
-        );
-      })}
-    </div>
-  );
-}
 
 /* ==================================================================
 /*  BANNER BELOW                                                        */
@@ -947,12 +901,8 @@ export function StoreHeader() {
 
     return (
       <div className={cn('flex items-center gap-1', isCentered && 'lg:absolute lg:right-0')}>
-        {/* Social icons (actions position) */}
-        {!forMobile && theme.header?.socialBar?.enabled && theme.header.socialBar.position === 'header-actions' && (
-          <div className="hidden lg:flex items-center mr-1">
-            <SocialBar />
-          </div>
-        )}
+
+
         {h.showSearch && h.searchStyle !== 'inline' && (!forMobile || searchConfig.showOnMobile) && (
           <Button variant="ghost" size="icon" className="h-10 w-10" onClick={handleSearchClick}>
             <SearchIconComp style={iconStyle} strokeWidth={sw} />
@@ -1040,16 +990,8 @@ export function StoreHeader() {
       ...headerStyle,
       paddingTop: 'env(safe-area-inset-top, 0px)',
     }}>
-      {/* Social bar (top position) */}
-      {theme.header?.socialBar?.enabled && theme.header.socialBar.position === 'header-top' && !shrinkActive && (
-        <div className="hidden lg:block">
-          <div style={containerStyle}>
-            <div className="flex items-center justify-end py-1.5">
-              <SocialBar />
-            </div>
-          </div>
-        </div>
-      )}
+
+
 
       {/* Announcement bar */}
       {!isMinimal && !shrinkActive && <AnnouncementBar />}
