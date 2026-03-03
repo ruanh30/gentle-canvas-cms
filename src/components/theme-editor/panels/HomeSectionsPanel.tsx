@@ -230,44 +230,6 @@ export function HomeSectionsPanel() {
                     <span className="text-[11px] text-muted-foreground w-8 text-right">{(section.settings?.gridGap as number) ?? 16}px</span>
                   </div>
                 )}
-                {(section.type === 'collections' || section.type === 'featured-products') && (
-                  <>
-                    <SectionDivider label="Limite de produtos" />
-                    <div className="flex items-center gap-2">
-                      <label className="text-[11px] text-muted-foreground">Desktop:</label>
-                      <select
-                        value={String((section.settings?.limitDesktop as number) || 0)}
-                        onChange={e => setSetting(section.id, 'limitDesktop', Number(e.target.value))}
-                        className="h-6 text-[11px] rounded border border-border bg-background px-1.5"
-                      >
-                        <option value="0">Todos</option>
-                        <option value="3">3</option>
-                        <option value="4">4</option>
-                        <option value="6">6</option>
-                        <option value="8">8</option>
-                        <option value="10">10</option>
-                        <option value="12">12</option>
-                      </select>
-                      <HintTooltip text="Quantidade máxima de produtos exibidos no desktop" />
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <label className="text-[11px] text-muted-foreground">Mobile:</label>
-                      <select
-                        value={String((section.settings?.limitMobile as number) || 0)}
-                        onChange={e => setSetting(section.id, 'limitMobile', Number(e.target.value))}
-                        className="h-6 text-[11px] rounded border border-border bg-background px-1.5"
-                      >
-                        <option value="0">Todos</option>
-                        <option value="2">2</option>
-                        <option value="3">3</option>
-                        <option value="4">4</option>
-                        <option value="6">6</option>
-                        <option value="8">8</option>
-                      </select>
-                      <HintTooltip text="Quantidade máxima de produtos exibidos no mobile" />
-                    </div>
-                  </>
-                )}
                 {section.type === 'categories' && (
                   <>
                     <SectionDivider label="Aparência das Categorias" />

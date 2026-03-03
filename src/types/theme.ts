@@ -524,6 +524,11 @@ export interface ThemeABTest {
   }[];
 }
 
+export interface ThemeProductListing {
+  limitDesktop: number;       // 0 = all
+  limitMobile: number;        // 0 = all
+}
+
 export interface ThemeGlobal {
   containerWidth: 'narrow' | 'default' | 'wide' | 'full';
   containerMaxPx: number;
@@ -648,6 +653,7 @@ export interface ThemeConfig {
 
   footer: ThemeFooter;
 
+  productListing: ThemeProductListing;
   homepageSections: ThemeHomepageSection[];
 
   badges: ThemeBadges;
