@@ -66,7 +66,7 @@ const sections: EditorSectionItem[] = [
   { id: 'footer', label: 'Rodapé', icon: PanelBottom, group: 'Estrutura' },
   // Aparência de Produto
   { id: 'product-card', label: 'Card de Produto', icon: Package, group: 'Aparência de Produto' },
-  { id: 'product-page', label: 'Página de Produto', icon: FileText, group: 'Aparência de Produto' },
+  
   { id: 'category', label: 'Categoria / Busca', icon: SlidersHorizontal, group: 'Aparência de Produto' },
   { id: 'quick-view', label: 'Quick View', icon: Eye, group: 'Aparência de Produto' },
   // badges moved to Product Status in Admin > Produtos
@@ -97,7 +97,7 @@ function renderPanel(sectionId: string) {
     case 'home-sections': return <HomeSectionsPanel />;
     case 'product-listing': return <ProductListingPanel />;
     case 'product-card': return <ProductCardPanel />;
-    case 'product-page': return <ProductPagePanel />;
+    
     case 'category': return <CategoryPanel />;
     case 'cart': return <CartPanel />;
     case 'checkout': return <CheckoutPanel />;
