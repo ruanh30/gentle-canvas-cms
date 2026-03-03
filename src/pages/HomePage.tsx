@@ -351,7 +351,7 @@ const HomePage = () => {
               </Link>
             </div>
             {isCarousel ? (
-              <SectionCarousel speed={carouselSpeed} showArrows={carouselShowArrows}>
+              <SectionCarousel speed={carouselSpeed} showArrows={carouselShowArrows} centered>
                 {featured.map(product => (
                   <div key={product.id} className="min-w-[260px] max-w-[280px] snap-start flex-shrink-0">
                     <ProductCard product={product} />
@@ -603,7 +603,7 @@ const HomePage = () => {
               <h2 className="text-2xl font-display font-bold text-center mb-8">{section.title}</h2>
             )}
             {isCarousel ? (
-              <SectionCarousel speed={carouselSpeed} showArrows={carouselShowArrows}>
+              <SectionCarousel speed={carouselSpeed} showArrows={carouselShowArrows} centered>
                 {allCollectionProducts.map(product => (
                   <div key={product.id} className="min-w-[260px] max-w-[280px] snap-start flex-shrink-0">
                     <ProductCard product={product} />
