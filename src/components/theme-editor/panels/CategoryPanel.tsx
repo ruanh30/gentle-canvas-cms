@@ -74,13 +74,6 @@ export function CategoryPanel() {
         { value: 'load-more', label: 'Carregar mais', description: 'Botão para carregar mais produtos' },
       ]} />
 
-      <SectionDivider label="Extras" />
-      <p className="text-[10px] text-muted-foreground/60 leading-relaxed -mt-2">
-        Elementos adicionais na página de categoria.
-      </p>
-      <ToggleRow label="Banner de categoria" hint="Exibe uma imagem de banner no topo da página de cada categoria" checked={c.showBanner} onChange={v => set({ showBanner: v })} />
-      <ToggleRow label="Breadcrumb" hint="Mostra o caminho de navegação (ex: Home > Roupas > Camisetas)" checked={c.showBreadcrumb} onChange={v => set({ showBreadcrumb: v })} />
-      <ToggleRow label="Contagem de produtos" hint="Exibe o total de produtos encontrados no topo da listagem (ex: '42 produtos')" checked={c.showProductCount} onChange={v => set({ showProductCount: v })} />
     </EditorSection>
   );
 }
