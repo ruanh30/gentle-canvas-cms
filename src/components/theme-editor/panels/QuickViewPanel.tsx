@@ -94,7 +94,7 @@ export function QuickViewPanel() {
               <ToggleRow label="Ver página do produto" hint="Link para a página completa" checked={qv.showViewProduct ?? true} onChange={v => set({ showViewProduct: v })} />
               <ToggleRow label="Simulação de frete" hint="Accordion com input de CEP e cálculo" checked={qv.showShipping ?? true} onChange={v => set({ showShipping: v })} />
               <ToggleRow label="Descrição" hint="Accordion com a descrição do produto" checked={qv.showDescription ?? true} onChange={v => set({ showDescription: v })} />
-              <ToggleRow label="Tabela de medidas" hint="Se existir, mostra accordion de medidas" checked={qv.showSizeGuide ?? false} onChange={v => set({ showSizeGuide: v })} />
+              
             </>
           )}
 
