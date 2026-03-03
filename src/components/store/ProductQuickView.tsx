@@ -640,7 +640,7 @@ export function ProductQuickView({ product, open, onClose }: QuickViewProps) {
         {/* Accordions */}
         {qv?.showShipping !== false && <QuickViewShipping />}
         {qv?.showDescription !== false && <QuickViewDescription product={product} />}
-        {qv?.showSizeGuide && product.sizeGuideId && (
+        {product.sizeGuideId && (
           <AccordionSection icon={Ruler} title="Tabela de Medidas">
             <SizeGuideDisplay product={product} />
           </AccordionSection>
@@ -692,7 +692,7 @@ export function ProductQuickView({ product, open, onClose }: QuickViewProps) {
         <div className="flex-1 overflow-y-auto qv-scrollbar px-5 pb-5">
           <div className="mt-4">
             {qv?.showDescription !== false && <QuickViewDescription product={product} defaultOpen />}
-            {qv?.showSizeGuide && product.sizeGuideId && (
+            {product.sizeGuideId && (
               <AccordionSection icon={Ruler} title="Tabela de Medidas" defaultOpen>
                 <SizeGuideDisplay product={product} />
               </AccordionSection>
@@ -718,7 +718,7 @@ export function ProductQuickView({ product, open, onClose }: QuickViewProps) {
             )}
             {qv?.showShipping !== false && <QuickViewShipping defaultOpen />}
             {qv?.showDescription !== false && <div className="md:hidden"><QuickViewDescription product={product} defaultOpen /></div>}
-            {qv?.showSizeGuide && product.sizeGuideId && (
+            {product.sizeGuideId && (
               <div className="md:hidden">
                 <AccordionSection icon={Ruler} title="Tabela de Medidas">
                   <SizeGuideDisplay product={product} />

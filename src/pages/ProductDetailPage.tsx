@@ -4,9 +4,10 @@ import { mockProducts } from '@/data/mock';
 import { useCart } from '@/contexts/CartContext';
 import { formatCurrency } from '@/lib/format';
 import { Button } from '@/components/ui/button';
-import { ShoppingBag, Star, Minus, Plus, ArrowLeft, Truck, Check } from 'lucide-react';
+import { ShoppingBag, Star, Minus, Plus, ArrowLeft, Truck, Check, Ruler, ChevronDown } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { ProductCard } from '@/components/store/ProductCard';
+import { SizeGuideDisplay } from '@/components/store/SizeGuideDisplay';
 import { cn } from '@/lib/utils';
 
 const colorHex: Record<string, string> = {
@@ -231,6 +232,20 @@ const ProductDetailPage = () => {
             <Truck className="h-4 w-4" />
             <span>Frete grátis acima de R$ 299,00</span>
           </div>
+
+          {/* Size Guide */}
+          {product.sizeGuideId && (
+            <details className="border-t border-border/40 pt-4">
+              <summary className="flex items-center gap-2 cursor-pointer text-sm font-semibold text-foreground hover:text-foreground/80 transition-colors list-none [&::-webkit-details-marker]:hidden">
+                <Ruler className="h-4 w-4 text-muted-foreground" />
+                Tabela de Medidas
+                <ChevronDown className="h-4 w-4 text-muted-foreground ml-auto transition-transform [[open]>&]:rotate-180" />
+              </summary>
+              <div className="mt-3">
+                <SizeGuideDisplay product={product} />
+              </div>
+            </details>
+          )}
         </div>
       </div>
 
