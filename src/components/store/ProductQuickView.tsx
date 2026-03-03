@@ -168,17 +168,53 @@ function QuickViewVariants({ product, qv, quantities, onUpdateQty, selectedAttrs
   const style = qv?.variationStyle || 'chips';
   const attrKeys = [...new Set(variants.flatMap(v => Object.keys(v.attributes)))];
 
+  // Color swatch renderer shared across styles
+  const renderColorSwatches = (key: string, values: string[]) => (
+    <div key={key}>
+      <p className="text-xs font-semibold text-foreground uppercase tracking-wider mb-2">{key}</p>
+      <div className="flex flex-wrap gap-2.5">
+        {values.map(val => {
+          const hex = colorHex[val];
+          const isSelected = selectedAttrs[key] === val;
+          const isWhite = hex?.toLowerCase() === '#ffffff' || hex?.toLowerCase() === '#fff';
+          return (
+            <button
+              key={val}
+              onClick={() => onSelectAttr(key, val)}
+              className="flex flex-col items-center gap-1 group"
+              title={val}
+            >
+              <span
+                className={cn(
+                  'w-8 h-8 rounded-full transition-all duration-150 ring-offset-2 ring-offset-background',
+                  isSelected ? 'ring-2 ring-foreground scale-110' : 'ring-0 group-hover:ring-1 group-hover:ring-border',
+                  isWhite && 'border border-border/50',
+                )}
+                style={{ backgroundColor: hex || '#ccc' }}
+              />
+              <span className={cn(
+                'text-[10px] transition-colors',
+                isSelected ? 'text-foreground font-semibold' : 'text-muted-foreground',
+              )}>{val}</span>
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+
   if (style === 'chips') {
     return (
       <div className="space-y-4">
         {attrKeys.map(key => {
           const values = [...new Set(variants.map(v => v.attributes[key]))];
+          const isColor = key.toLowerCase() === 'cor';
+          if (isColor) return renderColorSwatches(key, values);
           return (
             <div key={key}>
               <p className="text-xs font-semibold text-foreground uppercase tracking-wider mb-2">{key}</p>
               <div className="flex flex-wrap gap-2">
                 {values.map(val => {
-                  const isColor = key.toLowerCase() === 'cor';
                   const isSelected = selectedAttrs[key] === val;
                   return (
                     <button
@@ -191,12 +227,6 @@ function QuickViewVariants({ product, qv, quantities, onUpdateQty, selectedAttrs
                           : 'border-border/60 hover:border-foreground text-foreground',
                       )}
                     >
-                      {isColor && colorHex[val] && (
-                        <span
-                          className="inline-block w-3 h-3 rounded-full mr-1.5 border border-border/40 align-middle"
-                          style={{ backgroundColor: colorHex[val] }}
-                        />
-                      )}
                       {val}
                     </button>
                   );
@@ -231,45 +261,46 @@ function QuickViewVariants({ product, qv, quantities, onUpdateQty, selectedAttrs
   }
 
   if (style === 'list-compact') {
+    // Extract color attribute separately for swatches
+    const colorKey = attrKeys.find(k => k.toLowerCase() === 'cor');
+    const colorValues = colorKey ? [...new Set(variants.map(v => v.attributes[colorKey]))] : [];
+
     return (
-      <div>
-        <p className="text-xs font-semibold text-foreground uppercase tracking-wider mb-2">Variações</p>
-        <div className="divide-y divide-border/30">
-          {variants.map(v => (
-            <div key={v.id} className="flex items-center justify-between py-2.5 gap-3">
-              <div className="flex items-center gap-2.5 min-w-0 flex-1">
-                {v.attributes.cor && colorHex[v.attributes.cor] && (
-                  <span
-                    className="w-3.5 h-3.5 rounded shrink-0 border border-border/40"
-                    style={{ backgroundColor: colorHex[v.attributes.cor] }}
-                  />
-                )}
-                <div className="min-w-0">
-                  <p className="text-sm font-medium text-foreground truncate">{v.name}</p>
-                  {qv?.showSKU && (
-                    <p className="text-[10px] text-muted-foreground font-mono">#{v.sku}</p>
-                  )}
+      <div className="space-y-4">
+        {colorKey && renderColorSwatches(colorKey, colorValues)}
+        <div>
+          <p className="text-xs font-semibold text-foreground uppercase tracking-wider mb-2">Variações</p>
+          <div className="divide-y divide-border/30">
+            {variants.map(v => (
+              <div key={v.id} className="flex items-center justify-between py-2.5 gap-3">
+                <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                  <div className="min-w-0">
+                    <p className="text-sm font-medium text-foreground truncate">{v.name}</p>
+                    {qv?.showSKU && (
+                      <p className="text-[10px] text-muted-foreground font-mono">#{v.sku}</p>
+                    )}
+                  </div>
+                </div>
+                <div className="flex items-center border border-border/60 rounded-lg">
+                  <button
+                    onClick={() => onUpdateQty(v.id, -1)}
+                    className="w-8 h-8 grid place-items-center hover:bg-muted transition-colors"
+                  >
+                    <Minus className="h-3 w-3" />
+                  </button>
+                  <span className="w-8 text-center text-xs font-semibold tabular-nums">
+                    {quantities[v.id] || 0}
+                  </span>
+                  <button
+                    onClick={() => onUpdateQty(v.id, 1)}
+                    className="w-8 h-8 grid place-items-center hover:bg-muted transition-colors"
+                  >
+                    <Plus className="h-3 w-3" />
+                  </button>
                 </div>
               </div>
-              <div className="flex items-center border border-border/60 rounded-lg">
-                <button
-                  onClick={() => onUpdateQty(v.id, -1)}
-                  className="w-8 h-8 grid place-items-center hover:bg-muted transition-colors"
-                >
-                  <Minus className="h-3 w-3" />
-                </button>
-                <span className="w-8 text-center text-xs font-semibold tabular-nums">
-                  {quantities[v.id] || 0}
-                </span>
-                <button
-                  onClick={() => onUpdateQty(v.id, 1)}
-                  className="w-8 h-8 grid place-items-center hover:bg-muted transition-colors"
-                >
-                  <Plus className="h-3 w-3" />
-                </button>
-              </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
     );
@@ -280,10 +311,16 @@ function QuickViewVariants({ product, qv, quantities, onUpdateQty, selectedAttrs
     <div className="space-y-3">
       {attrKeys.map(key => {
         const values = [...new Set(variants.map(v => v.attributes[key]))];
+        const isColor = key.toLowerCase() === 'cor';
+        if (isColor) return renderColorSwatches(key, values);
         return (
           <div key={key}>
             <p className="text-xs font-semibold text-foreground uppercase tracking-wider mb-1.5">{key}</p>
-            <select className="w-full h-10 rounded-lg border border-border/60 bg-background px-3 text-sm text-foreground">
+            <select
+              className="w-full h-10 rounded-lg border border-border/60 bg-background px-3 text-sm text-foreground"
+              value={selectedAttrs[key] || ''}
+              onChange={e => onSelectAttr(key, e.target.value)}
+            >
               {values.map(val => (
                 <option key={val} value={val}>{val}</option>
               ))}
