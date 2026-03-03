@@ -243,30 +243,22 @@ function AnnouncementCarouselPreview({ messages, bg, color, speed }: { messages:
 function MobilePreviewFloat() {
   const { draft } = useTheme();
   const mobileIframeRef = React.useRef<HTMLIFrameElement>(null);
-  const iframeReadyRef = React.useRef(false);
-  const [mobileHeight, setMobileHeight] = useState(80);
+  const iframeLoadedRef = React.useRef(false);
 
-  useEffect(() => {
-    const handler = (event: MessageEvent) => {
-      if (event.data?.type === 'header-preview-ready') {
-        iframeReadyRef.current = true;
-        mobileIframeRef.current?.contentWindow?.postMessage(
-          { type: 'admin-header-preview', theme: draft },
-          '*'
-        );
-      }
-      if (event.data?.type === 'header-preview-resize' && typeof event.data.height === 'number') {
-        setMobileHeight(event.data.height);
-      }
-    };
-    window.addEventListener('message', handler);
-    return () => window.removeEventListener('message', handler);
-  }, []);
+  // When iframe loads, send initial theme
+  const handleIframeLoad = useCallback(() => {
+    iframeLoadedRef.current = true;
+    mobileIframeRef.current?.contentWindow?.postMessage(
+      { type: 'theme-preview-update', theme: draft },
+      '*'
+    );
+  }, [draft]);
 
+  // Sync draft changes to iframe
   useEffect(() => {
-    if (iframeReadyRef.current && mobileIframeRef.current?.contentWindow) {
+    if (iframeLoadedRef.current && mobileIframeRef.current?.contentWindow) {
       mobileIframeRef.current.contentWindow.postMessage(
-        { type: 'admin-header-preview', theme: draft },
+        { type: 'theme-preview-update', theme: draft },
         '*'
       );
     }
@@ -312,43 +304,25 @@ function MobilePreviewFloat() {
             </div>
           </div>
 
-          {/* Screen area */}
-          <div className="bg-background overflow-hidden" style={{ height: screenHeight }}>
-            {/* Header iframe — real 375px scaled */}
-            <div className="overflow-hidden" style={{ height: mobileHeight * iframeScale, transition: 'height 200ms ease' }}>
-              <iframe
-                ref={mobileIframeRef}
-                src="/preview/header"
-                title="Mobile Header Preview"
-                className="border-0 bg-background block origin-top-left"
-                style={{
-                  width: 375,
-                  height: mobileHeight,
-                  transform: `scale(${iframeScale})`,
-                  transformOrigin: 'top left',
-                }}
-                sandbox="allow-same-origin allow-scripts"
-              />
-            </div>
-
-            {/* Fake page content below header */}
-            <div className="px-3 pt-3 space-y-2.5" style={{ transform: `scale(${iframeScale})`, transformOrigin: 'top left', width: 375 }}>
-              {/* Hero placeholder */}
-              <div className="w-full h-28 rounded-lg bg-muted/60 animate-pulse" />
-              {/* Product grid skeleton */}
-              <div className="grid grid-cols-2 gap-2">
-                {[1,2,3,4].map(i => (
-                  <div key={i} className="space-y-1.5">
-                    <div className="w-full aspect-square rounded-md bg-muted/50" />
-                    <div className="h-2.5 w-3/4 rounded bg-muted/40" />
-                    <div className="h-2 w-1/2 rounded bg-muted/30" />
-                  </div>
-                ))}
-              </div>
-            </div>
+          {/* Screen area — full store page in iframe */}
+          <div className="overflow-hidden" style={{ height: screenHeight }}>
+            <iframe
+              ref={mobileIframeRef}
+              src="/?theme-preview=true"
+              title="Mobile Store Preview"
+              className="border-0 bg-background block origin-top-left"
+              onLoad={handleIframeLoad}
+              style={{
+                width: 375,
+                height: screenHeight / iframeScale,
+                transform: `scale(${iframeScale})`,
+                transformOrigin: 'top left',
+              }}
+              sandbox="allow-same-origin allow-scripts"
+            />
           </div>
 
-          {/* Bottom navigation bar (home indicator) */}
+          {/* Bottom home indicator */}
           <div className="h-5 bg-background flex items-end justify-center pb-1">
             <div className="w-24 h-1 rounded-full bg-foreground/20" />
           </div>
