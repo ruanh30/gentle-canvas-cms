@@ -105,13 +105,6 @@ export const defaultThemeConfig: ThemeConfig = {
     shadow: false,
   },
 
-  inputs: {
-    radius: 'medium',
-    borderWidth: 1,
-    focusRing: true,
-    style: 'default',
-  },
-
   global: {
     containerWidth: 'default',
     containerMaxPx: 1400,
@@ -472,10 +465,6 @@ export const defaultThemeConfig: ThemeConfig = {
     stickyHeaderMobile: true,
   },
 
-  abTest: {
-    enabled: false,
-    tests: [],
-  },
 
   whatsapp: {
     enabled: false,
@@ -488,19 +477,7 @@ export const defaultThemeConfig: ThemeConfig = {
     delay: 3,
   },
 
-  seo: {
-    titleTemplate: '{page} | {storeName}',
-    defaultDescription: 'Loja online com os melhores produtos.',
-    ogImage: '',
-    showBreadcrumbs: true,
-  },
 
-  accessibility: {
-    minContrastRatio: 4.5,
-    focusVisible: true,
-    minTouchTarget: 44,
-    reducedMotion: false,
-  },
 
   quickView: {
     enabled: true,
@@ -544,24 +521,6 @@ export const defaultThemeConfig: ThemeConfig = {
     // Tab 7 — Animação
     animationType: 'slide',
     animationDuration: 200,
-    // Legacy compat
-    style: 'modal',
-    showGalleryThumbs: true,
-    showVariations: true,
-    showQuantityPerVariation: true,
-    descriptionStyle: 'accordion',
-    
-    showSocialActions: false,
-    socialActions: { chat: false, share: false, whatsapp: false },
-    showRelatedProducts: false,
-    relatedTitle: 'Produtos Relacionados',
-    relatedCount: 6,
-    showTags: false,
-    showSalesCount: false,
-    ctaStyle: 'filled',
-    showBuyNow: true,
-    buyNowText: 'Comprar Agora',
-    showDownloadImage: false,
   },
 
   customCode: {

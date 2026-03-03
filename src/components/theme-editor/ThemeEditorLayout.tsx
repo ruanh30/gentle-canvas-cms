@@ -37,7 +37,6 @@ import { WhatsAppPanel } from './panels/WhatsAppPanel';
 import { CustomCodePanel } from './panels/CustomCodePanel';
 import { PresetsPanel } from './panels/PresetsPanel';
 import { QuickViewPanel } from './panels/QuickViewPanel';
-import { BadgesPanel } from './panels/BadgesPanel';
 import { MicrocopyPanel } from './panels/MicrocopyPanel';
 import { ConversionPanel } from './panels/ConversionPanel';
 import { ProductListingPanel } from './panels/ProductListingPanel';
@@ -103,7 +102,6 @@ function renderPanel(sectionId: string) {
     case 'cart': return <CartPanel />;
     case 'checkout': return <CheckoutPanel />;
     case 'quick-view': return <QuickViewPanel />;
-    case 'badges': return <BadgesPanel />;
     case 'microcopy': return <MicrocopyPanel />;
     case 'conversion': return <ConversionPanel />;
     
