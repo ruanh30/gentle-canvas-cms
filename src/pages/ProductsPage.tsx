@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import { mockProducts, mockCategories } from '@/data/mock';
 import { ProductCard } from '@/components/store/ProductCard';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -10,6 +10,7 @@ import { cn } from '@/lib/utils';
 
 const ProductsPage = () => {
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   const categorySlug = searchParams.get('category');
   const searchQuery = searchParams.get('q')?.toLowerCase().trim() || '';
   const [sortBy, setSortBy] = useState('featured');
@@ -198,7 +199,7 @@ const ProductsPage = () => {
               variant={!categorySlug ? 'default' : 'outline'}
               size="sm"
               className="rounded-full whitespace-nowrap font-body"
-              onClick={() => window.history.pushState({}, '', '/products')}
+              onClick={() => navigate('/products')}
             >
               Todos
             </Button>
@@ -208,7 +209,7 @@ const ProductsPage = () => {
                 variant={categorySlug === cat.slug ? 'default' : 'outline'}
                 size="sm"
                 className="rounded-full whitespace-nowrap font-body"
-                onClick={() => window.history.pushState({}, '', `/products?category=${cat.slug}`)}
+                onClick={() => navigate(`/products?category=${cat.slug}`)}
               >
                 {cat.name}
               </Button>
