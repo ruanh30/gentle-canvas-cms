@@ -31,7 +31,7 @@ export function BottomNav() {
       className="fixed bottom-0 left-0 right-0 z-50 lg:hidden border-t border-border/30 bg-background/95 backdrop-blur-md supports-[backdrop-filter]:bg-background/80"
       style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
     >
-      <div className="grid grid-cols-4 h-12">
+      <div className="grid grid-cols-4 h-10">
         {navItems.map(item => {
           const isActive =
             item.path === '/'
@@ -56,7 +56,7 @@ export function BottomNav() {
               <div className="relative">
                 <item.icon
                   className={cn(
-                    'h-4 w-4 transition-all',
+                    'h-3.5 w-3.5 transition-all',
                     isActive && 'scale-105'
                   )}
                   strokeWidth={isActive ? 1.8 : 1.4}
