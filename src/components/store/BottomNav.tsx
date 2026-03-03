@@ -56,10 +56,10 @@ export function BottomNav() {
               <div className="relative">
                 <item.icon
                   className={cn(
-                    'h-[18px] w-[18px] transition-all',
+                    'h-4 w-4 transition-all',
                     isActive && 'scale-105'
                   )}
-                  strokeWidth={isActive ? 2 : 1.5}
+                  strokeWidth={isActive ? 1.8 : 1.4}
                 />
                 {item.path === '/cart' && itemCount > 0 && (
                   <span className="absolute -top-1.5 -right-2 bg-foreground text-background text-[9px] font-bold rounded-full h-4 w-4 flex items-center justify-center">
