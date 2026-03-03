@@ -313,7 +313,7 @@ const HomePage = () => {
                 <img src={cat.image} alt={cat.name} className={cn('w-full h-full object-cover', shapeClass)} loading="lazy" />
               </div>
             )}
-            <p className="text-xs font-medium group-hover:text-foreground transition-colors uppercase tracking-wider">{cat.name}</p>
+            <p className="text-sm font-semibold group-hover:text-foreground transition-colors tracking-normal">{cat.name}</p>
           </Link>
         );
 
