@@ -30,6 +30,7 @@ export function GlobalPanel() {
         Controla o espaço vertical entre as seções da página (hero, produtos, banners, etc).
       </p>
       <OptionPicker label="Espaço entre seções" value={g.sectionSpacing} onChange={v => set({ sectionSpacing: v })} options={[
+        { value: 'minimal', label: 'Mínimo', description: 'Quase colado (8px)' },
         { value: 'compact', label: 'Compacto', description: 'Pouco espaço (16px)' },
         { value: 'normal', label: 'Normal', description: 'Espaço padrão (32px)' },
         { value: 'spacious', label: 'Espaçoso', description: 'Muito espaço (64px)' },
