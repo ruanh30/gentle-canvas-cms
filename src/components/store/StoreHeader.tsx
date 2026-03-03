@@ -1154,10 +1154,6 @@ export function StoreHeader() {
         <div
           className={cn(
             'hidden lg:block transition-all duration-300',
-            menuBar.borderTop && 'border-t border-border/20',
-            menuBar.borderBottom && 'border-b border-border/20',
-            menuBar.shadow === 'subtle' && 'shadow-sm',
-            menuBar.shadow === 'medium' && 'shadow-md',
           )}
           style={{
             backgroundColor: menuBar.backgroundColor,
