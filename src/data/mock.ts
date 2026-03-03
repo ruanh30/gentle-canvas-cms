@@ -72,7 +72,7 @@ export const mockProducts: Product[] = [
     id: 'prod-4', name: 'Bolsa Couro Elegance', slug: 'bolsa-couro-elegance',
     description: 'Bolsa em couro legítimo com acabamento artesanal. Design atemporal e sofisticado.',
     price: 399.90, compareAtPrice: 499.90, images: [imgs[4], imgs[11]],
-    categoryId: 'cat-4', stock: 25, sku: 'BOL-001', featured: false, active: true,
+    categoryId: 'cat-4', stock: 0, sku: 'BOL-001', featured: false, active: true,
     rating: 4.7, reviewCount: 43, createdAt: '2024-03-01', tags: ['couro', 'elegante'],
     variants: [],
   },

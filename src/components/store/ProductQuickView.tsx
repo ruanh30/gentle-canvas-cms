@@ -533,6 +533,12 @@ export function ProductQuickView({ product, open, onClose }: QuickViewProps) {
     return attrs;
   });
 
+  // Check if product is fully out of stock
+  const isFullyOutOfStock = useMemo(() => {
+    if (product.variants.length > 0) return product.variants.every(v => v.stock <= 0);
+    return product.stock <= 0;
+  }, [product]);
+
   const selectAttr = useCallback((key: string, value: string) => {
     setSelectedAttrs(prev => ({ ...prev, [key]: value }));
   }, []);
@@ -606,6 +612,13 @@ export function ProductQuickView({ product, open, onClose }: QuickViewProps) {
   const body = (
     <div className="flex-1 overflow-y-auto qv-scrollbar" style={{ padding: `0 ${padding}px` }}>
       <div style={{ paddingTop: spacing, paddingBottom: spacing }} className="space-y-0">
+        {/* Fully out of stock banner */}
+        {isFullyOutOfStock && (
+          <div className="mb-4 rounded-xl border border-border/50 bg-muted/50 px-4 py-3 text-center">
+            <p className="text-sm font-semibold text-foreground">Produto Esgotado</p>
+            <p className="text-xs text-muted-foreground mt-0.5">Este produto está temporariamente indisponível.</p>
+          </div>
+        )}
         {/* Gallery */}
         <div style={{ marginBottom: spacing }}>
           <QuickViewGallery product={product} qv={qv} />
@@ -663,7 +676,7 @@ export function ProductQuickView({ product, open, onClose }: QuickViewProps) {
         qv={qv}
         theme={theme}
         installmentPrice={installmentPrice}
-        disabled={isCurrentOutOfStock}
+        disabled={isCurrentOutOfStock || isFullyOutOfStock}
       />
     </div>
   );
@@ -727,7 +740,7 @@ export function ProductQuickView({ product, open, onClose }: QuickViewProps) {
           qv={qv}
           theme={theme}
           installmentPrice={installmentPrice}
-          disabled={isCurrentOutOfStock}
+          disabled={isCurrentOutOfStock || isFullyOutOfStock}
         />
       </div>
     </div>
