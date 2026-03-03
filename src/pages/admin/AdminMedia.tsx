@@ -49,8 +49,12 @@ export default function AdminMedia() {
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [filter, setFilter] = useState<'all' | 'Produto' | 'Categoria'>('all');
   const [sort, setSort] = useState<SortOption>('recent');
-  const [uploadedMedia, setUploadedMedia] = useState<MediaItem[]>([]);
-  const [deletedIds, setDeletedIds] = useState<Set<string>>(new Set());
+  const [uploadedMedia, setUploadedMedia] = useState<MediaItem[]>(() => {
+    try { return JSON.parse(localStorage.getItem('flashloja_uploaded_media') || '[]'); } catch { return []; }
+  });
+  const [deletedIds, setDeletedIds] = useState<Set<string>>(() => {
+    try { return new Set(JSON.parse(localStorage.getItem('flashloja_deleted_media') || '[]')); } catch { return new Set(); }
+  });
 
   const allMedia = [...getAllMedia(), ...uploadedMedia].filter(m => !deletedIds.has(m.id));
 
@@ -79,12 +83,15 @@ export default function AdminMedia() {
 
   const handleDelete = () => {
     const count = selected.size;
-    setDeletedIds(prev => {
-      const next = new Set(prev);
-      selected.forEach(id => next.add(id));
-      return next;
-    });
-    setUploadedMedia(prev => prev.filter(m => !selected.has(m.id)));
+    const nextDeleted = new Set(deletedIds);
+    selected.forEach(id => nextDeleted.add(id));
+    setDeletedIds(nextDeleted);
+    localStorage.setItem('flashloja_deleted_media', JSON.stringify([...nextDeleted]));
+
+    const nextUploaded = uploadedMedia.filter(m => !selected.has(m.id));
+    setUploadedMedia(nextUploaded);
+    localStorage.setItem('flashloja_uploaded_media', JSON.stringify(nextUploaded));
+
     setSelected(new Set());
     toast({
       title: `${count} ${count === 1 ? 'imagem removida' : 'imagens removidas'}`,
@@ -100,7 +107,11 @@ export default function AdminMedia() {
       name: file.name.replace(/\.[^/.]+$/, ''),
       addedAt: Date.now(),
     };
-    setUploadedMedia(prev => [newItem, ...prev]);
+    setUploadedMedia(prev => {
+      const next = [newItem, ...prev];
+      localStorage.setItem('flashloja_uploaded_media', JSON.stringify(next));
+      return next;
+    });
     toast({
       title: 'Upload concluído',
       description: `"${newItem.name}" foi adicionada à biblioteca.`,
