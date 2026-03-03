@@ -9,6 +9,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import { cn } from '@/lib/utils';
 import { ThemeHomepageSection } from '@/types/theme';
 import { AnimatePresence, motion } from 'framer-motion';
+import { SectionHeader } from '@/components/store/SectionHeader';
 
 function SectionCarousel({ children, speed, showArrows = true, centered = false, gap = 16 }: { children: React.ReactNode[]; speed: number; showArrows?: boolean; centered?: boolean; gap?: number }) {
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -146,6 +147,20 @@ const HomePage = () => {
     const isHiddenMobile = hiddenMobile.includes(section.id);
 
     const wrapperClass = isHiddenMobile ? 'hidden md:block' : '';
+
+    // Rhythm: larger sections get more breathing room
+    const sectionSpacingMap: Record<string, string> = {
+      'featured-products': 'py-14 md:py-20',
+      'collections': 'py-12 md:py-16',
+      'categories': sectionPy,
+      'banner': 'py-6 md:py-10',
+      'benefits': 'py-8 md:py-12',
+      'trust-bar': 'py-4 md:py-6',
+      'faq': 'py-10 md:py-14',
+      'countdown': 'py-10 md:py-14',
+      'video': 'py-10 md:py-14',
+    };
+    const rhythmPy = sectionSpacingMap[section.type] || sectionPy;
 
     switch (section.type) {
       case 'hero': {
@@ -319,9 +334,9 @@ const HomePage = () => {
         );
 
         return (
-          <section key={section.id} className={cn('container mx-auto px-4 flex flex-col items-center justify-center', sectionPy, wrapperClass)}>
+          <section key={section.id} className={cn('container mx-auto px-4 flex flex-col items-center justify-center', rhythmPy, wrapperClass)}>
             {section.showTitle !== false && (
-              <h2 className="text-2xl font-display font-bold mb-8 text-center">{section.title}</h2>
+              <SectionHeader title={section.title} size="md" subtitle="Encontre o que procura" />
             )}
             {isCarousel ? (
               <SectionCarousel speed={carouselSpeed} showArrows={carouselShowArrows} centered gap={(section.settings?.carouselGap as number) ?? 16}>
@@ -342,12 +357,12 @@ const HomePage = () => {
         const mobileProducts = pl.limitMobile > 0 ? featured.slice(0, pl.limitMobile) : featured;
 
         return (
-          <section key={section.id} className={cn('container mx-auto px-4', sectionPy, wrapperClass)}>
+          <section key={section.id} className={cn('container mx-auto px-4', rhythmPy, wrapperClass)}>
             <div className="flex items-center justify-between mb-8">
               {section.showTitle !== false && (
-                <h2 className="text-2xl font-display font-bold">{section.title}</h2>
+                <SectionHeader title={section.title} size="lg" subtitle="Peças selecionadas para você" align="left" className="mb-0" />
               )}
-              <Link to="/products" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1 ml-auto">
+              <Link to="/products" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1 ml-auto shrink-0">
                 Ver todos <ArrowRight className="h-4 w-4" />
               </Link>
             </div>
@@ -393,7 +408,7 @@ const HomePage = () => {
         return (
           <section key={section.id} className={cn('container mx-auto px-4 py-8', wrapperClass)}>
             <div className="bg-secondary rounded-2xl p-8 md:p-16 text-center">
-              <h2 className="text-3xl md:text-4xl font-display font-bold mb-4">{settings.title || 'Banner'}</h2>
+              <h2 className="text-3xl md:text-4xl font-display font-bold mb-3">{settings.title || 'Banner'}</h2>
               <p className="text-muted-foreground mb-6 font-body">{settings.description || ''}</p>
               <Link to="/login">
                 <Button variant="outline" size="lg" className="rounded-full px-8 font-body">Criar conta</Button>
@@ -409,7 +424,7 @@ const HomePage = () => {
           <section key={section.id} className={cn('py-12', wrapperClass)} style={{ backgroundColor: s.backgroundColor || '#1a1a1a', color: s.textColor || '#ffffff' }}>
             <div className="container mx-auto px-4 text-center">
               {section.showTitle !== false && (
-                <h2 className="text-2xl font-display font-bold mb-2">{section.title}</h2>
+                <SectionHeader title={section.title} size="lg" />
               )}
               <p className="text-sm opacity-80 mb-6">{s.label || 'Promoção termina em'}</p>
               {s.targetDate ? (
@@ -429,9 +444,9 @@ const HomePage = () => {
         const isYouTube = (s.provider || 'youtube') === 'youtube';
         const videoId = s.url?.match(/(?:v=|\/embed\/|youtu\.be\/)([\w-]+)/)?.[1];
         return (
-          <section key={section.id} className={cn('container mx-auto px-4', sectionPy, wrapperClass)}>
+          <section key={section.id} className={cn('container mx-auto px-4', rhythmPy, wrapperClass)}>
             {section.showTitle !== false && (
-              <h2 className="text-2xl font-display font-bold mb-8 text-center">{section.title}</h2>
+              <SectionHeader title={section.title} size="sm" />
             )}
             <div className="aspect-video rounded-2xl overflow-hidden bg-secondary">
               {isYouTube && videoId ? (
@@ -466,7 +481,7 @@ const HomePage = () => {
         return (
           <section key={section.id} className={cn('container mx-auto px-4 py-8', wrapperClass)}>
             {section.showTitle !== false && (
-              <h2 className="text-2xl font-display font-bold mb-8 text-center">{section.title}</h2>
+              <SectionHeader title={section.title} size="sm" />
             )}
             <div className={cn('grid gap-4', isTriple ? 'grid-cols-1 md:grid-cols-3' : 'grid-cols-1 md:grid-cols-2')}>
               {banners.map((b, i) => {
@@ -492,7 +507,7 @@ const HomePage = () => {
         const s = section.settings as { imageUrl?: string; title?: string; description?: string; ctaText?: string; ctaLink?: string; imagePosition?: string };
         const imgLeft = (s.imagePosition || 'left') === 'left';
         return (
-          <section key={section.id} className={cn('container mx-auto px-4', sectionPy, wrapperClass)}>
+          <section key={section.id} className={cn('container mx-auto px-4', rhythmPy, wrapperClass)}>
             <div className={cn('grid md:grid-cols-2 gap-8 items-center', !imgLeft && 'direction-rtl')}>
               <div className={cn('rounded-2xl overflow-hidden bg-secondary', !imgLeft && 'md:order-2')}>
                 {s.imageUrl ? (
@@ -522,9 +537,9 @@ const HomePage = () => {
       case 'faq': {
         const items = (section.settings?.items as { question: string; answer: string }[]) || [];
         return (
-          <section key={section.id} className={cn('container mx-auto px-4 max-w-3xl', sectionPy, wrapperClass)}>
+          <section key={section.id} className={cn('container mx-auto px-4 max-w-3xl', rhythmPy, wrapperClass)}>
             {section.showTitle !== false && (
-              <h2 className="text-2xl font-display font-bold mb-8 text-center">{section.title}</h2>
+              <SectionHeader title={section.title} size="sm" subtitle="Tire suas dúvidas" />
             )}
             <Accordion type="multiple" className="w-full">
               {items.map((item, i) => (
@@ -546,9 +561,9 @@ const HomePage = () => {
           { icon: CreditCard, label: '12x sem juros', desc: 'No cartão de crédito' },
         ];
         return (
-          <section key={section.id} className={cn('container mx-auto px-4', sectionPy, wrapperClass)}>
+          <section key={section.id} className={cn('container mx-auto px-4', rhythmPy, wrapperClass)}>
             {section.showTitle !== false && (
-              <h2 className="text-2xl font-display font-bold mb-8 text-center">{section.title}</h2>
+              <SectionHeader title={section.title} size="sm" accent={false} />
             )}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
               {benefits.map((b, i) => (
@@ -599,9 +614,9 @@ const HomePage = () => {
         const mobileProducts = pl.limitMobile > 0 ? allCollectionProducts.slice(0, pl.limitMobile) : allCollectionProducts;
 
         return (
-          <section key={section.id} className={cn('container mx-auto px-4', sectionPy, wrapperClass)}>
+          <section key={section.id} className={cn('container mx-auto px-4', rhythmPy, wrapperClass)}>
             {section.showTitle !== false && (
-              <h2 className="text-2xl font-display font-bold text-center mb-8">{section.title}</h2>
+              <SectionHeader title={section.title} size="md" />
             )}
             {isCarousel ? (
               <SectionCarousel speed={carouselSpeed} showArrows={carouselShowArrows} centered>
