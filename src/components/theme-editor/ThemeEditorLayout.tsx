@@ -40,7 +40,7 @@ import { QuickViewPanel } from './panels/QuickViewPanel';
 import { BadgesPanel } from './panels/BadgesPanel';
 import { MicrocopyPanel } from './panels/MicrocopyPanel';
 import { ConversionPanel } from './panels/ConversionPanel';
-
+import { ProductListingPanel } from './panels/ProductListingPanel';
 
 export interface EditorSectionItem {
   id: string;
@@ -63,6 +63,7 @@ const sections: EditorSectionItem[] = [
   
   { id: 'hero', label: 'Hero / Banner', icon: Layers, group: 'Estrutura' },
   { id: 'home-sections', label: 'Seções da Home', icon: LayoutGrid, group: 'Estrutura' },
+  { id: 'product-listing', label: 'Listagem de Produtos', icon: LayoutGrid, group: 'Estrutura' },
   { id: 'footer', label: 'Rodapé', icon: PanelBottom, group: 'Estrutura' },
   // Aparência de Produto
   { id: 'product-card', label: 'Card de Produto', icon: Package, group: 'Aparência de Produto' },
@@ -95,6 +96,7 @@ function renderPanel(sectionId: string) {
     
     case 'hero': return <HeroPanel />;
     case 'home-sections': return <HomeSectionsPanel />;
+    case 'product-listing': return <ProductListingPanel />;
     case 'product-card': return <ProductCardPanel />;
     case 'product-page': return <ProductPagePanel />;
     case 'category': return <CategoryPanel />;

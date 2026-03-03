@@ -336,10 +336,9 @@ const HomePage = () => {
       }
 
       case 'featured-products': {
-        const limitDesktop = (section.settings?.limitDesktop as number) || 0;
-        const limitMobile = (section.settings?.limitMobile as number) || 0;
-        const desktopProducts = limitDesktop > 0 ? featured.slice(0, limitDesktop) : featured;
-        const mobileProducts = limitMobile > 0 ? featured.slice(0, limitMobile) : featured;
+        const pl = theme.productListing || { limitDesktop: 0, limitMobile: 0 };
+        const desktopProducts = pl.limitDesktop > 0 ? featured.slice(0, pl.limitDesktop) : featured;
+        const mobileProducts = pl.limitMobile > 0 ? featured.slice(0, pl.limitMobile) : featured;
 
         return (
           <section key={section.id} className={cn('container mx-auto px-4', sectionPy, wrapperClass)}>
@@ -585,10 +584,9 @@ const HomePage = () => {
         const allCollectionProducts = mockProducts.filter(p => collection.productIds.includes(p.id));
         if (allCollectionProducts.length === 0) return null;
 
-        const limitDesktop = (section.settings?.limitDesktop as number) || 0;
-        const limitMobile = (section.settings?.limitMobile as number) || 0;
-        const desktopProducts = limitDesktop > 0 ? allCollectionProducts.slice(0, limitDesktop) : allCollectionProducts;
-        const mobileProducts = limitMobile > 0 ? allCollectionProducts.slice(0, limitMobile) : allCollectionProducts;
+        const pl = theme.productListing || { limitDesktop: 0, limitMobile: 0 };
+        const desktopProducts = pl.limitDesktop > 0 ? allCollectionProducts.slice(0, pl.limitDesktop) : allCollectionProducts;
+        const mobileProducts = pl.limitMobile > 0 ? allCollectionProducts.slice(0, pl.limitMobile) : allCollectionProducts;
 
         return (
           <section key={section.id} className={cn('container mx-auto px-4', sectionPy, wrapperClass)}>

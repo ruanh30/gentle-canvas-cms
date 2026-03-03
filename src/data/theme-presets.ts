@@ -399,6 +399,11 @@ export const defaultThemeConfig: ThemeConfig = {
     ],
   },
 
+  productListing: {
+    limitDesktop: 0,
+    limitMobile: 0,
+  },
+
   homepageSections: defaultHomeSections,
 
   megaMenu: {
