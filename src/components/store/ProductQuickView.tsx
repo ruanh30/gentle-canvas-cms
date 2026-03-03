@@ -258,45 +258,57 @@ function QuickViewVariants({ product, qv, quantities, onUpdateQty, selectedAttrs
   }
 
   if (style === 'list-compact') {
-    // Extract color attribute separately for swatches
     const colorKey = attrKeys.find(k => k.toLowerCase() === 'cor');
-    const colorValues = colorKey ? [...new Set(variants.map(v => v.attributes[colorKey]))] : [];
 
     return (
       <div className="space-y-4">
-        {colorKey && renderColorSwatches(colorKey, colorValues)}
         <div>
           <p className="text-xs font-semibold text-foreground uppercase tracking-wider mb-2">Variações</p>
           <div className="divide-y divide-border/30">
-            {variants.map(v => (
-              <div key={v.id} className="flex items-center justify-between py-2.5 gap-3">
-                <div className="flex items-center gap-2.5 min-w-0 flex-1">
-                  <div className="min-w-0">
-                    <p className="text-sm font-medium text-foreground truncate">{v.name}</p>
-                    {qv?.showSKU && (
-                      <p className="text-[10px] text-muted-foreground font-mono">#{v.sku}</p>
+            {variants.map(v => {
+              const colorVal = colorKey ? v.attributes[colorKey] : null;
+              const hex = colorVal ? (colorHex[colorVal] || '#ccc') : null;
+              const isWhite = hex?.toLowerCase() === '#ffffff' || hex?.toLowerCase() === '#fff';
+              return (
+                <div key={v.id} className="flex items-center justify-between py-2.5 gap-3">
+                  <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                    {hex && (
+                      <span
+                        className={cn(
+                          'w-5 h-5 rounded-full shrink-0 border',
+                          isWhite ? 'border-border/50' : 'border-transparent',
+                        )}
+                        style={{ backgroundColor: hex }}
+                        title={colorVal || ''}
+                      />
                     )}
+                    <div className="min-w-0">
+                      <p className="text-sm font-medium text-foreground truncate">{v.name}</p>
+                      {qv?.showSKU && (
+                        <p className="text-[10px] text-muted-foreground font-mono">#{v.sku}</p>
+                      )}
+                    </div>
+                  </div>
+                  <div className="flex items-center border border-border/60 rounded-lg">
+                    <button
+                      onClick={() => onUpdateQty(v.id, -1)}
+                      className="w-8 h-8 grid place-items-center hover:bg-muted transition-colors"
+                    >
+                      <Minus className="h-3 w-3" />
+                    </button>
+                    <span className="w-8 text-center text-xs font-semibold tabular-nums">
+                      {quantities[v.id] || 0}
+                    </span>
+                    <button
+                      onClick={() => onUpdateQty(v.id, 1)}
+                      className="w-8 h-8 grid place-items-center hover:bg-muted transition-colors"
+                    >
+                      <Plus className="h-3 w-3" />
+                    </button>
                   </div>
                 </div>
-                <div className="flex items-center border border-border/60 rounded-lg">
-                  <button
-                    onClick={() => onUpdateQty(v.id, -1)}
-                    className="w-8 h-8 grid place-items-center hover:bg-muted transition-colors"
-                  >
-                    <Minus className="h-3 w-3" />
-                  </button>
-                  <span className="w-8 text-center text-xs font-semibold tabular-nums">
-                    {quantities[v.id] || 0}
-                  </span>
-                  <button
-                    onClick={() => onUpdateQty(v.id, 1)}
-                    className="w-8 h-8 grid place-items-center hover:bg-muted transition-colors"
-                  >
-                    <Plus className="h-3 w-3" />
-                  </button>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </div>
