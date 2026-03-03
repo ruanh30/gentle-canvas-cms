@@ -319,20 +319,18 @@ const HomePage = () => {
 
         return (
           <section key={section.id} className={cn('container mx-auto px-4', sectionPy, wrapperClass)}>
-            <div className="rounded-2xl border border-border/40 bg-card/50 p-6 md:p-8">
-              {section.showTitle !== false && (
-                <h2 className="text-2xl font-display font-bold mb-6 text-center">{section.title}</h2>
-              )}
-              {isCarousel ? (
-                <SectionCarousel speed={carouselSpeed} showArrows={carouselShowArrows} centered gap={(section.settings?.carouselGap as number) ?? 16}>
-                  {filteredCategories.map(categoryCard)}
-                </SectionCarousel>
-              ) : (
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6" style={{ gap: `${(section.settings?.gridGap as number) ?? 16}px` }}>
-                  {filteredCategories.map(categoryCard)}
-                </div>
-              )}
-            </div>
+            {section.showTitle !== false && (
+              <h2 className="text-2xl font-display font-bold mb-8 text-center">{section.title}</h2>
+            )}
+            {isCarousel ? (
+              <SectionCarousel speed={carouselSpeed} showArrows={carouselShowArrows} centered gap={(section.settings?.carouselGap as number) ?? 16}>
+                {filteredCategories.map(categoryCard)}
+              </SectionCarousel>
+            ) : (
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6" style={{ gap: `${(section.settings?.gridGap as number) ?? 16}px` }}>
+                {filteredCategories.map(categoryCard)}
+              </div>
+            )}
           </section>
         );
       }
