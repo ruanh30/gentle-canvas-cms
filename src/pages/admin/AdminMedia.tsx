@@ -1,5 +1,5 @@
-import React, { useState, useCallback } from 'react';
-import { ImageIcon, Upload, Palette, Check, Trash2, Search } from 'lucide-react';
+import React, { useState, useCallback, useMemo } from 'react';
+import { ImageIcon, Upload, Palette, Check, Trash2, Search, ArrowDownAZ, ArrowUpAZ, ArrowDown, ArrowUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -14,16 +14,20 @@ interface MediaItem {
   url: string;
   source: string;
   name: string;
+  addedAt: number; // timestamp for sort
 }
+
+type SortOption = 'recent' | 'oldest' | 'a-z' | 'z-a';
 
 function getAllMedia(): MediaItem[] {
   const items: MediaItem[] = [];
   const seen = new Set<string>();
 
+  let order = 0;
   mockCategories.forEach(c => {
     if (c.image && !seen.has(c.image)) {
       seen.add(c.image);
-      items.push({ id: `cat-${c.id}`, url: c.image, source: 'Categoria', name: c.name });
+      items.push({ id: `cat-${c.id}`, url: c.image, source: 'Categoria', name: c.name, addedAt: order++ });
     }
   });
 
@@ -31,7 +35,7 @@ function getAllMedia(): MediaItem[] {
     p.images.forEach((img, i) => {
       if (!seen.has(img)) {
         seen.add(img);
-        items.push({ id: `${p.id}-${i}`, url: img, source: 'Produto', name: `${p.name}${i > 0 ? ` (${i + 1})` : ''}` });
+        items.push({ id: `${p.id}-${i}`, url: img, source: 'Produto', name: `${p.name}${i > 0 ? ` (${i + 1})` : ''}`, addedAt: order++ });
       }
     });
   });
@@ -44,14 +48,25 @@ export default function AdminMedia() {
   const [search, setSearch] = useState('');
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [filter, setFilter] = useState<'all' | 'Produto' | 'Categoria'>('all');
+  const [sort, setSort] = useState<SortOption>('recent');
   const [uploadedMedia, setUploadedMedia] = useState<MediaItem[]>([]);
   const [deletedIds, setDeletedIds] = useState<Set<string>>(new Set());
 
   const allMedia = [...getAllMedia(), ...uploadedMedia].filter(m => !deletedIds.has(m.id));
 
-  const filtered = allMedia
-    .filter(m => filter === 'all' || m.source === filter)
-    .filter(m => m.name.toLowerCase().includes(search.toLowerCase()));
+  const filtered = useMemo(() => {
+    const list = allMedia
+      .filter(m => filter === 'all' || m.source === filter)
+      .filter(m => m.name.toLowerCase().includes(search.toLowerCase()));
+
+    switch (sort) {
+      case 'a-z': return list.sort((a, b) => a.name.localeCompare(b.name));
+      case 'z-a': return list.sort((a, b) => b.name.localeCompare(a.name));
+      case 'oldest': return list.sort((a, b) => a.addedAt - b.addedAt);
+      case 'recent':
+      default: return list.sort((a, b) => b.addedAt - a.addedAt);
+    }
+  }, [allMedia, filter, search, sort]);
 
   const toggleSelect = (id: string) => {
     setSelected(prev => {
@@ -83,6 +98,7 @@ export default function AdminMedia() {
       url: dataUrl,
       source: 'Upload',
       name: file.name.replace(/\.[^/.]+$/, ''),
+      addedAt: Date.now(),
     };
     setUploadedMedia(prev => [newItem, ...prev]);
     toast({
@@ -138,6 +154,29 @@ export default function AdminMedia() {
               )}
             >
               {f === 'all' ? 'Todas' : f === 'Produto' ? 'Produtos' : 'Categorias'}
+            </button>
+          ))}
+        </div>
+        <div className="h-5 w-px bg-border" />
+        <div className="flex gap-1">
+          {([
+            { value: 'recent' as SortOption, label: 'Recentes', icon: ArrowDown },
+            { value: 'oldest' as SortOption, label: 'Antigas', icon: ArrowUp },
+            { value: 'a-z' as SortOption, label: 'A–Z', icon: ArrowDownAZ },
+            { value: 'z-a' as SortOption, label: 'Z–A', icon: ArrowUpAZ },
+          ]).map(s => (
+            <button
+              key={s.value}
+              onClick={() => setSort(s.value)}
+              className={cn(
+                'px-2.5 py-1.5 rounded-md text-xs font-medium border transition-colors flex items-center gap-1',
+                sort === s.value
+                  ? 'bg-foreground text-background border-foreground'
+                  : 'bg-card text-muted-foreground border-border hover:bg-muted/50'
+              )}
+            >
+              <s.icon className="h-3.5 w-3.5" />
+              {s.label}
             </button>
           ))}
         </div>
