@@ -335,7 +335,12 @@ const HomePage = () => {
         );
       }
 
-      case 'featured-products':
+      case 'featured-products': {
+        const limitDesktop = (section.settings?.limitDesktop as number) || 0;
+        const limitMobile = (section.settings?.limitMobile as number) || 0;
+        const desktopProducts = limitDesktop > 0 ? featured.slice(0, limitDesktop) : featured;
+        const mobileProducts = limitMobile > 0 ? featured.slice(0, limitMobile) : featured;
+
         return (
           <section key={section.id} className={cn('container mx-auto px-4', sectionPy, wrapperClass)}>
             <div className="flex items-center justify-between mb-8">
@@ -355,14 +360,24 @@ const HomePage = () => {
                 ))}
               </SectionCarousel>
             ) : (
-              <div className={cn('grid gap-6', gridCols[theme.category?.columnsDesktop] || 'grid-cols-2 md:grid-cols-3 lg:grid-cols-4')}>
-                {featured.map(product => (
-                  <ProductCard key={product.id} product={product} />
-                ))}
-              </div>
+              <>
+                {/* Desktop */}
+                <div className={cn('hidden md:grid gap-6', gridCols[theme.category?.columnsDesktop] || 'grid-cols-2 md:grid-cols-3 lg:grid-cols-4')}>
+                  {desktopProducts.map(product => (
+                    <ProductCard key={product.id} product={product} />
+                  ))}
+                </div>
+                {/* Mobile */}
+                <div className={cn('grid md:hidden gap-6 grid-cols-2')}>
+                  {mobileProducts.map(product => (
+                    <ProductCard key={product.id} product={product} />
+                  ))}
+                </div>
+              </>
             )}
           </section>
         );
+      }
 
       case 'banner': {
         const settings = section.settings as { title?: string; description?: string };
@@ -567,8 +582,13 @@ const HomePage = () => {
           ? mockCollections.find(c => c.id === collectionId)
           : mockCollections.find(c => c.slug === section.id || c.name === section.title);
         if (!collection) return null;
-        const collectionProducts = mockProducts.filter(p => collection.productIds.includes(p.id));
-        if (collectionProducts.length === 0) return null;
+        const allCollectionProducts = mockProducts.filter(p => collection.productIds.includes(p.id));
+        if (allCollectionProducts.length === 0) return null;
+
+        const limitDesktop = (section.settings?.limitDesktop as number) || 0;
+        const limitMobile = (section.settings?.limitMobile as number) || 0;
+        const desktopProducts = limitDesktop > 0 ? allCollectionProducts.slice(0, limitDesktop) : allCollectionProducts;
+        const mobileProducts = limitMobile > 0 ? allCollectionProducts.slice(0, limitMobile) : allCollectionProducts;
 
         return (
           <section key={section.id} className={cn('container mx-auto px-4', sectionPy, wrapperClass)}>
@@ -577,18 +597,27 @@ const HomePage = () => {
             )}
             {isCarousel ? (
               <SectionCarousel speed={carouselSpeed} showArrows={carouselShowArrows}>
-                {collectionProducts.map(product => (
+                {allCollectionProducts.map(product => (
                   <div key={product.id} className="min-w-[260px] max-w-[280px] snap-start flex-shrink-0">
                     <ProductCard product={product} />
                   </div>
                 ))}
               </SectionCarousel>
             ) : (
-              <div className={cn('grid gap-6', gridCols[theme.category?.columnsDesktop] || 'grid-cols-2 md:grid-cols-3 lg:grid-cols-4')}>
-                {collectionProducts.map(product => (
-                  <ProductCard key={product.id} product={product} />
-                ))}
-              </div>
+              <>
+                {/* Desktop */}
+                <div className={cn('hidden md:grid gap-6', gridCols[theme.category?.columnsDesktop] || 'grid-cols-2 md:grid-cols-3 lg:grid-cols-4')}>
+                  {desktopProducts.map(product => (
+                    <ProductCard key={product.id} product={product} />
+                  ))}
+                </div>
+                {/* Mobile */}
+                <div className={cn('grid md:hidden gap-6 grid-cols-2')}>
+                  {mobileProducts.map(product => (
+                    <ProductCard key={product.id} product={product} />
+                  ))}
+                </div>
+              </>
             )}
           </section>
         );
