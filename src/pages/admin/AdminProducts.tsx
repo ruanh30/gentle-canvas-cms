@@ -462,7 +462,11 @@ function ProductsTab() {
             return;
           }
           setProducts(prev => prev.find(x => x.id === p.id) ? prev.map(x => x.id === p.id ? p : x) : [...prev, p]);
+          // Sync to shared mockProducts so storefront reflects changes
+          const idx = mockProducts.findIndex(x => x.id === p.id);
+          if (idx >= 0) { mockProducts[idx] = p; } else { mockProducts.push(p); }
           setEditing(null);
+          toast({ title: 'Produto salvo', description: `"${p.name}" foi atualizado com sucesso.` });
         }}
         onBack={() => setEditing(null)}
         onDuplicate={duplicateProduct}
