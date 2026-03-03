@@ -1092,7 +1092,7 @@ export function StoreHeader() {
               </Link>
 
               {h.layout !== 'hamburger-only' && h.layout !== 'centered' && !isMenuBarSeparated && (
-                <nav className="flex items-center" style={{ gap: `${h.menuItemGap ?? 4}px` }}>
+                <nav className="flex items-center" style={{ gap: '24px' }}>
                   {renderNavItems()}
                 </nav>
               )}
@@ -1108,7 +1108,7 @@ export function StoreHeader() {
 
         {/* When shrunk: show ONLY the nav menu bar */}
         {shrinkActive && (
-          <nav className="flex items-center justify-center py-2" style={{ gap: `${h.menuItemGap ?? 4}px` }}>
+          <nav className="flex items-center justify-center py-2" style={{ gap: '24px' }}>
             {renderNavItems()}
           </nav>
         )}
@@ -1128,7 +1128,7 @@ export function StoreHeader() {
             <div style={containerStyle}>
               <nav
                 className="flex items-center justify-center"
-                style={{ height: '40px', gap: `${h.menuItemGap ?? 4}px` }}
+                style={{ height: '40px', gap: '24px' }}
               >
                 {renderNavItems()}
               </nav>
@@ -1147,7 +1147,7 @@ export function StoreHeader() {
             <div style={containerStyle}>
               <nav
                 className="flex items-center justify-center"
-                style={{ height: '40px', gap: `${h.menuItemGap ?? 4}px` }}
+                style={{ height: '40px', gap: '24px' }}
               >
                 {renderNavItems()}
               </nav>
@@ -1172,7 +1172,7 @@ export function StoreHeader() {
               className="flex items-center justify-center"
               style={{
                 height: `${menuBar.height}px`,
-                gap: `${h.menuItemGap ?? 4}px`,
+                gap: '24px',
               }}
             >
               {renderNavItems()}
