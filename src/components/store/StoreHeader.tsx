@@ -839,7 +839,7 @@ export function StoreHeader() {
     const sw = h.iconStrokeWidth || 1.5;
 
     return (
-      <div className={cn('flex items-center gap-1', isCentered && !forMobile && 'absolute right-0')}>
+      <div className={cn('flex items-center gap-1', isCentered && !forMobile && 'lg:absolute lg:right-0')}>
         {h.showSearch && h.searchStyle !== 'inline' && (!forMobile || searchConfig.showOnMobile) && (
           <Button variant="ghost" size="icon" className="h-10 w-10" onClick={handleSearchClick}>
             <SearchIconComp style={iconStyle} strokeWidth={sw} />
@@ -958,16 +958,23 @@ export function StoreHeader() {
           /* ALL OTHER LAYOUTS */
           <div className={cn(
             'flex items-center transition-all duration-300',
-            isCentered ? 'justify-center relative' : 'justify-between'
+            isCentered ? 'justify-between lg:justify-center lg:relative' : 'justify-between'
           )} style={{ height: currentHeight, gap: `${container.gap}px` }}>
-            {renderMobileDrawer()}
+            {/* Mobile: hamburger left — on centered layout use flex instead of absolute to prevent overlap */}
+            {isCentered ? (
+              <div className="lg:absolute lg:left-0 shrink-0">
+                {renderMobileDrawer()}
+              </div>
+            ) : (
+              renderMobileDrawer()
+            )}
 
-            <Link to="/" className="flex items-center gap-2 shrink-0">
+            <Link to="/" className="flex items-center gap-2 shrink-0 min-w-0">
               {theme.logo.imageUrl && (
-                <img src={theme.logo.imageUrl} alt="Logo" style={{ maxHeight: theme.logo.maxHeight }} className="object-contain" />
+                <img src={theme.logo.imageUrl} alt="Logo" style={{ maxHeight: theme.logo.maxHeight }} className="object-contain shrink-0" />
               )}
               {theme.logo.showText && (
-                <span className="font-display text-xl md:text-2xl font-bold tracking-tight">
+                <span className="font-display text-xl md:text-2xl font-bold tracking-tight truncate">
                   {theme.logo.text}
                 </span>
               )}
