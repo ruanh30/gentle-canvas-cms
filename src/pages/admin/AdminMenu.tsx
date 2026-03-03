@@ -41,7 +41,7 @@ import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 type SectionKey =
   | 'presets' | 'layout' | 'states' | 'container' | 'menu-style'
   | 'mega-menu' | 'icons' | 'search' | 'mobile' | 'items'
-  | 'banners' | 'icon-picker' | 'menu-colors' | 'social';
+  | 'banners' | 'icon-picker' | 'menu-colors';
 
 interface SidebarItem {
   key: SectionKey;
@@ -69,7 +69,7 @@ const SIDEBAR_ITEMS: SidebarItem[] = [
   { key: 'icon-picker', label: 'Estilo dos Ícones', icon: Sparkles, group: 'ELEMENTOS', badge: 'NOVO', hint: 'Escolha o visual de cada ícone' },
   { key: 'search', label: 'Busca', icon: Search, group: 'ELEMENTOS', hint: 'Estilo e comportamento da busca' },
   { key: 'menu-colors', label: 'Cores do Menu', icon: Paintbrush, group: 'ELEMENTOS', badge: 'NOVO', hint: 'Cores dos links e hover' },
-  { key: 'social', label: 'Redes Sociais', icon: ExternalLink, group: 'ELEMENTOS', badge: 'NOVO', hint: 'Ícones de redes sociais no topo' },
+  
   { key: 'banners', label: 'Banners & Anúncios', icon: Megaphone, group: 'CONTEÚDO', hint: 'Barra de anúncio + banner' },
 ];
 
@@ -1881,89 +1881,7 @@ function MenuColorsSection() {
   );
 }
 
-/* ================================================================== */
-/*  SOCIAL SECTION                                                      */
-/* ================================================================== */
 
-const SOCIAL_PLATFORMS = [
-  { key: 'facebook', label: 'Facebook', placeholder: 'https://facebook.com/suapagina' },
-  { key: 'whatsapp', label: 'WhatsApp', placeholder: '5511999990000' },
-  { key: 'instagram', label: 'Instagram', placeholder: 'https://instagram.com/sualoja' },
-  { key: 'tiktok', label: 'TikTok', placeholder: 'https://tiktok.com/@sualoja' },
-  { key: 'kwai', label: 'Kwai', placeholder: 'https://kwai.com/@sualoja' },
-  { key: 'youtube', label: 'YouTube', placeholder: 'https://youtube.com/@sualoja' },
-  { key: 'linkedin', label: 'LinkedIn', placeholder: 'https://linkedin.com/company/sualoja' },
-  { key: 'twitter', label: 'X (Twitter)', placeholder: 'https://x.com/sualoja' },
-  { key: 'telegram', label: 'Telegram', placeholder: 'https://t.me/sualoja' },
-] as const;
-
-function SocialSection() {
-  const { draft, updateDraftSection } = useTheme();
-  const sb = draft.header?.socialBar ?? {
-    enabled: false, position: 'header-top', links: [], iconSize: 16,
-    iconColor: '#737373', iconHoverColor: '#1a1a1a', showLabels: false,
-  };
-  const setSB = (u: Partial<typeof sb>) => updateDraftSection('header', { socialBar: { ...sb, ...u } });
-
-  const updateLink = (platform: string, field: string, value: any) => {
-    const links = [...(sb.links || [])];
-    const idx = links.findIndex(l => l.platform === platform);
-    if (idx >= 0) {
-      links[idx] = { ...links[idx], [field]: value };
-    } else {
-      links.push({ platform: platform as any, url: '', enabled: true, [field]: value });
-    }
-    setSB({ links });
-  };
-
-  const getLink = (platform: string) => sb.links?.find(l => l.platform === platform) || { platform, url: '', enabled: false };
-
-  return (
-    <div className="space-y-5">
-      <div>
-        <h3 className="text-[15px] font-semibold text-foreground">Redes Sociais</h3>
-        <p className="text-[12px] text-muted-foreground/60 mt-0.5">Adicione ícones de redes sociais ao cabeçalho da loja.</p>
-      </div>
-
-      <ToggleRow label="Ativar redes sociais" hint="Exibe ícones no topo do cabeçalho" checked={sb.enabled} onChange={v => setSB({ enabled: v })} />
-
-      {sb.enabled && (
-        <>
-          <Pills label="Posição" value={sb.position} onChange={v => setSB({ position: v as any })} options={[
-            { value: 'header-top', label: 'Topo', desc: 'Faixa acima do cabeçalho' },
-            { value: 'header-actions', label: 'Junto às ações', desc: 'Ao lado dos ícones de busca/conta/carrinho' },
-          ]} />
-
-          <ControlGroup title="Redes" hint="Ative e configure o link de cada rede">
-            {SOCIAL_PLATFORMS.map(p => {
-              const link = getLink(p.key);
-              return (
-                <div key={p.key} className="space-y-2">
-                  <ToggleRow label={p.label} checked={link.enabled} onChange={v => updateLink(p.key, 'enabled', v)} />
-                  {link.enabled && (
-                    <Input
-                      placeholder={p.placeholder}
-                      value={link.url}
-                      onChange={e => updateLink(p.key, 'url', e.target.value)}
-                      className="text-[12px] h-9 bg-muted/30 border-border/40"
-                    />
-                  )}
-                </div>
-              );
-            })}
-          </ControlGroup>
-
-          <ControlGroup title="Aparência" hint="Tamanho e cores dos ícones">
-            <NumSlider label="Tamanho" value={sb.iconSize} onChange={v => setSB({ iconSize: v })} min={14} max={24} suffix="px" />
-            <ColorField label="Cor dos ícones" value={sb.iconColor} onChange={v => setSB({ iconColor: v })} />
-            <ColorField label="Cor no hover" value={sb.iconHoverColor} onChange={v => setSB({ iconHoverColor: v })} />
-            <ToggleRow label="Mostrar nomes" hint="Exibe o nome da rede ao lado do ícone" checked={sb.showLabels} onChange={v => setSB({ showLabels: v })} />
-          </ControlGroup>
-        </>
-      )}
-    </div>
-  );
-}
 
 /* ================================================================== */
 /*  SECTION MAP                                                         */
@@ -1982,7 +1900,7 @@ const SECTION_COMPONENTS: Record<SectionKey, React.FC> = {
   'menu-colors': MenuColorsSection,
   'mobile': MobileSection,
   'items': ItemsSection,
-  'social': SocialSection,
+  
   'banners': BannersSection,
 };
 
