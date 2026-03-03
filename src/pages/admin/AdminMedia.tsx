@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { ImageIcon, Upload, Palette, Check, Trash2, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -6,10 +6,18 @@ import { Badge } from '@/components/ui/badge';
 import { useNavigate } from 'react-router-dom';
 import { mockProducts, mockCategories } from '@/data/mock';
 import { cn } from '@/lib/utils';
+import SecureFileUpload from '@/components/admin/SecureFileUpload';
+import { toast } from '@/hooks/use-toast';
 
-// Extract all unique images from store products and categories
-function getAllMedia() {
-  const items: { id: string; url: string; source: string; name: string }[] = [];
+interface MediaItem {
+  id: string;
+  url: string;
+  source: string;
+  name: string;
+}
+
+function getAllMedia(): MediaItem[] {
+  const items: MediaItem[] = [];
   const seen = new Set<string>();
 
   mockCategories.forEach(c => {
@@ -33,10 +41,12 @@ function getAllMedia() {
 
 export default function AdminMedia() {
   const navigate = useNavigate();
-  const allMedia = getAllMedia();
   const [search, setSearch] = useState('');
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [filter, setFilter] = useState<'all' | 'Produto' | 'Categoria'>('all');
+  const [uploadedMedia, setUploadedMedia] = useState<MediaItem[]>([]);
+
+  const allMedia = [...getAllMedia(), ...uploadedMedia];
 
   const filtered = allMedia
     .filter(m => filter === 'all' || m.source === filter)
@@ -51,6 +61,31 @@ export default function AdminMedia() {
     });
   };
 
+  const handleDelete = () => {
+    const count = selected.size;
+    // Remove uploaded items that are selected
+    setUploadedMedia(prev => prev.filter(m => !selected.has(m.id)));
+    setSelected(new Set());
+    toast({
+      title: `${count} ${count === 1 ? 'imagem removida' : 'imagens removidas'}`,
+      description: 'As imagens selecionadas foram removidas da biblioteca.',
+    });
+  };
+
+  const handleFileAccepted = useCallback((dataUrl: string, file: File) => {
+    const newItem: MediaItem = {
+      id: `upload-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+      url: dataUrl,
+      source: 'Upload',
+      name: file.name.replace(/\.[^/.]+$/, ''),
+    };
+    setUploadedMedia(prev => [newItem, ...prev]);
+    toast({
+      title: 'Upload concluído',
+      description: `"${newItem.name}" foi adicionada à biblioteca.`,
+    });
+  }, []);
+
   return (
     <div className="p-6 max-w-6xl mx-auto space-y-6">
       <div className="flex items-center justify-between">
@@ -62,19 +97,20 @@ export default function AdminMedia() {
         </div>
         <div className="flex items-center gap-2">
           {selected.size > 0 && (
-            <Button variant="outline" size="sm" className="gap-1.5 text-destructive border-destructive/30" onClick={() => setSelected(new Set())}>
+            <Button variant="outline" size="sm" className="gap-1.5 text-destructive border-destructive/30" onClick={handleDelete}>
               <Trash2 className="h-4 w-4" />
-              {selected.size} selecionadas
+              Apagar {selected.size}
             </Button>
           )}
           <Button variant="outline" size="sm" className="gap-1.5" onClick={() => navigate('/admin/customization')}>
             <Palette className="h-4 w-4" />
             Editor de Tema
           </Button>
-          <Button size="sm" className="gap-1.5">
-            <Upload className="h-4 w-4" />
-            Upload
-          </Button>
+          <SecureFileUpload
+            onFileAccepted={handleFileAccepted}
+            multiple
+            compact
+          />
         </div>
       </div>
 
