@@ -980,9 +980,9 @@ export function StoreHeader() {
       'z-50 transition-all duration-300',
       activeState?.blur && 'backdrop-blur-md',
       !activeState && 'bg-background/95 backdrop-blur-md supports-[backdrop-filter]:bg-background/80',
-      activeState?.borderBottom && 'border-b',
-      !activeState && (h.headerSurface ?? true) && !hasNavBarBelow && 'border-b border-border/10',
-      !activeState && !(h.headerSurface ?? true) && h.borderBottom && !hasNavBarBelow && 'border-b border-border',
+      activeState?.borderBottom && 'border-b-2 border-red-500',
+      !activeState && (h.headerSurface ?? true) && !hasNavBarBelow && 'border-b-2 border-red-500',
+      !activeState && !(h.headerSurface ?? true) && h.borderBottom && !hasNavBarBelow && 'border-b-2 border-red-500',
       activeState ? shadowMap[activeState.shadow] : (h.shadowOnScroll && scrolled ? 'shadow-md' : ''),
       h.sticky && 'sticky top-0',
       headerHidden && 'lg:translate-y-0 -translate-y-full',
@@ -1118,7 +1118,7 @@ export function StoreHeader() {
       {/* Double-row nav bar (1px white gap divider) */}
       {isDoubleRow && !shrinkActive && !isMenuBarSeparated && (
         <>
-          {h.menuDividerLine && <div className="hidden lg:block" style={{ height: '2px', backgroundColor: 'red' }} />}
+{h.menuDividerLine && <div className="hidden lg:block" style={{ height: '1px', backgroundColor: '#e5e5e5' }} />}
           <div
             className="hidden lg:block"
             style={{
@@ -1140,7 +1140,7 @@ export function StoreHeader() {
       {/* Centered layout nav bar (1px white gap divider) */}
       {h.layout === 'centered' && !shrinkActive && !isMenuBarSeparated && (
         <>
-          {h.menuDividerLine && <div className="hidden lg:block" style={{ height: '2px', backgroundColor: 'red' }} />}
+          {h.menuDividerLine && <div className="hidden lg:block" style={{ height: '1px', backgroundColor: '#e5e5e5' }} />}
           <div
             className="hidden lg:block"
             style={{
