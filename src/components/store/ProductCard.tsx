@@ -147,6 +147,11 @@ export function ProductCard({ product }: Props) {
   const c = theme.productCard ?? {} as any;
   const [showPreview, setShowPreview] = useState(false);
 
+  // Check if product is fully out of stock
+  const isFullyOutOfStock = product.variants.length > 0
+    ? product.variants.every(v => v.stock <= 0)
+    : product.stock <= 0;
+
   const discount = product.compareAtPrice
     ? Math.round((1 - product.price / product.compareAtPrice) * 100)
     : 0;
@@ -169,6 +174,7 @@ export function ProductCard({ product }: Props) {
   const handleBuyNow = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
+    if (isFullyOutOfStock) return;
     addItem(product);
     navigate('/cart');
   };
@@ -180,6 +186,7 @@ export function ProductCard({ product }: Props) {
           'group relative pm-global-border transition-all duration-300',
           radiusMap[c.imageBorderRadius],
           'text-center',
+          isFullyOutOfStock && 'opacity-60',
         )}
         style={{
           boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
@@ -196,10 +203,18 @@ export function ProductCard({ product }: Props) {
             <img
               src={product.images[0]}
               alt={product.name}
-              className={cn('h-full w-full object-cover transition-transform duration-500', hoverClass)}
+              className={cn('h-full w-full object-cover transition-transform duration-500', hoverClass, isFullyOutOfStock && 'grayscale-[30%]')}
               loading="lazy"
             />
-            {c.showDiscount && discount > 0 && (
+
+            {/* Out of stock badge — takes priority over discount */}
+            {isFullyOutOfStock && (
+              <span className="absolute top-3 left-3 bg-muted-foreground text-background text-xs font-bold px-2.5 py-1 rounded-md">
+                Esgotado
+              </span>
+            )}
+
+            {!isFullyOutOfStock && c.showDiscount && discount > 0 && (
               <span className={cn(
                 'absolute bg-foreground text-background text-xs font-bold px-2 py-1',
                 badgeRadiusMap[c.badgeStyle],
@@ -255,7 +270,7 @@ export function ProductCard({ product }: Props) {
           'px-3 pb-3 mt-2 transition-all duration-300 ease-out',
           c.buyNowHoverReveal !== false && 'opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0',
         )}>
-          {showBuy && (
+        {showBuy && !isFullyOutOfStock && (
             <BuyButton
               label={c.buyNowText || 'Comprar Agora'}
               btnStyle={c.buttonStyle || 'solid'}
