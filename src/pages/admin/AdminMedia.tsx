@@ -45,8 +45,9 @@ export default function AdminMedia() {
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [filter, setFilter] = useState<'all' | 'Produto' | 'Categoria'>('all');
   const [uploadedMedia, setUploadedMedia] = useState<MediaItem[]>([]);
+  const [deletedIds, setDeletedIds] = useState<Set<string>>(new Set());
 
-  const allMedia = [...getAllMedia(), ...uploadedMedia];
+  const allMedia = [...getAllMedia(), ...uploadedMedia].filter(m => !deletedIds.has(m.id));
 
   const filtered = allMedia
     .filter(m => filter === 'all' || m.source === filter)
@@ -63,7 +64,11 @@ export default function AdminMedia() {
 
   const handleDelete = () => {
     const count = selected.size;
-    // Remove uploaded items that are selected
+    setDeletedIds(prev => {
+      const next = new Set(prev);
+      selected.forEach(id => next.add(id));
+      return next;
+    });
     setUploadedMedia(prev => prev.filter(m => !selected.has(m.id)));
     setSelected(new Set());
     toast({
