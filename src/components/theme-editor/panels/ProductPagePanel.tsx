@@ -67,7 +67,7 @@ export function ProductPagePanel() {
         Elementos que aumentam a confiança do cliente e facilitam a decisão de compra.
       </p>
       <ToggleRow label="Selos de confiança" hint="Exibe badges como 'Compra Segura', 'Troca Grátis' e 'Frete Rápido' abaixo do botão de compra" checked={p.showTrustBadges} onChange={v => set({ showTrustBadges: v })} />
-      <ToggleRow label="Guia de tamanhos" hint="Exibe um link ou botão para abrir a tabela de medidas do produto" checked={p.sizeGuideEnabled} onChange={v => set({ sizeGuideEnabled: v })} />
+      
       <ToggleRow label="Estimativa de frete" hint="Permite que o cliente insira o CEP e veja o prazo e custo de entrega" checked={p.shippingEstimate} onChange={v => set({ shippingEstimate: v })} />
 
       <SectionDivider label="Conteúdo Adicional" />
