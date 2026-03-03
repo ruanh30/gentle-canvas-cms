@@ -980,10 +980,7 @@ export function StoreHeader() {
       'z-50 transition-all duration-300',
       activeState?.blur && 'backdrop-blur-md',
       !activeState && 'bg-background/95 backdrop-blur-md supports-[backdrop-filter]:bg-background/80',
-      false && activeState?.borderBottom && !hasNavBarBelow && 'border-b',
-      false && !activeState && (h.headerSurface ?? true) && !hasNavBarBelow && 'border-b border-border/10',
-      false && !activeState && !(h.headerSurface ?? true) && h.borderBottom && !hasNavBarBelow && 'border-b border-border',
-      activeState ? shadowMap[activeState.shadow] : (h.shadowOnScroll && scrolled ? 'shadow-md' : ''),
+      'shadow-[0_1px_3px_0_rgba(0,0,0,0.04)]',
       h.sticky && 'sticky top-0',
       headerHidden && 'lg:translate-y-0 -translate-y-full',
     )} style={{
