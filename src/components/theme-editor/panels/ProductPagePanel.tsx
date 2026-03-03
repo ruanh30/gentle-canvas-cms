@@ -27,16 +27,6 @@ export function ProductPagePanel() {
       <ToggleRow label="Zoom na imagem" hint="Permite ampliar a imagem ao passar o mouse ou tocar, para ver detalhes do produto" checked={p.imageZoom} onChange={v => set({ imageZoom: v })} />
       <ToggleRow label="Galeria fixa (sticky)" hint="A galeria acompanha a rolagem da página, ficando visível enquanto o usuário lê as informações" checked={p.stickyGallery} onChange={v => set({ stickyGallery: v })} />
 
-      <SectionDivider label="Informações do Produto" />
-      <p className="text-[10px] text-muted-foreground/60 leading-relaxed -mt-2">
-        Controle quais informações são exibidas na página do produto.
-      </p>
-      <ToggleRow label="Breadcrumb" hint="Mostra o caminho de navegação no topo (ex: Home > Camisetas > Produto)" checked={p.showBreadcrumb} onChange={v => set({ showBreadcrumb: v })} />
-      <ToggleRow label="Código SKU" hint="Exibe o código de referência do produto (útil para lojas com estoque)" checked={p.showSKU} onChange={v => set({ showSKU: v })} />
-      <ToggleRow label="Marca" hint="Mostra o nome do fabricante/marca do produto" checked={p.showBrand} onChange={v => set({ showBrand: v })} />
-      <ToggleRow label="Avaliação" hint="Exibe estrelas de avaliação e quantidade de reviews dos clientes" checked={p.showRating} onChange={v => set({ showRating: v })} />
-      <ToggleRow label="Estoque disponível" hint="Mostra a quantidade de unidades disponíveis em estoque" checked={p.showStock} onChange={v => set({ showStock: v })} />
-      <ToggleRow label="Botões de compartilhar" hint="Exibe ícones para compartilhar o produto em redes sociais (WhatsApp, Facebook, etc)" checked={p.showShareButtons} onChange={v => set({ showShareButtons: v })} />
 
       <SectionDivider label="Variações e Quantidade" />
       <p className="text-[10px] text-muted-foreground/60 leading-relaxed -mt-2">
