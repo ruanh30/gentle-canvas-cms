@@ -158,6 +158,23 @@ export const mockProducts: Product[] = [
   },
 ];
 
+// Hydrate mockProducts from localStorage on app init (storefront reads this)
+try {
+  const saved = localStorage.getItem('flashloja_products');
+  if (saved) {
+    const parsed = JSON.parse(saved) as Product[];
+    const original = [...mockProducts];
+    mockProducts.length = 0;
+    original.forEach(mp => {
+      const sp = parsed.find(p => p.id === mp.id);
+      mockProducts.push(sp || mp);
+    });
+    parsed.forEach(sp => {
+      if (!mockProducts.find(m => m.id === sp.id)) mockProducts.push(sp);
+    });
+  }
+} catch {}
+
 export const mockOrders: Order[] = [
   {
     id: 'ord-1', orderNumber: '#1001', customerId: 'cust-1', customerName: 'Maria Silva', customerEmail: 'maria@email.com',

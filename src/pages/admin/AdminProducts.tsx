@@ -410,8 +410,37 @@ function CategoriesTab() {
 /*  PRODUCTS TAB                                                       */
 /* ================================================================== */
 
+function loadPersistedProducts(): Product[] {
+  try {
+    const saved = localStorage.getItem('flashloja_products');
+    if (saved) {
+      const parsed = JSON.parse(saved) as Product[];
+      const merged = mockProducts.map(mp => {
+        const sp = parsed.find(p => p.id === mp.id);
+        return sp || mp;
+      });
+      parsed.forEach(sp => {
+        if (!merged.find(m => m.id === sp.id)) merged.push(sp);
+      });
+      // Sync mockProducts so storefront reads updated data
+      mockProducts.length = 0;
+      merged.forEach(p => mockProducts.push(p));
+      return merged;
+    }
+  } catch {}
+  return [...mockProducts];
+}
+
+function persistProducts(products: Product[]) {
+  try {
+    localStorage.setItem('flashloja_products', JSON.stringify(products));
+    mockProducts.length = 0;
+    products.forEach(p => mockProducts.push(p));
+  } catch {}
+}
+
 function ProductsTab() {
-  const [products, setProducts] = useState<Product[]>(mockProducts);
+  const [products, setProducts] = useState<Product[]>(() => loadPersistedProducts());
   const [search, setSearch] = useState('');
   const [editing, setEditing] = useState<Product | null>(null);
   const [sidebarSearch, setSidebarSearch] = useState('');
@@ -461,10 +490,9 @@ function ProductsTab() {
             toast({ title: 'Slug já existe', description: `O produto "${duplicate.name}" já utiliza o slug "/${p.slug}". Escolha um slug diferente.`, variant: 'destructive' });
             return;
           }
-          setProducts(prev => prev.find(x => x.id === p.id) ? prev.map(x => x.id === p.id ? p : x) : [...prev, p]);
-          // Sync to shared mockProducts so storefront reflects changes
-          const idx = mockProducts.findIndex(x => x.id === p.id);
-          if (idx >= 0) { mockProducts[idx] = p; } else { mockProducts.push(p); }
+          const updated = products.find(x => x.id === p.id) ? products.map(x => x.id === p.id ? p : x) : [...products, p];
+          setProducts(updated);
+          persistProducts(updated);
           setEditing(null);
           toast({ title: 'Produto salvo', description: `"${p.name}" foi atualizado com sucesso.` });
         }}
