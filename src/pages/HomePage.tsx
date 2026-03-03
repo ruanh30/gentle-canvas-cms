@@ -327,7 +327,7 @@ const HomePage = () => {
                 {filteredCategories.map(categoryCard)}
               </SectionCarousel>
             ) : (
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6" style={{ gap: `${(section.settings?.gridGap as number) ?? 16}px` }}>
+              <div className="flex flex-wrap justify-center" style={{ gap: `${(section.settings?.gridGap as number) ?? 16}px` }}>
                 {filteredCategories.map(categoryCard)}
               </div>
             )}
