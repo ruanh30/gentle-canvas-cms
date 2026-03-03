@@ -124,7 +124,11 @@ const ProductsPage = () => {
         return (
           <div className="space-y-4">
             {filtered.map(product => (
-              <div key={product.id} className="flex gap-4 border border-border rounded-lg p-3 hover:shadow-md transition-shadow">
+              <div
+                key={product.id}
+                onClick={() => navigate(`/product/${product.slug}`)}
+                className="flex gap-4 border border-border rounded-lg p-3 hover:shadow-md transition-shadow cursor-pointer"
+              >
                 <div className="w-24 h-24 flex-shrink-0">
                   <img src={product.images[0]} alt={product.name} className="w-full h-full object-cover rounded-md" />
                 </div>
