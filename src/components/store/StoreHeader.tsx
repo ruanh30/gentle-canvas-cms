@@ -1112,7 +1112,7 @@ export function StoreHeader() {
 
         {/* When shrunk: show logo + nav + actions in compact bar */}
         {shrinkActive && (
-          <div className="flex items-center justify-between" style={{ height: 44, gap: `${container.gap}px` }}>
+          <div className="flex items-center justify-between overflow-hidden" style={{ height: 44, gap: `${container.gap}px` }}>
             {/* Mobile: hamburger + logo + actions */}
             <div className="grid grid-cols-[auto_1fr_auto] items-center lg:hidden w-full" style={{ gap: `${Math.min(container.gap, 12)}px` }}>
               {renderMobileDrawer()}
@@ -1143,7 +1143,7 @@ export function StoreHeader() {
             <nav className="hidden lg:flex items-center flex-1 justify-center" style={{ gap: '24px' }}>
               {renderNavItems()}
             </nav>
-            <div className="hidden lg:block">
+            <div className="hidden lg:flex items-center shrink-0">
               {renderActions()}
             </div>
           </div>
