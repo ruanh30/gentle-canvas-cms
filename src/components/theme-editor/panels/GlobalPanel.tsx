@@ -80,27 +80,6 @@ export function GlobalPanel() {
         { value: 'thick', label: 'Grossa', description: 'Borda marcante de 3px' },
       ]} />
 
-      <SectionDivider label="Animações" />
-      <p className="text-[10px] text-muted-foreground/60 leading-relaxed -mt-2">
-        Animações de entrada e transição ao rolar a página e interagir com elementos.
-      </p>
-      <ToggleRow label="Animações habilitadas" hint="Ativa/desativa todas as animações da loja (fade-in, slide, hover, etc)" checked={g.animationsEnabled} onChange={v => set({ animationsEnabled: v })} />
-      {g.animationsEnabled && (
-        <OptionPicker label="Velocidade" value={g.animationSpeed} onChange={v => set({ animationSpeed: v })} options={[
-          { value: 'slow', label: 'Lenta', description: 'Transições de 0.5s' },
-          { value: 'normal', label: 'Normal', description: 'Transições de 0.3s' },
-          { value: 'fast', label: 'Rápida', description: 'Transições de 0.15s' },
-        ]} />
-      )}
-
-      <SectionDivider label="Rolagem" />
-      <p className="text-[10px] text-muted-foreground/60 leading-relaxed -mt-2">
-        Comportamento ao clicar em links internos ou botões "voltar ao topo".
-      </p>
-      <OptionPicker label="Rolagem da página" value={g.scrollBehavior} onChange={v => set({ scrollBehavior: v })} options={[
-        { value: 'smooth', label: 'Suave', description: 'Rolagem com animação' },
-        { value: 'auto', label: 'Instantânea', description: 'Pula direto sem animação' },
-      ]} />
     </EditorSection>
   );
 }
