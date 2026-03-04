@@ -663,6 +663,35 @@ const HEADER_PRESETS: HeaderPreset[] = [
       },
     },
   },
+
+  // ── 11. DALUZ — Two-row, peach tones, inline search, utility links, uppercase menu ──
+  {
+    id: 'daluz',
+    name: 'Daluz',
+    tagline: 'Estilo Daluz. Duas linhas, tons pêssego, busca inline, menu uppercase em barra separada',
+    tags: ['Elegante', 'Feminino'],
+    config: {
+      layout: 'double-row', menuStyle: 'horizontal', menuUppercase: true, menuFontWeight: 500,
+      menuFontSize: 13, menuHoverStyle: 'underline', menuSeparator: 'none', menuItemGap: 32,
+      menuLetterSpacing: 0.12, menuItemPadding: false,
+      headerSurface: false, dropdownElevated: false, borderBottom: false, shadowOnScroll: false,
+      iconStrokeWidth: 1.5, height: 64, sticky: true, shrinkOnScroll: true, shrinkTransparent: false, iconSize: 20,
+      showSearch: true, searchStyle: 'inline', showAccount: true, showCart: true, cartBadgeStyle: 'count',
+      menuDividerLine: false,
+      menuTypography: { fontFamily: 'Montserrat', fontWeight: 500, fontSizeDesktop: 13, fontSizeMobile: 13, letterSpacing: 0.12, textTransform: 'uppercase', lineHeight: 1.2 },
+      container: { width: 'container', maxWidth: 1400, paddingX: 24, gap: 20, verticalAlign: 'center' },
+      mobile: { drawerPosition: 'left', showSearchInDrawer: true, showAccountInDrawer: true, showCartInDrawer: true, maxLevels: 2, groupStyle: 'accordion' },
+      search: { placeholder: 'Buscar', showOnDesktop: true, showOnMobile: true, autoSuggest: false, maxResults: 6, shortcutEnabled: false },
+      menuBar: { enabled: true, backgroundColor: '#f5d5c8', textColor: '#3d2b1f', height: 44, fullWidth: true, borderTop: false, borderBottom: false, shadow: 'none' },
+      announcement: { enabled: false },
+      menuColors: { linkColor: '#3d2b1f', linkHoverColor: '#8b6f5e', linkActiveColor: '#3d2b1f', linkBg: '', linkHoverBg: '' },
+      states: {
+        normal: { backgroundColor: '#fdf0ea', textColor: '#3d2b1f', borderBottom: false, borderColor: 'transparent', shadow: 'none', blur: false, height: 64 },
+        sticky: { backgroundColor: '#fdf0ea', textColor: '#3d2b1f', borderBottom: true, borderColor: '#e8cfc4', shadow: 'subtle', blur: true, height: 52 },
+        transparent: { backgroundColor: 'transparent', textColor: '#ffffff', borderBottom: false, borderColor: 'transparent', shadow: 'none', blur: false, height: 64 },
+      },
+    },
+  },
 ];
 
 /* Preset Card with SVG preview */
