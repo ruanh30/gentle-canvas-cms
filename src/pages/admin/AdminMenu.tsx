@@ -43,7 +43,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 type SectionKey =
   | 'presets' | 'layout' | 'states' | 'container' | 'menu-style'
   | 'mega-menu' | 'icons' | 'search' | 'mobile' | 'items'
-  | 'banners' | 'icon-picker' | 'menu-colors';
+  | 'banners';
 
 interface SidebarItem {
   key: SectionKey;
@@ -60,18 +60,15 @@ interface SidebarItem {
 
 const SIDEBAR_ITEMS: SidebarItem[] = [
   { key: 'presets', label: 'Estilos Prontos', icon: Sparkles, group: 'DESIGN', hint: 'Layouts pré-montados' },
-  { key: 'layout', label: 'Layout', icon: LayoutGrid, group: 'DESIGN', hint: 'Estrutura do cabeçalho' },
-  { key: 'states', label: 'Estados', icon: Layers, group: 'DESIGN', badge: 'PRO', hint: 'Normal, Sticky, Transparente' },
+  { key: 'layout', label: 'Layout', icon: LayoutGrid, group: 'DESIGN', hint: 'Estrutura e comportamento' },
+  { key: 'states', label: 'Estados', icon: Layers, group: 'DESIGN', hint: 'Normal, Sticky, Transparente' },
   { key: 'container', label: 'Dimensões', icon: Columns3, group: 'DESIGN', hint: 'Largura, altura e espaçamentos' },
-  { key: 'menu-style', label: 'Menu Desktop', icon: Navigation, group: 'NAVEGAÇÃO', hint: 'Tipografia e interações' },
+  { key: 'menu-style', label: 'Menu Desktop', icon: Navigation, group: 'NAVEGAÇÃO', hint: 'Tipografia, cores e interações' },
   { key: 'mega-menu', label: 'Mega Menu', icon: LayoutGrid, group: 'NAVEGAÇÃO', hint: 'Painel com colunas e banners' },
   { key: 'mobile', label: 'Menu Mobile', icon: Smartphone, group: 'NAVEGAÇÃO', hint: 'Drawer e ações mobile' },
   { key: 'items', label: 'Itens do Menu', icon: Menu, group: 'NAVEGAÇÃO', hint: 'Links e subitens' },
-  { key: 'icons', label: 'Ícones', icon: MousePointer, group: 'ELEMENTOS', hint: 'Tamanho, traço e visibilidade' },
-  { key: 'icon-picker', label: 'Estilo dos Ícones', icon: Sparkles, group: 'ELEMENTOS', badge: 'NOVO', hint: 'Escolha o visual de cada ícone' },
+  { key: 'icons', label: 'Ícones', icon: MousePointer, group: 'ELEMENTOS', hint: 'Visibilidade, estilo e personalização' },
   { key: 'search', label: 'Busca', icon: Search, group: 'ELEMENTOS', hint: 'Estilo e comportamento da busca' },
-  { key: 'menu-colors', label: 'Cores do Menu', icon: Paintbrush, group: 'ELEMENTOS', badge: 'NOVO', hint: 'Cores dos links e hover' },
-  
   { key: 'banners', label: 'Banners & Anúncios', icon: Megaphone, group: 'CONTEÚDO', hint: 'Barra de anúncio + banner' },
 ];
 
@@ -1020,6 +1017,37 @@ function LayoutSection() {
         <ToggleRow label="Superfície elevada" hint="Adiciona sombra e borda permanentes ao cabeçalho, separando-o visualmente do conteúdo" checked={h.headerSurface ?? true} onChange={v => set({ headerSurface: v })} />
         <ToggleRow label="Dropdown elevado" hint="Submenus abrem com sombra forte, seta de ancoragem e cantos arredondados (estilo popover premium)" checked={h.dropdownElevated ?? true} onChange={v => set({ dropdownElevated: v })} />
         <ToggleRow label="Área clicável ampla" hint="Links do menu ganham padding maior e fundo sutil no hover, facilitando cliques e tornando o menu mais confortável" checked={h.menuItemPadding ?? true} onChange={v => set({ menuItemPadding: v })} />
+        <ToggleRow label="Linha divisória" hint="Exibe uma linha fina separando o topo (logo + ações) da navegação" checked={h.menuDividerLine ?? false} onChange={v => set({ menuDividerLine: v })} />
+      </ControlGroup>
+
+      <ControlGroup title="Barra de Menu Separada" collapsible hint="Exibe o menu em uma barra independente abaixo do cabeçalho">
+        {(() => {
+          const mb = h.menuBar ?? { enabled: false, backgroundColor: '#1a1a1a', textColor: '#ffffff', height: 48, fullWidth: true, borderTop: false, borderBottom: false, shadow: 'none' };
+          const setMB = (u: Partial<typeof mb>) => updateDraftSection('header', { menuBar: { ...mb, ...u } });
+
+          return (
+            <>
+              <ToggleRow label="Ativar barra separada" hint="O menu sai do cabeçalho e fica em sua própria barra com visual independente" checked={mb.enabled} onChange={v => setMB({ enabled: v })} />
+              {mb.enabled && (
+                <>
+                  <div className="grid grid-cols-2 gap-3">
+                    <ColorField label="Cor de fundo" value={mb.backgroundColor} onChange={v => setMB({ backgroundColor: v })} />
+                    <ColorField label="Cor do texto" value={mb.textColor} onChange={v => setMB({ textColor: v })} />
+                  </div>
+                  <NumSlider label="Altura" value={mb.height} onChange={v => setMB({ height: v })} min={36} max={64} suffix="px" hint="Altura da barra de navegação separada" />
+                  <ToggleRow label="Largura total" hint="Barra ocupa 100% da tela" checked={mb.fullWidth} onChange={v => setMB({ fullWidth: v })} />
+                  <ToggleRow label="Borda superior" hint="Linha fina acima da barra" checked={mb.borderTop} onChange={v => setMB({ borderTop: v })} />
+                  <ToggleRow label="Borda inferior" hint="Linha fina abaixo da barra" checked={mb.borderBottom} onChange={v => setMB({ borderBottom: v })} />
+                  <Pills label="Sombra" value={mb.shadow} onChange={v => setMB({ shadow: v as any })} options={[
+                    { value: 'none', label: 'Nenhuma' },
+                    { value: 'subtle', label: 'Sutil' },
+                    { value: 'medium', label: 'Média' },
+                  ]} />
+                </>
+              )}
+            </>
+          );
+        })()}
       </ControlGroup>
     </div>
   );
@@ -1182,35 +1210,23 @@ function MenuStyleSection() {
         ]} />
       </ControlGroup>
 
-      <ControlGroup title="Linha Divisória do Menu" hint="Linha horizontal sutil entre a área do logo/ícones e os links de navegação, dentro do mesmo cabeçalho">
-        <ToggleRow label="Ativar linha divisória" hint="Exibe uma linha fina e sutil separando visualmente o topo (logo + ações) da navegação" checked={h.menuDividerLine ?? false} onChange={v => set({ menuDividerLine: v })} />
-      </ControlGroup>
-
-      <ControlGroup title="Barra de Menu Separada" hint="Exibe o menu de navegação em uma barra independente abaixo do cabeçalho, com cor e altura próprias">
+      <ControlGroup title="Cores dos Links" collapsible hint="Personalize as cores dos links de navegação. Deixe vazio para herdar do estado do cabeçalho">
         {(() => {
-          const mb = h.menuBar ?? { enabled: false, backgroundColor: '#1a1a1a', textColor: '#ffffff', height: 48, fullWidth: true, borderTop: false, borderBottom: false, shadow: 'none' };
-          const setMB = (u: Partial<typeof mb>) => updateDraftSection('header', { menuBar: { ...mb, ...u } });
+          const mc = h.menuColors ?? { linkColor: '', linkHoverColor: '', linkActiveColor: '', linkBg: '', linkHoverBg: '' };
+          const setMC = (u: Partial<typeof mc>) => updateDraftSection('header', { menuColors: { ...mc, ...u } });
 
           return (
             <>
-              <ToggleRow label="Ativar barra separada" hint="O menu sai do cabeçalho e fica em sua própria barra com visual independente" checked={mb.enabled} onChange={v => setMB({ enabled: v })} />
-              {mb.enabled && (
-                <>
-                  <div className="grid grid-cols-2 gap-3">
-                    <ColorField label="Cor de fundo" value={mb.backgroundColor} onChange={v => setMB({ backgroundColor: v })} />
-                    <ColorField label="Cor do texto" value={mb.textColor} onChange={v => setMB({ textColor: v })} />
-                  </div>
-                  <NumSlider label="Altura" value={mb.height} onChange={v => setMB({ height: v })} min={36} max={64} suffix="px" hint="Altura da barra de navegação separada" />
-                  <ToggleRow label="Largura total" hint="Barra ocupa 100% da tela" checked={mb.fullWidth} onChange={v => setMB({ fullWidth: v })} />
-                  <ToggleRow label="Borda superior" hint="Linha fina acima da barra" checked={mb.borderTop} onChange={v => setMB({ borderTop: v })} />
-                  <ToggleRow label="Borda inferior" hint="Linha fina abaixo da barra" checked={mb.borderBottom} onChange={v => setMB({ borderBottom: v })} />
-                  <Pills label="Sombra" value={mb.shadow} onChange={v => setMB({ shadow: v as any })} options={[
-                    { value: 'none', label: 'Nenhuma' },
-                    { value: 'subtle', label: 'Sutil' },
-                    { value: 'medium', label: 'Média' },
-                  ]} />
-                </>
-              )}
+              <ColorField label="Cor dos links" value={mc.linkColor} onChange={v => setMC({ linkColor: v })} />
+              <ColorField label="Cor no hover" value={mc.linkHoverColor} onChange={v => setMC({ linkHoverColor: v })} />
+              <ColorField label="Cor do ativo" value={mc.linkActiveColor} onChange={v => setMC({ linkActiveColor: v })} />
+              <ColorField label="Fundo no hover" value={mc.linkHoverBg} onChange={v => setMC({ linkHoverBg: v })} />
+              <Button variant="outline" size="sm" className="w-full gap-1.5 text-xs mt-2" onClick={() => {
+                setMC({ linkColor: '', linkHoverColor: '', linkActiveColor: '', linkBg: '', linkHoverBg: '' });
+                toast.success('Cores do menu resetadas');
+              }}>
+                <RotateCcw className="h-3.5 w-3.5" /> Resetar Cores
+              </Button>
             </>
           );
         })()}
@@ -1269,13 +1285,21 @@ function IconsSection() {
   const { draft, updateDraftSection } = useTheme();
   const h = draft.header ?? {} as any;
   const set = (u: Partial<typeof h>) => updateDraftSection('header', u);
+  const iconSize = h.iconSize || 20;
+  const sw = h.iconStrokeWidth || 1.5;
 
   return (
     <div className="space-y-5">
       <div>
         <h3 className="text-[15px] font-semibold text-foreground">Ícones & Ações</h3>
-        <p className="text-[12px] text-muted-foreground/60 mt-0.5">Controle quais ícones aparecem no cabeçalho, seu tamanho e espessura. Esses ícones são atalhos para busca, conta e carrinho.</p>
+        <p className="text-[12px] text-muted-foreground/60 mt-0.5">Controle quais ícones aparecem, seu visual, tamanho e espessura.</p>
       </div>
+
+      <ControlGroup title="Visibilidade" hint="Escolha quais ícones de ação serão exibidos no cabeçalho">
+        <ToggleRow label="Busca" hint="Ícone de lupa — permite ao cliente buscar produtos" checked={h.showSearch} onChange={v => set({ showSearch: v })} />
+        <ToggleRow label="Conta" hint="Ícone de perfil — leva para login ou área do cliente" checked={h.showAccount} onChange={v => set({ showAccount: v })} />
+        <ToggleRow label="Carrinho" hint="Ícone da sacola — mostra o carrinho de compras" checked={h.showCart} onChange={v => set({ showCart: v })} />
+      </ControlGroup>
 
       <NumSlider label="Tamanho dos ícones" value={h.iconSize} onChange={v => set({ iconSize: v })} min={16} max={28} suffix="px" hint="Dimensão em pixels de cada ícone no cabeçalho" />
 
@@ -1285,13 +1309,6 @@ function IconsSection() {
         { value: '2', label: 'Bold' },
       ]} />
 
-      <ControlGroup title="Visibilidade" hint="Escolha quais ícones de ação serão exibidos no cabeçalho">
-        <ToggleRow label="Busca" hint="Ícone de lupa — permite ao cliente buscar produtos" checked={h.showSearch} onChange={v => set({ showSearch: v })} />
-        <ToggleRow label="Conta" hint="Ícone de perfil — leva para login ou área do cliente" checked={h.showAccount} onChange={v => set({ showAccount: v })} />
-        
-        <ToggleRow label="Carrinho" hint="Ícone da sacola — mostra o carrinho de compras" checked={h.showCart} onChange={v => set({ showCart: v })} />
-      </ControlGroup>
-
       {h.showCart && (
         <Pills label="Badge do carrinho" value={h.cartBadgeStyle} onChange={v => set({ cartBadgeStyle: v })} hint="Indicador sobre o ícone do carrinho mostrando que há itens" options={[
           { value: 'count', label: 'Contador', desc: 'Exibe número de itens' },
@@ -1300,23 +1317,53 @@ function IconsSection() {
         ]} />
       )}
 
-      {/* Live icon preview */}
-      <div className="rounded-xl border border-border/40 bg-[hsl(var(--flash-surface))] p-4 flex items-center justify-center gap-4">
-        <p className="text-[9px] text-muted-foreground/40 uppercase tracking-wider mr-2">Preview</p>
-        {h.showSearch && <Search style={{ width: h.iconSize, height: h.iconSize }} strokeWidth={h.iconStrokeWidth || 1.5} className="text-foreground/70" />}
-        
-        {h.showAccount && <User style={{ width: h.iconSize, height: h.iconSize }} strokeWidth={h.iconStrokeWidth || 1.5} className="text-foreground/70" />}
-        {h.showCart && (
-          <div className="relative">
-            <ShoppingBag style={{ width: h.iconSize, height: h.iconSize }} strokeWidth={h.iconStrokeWidth || 1.5} className="text-foreground/70" />
-            {h.cartBadgeStyle === 'count' && (
-              <span className="absolute -top-1.5 -right-2 bg-foreground text-background text-[8px] font-bold rounded-full h-4 w-4 flex items-center justify-center">3</span>
-            )}
-            {h.cartBadgeStyle === 'dot' && (
-              <span className="absolute -top-0.5 -right-0.5 bg-[hsl(var(--flash-brand-deep))] rounded-full h-2 w-2" />
-            )}
-          </div>
-        )}
+      {/* Icon pickers — inline */}
+      {h.showSearch && (
+        <ControlGroup title="Ícone da Busca" collapsible hint="Escolha o ícone que representa a busca na sua loja">
+          <IconGrid icons={SEARCH_ICONS} selected={h.searchIcon || 'Search'} onSelect={v => set({ searchIcon: v })} iconSize={iconSize} strokeWidth={sw} />
+        </ControlGroup>
+      )}
+
+      {h.showAccount && (
+        <ControlGroup title="Ícone da Conta" collapsible hint="Escolha o ícone que leva o cliente para login ou perfil">
+          <IconGrid icons={ACCOUNT_ICONS} selected={h.accountIcon || 'User'} onSelect={v => set({ accountIcon: v })} iconSize={iconSize} strokeWidth={sw} />
+        </ControlGroup>
+      )}
+
+      {h.showCart && (
+        <ControlGroup title="Ícone do Carrinho" collapsible hint="Escolha o ícone que representa o carrinho de compras">
+          <IconGrid icons={CART_ICONS} selected={h.cartIcon || 'ShoppingBag'} onSelect={v => set({ cartIcon: v })} iconSize={iconSize} strokeWidth={sw} />
+        </ControlGroup>
+      )}
+
+      {/* Live preview */}
+      <div className="rounded-xl border border-border/40 bg-[hsl(var(--flash-surface))] p-4">
+        <p className="text-[9px] text-muted-foreground/40 uppercase tracking-wider mb-3 text-center">Preview ao vivo</p>
+        <div className="flex items-center justify-center gap-5">
+          {h.showSearch && (() => {
+            const si = SEARCH_ICONS.find(i => i.id === (h.searchIcon || 'Search')) || SEARCH_ICONS[0];
+            return <div className="flex flex-col items-center gap-1">
+              <si.icon style={{ width: iconSize, height: iconSize }} strokeWidth={sw} className="text-foreground/70" />
+              <span className="text-[8px] text-muted-foreground/40">Busca</span>
+            </div>;
+          })()}
+          {h.showAccount && (() => {
+            const ai = ACCOUNT_ICONS.find(i => i.id === (h.accountIcon || 'User')) || ACCOUNT_ICONS[0];
+            return <div className="flex flex-col items-center gap-1">
+              <ai.icon style={{ width: iconSize, height: iconSize }} strokeWidth={sw} className="text-foreground/70" />
+              <span className="text-[8px] text-muted-foreground/40">Conta</span>
+            </div>;
+          })()}
+          {h.showCart && (() => {
+            const ci = CART_ICONS.find(i => i.id === (h.cartIcon || 'ShoppingBag')) || CART_ICONS[0];
+            return <div className="flex flex-col items-center gap-1 relative">
+              <ci.icon style={{ width: iconSize, height: iconSize }} strokeWidth={sw} className="text-foreground/70" />
+              {h.cartBadgeStyle === 'count' && <span className="absolute -top-1.5 right-0 bg-foreground text-background text-[7px] font-bold rounded-full h-3.5 w-3.5 flex items-center justify-center">3</span>}
+              {h.cartBadgeStyle === 'dot' && <span className="absolute -top-0.5 right-0 bg-[hsl(var(--flash-brand-deep))] rounded-full h-2 w-2" />}
+              <span className="text-[8px] text-muted-foreground/40">Carrinho</span>
+            </div>;
+          })()}
+        </div>
       </div>
     </div>
   );
@@ -1354,12 +1401,8 @@ function SearchSection() {
         <ToggleRow label="Exibir no Mobile" hint="Mostra o ícone de busca em telas pequenas" checked={search.showOnMobile} onChange={v => setSearch({ showOnMobile: v })} />
       </ControlGroup>
 
-      <ControlGroup title="Funcionalidades Avançadas" collapsible hint="Auto-sugestão e atalho de teclado">
+      <ControlGroup title="Funcionalidades" collapsible hint="Sugestões automáticas ao digitar">
         <ToggleRow label="Auto-sugestão" hint="Ao digitar, sugere produtos em tempo real abaixo da barra de busca" checked={search.autoSuggest} onChange={v => setSearch({ autoSuggest: v })} />
-        {search.autoSuggest && (
-          <NumSlider label="Máx. resultados sugeridos" value={search.maxResults} onChange={v => setSearch({ maxResults: v })} min={3} max={12} hint="Quantos produtos aparecem na lista de sugestões" />
-        )}
-        <ToggleRow label="Atalho Ctrl+K" hint="Permite abrir a busca rapidamente com o atalho de teclado Ctrl+K ou /" checked={search.shortcutEnabled} onChange={v => setSearch({ shortcutEnabled: v })} />
       </ControlGroup>
     </div>
   );
@@ -1667,130 +1710,6 @@ function IconGrid({ icons, selected, onSelect, iconSize, strokeWidth }: {
   );
 }
 
-function IconPickerSection() {
-  const { draft, updateDraftSection } = useTheme();
-  const h = draft.header ?? {} as any;
-  const set = (u: Partial<typeof h>) => updateDraftSection('header', u);
-  const iconSize = h.iconSize || 20;
-  const sw = h.iconStrokeWidth || 1.5;
-
-  return (
-    <div className="space-y-6">
-      <div>
-        <h3 className="text-[15px] font-semibold text-foreground">Estilo dos Ícones</h3>
-        <p className="text-[12px] text-muted-foreground/60 mt-0.5">Escolha o visual de cada ícone de ação do cabeçalho. Todos os ícones são contextuais à sua função.</p>
-      </div>
-
-      {h.showSearch && (
-        <ControlGroup title="Ícone da Busca" hint="Escolha o ícone que representa a busca na sua loja">
-          <IconGrid icons={SEARCH_ICONS} selected={h.searchIcon || 'Search'} onSelect={v => set({ searchIcon: v })} iconSize={iconSize} strokeWidth={sw} />
-        </ControlGroup>
-      )}
-
-      {h.showAccount && (
-        <ControlGroup title="Ícone da Conta" hint="Escolha o ícone que leva o cliente para login ou perfil">
-          <IconGrid icons={ACCOUNT_ICONS} selected={h.accountIcon || 'User'} onSelect={v => set({ accountIcon: v })} iconSize={iconSize} strokeWidth={sw} />
-        </ControlGroup>
-      )}
-
-      {h.showCart && (
-        <ControlGroup title="Ícone do Carrinho" hint="Escolha o ícone que representa o carrinho de compras">
-          <IconGrid icons={CART_ICONS} selected={h.cartIcon || 'ShoppingBag'} onSelect={v => set({ cartIcon: v })} iconSize={iconSize} strokeWidth={sw} />
-        </ControlGroup>
-      )}
-
-      {/* Live preview */}
-      <div className="rounded-xl border border-border/40 bg-[hsl(var(--flash-surface))] p-4">
-        <p className="text-[9px] text-muted-foreground/40 uppercase tracking-wider mb-3 text-center">Preview ao vivo</p>
-        <div className="flex items-center justify-center gap-5">
-          {h.showSearch && (() => {
-            const si = SEARCH_ICONS.find(i => i.id === (h.searchIcon || 'Search')) || SEARCH_ICONS[0];
-            return <div className="flex flex-col items-center gap-1">
-              <si.icon style={{ width: iconSize, height: iconSize }} strokeWidth={sw} className="text-foreground/70" />
-              <span className="text-[8px] text-muted-foreground/40">Busca</span>
-            </div>;
-          })()}
-          {h.showAccount && (() => {
-            const ai = ACCOUNT_ICONS.find(i => i.id === (h.accountIcon || 'User')) || ACCOUNT_ICONS[0];
-            return <div className="flex flex-col items-center gap-1">
-              <ai.icon style={{ width: iconSize, height: iconSize }} strokeWidth={sw} className="text-foreground/70" />
-              <span className="text-[8px] text-muted-foreground/40">Conta</span>
-            </div>;
-          })()}
-          {h.showCart && (() => {
-            const ci = CART_ICONS.find(i => i.id === (h.cartIcon || 'ShoppingBag')) || CART_ICONS[0];
-            return <div className="flex flex-col items-center gap-1 relative">
-              <ci.icon style={{ width: iconSize, height: iconSize }} strokeWidth={sw} className="text-foreground/70" />
-              {h.cartBadgeStyle === 'count' && <span className="absolute -top-1.5 right-0 bg-foreground text-background text-[7px] font-bold rounded-full h-3.5 w-3.5 flex items-center justify-center">3</span>}
-              <span className="text-[8px] text-muted-foreground/40">Carrinho</span>
-            </div>;
-          })()}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-/* ================================================================== */
-/*  MENU COLORS SECTION                                                 */
-/* ================================================================== */
-
-function MenuColorsSection() {
-  const { draft, updateDraftSection } = useTheme();
-  const h = draft.header ?? {} as any;
-  const mc = h.menuColors ?? { linkColor: '', linkHoverColor: '', linkActiveColor: '', linkBg: '', linkHoverBg: '' };
-  const setMC = (u: Partial<typeof mc>) => updateDraftSection('header', { menuColors: { ...mc, ...u } });
-
-  return (
-    <div className="space-y-5">
-      <div>
-        <h3 className="text-[15px] font-semibold text-foreground">Cores do Menu</h3>
-        <p className="text-[12px] text-muted-foreground/60 mt-0.5">Personalize as cores dos links de navegação. Deixe vazio para usar as cores do estado do cabeçalho.</p>
-      </div>
-
-      <ControlGroup title="Cores dos Links" hint="Cores aplicadas ao texto dos itens de navegação">
-        <ColorField label="Cor dos links" value={mc.linkColor} onChange={v => setMC({ linkColor: v })} />
-        <ColorField label="Cor no hover" value={mc.linkHoverColor} onChange={v => setMC({ linkHoverColor: v })} />
-        <ColorField label="Cor do ativo" value={mc.linkActiveColor} onChange={v => setMC({ linkActiveColor: v })} />
-      </ControlGroup>
-
-      <ControlGroup title="Fundos dos Links" collapsible hint="Fundo sutil aplicado atrás dos links (visível quando 'Área clicável ampla' está ativa)">
-        <ColorField label="Fundo padrão" value={mc.linkBg} onChange={v => setMC({ linkBg: v })} />
-        <ColorField label="Fundo no hover" value={mc.linkHoverBg} onChange={v => setMC({ linkHoverBg: v })} />
-      </ControlGroup>
-
-      {/* Preview */}
-      <div className="rounded-xl border border-border/40 bg-[hsl(var(--flash-surface))] p-4">
-        <p className="text-[9px] text-muted-foreground/40 uppercase tracking-wider mb-3 text-center">Preview</p>
-        <div className="flex items-center justify-center gap-4">
-          {['Início', 'Loja', 'Sobre'].map((label, i) => (
-            <span
-              key={label}
-              className={cn(
-                'text-[12px] px-3 py-1.5 rounded-md transition-colors cursor-default',
-                i === 0 ? 'font-semibold' : 'font-normal'
-              )}
-              style={{
-                color: i === 0 ? (mc.linkActiveColor || mc.linkColor || undefined) : (mc.linkColor || undefined),
-                backgroundColor: i === 0 ? (mc.linkHoverBg || undefined) : (mc.linkBg || undefined),
-              }}
-            >
-              {label}
-            </span>
-          ))}
-        </div>
-      </div>
-
-      <Button variant="outline" size="sm" className="w-full gap-1.5 text-xs" onClick={() => {
-        setMC({ linkColor: '', linkHoverColor: '', linkActiveColor: '', linkBg: '', linkHoverBg: '' });
-        toast.success('Cores do menu resetadas');
-      }}>
-        <RotateCcw className="h-3.5 w-3.5" /> Resetar Cores
-      </Button>
-    </div>
-  );
-}
-
 
 
 /* ================================================================== */
@@ -1805,12 +1724,9 @@ const SECTION_COMPONENTS: Record<SectionKey, React.FC> = {
   'menu-style': MenuStyleSection,
   'mega-menu': MegaMenuSection,
   'icons': IconsSection,
-  'icon-picker': IconPickerSection,
   'search': SearchSection,
-  'menu-colors': MenuColorsSection,
   'mobile': MobileSection,
   'items': ItemsSection,
-  
   'banners': BannersSection,
 };
 
