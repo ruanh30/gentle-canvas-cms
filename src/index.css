@@ -268,8 +268,13 @@
   max-width: var(--pm-container-width, 1280px);
 }
 
-/* Global radius applied to store elements */
+/* Global radius applied to containers — capped at 16px to prevent pill distortion */
 .pm-global-radius {
+  border-radius: min(var(--pm-radius, 8px), 16px) !important;
+}
+
+/* Full radius for small elements like buttons, badges, tags */
+.pm-global-radius-full {
   border-radius: var(--pm-radius, 8px) !important;
 }
 
