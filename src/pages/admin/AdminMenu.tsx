@@ -609,6 +609,62 @@ const HEADER_PRESETS: HeaderPreset[] = [
       },
     },
   },
+
+  // ── 9. CANDY — Playful pink e-commerce, bold Poppins, fun vibes ──
+  {
+    id: 'candy',
+    name: 'Candy',
+    tagline: 'Divertido e vibrante. Poppins bold, rosa vibrante, emojis e personalidade',
+    tags: ['Divertido', 'Pop'],
+    config: {
+      layout: 'classic', menuStyle: 'horizontal', menuUppercase: false, menuFontWeight: 600,
+      menuFontSize: 14, menuHoverStyle: 'background', menuSeparator: 'none', menuItemGap: 20,
+      menuLetterSpacing: 0, menuItemPadding: true,
+      headerSurface: true, dropdownElevated: true, borderBottom: false, shadowOnScroll: true,
+      iconStrokeWidth: 2, height: 60, sticky: true, shrinkOnScroll: false, iconSize: 22,
+      showSearch: true, searchStyle: 'inline', showAccount: true, showCart: true, cartBadgeStyle: 'count',
+      menuDividerLine: false,
+      menuTypography: { fontFamily: 'Poppins', fontWeight: 600, fontSizeDesktop: 14, fontSizeMobile: 14, letterSpacing: 0, textTransform: 'none', lineHeight: 1.2 },
+      container: { width: 'container', maxWidth: 1300, paddingX: 20, gap: 16, verticalAlign: 'center' },
+      mobile: { drawerPosition: 'right', showSearchInDrawer: true, showAccountInDrawer: true, showCartInDrawer: true, maxLevels: 2, groupStyle: 'accordion' },
+      search: { placeholder: 'O que você quer? 🍬', showOnDesktop: true, showOnMobile: true, autoSuggest: false, maxResults: 6, shortcutEnabled: false },
+      announcement: { enabled: true, messages: ['🍭 Frete grátis em pedidos acima de R$99!'], speed: 4, backgroundColor: '#f472b6', textColor: '#ffffff', style: 'static', direction: 'rtl', showIcon: false, icon: '', link: '', pauseOnHover: true, pageRules: 'all', scheduleEnabled: false, scheduleStart: '', scheduleEnd: '', segmentation: 'all', ctaText: '', ctaLink: '', utmSource: '', utmMedium: '', utmCampaign: '' },
+      menuColors: { linkColor: '#9d174d', linkHoverColor: '#be185d', linkActiveColor: '#9d174d', linkBg: '', linkHoverBg: 'rgba(190,24,93,0.08)' },
+      states: {
+        normal: { backgroundColor: '#fff1f2', textColor: '#9d174d', borderBottom: false, borderColor: 'transparent', shadow: 'subtle', blur: false, height: 60 },
+        sticky: { backgroundColor: '#fff1f2', textColor: '#9d174d', borderBottom: false, borderColor: 'transparent', shadow: 'medium', blur: true, height: 56 },
+        transparent: { backgroundColor: 'transparent', textColor: '#ffffff', borderBottom: false, borderColor: 'transparent', shadow: 'none', blur: false, height: 60 },
+      },
+    },
+  },
+
+  // ── 10. FRESH — Modern purple accent, Nunito Sans bold, clean dropdown ──
+  {
+    id: 'fresh',
+    name: 'Fresh',
+    tagline: 'Moderno e vibrante. Nunito Sans bold, acentos roxo, dropdown elegante',
+    tags: ['Moderno', 'Vibrante'],
+    config: {
+      layout: 'classic', menuStyle: 'dropdown', menuUppercase: false, menuFontWeight: 600,
+      menuFontSize: 15, menuHoverStyle: 'background', menuSeparator: 'none', menuItemGap: 16,
+      menuLetterSpacing: 0, menuItemPadding: true,
+      headerSurface: true, dropdownElevated: true, borderBottom: false, shadowOnScroll: true,
+      iconStrokeWidth: 2, height: 64, sticky: true, shrinkOnScroll: false, iconSize: 22,
+      showSearch: true, searchStyle: 'inline', showAccount: true, showCart: true, cartBadgeStyle: 'count',
+      menuDividerLine: false,
+      menuTypography: { fontFamily: 'Nunito Sans', fontWeight: 600, fontSizeDesktop: 15, fontSizeMobile: 14, letterSpacing: 0, textTransform: 'none', lineHeight: 1.2 },
+      container: { width: 'container', maxWidth: 1400, paddingX: 20, gap: 16, verticalAlign: 'center' },
+      mobile: { drawerPosition: 'right', showSearchInDrawer: true, showAccountInDrawer: true, showCartInDrawer: true, maxLevels: 2, groupStyle: 'accordion' },
+      search: { placeholder: 'O que você quer encontrar? 🔍', showOnDesktop: true, showOnMobile: true, autoSuggest: false, maxResults: 6, shortcutEnabled: false },
+      announcement: { enabled: true, messages: ['🎉 Primeira compra com 15% OFF!', '✨ Novidades toda semana'], speed: 4, backgroundColor: '#7c3aed', textColor: '#ffffff', style: 'carousel', direction: 'rtl', showIcon: false, icon: '', link: '', pauseOnHover: true, pageRules: 'all', scheduleEnabled: false, scheduleStart: '', scheduleEnd: '', segmentation: 'all', ctaText: '', ctaLink: '', utmSource: '', utmMedium: '', utmCampaign: '' },
+      menuColors: { linkColor: '#1e1b4b', linkHoverColor: '#7c3aed', linkActiveColor: '#7c3aed', linkBg: '', linkHoverBg: 'rgba(124,58,237,0.08)' },
+      states: {
+        normal: { backgroundColor: '#ffffff', textColor: '#1e1b4b', borderBottom: false, borderColor: 'transparent', shadow: 'subtle', blur: false, height: 64 },
+        sticky: { backgroundColor: '#ffffff', textColor: '#1e1b4b', borderBottom: false, borderColor: 'transparent', shadow: 'medium', blur: true, height: 56 },
+        transparent: { backgroundColor: 'transparent', textColor: '#ffffff', borderBottom: false, borderColor: 'transparent', shadow: 'none', blur: false, height: 64 },
+      },
+    },
+  },
 ];
 
 /* Preset Card with SVG preview */
