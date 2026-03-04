@@ -1,10 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useTheme } from '@/contexts/ThemeContext';
 import { themePresets } from '@/data/theme-presets';
 import { EditorSection } from '../EditorControls';
 import { Palette, Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
+import { PresetConfirmDialog } from '@/components/admin/PresetConfirmDialog';
+import type { ThemePreset } from '@/types/theme';
 
 interface MiniColors {
   primary: string;
@@ -29,45 +31,32 @@ function StoreMiniPreview({ colors }: { colors: MiniColors }) {
       className="w-14 h-10 rounded-md border border-border/30 shadow-sm shrink-0 overflow-hidden"
       xmlns="http://www.w3.org/2000/svg"
     >
-      {/* Background */}
       <rect width="64" height="48" fill={bg} />
-
-      {/* Header bar */}
       <rect width="64" height="8" fill={pr} />
-      {/* Logo placeholder */}
       <rect x="3" y="2.5" width="10" height="3" rx="0.5" fill={bg} opacity="0.9" />
-      {/* Nav dots */}
       <circle cx="30" cy="4" r="1" fill={bg} opacity="0.5" />
       <circle cx="34" cy="4" r="1" fill={bg} opacity="0.5" />
       <circle cx="38" cy="4" r="1" fill={bg} opacity="0.5" />
-      {/* Cart icon */}
       <rect x="56" y="2.5" width="5" height="3" rx="0.5" fill={bg} opacity="0.6" />
-
-      {/* Hero section */}
       <rect x="0" y="8" width="64" height="14" fill={ac} />
       <rect x="6" y="12" width="20" height="2" rx="0.5" fill={fg} opacity="0.7" />
       <rect x="6" y="15.5" width="14" height="1.5" rx="0.5" fill={fg} opacity="0.3" />
       <rect x="6" y="18" width="12" height="3" rx="1" fill={bn} />
-
-      {/* Product cards */}
       <rect x="3" y="24" width="13" height="18" rx="1" fill={bg} stroke={bd} strokeWidth="0.5" />
       <rect x="3" y="24" width="13" height="10" rx="1" fill={ac} opacity="0.5" />
       <rect x="5" y="35.5" width="9" height="1" rx="0.3" fill={fg} opacity="0.4" />
       <rect x="5" y="37.5" width="6" height="1.5" rx="0.3" fill={fg} opacity="0.6" />
       <rect x="5" y="40" width="9" height="1.5" rx="0.5" fill={bn} opacity="0.8" />
-
       <rect x="19" y="24" width="13" height="18" rx="1" fill={bg} stroke={bd} strokeWidth="0.5" />
       <rect x="19" y="24" width="13" height="10" rx="1" fill={ac} opacity="0.5" />
       <rect x="21" y="35.5" width="9" height="1" rx="0.3" fill={fg} opacity="0.4" />
       <rect x="21" y="37.5" width="6" height="1.5" rx="0.3" fill={fg} opacity="0.6" />
       <rect x="21" y="40" width="9" height="1.5" rx="0.5" fill={bn} opacity="0.8" />
-
       <rect x="35" y="24" width="13" height="18" rx="1" fill={bg} stroke={bd} strokeWidth="0.5" />
       <rect x="35" y="24" width="13" height="10" rx="1" fill={ac} opacity="0.5" />
       <rect x="37" y="35.5" width="9" height="1" rx="0.3" fill={fg} opacity="0.4" />
       <rect x="37" y="37.5" width="6" height="1.5" rx="0.3" fill={fg} opacity="0.6" />
       <rect x="37" y="40" width="9" height="1.5" rx="0.5" fill={bn} opacity="0.8" />
-
       <rect x="51" y="24" width="13" height="18" rx="1" fill={bg} stroke={bd} strokeWidth="0.5" />
       <rect x="51" y="24" width="13" height="10" rx="1" fill={ac} opacity="0.5" />
       <rect x="53" y="35.5" width="9" height="1" rx="0.3" fill={fg} opacity="0.4" />
@@ -79,6 +68,7 @@ function StoreMiniPreview({ colors }: { colors: MiniColors }) {
 
 export function PresetsPanel() {
   const { applyPreset, draft } = useTheme();
+  const [pendingPreset, setPendingPreset] = useState<ThemePreset | null>(null);
 
   return (
     <EditorSection icon={Palette} title="Temas Prontos" description="Selecione um tema base e personalize cada detalhe ao seu gosto">
@@ -93,10 +83,7 @@ export function PresetsPanel() {
           return (
             <button
               key={preset.id}
-              onClick={() => {
-                applyPreset(preset.config);
-                toast.success(`Preset "${preset.name}" aplicado ao rascunho!`);
-              }}
+              onClick={() => setPendingPreset(preset)}
               className={cn(
                 'w-full flex items-center gap-3 px-3 py-2.5 rounded-lg border transition-all text-left group',
                 isActive
@@ -129,6 +116,21 @@ export function PresetsPanel() {
           );
         })}
       </div>
+
+      {pendingPreset && (
+        <PresetConfirmDialog
+          open={!!pendingPreset}
+          onOpenChange={open => { if (!open) setPendingPreset(null); }}
+          presetName={pendingPreset.name}
+          currentConfig={draft as any}
+          presetConfig={pendingPreset.config as any}
+          onConfirm={() => {
+            applyPreset(pendingPreset.config);
+            toast.success(`Preset "${pendingPreset.name}" aplicado ao rascunho!`);
+          }}
+          scope="theme"
+        />
+      )}
     </EditorSection>
   );
 }
