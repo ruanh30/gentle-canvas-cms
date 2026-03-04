@@ -25,6 +25,17 @@ const MAGIC_BYTES: Record<string, number[][]> = {
   'video/webm': [[0x1A, 0x45, 0xDF, 0xA3]],
 };
 
+/** Dangerous extensions — blocked unconditionally */
+const BLOCKED_EXTENSIONS = new Set([
+  '.php', '.phtml', '.phar', '.php3', '.php4', '.php5', '.phps',
+  '.js', '.jsx', '.ts', '.tsx', '.mjs', '.cjs',
+  '.sh', '.bash', '.zsh', '.bat', '.cmd', '.ps1',
+  '.exe', '.dll', '.bin', '.com', '.msi', '.scr',
+  '.py', '.rb', '.pl', '.cgi', '.asp', '.aspx', '.jsp',
+  '.htaccess', '.htpasswd', '.svg', '.html', '.htm', '.xml',
+  '.shtml', '.shtm', '.swf',
+]);
+
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const MAX_VIDEO_SIZE = 20 * 1024 * 1024; // 20MB
 
@@ -32,14 +43,33 @@ const MAX_VIDEO_SIZE = 20 * 1024 * 1024; // 20MB
 /*  Validation helpers                                                 */
 /* ------------------------------------------------------------------ */
 
+/** Extract ALL extensions from a filename (catches double-extension attacks) */
+function getAllExtensions(name: string): string[] {
+  const parts = name.split('.');
+  if (parts.length <= 1) return [];
+  return parts.slice(1).map(ext => `.${ext.toLowerCase()}`);
+}
+
 function getExtension(name: string): string {
   const dot = name.lastIndexOf('.');
   return dot >= 0 ? name.slice(dot).toLowerCase() : '';
 }
 
+/** Check if ANY extension in the filename is blocked (prevents double-extension bypass) */
+function hasBlockedExtension(name: string): boolean {
+  const allExts = getAllExtensions(name);
+  return allExts.some(ext => BLOCKED_EXTENSIONS.has(ext));
+}
+
 function isExtensionAllowed(name: string): boolean {
   const ext = getExtension(name);
   return Object.values(ALLOWED_TYPES).flat().includes(ext);
+}
+
+/** Reject filenames with multiple extensions (e.g. image.jpg.php) */
+function hasDoubleExtension(name: string): boolean {
+  const allExts = getAllExtensions(name);
+  return allExts.length > 1;
 }
 
 function isMimeAllowed(mime: string): boolean {
@@ -82,6 +112,56 @@ function formatSize(bytes: number): string {
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
+/** Generate a cryptographically random filename (never use user-provided names for storage) */
+function generateSafeFilename(originalName: string): string {
+  const ext = getExtension(originalName);
+  const randomPart = crypto.randomUUID().replace(/-/g, '');
+  return `${randomPart}${ext}`;
+}
+
+/** Strip metadata from images by re-encoding through canvas */
+async function stripImageMetadata(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const img = new window.Image();
+    img.onload = () => {
+      // Sanity check dimensions (anti-decompression bomb)
+      if (img.width > 8000 || img.height > 8000) {
+        reject(new Error('Imagem com dimensões excessivas (máx 8000×8000px).'));
+        return;
+      }
+      const canvas = document.createElement('canvas');
+      canvas.width = img.width;
+      canvas.height = img.height;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) { reject(new Error('Erro ao processar imagem.')); return; }
+      ctx.drawImage(img, 0, 0);
+      // Re-encode as the same type (strips EXIF/metadata)
+      const outputMime = file.type === 'image/png' ? 'image/png' : file.type === 'image/webp' ? 'image/webp' : 'image/jpeg';
+      const quality = outputMime === 'image/png' ? undefined : 0.92;
+      const dataUrl = canvas.toDataURL(outputMime, quality);
+      URL.revokeObjectURL(img.src);
+      resolve(dataUrl);
+    };
+    img.onerror = () => {
+      URL.revokeObjectURL(img.src);
+      reject(new Error('Arquivo corrompido ou não é uma imagem válida.'));
+    };
+    img.src = URL.createObjectURL(file);
+  });
+}
+
+/** Check file content for suspicious script patterns */
+function scanForScriptContent(bytes: Uint8Array): boolean {
+  // Convert first 1KB to string and check for script signatures
+  const textSlice = new TextDecoder('utf-8', { fatal: false }).decode(bytes.slice(0, 1024));
+  const lower = textSlice.toLowerCase();
+  const suspicious = [
+    '<?php', '<%', '<script', 'eval(', 'exec(', 'system(',
+    '#!/bin', 'import os', 'require(', 'child_process',
+  ];
+  return suspicious.some(sig => lower.includes(sig));
+}
+
 /* ------------------------------------------------------------------ */
 /*  Component                                                          */
 /* ------------------------------------------------------------------ */
@@ -113,13 +193,25 @@ export default function SecureFileUpload({
   const processFile = useCallback(async (file: File) => {
     setError(null);
 
-    // 1. Extension check
+    // 0. Block dangerous extensions (anti-webshell)
+    if (hasBlockedExtension(file.name)) {
+      setError('Tipo de arquivo bloqueado por segurança. Extensão executável ou perigosa detectada.');
+      return false;
+    }
+
+    // 0b. Block double extensions (e.g. image.jpg.php)
+    if (hasDoubleExtension(file.name)) {
+      setError('Arquivo com múltiplas extensões não é permitido (ex: foto.jpg.php). Possível tentativa de bypass.');
+      return false;
+    }
+
+    // 1. Extension allowlist check
     if (!isExtensionAllowed(file.name)) {
       setError(`Extensão não permitida: ${getExtension(file.name)}. Use JPG, PNG, WebP, GIF, MP4 ou WebM.`);
       return false;
     }
 
-    // 2. MIME type check
+    // 2. MIME type allowlist check
     if (!isMimeAllowed(file.type)) {
       setError(`Tipo de arquivo inválido: ${file.type}`);
       return false;
@@ -131,47 +223,49 @@ export default function SecureFileUpload({
       return false;
     }
 
-    // 4. File size
+    // 4. File size limit
     if (!isFileSizeValid(file)) {
       const isVideo = file.type.startsWith('video/');
       setError(`Arquivo muito grande (${formatSize(file.size)}). Máximo: ${isVideo ? '20MB' : '5MB'}.`);
       return false;
     }
 
-    // 5. Magic bytes (header) validation
+    // 5. Magic bytes (binary header) validation
     const magicValid = await validateMagicBytes(file);
     if (!magicValid) {
       setError('Conteúdo do arquivo não corresponde ao tipo declarado. Upload bloqueado por segurança.');
       return false;
     }
 
-    // 6. For images: validate it actually renders
-    if (file.type.startsWith('image/')) {
-      const valid = await new Promise<boolean>(resolve => {
-        const img = new window.Image();
-        img.onload = () => {
-          // Sanity check dimensions (anti-decompression bomb)
-          if (img.width > 8000 || img.height > 8000) {
-            setError('Imagem com dimensões excessivas (máx 8000×8000px).');
-            resolve(false);
-          } else {
-            resolve(true);
-          }
-        };
-        img.onerror = () => {
-          setError('Arquivo corrompido ou não é uma imagem válida.');
-          resolve(false);
-        };
-        img.src = URL.createObjectURL(file);
-      });
-      if (!valid) return false;
+    // 6. Scan for embedded script content
+    const scanBuffer = await file.slice(0, 1024).arrayBuffer();
+    if (scanForScriptContent(new Uint8Array(scanBuffer))) {
+      setError('Conteúdo suspeito detectado no arquivo. Upload bloqueado por segurança.');
+      return false;
     }
 
-    // All checks passed → read as data URL
+    // 7. For images: strip metadata via canvas re-encode + validate rendering
+    if (file.type.startsWith('image/')) {
+      try {
+        const sanitizedDataUrl = await stripImageMetadata(file);
+        // Generate safe filename (never trust user-provided names)
+        const safeName = generateSafeFilename(file.name);
+        const sanitizedFile = new File([file], safeName, { type: file.type });
+        onFileAccepted(sanitizedDataUrl, sanitizedFile);
+        return true;
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Erro ao processar imagem.');
+        return false;
+      }
+    }
+
+    // 8. For videos: read as data URL (no metadata stripping available client-side)
     return new Promise<boolean>(resolve => {
       const reader = new FileReader();
       reader.onload = () => {
-        onFileAccepted(reader.result as string, file);
+        const safeName = generateSafeFilename(file.name);
+        const sanitizedFile = new File([file], safeName, { type: file.type });
+        onFileAccepted(reader.result as string, sanitizedFile);
         resolve(true);
       };
       reader.onerror = () => {
