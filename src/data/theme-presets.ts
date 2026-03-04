@@ -129,6 +129,7 @@ export const defaultThemeConfig: ThemeConfig = {
     layout: 'classic',
     sticky: true,
     shrinkOnScroll: false,
+    shrinkTransparent: false,
     shadowOnScroll: true,
     backgroundColor: '#ffffff',
     borderBottom: true,

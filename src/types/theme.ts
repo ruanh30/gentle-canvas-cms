@@ -162,6 +162,7 @@ export interface ThemeHeader {
   layout: 'classic' | 'centered' | 'minimal' | 'logo-center-nav-left' | 'hamburger-only' | 'top-bar-split' | 'double-row' | 'sidebar-nav' | 'transparent';
   sticky: boolean;
   shrinkOnScroll: boolean;
+  shrinkTransparent: boolean;
   shadowOnScroll: boolean;
   backgroundColor: string;
   borderBottom: boolean;

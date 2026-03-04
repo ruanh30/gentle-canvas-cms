@@ -727,7 +727,8 @@ export function StoreHeader() {
   }, [searchConfig.shortcutEnabled, h.showSearch]);
 
   const baseHeight = h.height || 64;
-  const shrinkActive = h.shrinkOnScroll && scrolled;
+  const shrinkActive = (h.shrinkOnScroll || h.shrinkTransparent) && scrolled;
+  const shrinkTransparentActive = h.shrinkTransparent && scrolled;
 
   // Resolve state-based styling
   const states = h.states;
@@ -981,13 +982,16 @@ export function StoreHeader() {
   return (
     <header className={cn(
       'z-50 transition-all duration-300',
-      activeState?.blur && 'backdrop-blur-md',
-      !activeState && 'bg-background/95 backdrop-blur-md supports-[backdrop-filter]:bg-background/80',
-      'shadow-[0_1px_3px_0_rgba(0,0,0,0.04)]',
-      (h.sticky || h.shrinkOnScroll) && 'sticky top-0',
+      shrinkTransparentActive
+        ? 'bg-transparent'
+        : activeState?.blur
+        ? 'backdrop-blur-md'
+        : !activeState && 'bg-background/95 backdrop-blur-md supports-[backdrop-filter]:bg-background/80',
+      !shrinkTransparentActive && 'shadow-[0_1px_3px_0_rgba(0,0,0,0.04)]',
+      (h.sticky || h.shrinkOnScroll || h.shrinkTransparent) && 'sticky top-0',
       headerHidden && 'lg:translate-y-0 -translate-y-full',
     )} style={{
-      ...headerStyle,
+      ...(shrinkTransparentActive ? { backgroundColor: 'transparent', borderColor: 'transparent' } : headerStyle),
       paddingTop: 'env(safe-area-inset-top, 0px)',
     }}>
 
