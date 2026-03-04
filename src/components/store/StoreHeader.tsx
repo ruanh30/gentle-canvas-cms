@@ -587,23 +587,31 @@ function SearchDrawer({ placeholder, onSearch, onClose }: {
 
 function MobileDrawerSearch({ placeholder, onSearch }: { placeholder: string; onSearch: (q: string) => void }) {
   const [query, setQuery] = useState('');
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && query.trim()) onSearch(query.trim());
   };
 
+  useEffect(() => {
+    // Auto-focus after drawer animation
+    const timer = setTimeout(() => inputRef.current?.focus(), 350);
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
-    <div className="relative mt-4 mb-2">
-      <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/50" />
+    <div className="relative">
+      <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/40" />
       <input
+        ref={inputRef}
         value={query}
         onChange={e => setQuery(e.target.value)}
         onKeyDown={handleKeyDown}
         placeholder={placeholder}
-        className="w-full pl-9 pr-3 h-9 text-sm rounded-lg border border-border/60 outline-none focus:ring-1 focus:ring-border bg-muted/30 placeholder:text-muted-foreground/40"
+        className="w-full pl-10 pr-4 h-11 text-[14px] rounded-xl border border-border/50 outline-none focus:ring-2 focus:ring-foreground/10 focus:border-foreground/20 bg-muted/30 placeholder:text-muted-foreground/40 transition-all duration-200"
       />
       {query.trim().length >= 2 && (
-        <div className="absolute left-0 right-0 top-full mt-1 z-50">
+        <div className="absolute left-0 right-0 top-full mt-1.5 z-50">
           <SearchSuggestions
             query={query}
             maxResults={5}
@@ -934,6 +942,8 @@ export function StoreHeader() {
 
   // Mobile drawer content
   const renderMobileDrawer = () => {
+    const drawerSide = mobile.drawerPosition || 'left';
+    
     return (
       <Sheet open={drawerOpen} onOpenChange={setDrawerOpen}>
         <SheetTrigger asChild>
@@ -941,34 +951,99 @@ export function StoreHeader() {
             <Menu className="h-5 w-5" />
           </Button>
         </SheetTrigger>
-        <SheetContent side={mobile.drawerPosition} className="w-72 flex flex-col">
-          {/* Search in drawer */}
+        <SheetContent
+          side={drawerSide}
+          className="w-[300px] sm:w-[340px] p-0 flex flex-col border-none [&>button]:hidden"
+        >
+          {/* Header with close + logo area */}
+          <div className="flex items-center justify-between px-5 pt-[env(safe-area-inset-top,16px)] pb-3 border-b border-border/30">
+            <Link to="/" onClick={() => setDrawerOpen(false)} className="flex items-center gap-2">
+              {theme.logo?.imageUrl ? (
+                <img src={theme.logo.imageUrl} alt="Logo" className="h-7 object-contain" />
+              ) : (
+                <span className="text-[15px] font-semibold tracking-tight">{theme.logo?.text || 'MODA STORE'}</span>
+              )}
+            </Link>
+            <button
+              onClick={() => setDrawerOpen(false)}
+              className="h-8 w-8 rounded-full flex items-center justify-center bg-muted/50 hover:bg-muted transition-colors"
+            >
+              <ChevronLeft className={cn('h-4 w-4', drawerSide === 'right' && 'rotate-180')} />
+            </button>
+          </div>
+
+          {/* Search */}
           {mobile.showSearchInDrawer && h.showSearch && (
-            <MobileDrawerSearch placeholder={placeholder} onSearch={handleSearch} />
+            <div className="px-5 pt-4 pb-1">
+              <MobileDrawerSearch placeholder={placeholder} onSearch={(q) => { handleSearch(q); setDrawerOpen(false); }} />
+            </div>
           )}
 
-          {/* Nav items */}
-          <nav className="flex flex-col gap-4 mt-4 flex-1" style={{ fontFamily: mt.fontFamily, fontSize: mt.fontSizeMobile, fontWeight: mt.fontWeight, letterSpacing: `${mt.letterSpacing}em`, textTransform: mt.textTransform, lineHeight: mt.lineHeight }}>
-            <Link to="/" className="font-display font-semibold" style={{ fontSize: mt.fontSizeMobile + 2 }}>Início</Link>
-            {hasCustomMenu ? mm!.items.map(mi => (
-              <MobileNavItem key={mi.id} item={mi} showBadges={mm!.showBadges} maxLevels={mobile.maxLevels} groupStyle={mobile.groupStyle} />
-            )) : mockCategories.slice(0, 5).map(cat => (
-              <Link key={cat.id} to={`/products?category=${cat.slug}`} className="hover:text-foreground/80 transition-colors">
-                {cat.name}
-              </Link>
-            ))}
+          {/* Navigation */}
+          <nav className="flex-1 overflow-y-auto px-5 py-4" style={{ fontFamily: mt.fontFamily }}>
+            {/* Home link */}
+            <Link
+              to="/"
+              onClick={() => setDrawerOpen(false)}
+              className="flex items-center gap-3 py-3 text-[15px] font-medium text-foreground hover:text-foreground/70 transition-colors"
+            >
+              <House className="h-[18px] w-[18px] text-muted-foreground/50" strokeWidth={1.5} />
+              Início
+            </Link>
+
+            <div className="h-px bg-border/30 my-1" />
+
+            {/* Menu items */}
+            <div className="space-y-0.5">
+              {hasCustomMenu ? mm!.items.map(mi => (
+                <MobileNavItem
+                  key={mi.id}
+                  item={mi}
+                  showBadges={mm!.showBadges}
+                  maxLevels={mobile.maxLevels}
+                  groupStyle={mobile.groupStyle}
+                  onNavigate={() => setDrawerOpen(false)}
+                  fontFamily={mt.fontFamily}
+                />
+              )) : mockCategories.slice(0, 6).map(cat => (
+                <Link
+                  key={cat.id}
+                  to={`/products?category=${cat.slug}`}
+                  onClick={() => setDrawerOpen(false)}
+                  className="flex items-center gap-3 py-3 text-[15px] text-foreground/80 hover:text-foreground transition-colors"
+                >
+                  <LayoutGrid className="h-[18px] w-[18px] text-muted-foreground/40" strokeWidth={1.5} />
+                  {cat.name}
+                </Link>
+              ))}
+            </div>
           </nav>
 
-          {/* Actions in drawer footer */}
-          <div className="border-t border-border/40 pt-4 pb-2 mt-auto space-y-2">
+          {/* Footer actions */}
+          <div className="border-t border-border/30 bg-muted/20 px-5 py-4 pb-[env(safe-area-inset-bottom,16px)] space-y-1">
             {mobile.showAccountInDrawer && (
-              <Link to={user ? '/account' : '/login'} className="flex items-center gap-3 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
-                <User className="h-4 w-4" /> {user ? 'Minha Conta' : 'Entrar'}
+              <Link
+                to={user ? '/account' : '/login'}
+                onClick={() => setDrawerOpen(false)}
+                className="flex items-center gap-3 py-2.5 text-[14px] text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-muted/50 px-2 -mx-2"
+              >
+                <CircleUserRound className="h-[18px] w-[18px]" strokeWidth={1.5} />
+                {user ? 'Minha Conta' : 'Entrar / Criar Conta'}
               </Link>
             )}
             {mobile.showCartInDrawer && (
-              <Link to="/cart" className="flex items-center gap-3 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
-                <ShoppingBag className="h-4 w-4" /> Carrinho {itemCount > 0 && `(${itemCount})`}
+              <Link
+                to="/cart"
+                onClick={() => setDrawerOpen(false)}
+                className="flex items-center gap-3 py-2.5 text-[14px] text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-muted/50 px-2 -mx-2"
+              >
+                <ShoppingBag className="h-[18px] w-[18px]" strokeWidth={1.5} />
+                <span>Carrinho</span>
+                {itemCount > 0 && (
+                  <span className="ml-auto bg-foreground text-background text-[10px] font-bold rounded-full h-5 min-w-[20px] px-1.5 flex items-center justify-center">
+                    {itemCount}
+                  </span>
+                )}
               </Link>
             )}
           </div>
@@ -1233,24 +1308,44 @@ export function StoreHeader() {
 /*  MOBILE NAV ITEM (with accordion / list support)                     */
 /* ================================================================== */
 
-function MobileNavItem({ item, showBadges, maxLevels, groupStyle, level = 0 }: {
+function MobileNavItem({ item, showBadges, maxLevels, groupStyle, level = 0, onNavigate, fontFamily }: {
   item: ThemeMenuItem;
   showBadges: boolean;
   maxLevels: number;
   groupStyle: 'accordion' | 'list';
   level?: number;
+  onNavigate?: () => void;
+  fontFamily?: string;
 }) {
   const [open, setOpen] = useState(false);
   const hasChildren = item.children && item.children.length > 0 && level < maxLevels - 1;
 
+  const badgeEl = showBadges && item.badge ? (
+    <span
+      className="ml-2 text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full"
+      style={{ backgroundColor: item.badgeColor, color: '#fff' }}
+    >
+      {item.badge}
+    </span>
+  ) : null;
+
   if (!hasChildren) {
     return (
-      <Link to={item.link || '#'} className={cn('text-base hover:text-foreground/80 transition-colors', level > 0 && 'text-sm text-muted-foreground ml-4')}
-        {...(item.openNewTab ? { target: '_blank', rel: 'noopener' } : {})}>
-        {item.label}
-        {showBadges && item.badge && (
-          <span className="ml-2 text-[10px] font-bold px-1.5 py-0.5 rounded" style={{ backgroundColor: item.badgeColor, color: '#fff' }}>{item.badge}</span>
+      <Link
+        to={item.link || '#'}
+        onClick={onNavigate}
+        className={cn(
+          'flex items-center py-3 transition-colors duration-150',
+          level === 0
+            ? 'text-[15px] text-foreground/80 hover:text-foreground font-normal'
+            : 'text-[14px] text-muted-foreground hover:text-foreground pl-3 border-l-2 border-border/30'
         )}
+        style={level === 0 ? { fontFamily } : undefined}
+        {...(item.openNewTab ? { target: '_blank', rel: 'noopener' } : {})}
+      >
+        {level === 0 && <LayoutGrid className="h-[18px] w-[18px] text-muted-foreground/40 mr-3 shrink-0" strokeWidth={1.5} />}
+        {item.label}
+        {badgeEl}
       </Link>
     );
   }
@@ -1258,44 +1353,64 @@ function MobileNavItem({ item, showBadges, maxLevels, groupStyle, level = 0 }: {
   if (groupStyle === 'list') {
     return (
       <div>
-        <Link to={item.link || '#'} className="text-base hover:text-foreground/80 transition-colors"
-          {...(item.openNewTab ? { target: '_blank', rel: 'noopener' } : {})}>
+        <Link
+          to={item.link || '#'}
+          onClick={onNavigate}
+          className="flex items-center py-3 text-[15px] text-foreground/80 hover:text-foreground transition-colors"
+          style={{ fontFamily }}
+          {...(item.openNewTab ? { target: '_blank', rel: 'noopener' } : {})}
+        >
+          <LayoutGrid className="h-[18px] w-[18px] text-muted-foreground/40 mr-3 shrink-0" strokeWidth={1.5} />
           {item.label}
-          {showBadges && item.badge && (
-            <span className="ml-2 text-[10px] font-bold px-1.5 py-0.5 rounded" style={{ backgroundColor: item.badgeColor, color: '#fff' }}>{item.badge}</span>
-          )}
+          {badgeEl}
         </Link>
-        <div className="ml-4 mt-2 flex flex-col gap-2">
+        <div className="ml-8 space-y-0.5">
           {item.children.map(sub => (
-            <MobileNavItem key={sub.id} item={sub} showBadges={showBadges} maxLevels={maxLevels} groupStyle={groupStyle} level={level + 1} />
+            <MobileNavItem key={sub.id} item={sub} showBadges={showBadges} maxLevels={maxLevels} groupStyle={groupStyle} level={level + 1} onNavigate={onNavigate} fontFamily={fontFamily} />
           ))}
         </div>
       </div>
     );
   }
 
-  // accordion
+  // accordion style — premium
   return (
     <div>
-      <button onClick={() => setOpen(!open)} className="w-full flex items-center justify-between text-base hover:text-foreground/80 transition-colors">
-        <span>
+      <button
+        onClick={() => setOpen(!open)}
+        className="w-full flex items-center py-3 text-[15px] text-foreground/80 hover:text-foreground transition-colors duration-150"
+        style={{ fontFamily }}
+      >
+        <LayoutGrid className="h-[18px] w-[18px] text-muted-foreground/40 mr-3 shrink-0" strokeWidth={1.5} />
+        <span className="flex-1 text-left flex items-center">
           {item.label}
-          {showBadges && item.badge && (
-            <span className="ml-2 text-[10px] font-bold px-1.5 py-0.5 rounded" style={{ backgroundColor: item.badgeColor, color: '#fff' }}>{item.badge}</span>
-          )}
+          {badgeEl}
         </span>
-        <ChevronDown className={cn('h-4 w-4 transition-transform', open && 'rotate-180')} />
+        <ChevronDown className={cn(
+          'h-4 w-4 text-muted-foreground/40 transition-transform duration-200',
+          open && 'rotate-180'
+        )} />
       </button>
-      {open && (
-        <div className="ml-4 mt-2 flex flex-col gap-2">
-          <Link to={item.link || '#'} className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-            Ver todos
-          </Link>
+      <div className={cn(
+        'overflow-hidden transition-all duration-200 ease-out',
+        open ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
+      )}>
+        <div className="ml-8 pb-2 space-y-0.5">
+          {/* "Ver todos" link */}
+          {item.link && (
+            <Link
+              to={item.link}
+              onClick={onNavigate}
+              className="flex items-center py-2.5 text-[13px] text-muted-foreground/70 hover:text-foreground transition-colors border-l-2 border-border/30 pl-3"
+            >
+              Ver todos →
+            </Link>
+          )}
           {item.children.map(sub => (
-            <MobileNavItem key={sub.id} item={sub} showBadges={showBadges} maxLevels={maxLevels} groupStyle={groupStyle} level={level + 1} />
+            <MobileNavItem key={sub.id} item={sub} showBadges={showBadges} maxLevels={maxLevels} groupStyle={groupStyle} level={level + 1} onNavigate={onNavigate} fontFamily={fontFamily} />
           ))}
         </div>
-      )}
+      </div>
     </div>
   );
 }
