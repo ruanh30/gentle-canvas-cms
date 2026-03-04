@@ -42,13 +42,17 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant, size, asChild = false, ...props }, ref) => {
     const Comp = asChild ? Slot : "button";
     const isAdminPage = typeof window !== "undefined" && window.location.pathname.startsWith('/admin');
-    const useThemeButton = (variant === undefined || variant === "default") && !isAdminPage;
+    const isStoreButton = !isAdminPage;
+    const useThemedVariant = (variant === undefined || variant === "default") && isStoreButton;
 
     return (
       <Comp
         className={cn(
-          buttonVariants({ variant: useThemeButton ? "themed" : variant, size }),
-          useThemeButton && "pm-theme-btn",
+          buttonVariants({ variant: useThemedVariant ? "themed" : variant, size }),
+          // All store buttons get pm-theme-btn for dimensions (padding, radius, font-size, weight)
+          isStoreButton && "pm-theme-btn",
+          // Only default/themed buttons get the color layer
+          useThemedVariant && "pm-theme-btn-colors",
           className
         )}
         ref={ref}
