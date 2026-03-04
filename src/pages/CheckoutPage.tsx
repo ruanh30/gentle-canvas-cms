@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '@/contexts/CartContext';
 import { useAuth } from '@/contexts/AuthContext';
@@ -6,10 +6,12 @@ import { formatCurrency } from '@/lib/format';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { mockCoupons } from '@/data/mock';
 import { toast } from 'sonner';
 import { Check, Tag, UserPlus, LogIn, Mail, Lock, ArrowLeft } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { brazilianStates } from '@/data/brazilian-locations';
 
 type CheckoutMode = 'choose' | 'guest' | 'login' | 'form';
 
@@ -20,6 +22,8 @@ const CheckoutPage = () => {
   const [couponCode, setCouponCode] = useState('');
   const [appliedCoupon, setAppliedCoupon] = useState<typeof mockCoupons[0] | null>(null);
   const [loading, setLoading] = useState(false);
+  const [selectedState, setSelectedState] = useState('');
+  const [selectedCity, setSelectedCity] = useState('');
 
   const isLoggedCustomer = user && user.role === 'customer';
   const [mode, setMode] = useState<CheckoutMode>(isLoggedCustomer ? 'form' : 'choose');
@@ -27,6 +31,12 @@ const CheckoutPage = () => {
   const [loginEmail, setLoginEmail] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
   const [loginLoading, setLoginLoading] = useState(false);
+
+  const availableCities = useMemo(() => {
+    if (!selectedState) return [];
+    const state = brazilianStates.find(s => s.uf === selectedState);
+    return state ? state.cities.sort() : [];
+  }, [selectedState]);
 
   const shipping = subtotal >= 299 ? 0 : 15.90;
   const discount = appliedCoupon
@@ -196,8 +206,32 @@ const CheckoutPage = () => {
                 <div><Label>Número</Label><Input required placeholder="Nº" className="mt-1" /></div>
                 <div><Label>Complemento</Label><Input placeholder="Apto, bloco..." className="mt-1" /></div>
                 <div><Label>Bairro</Label><Input required placeholder="Bairro" className="mt-1" /></div>
-                <div><Label>Cidade</Label><Input required placeholder="Cidade" className="mt-1" /></div>
-                <div><Label>Estado</Label><Input required placeholder="UF" className="mt-1" /></div>
+                <div>
+                  <Label>Estado</Label>
+                  <Select value={selectedState} onValueChange={(val) => { setSelectedState(val); setSelectedCity(''); }}>
+                    <SelectTrigger className="mt-1">
+                      <SelectValue placeholder="Selecione o estado" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {brazilianStates.map(s => (
+                        <SelectItem key={s.uf} value={s.uf}>{s.uf} - {s.name}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label>Cidade</Label>
+                  <Select value={selectedCity} onValueChange={setSelectedCity} disabled={!selectedState}>
+                    <SelectTrigger className="mt-1">
+                      <SelectValue placeholder={selectedState ? "Selecione a cidade" : "Selecione o estado primeiro"} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {availableCities.map(city => (
+                        <SelectItem key={city} value={city}>{city}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
             </section>
 
