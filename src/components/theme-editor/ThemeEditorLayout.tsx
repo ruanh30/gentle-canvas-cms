@@ -117,9 +117,9 @@ type DeviceSize = 'desktop' | 'tablet' | 'mobile';
 
 export function ThemeEditorLayout({ previewUrl, fullscreen = false }: { previewUrl?: string; fullscreen?: boolean } = {}) {
   const { isDirty, publish, discardDraft, resetToDefault, versions, rollback, draft } = useTheme();
-  const [activeSection, setActiveSection] = useState(() => {
+  const [activeSection, setActiveSection] = useState<string | null>(() => {
     const params = new URLSearchParams(window.location.search);
-    return params.get('section') || 'presets';
+    return params.get('section') || null;
   });
   const [searchQuery, setSearchQuery] = useState('');
   const [device, setDevice] = useState<DeviceSize>('desktop');
@@ -174,6 +174,7 @@ export function ThemeEditorLayout({ previewUrl, fullscreen = false }: { previewU
   };
 
   const activeLabel = sections.find(s => s.id === activeSection)?.label || '';
+  const ActiveIcon = sections.find(s => s.id === activeSection)?.icon;
 
   return (
     <div className="flex flex-col h-screen">
@@ -209,51 +210,65 @@ export function ThemeEditorLayout({ previewUrl, fullscreen = false }: { previewU
 
       {/* Main 3 columns */}
       <div className="flex flex-1 min-h-0">
-        {/* Col 1: Sections list */}
-        <div className="w-56 border-r bg-background flex flex-col shrink-0">
-          <div className="p-2 border-b">
-            <div className="relative">
-              <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
-              <Input
-                placeholder="Buscar..."
-                value={searchQuery}
-                onChange={e => setSearchQuery(e.target.value)}
-                className="pl-7 h-8 text-xs"
-              />
-            </div>
-          </div>
-          <div className="flex-1 overflow-y-auto p-1">
-            {groups.map(group => (
-              <div key={group} className="mb-1">
-                <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold px-2 py-1.5">{group}</p>
-                {filteredSections.filter(s => s.group === group).map(section => (
-                  <button
-                    key={section.id}
-                    onClick={() => setActiveSection(section.id)}
-                    className={cn(
-                      'w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-xs transition-colors',
-                      activeSection === section.id
-                        ? 'bg-foreground text-background font-medium'
-                        : 'text-muted-foreground hover:bg-secondary hover:text-foreground'
-                    )}
-                  >
-                    <section.icon className="h-3.5 w-3.5 shrink-0" />
-                    <span className="truncate">{section.label}</span>
-                  </button>
+        {/* Sidebar: drill-in navigation */}
+        <div className="w-72 border-r bg-background flex flex-col shrink-0">
+          {activeSection ? (
+            <>
+              {/* Panel header with back button */}
+              <div className="px-2 py-2 border-b flex items-center gap-1.5">
+                <button
+                  onClick={() => setActiveSection(null)}
+                  className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors rounded-md px-1.5 py-1 hover:bg-secondary"
+                >
+                  <ChevronLeft className="h-3.5 w-3.5" />
+                  <span>Voltar</span>
+                </button>
+                <div className="h-4 w-px bg-border mx-0.5" />
+                {ActiveIcon && <ActiveIcon className="h-3.5 w-3.5 text-foreground shrink-0" />}
+                <h2 className="text-sm font-semibold truncate">{activeLabel}</h2>
+              </div>
+              {/* Panel content */}
+              <div className="flex-1 overflow-y-auto p-3">
+                {renderPanel(activeSection)}
+              </div>
+            </>
+          ) : (
+            <>
+              {/* Section list */}
+              <div className="p-2 border-b">
+                <div className="relative">
+                  <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+                  <Input
+                    placeholder="Buscar seção..."
+                    value={searchQuery}
+                    onChange={e => setSearchQuery(e.target.value)}
+                    className="pl-7 h-8 text-xs"
+                  />
+                </div>
+              </div>
+              <div className="flex-1 overflow-y-auto p-1">
+                {groups.map(group => (
+                  <div key={group} className="mb-1">
+                    <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold px-2 py-1.5">{group}</p>
+                    {filteredSections.filter(s => s.group === group).map(section => (
+                      <button
+                        key={section.id}
+                        onClick={() => setActiveSection(section.id)}
+                        className={cn(
+                          'w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-xs transition-colors',
+                          'text-muted-foreground hover:bg-secondary hover:text-foreground'
+                        )}
+                      >
+                        <section.icon className="h-3.5 w-3.5 shrink-0" />
+                        <span className="truncate">{section.label}</span>
+                        <ChevronLeft className="h-3 w-3 ml-auto rotate-180 opacity-40" />
+                      </button>
+                    ))}
+                  </div>
                 ))}
               </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Col 2: Properties panel */}
-        <div className="w-80 border-r bg-background flex flex-col shrink-0">
-          <div className="px-3 py-2 border-b flex items-center gap-2">
-            <h2 className="text-sm font-semibold">{activeLabel}</h2>
-          </div>
-          <div className="flex-1 overflow-y-auto p-3">
-            {renderPanel(activeSection)}
-          </div>
+            </>
+          )}
         </div>
 
         {/* Col 3: Preview */}
