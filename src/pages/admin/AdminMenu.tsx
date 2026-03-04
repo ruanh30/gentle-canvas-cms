@@ -664,19 +664,20 @@ const HEADER_PRESETS: HeaderPreset[] = [
     },
   },
 
-  // ── 11. DALUZ — Two-row, peach tones, inline search, utility links, uppercase menu ──
+  // ── 11. DALUZ — Two-row, peach tones, inline search, icon labels, uppercase menu in separated bar ──
   {
     id: 'daluz',
     name: 'Daluz',
-    tagline: 'Estilo Daluz. Duas linhas, tons pêssego, busca inline, menu uppercase em barra separada',
+    tagline: 'Estilo Daluz. Duas linhas, tons pêssego, busca retangular, labels nos ícones, menu em barra separada',
     tags: ['Elegante', 'Feminino'],
     config: {
       layout: 'double-row', menuStyle: 'horizontal', menuUppercase: true, menuFontWeight: 500,
       menuFontSize: 13, menuHoverStyle: 'underline', menuSeparator: 'none', menuItemGap: 32,
       menuLetterSpacing: 0.12, menuItemPadding: false,
       headerSurface: false, dropdownElevated: false, borderBottom: false, shadowOnScroll: false,
-      iconStrokeWidth: 1.5, height: 64, sticky: true, shrinkOnScroll: true, shrinkTransparent: false, iconSize: 20,
-      showSearch: true, searchStyle: 'inline', showAccount: true, showCart: true, cartBadgeStyle: 'count',
+      iconStrokeWidth: 1.5, height: 68, sticky: true, shrinkOnScroll: true, shrinkTransparent: false, iconSize: 18,
+      showSearch: true, searchStyle: 'inline', searchShape: 'rectangle',
+      showAccount: true, showCart: true, showIconLabels: true, cartBadgeStyle: 'count',
       menuDividerLine: false,
       menuTypography: { fontFamily: 'Montserrat', fontWeight: 500, fontSizeDesktop: 13, fontSizeMobile: 13, letterSpacing: 0.12, textTransform: 'uppercase', lineHeight: 1.2 },
       container: { width: 'container', maxWidth: 1400, paddingX: 24, gap: 20, verticalAlign: 'center' },
@@ -686,9 +687,9 @@ const HEADER_PRESETS: HeaderPreset[] = [
       announcement: { enabled: false },
       menuColors: { linkColor: '#3d2b1f', linkHoverColor: '#8b6f5e', linkActiveColor: '#3d2b1f', linkBg: '', linkHoverBg: '' },
       states: {
-        normal: { backgroundColor: '#fdf0ea', textColor: '#3d2b1f', borderBottom: false, borderColor: 'transparent', shadow: 'none', blur: false, height: 64 },
+        normal: { backgroundColor: '#fdf0ea', textColor: '#3d2b1f', borderBottom: false, borderColor: 'transparent', shadow: 'none', blur: false, height: 68 },
         sticky: { backgroundColor: '#fdf0ea', textColor: '#3d2b1f', borderBottom: true, borderColor: '#e8cfc4', shadow: 'subtle', blur: true, height: 52 },
-        transparent: { backgroundColor: 'transparent', textColor: '#ffffff', borderBottom: false, borderColor: 'transparent', shadow: 'none', blur: false, height: 64 },
+        transparent: { backgroundColor: 'transparent', textColor: '#ffffff', borderBottom: false, borderColor: 'transparent', shadow: 'none', blur: false, height: 68 },
       },
     },
   },
@@ -702,6 +703,9 @@ function PresetCard({ preset, isActive, onApply }: { preset: HeaderPreset; isAct
   const isCentered = preset.config.layout === 'centered';
   const isDoubleRow = preset.config.layout === 'double-row';
   const isTransparent = preset.config.layout === 'transparent';
+  const hasMenuBar = preset.config.menuBar?.enabled;
+  const menuBarBg = preset.config.menuBar?.backgroundColor || '#1a1a1a';
+  const menuBarText = preset.config.menuBar?.textColor || '#ffffff';
   const fillBg = isTransparent ? '#2d2d2d' : bg;
 
   return (
@@ -734,10 +738,21 @@ function PresetCard({ preset, isActive, onApply }: { preset: HeaderPreset; isAct
               <circle cx="195" cy="10" r="3.5" fill={text} opacity="0.2" />
               <circle cx="210" cy="10" r="3.5" fill={text} opacity="0.2" />
               <circle cx="225" cy="10" r="3.5" fill={text} opacity="0.2" />
-              <line x1="0" y1="23" x2="240" y2="23" stroke={text} strokeOpacity="0.06" />
-              {[35, 75, 115, 155, 190].map((x, i) => (
-                <rect key={i} x={x} y="30" width="28" height="2.5" rx="1" fill={text} opacity={i === 0 ? 0.6 : 0.25} />
-              ))}
+              {hasMenuBar ? (
+                <>
+                  <rect x="0" y="23" width="240" height="27" fill={menuBarBg} />
+                  {[55, 95, 135, 175].map((x, i) => (
+                    <rect key={i} x={x} y="33" width="28" height="2.5" rx="1" fill={menuBarText} opacity={i === 0 ? 0.8 : 0.5} />
+                  ))}
+                </>
+              ) : (
+                <>
+                  <line x1="0" y1="23" x2="240" y2="23" stroke={text} strokeOpacity="0.06" />
+                  {[35, 75, 115, 155, 190].map((x, i) => (
+                    <rect key={i} x={x} y="30" width="28" height="2.5" rx="1" fill={text} opacity={i === 0 ? 0.6 : 0.25} />
+                  ))}
+                </>
+              )}
             </>
           ) : (
             <>

@@ -177,12 +177,13 @@ export const ICON_MAP: Record<string, LucideIcon> = {
 /* ================================================================== */
 /*  INLINE SEARCH FIELD — adaptive, always premium                      */
 
-function InlineSearchField({ placeholder, headerBg, headerText, className, onSearch }: {
+function InlineSearchField({ placeholder, headerBg, headerText, className, onSearch, shape = 'pill' }: {
   placeholder: string;
   headerBg?: string;
   headerText?: string;
   className?: string;
   onSearch: (q: string) => void;
+  shape?: 'pill' | 'rectangle';
 }) {
   const [query, setQuery] = useState('');
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -220,18 +221,23 @@ function InlineSearchField({ placeholder, headerBg, headerText, className, onSea
   return (
     <form ref={wrapperRef} onSubmit={handleSubmit} className={cn('hidden lg:block relative w-52 xl:w-72 group', className)}>
       <div className={cn(
-        'flex items-center gap-2 h-10 px-3.5 rounded-full border transition-all duration-200',
+        'flex items-center gap-2 h-10 px-3.5 border transition-all duration-200',
         'focus-within:ring-2 focus-within:ring-offset-1',
+        shape === 'rectangle'
+          ? 'rounded-md'
+          : 'rounded-full',
         isDark
           ? 'bg-white/[0.12] border-white/20 focus-within:bg-white/[0.18] focus-within:border-white/30 focus-within:ring-white/20 focus-within:ring-offset-transparent'
           : 'bg-secondary/50 border-border/50 focus-within:bg-background focus-within:border-border focus-within:ring-ring/20 focus-within:ring-offset-background hover:bg-secondary/70 hover:border-border/70',
       )}>
-        <Search className={cn(
-          'h-4 w-4 shrink-0 transition-colors duration-150',
-          isDark
-            ? 'text-white/40 group-focus-within:text-white/70'
-            : 'text-muted-foreground/50 group-focus-within:text-foreground/70',
-        )} />
+        {shape !== 'rectangle' && (
+          <Search className={cn(
+            'h-4 w-4 shrink-0 transition-colors duration-150',
+            isDark
+              ? 'text-white/40 group-focus-within:text-white/70'
+              : 'text-muted-foreground/50 group-focus-within:text-foreground/70',
+          )} />
+        )}
         <input
           value={query}
           onChange={e => { setQuery(e.target.value); setShowSuggestions(true); }}
@@ -244,6 +250,16 @@ function InlineSearchField({ placeholder, headerBg, headerText, className, onSea
               : 'text-foreground placeholder:text-muted-foreground/45',
           )}
         />
+        {shape === 'rectangle' && (
+          <button type="submit" className={cn(
+            'h-7 w-7 flex items-center justify-center rounded shrink-0 transition-colors',
+            isDark
+              ? 'text-white/50 hover:text-white/80'
+              : 'text-muted-foreground/50 hover:text-foreground/70',
+          )}>
+            <Search className="h-4 w-4" />
+          </button>
+        )}
       </div>
       {showSuggestions && (
         <div className="absolute top-full left-0 right-0 mt-2 z-50">
@@ -762,7 +778,7 @@ export function StoreHeader() {
     if (!searchConfig.showOnDesktop) return null;
 
     if (h.searchStyle === 'inline') {
-      return <InlineSearchField placeholder={placeholder} headerBg={activeState?.backgroundColor} headerText={activeState?.textColor} onSearch={handleSearch} />;
+      return <InlineSearchField placeholder={placeholder} headerBg={activeState?.backgroundColor} headerText={activeState?.textColor} onSearch={handleSearch} shape={h.searchShape || 'pill'} />;
     }
 
     return (
@@ -907,28 +923,31 @@ export function StoreHeader() {
   const renderActions = (forMobile = false) => {
     const iconStyle = { width: h.iconSize, height: h.iconSize };
     const sw = h.iconStrokeWidth || 1.5;
+    const labels = h.showIconLabels;
 
     return (
       <div className={cn('flex items-center gap-1', isCentered && 'lg:absolute lg:right-0')}>
 
-
         {h.showSearch && h.searchStyle !== 'inline' && (!forMobile || searchConfig.showOnMobile) && (
-          <Button variant="ghost" size="icon" className="h-10 w-10" onClick={handleSearchClick}>
+          <Button variant="ghost" size={labels ? 'default' : 'icon'} className={cn(labels ? 'h-10 px-3 gap-1.5' : 'h-10 w-10')} onClick={handleSearchClick}>
             <SearchIconComp style={iconStyle} strokeWidth={sw} />
+            {labels && <span className="hidden lg:inline text-xs font-medium uppercase tracking-wide">Buscar</span>}
           </Button>
         )}
         {h.showAccount && !forMobile && (
           <Link to={user ? '/account' : '/login'}>
-            <Button variant="ghost" size="icon" className="h-10 w-10">
+            <Button variant="ghost" size={labels ? 'default' : 'icon'} className={cn(labels ? 'h-10 px-3 gap-1.5' : 'h-10 w-10')}>
               <AccountIconComp style={iconStyle} strokeWidth={sw} />
+              {labels && <span className="hidden lg:inline text-xs font-medium uppercase tracking-wide">Minha Conta</span>}
             </Button>
           </Link>
         )}
         {h.showCart && (
           <Link to="/cart" className="relative">
-            <Button variant="ghost" size="icon" className="h-10 w-10">
+            <Button variant="ghost" size={labels ? 'default' : 'icon'} className={cn(labels ? 'h-10 px-3 gap-1.5' : 'h-10 w-10')}>
               <CartIconComponent style={iconStyle} strokeWidth={sw} />
-              {itemCount > 0 && h.cartBadgeStyle !== 'none' && (
+              {labels && <span className="hidden lg:inline text-xs font-medium uppercase tracking-wide">{itemCount} Carrinho</span>}
+              {!labels && itemCount > 0 && h.cartBadgeStyle !== 'none' && (
                 <span className="absolute -top-0.5 -right-0.5 bg-foreground text-background text-[10px] font-bold rounded-full h-5 w-5 flex items-center justify-center">
                   {h.cartBadgeStyle === 'count' ? itemCount : '●'}
                 </span>
@@ -1134,7 +1153,7 @@ export function StoreHeader() {
               </Link>
 
               {h.searchStyle === 'inline' && h.showSearch && (
-                <InlineSearchField placeholder={placeholder} headerBg={activeState?.backgroundColor} headerText={activeState?.textColor} className="flex-1 max-w-md" onSearch={handleSearch} />
+                <InlineSearchField placeholder={placeholder} headerBg={activeState?.backgroundColor} headerText={activeState?.textColor} className="flex-1 max-w-md" onSearch={handleSearch} shape={h.searchShape || 'pill'} />
               )}
 
               {renderActions()}
@@ -1197,7 +1216,7 @@ export function StoreHeader() {
               )}
 
               {h.searchStyle === 'inline' && h.showSearch && h.layout !== 'hamburger-only' && h.layout !== 'double-row' && (
-                <InlineSearchField placeholder={placeholder} headerBg={activeState?.backgroundColor} headerText={activeState?.textColor} onSearch={handleSearch} />
+                <InlineSearchField placeholder={placeholder} headerBg={activeState?.backgroundColor} headerText={activeState?.textColor} onSearch={handleSearch} shape={h.searchShape || 'pill'} />
               )}
 
               {renderActions()}
