@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { House, LayoutGrid, ShoppingBag, CircleUserRound } from 'lucide-react';
+import { Home, LayoutGrid, ShoppingBag, CircleUserRound } from 'lucide-react';
 import { useCart } from '@/contexts/CartContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -20,7 +20,7 @@ export function BottomNav() {
   const AccountIcon = ICON_MAP[h?.accountIcon || ''] || CircleUserRound;
 
   const navItems = [
-    { label: 'Início', icon: House, path: '/' },
+    { label: 'Início', icon: Home, path: '/' },
     { label: 'Categorias', icon: LayoutGrid, path: '/products' },
     { label: 'Carrinho', icon: CartIcon, path: '/cart' },
     { label: 'Conta', icon: AccountIcon, path: '/account' },
