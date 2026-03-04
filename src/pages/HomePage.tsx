@@ -195,6 +195,7 @@ const HomePage = () => {
 
         return (
           <section
+            data-highlight="hero"
             key={section.id}
             className={cn('relative bg-secondary overflow-hidden', heightClass, wrapperClass)}
           >

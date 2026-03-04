@@ -184,6 +184,7 @@ export function ProductCard({ product }: Props) {
   return (
     <>
       <div
+        data-highlight="card"
         className={cn(
           'group relative pm-global-border transition-all duration-300',
           radiusMap[c.imageBorderRadius],

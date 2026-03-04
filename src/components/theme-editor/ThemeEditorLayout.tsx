@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
-import { setPreviewIframe } from '@/hooks/use-preview-highlight';
+import { setPreviewIframe, sendPreviewHighlights, clearPreviewHighlight, sectionHighlightMap } from '@/hooks/use-preview-highlight';
 
 // Sections config
 import {
@@ -252,20 +252,32 @@ export function ThemeEditorLayout({ previewUrl, fullscreen = false }: { previewU
                 {groups.map(group => (
                   <div key={group} className="mb-1">
                     <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold px-2 py-1.5">{group}</p>
-                    {filteredSections.filter(s => s.group === group).map(section => (
-                      <button
-                        key={section.id}
-                        onClick={() => setActiveSection(section.id)}
-                        className={cn(
-                          'w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-xs transition-colors',
-                          'text-muted-foreground hover:bg-secondary hover:text-foreground'
-                        )}
-                      >
-                        <section.icon className="h-3.5 w-3.5 shrink-0" />
-                        <span className="truncate">{section.label}</span>
-                        <ChevronLeft className="h-3 w-3 ml-auto rotate-180 opacity-40" />
-                      </button>
-                    ))}
+                    {filteredSections.filter(s => s.group === group).map(section => {
+                      const targets = sectionHighlightMap[section.id] || [];
+                      return (
+                        <button
+                          key={section.id}
+                          onClick={() => {
+                            clearPreviewHighlight();
+                            setActiveSection(section.id);
+                          }}
+                          onMouseEnter={() => {
+                            if (targets.length > 0) {
+                              sendPreviewHighlights(targets, 99999);
+                            }
+                          }}
+                          onMouseLeave={() => clearPreviewHighlight()}
+                          className={cn(
+                            'w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-xs transition-colors',
+                            'text-muted-foreground hover:bg-secondary hover:text-foreground'
+                          )}
+                        >
+                          <section.icon className="h-3.5 w-3.5 shrink-0" />
+                          <span className="truncate">{section.label}</span>
+                          <ChevronLeft className="h-3 w-3 ml-auto rotate-180 opacity-40" />
+                        </button>
+                      );
+                    })}
                   </div>
                 ))}
               </div>
