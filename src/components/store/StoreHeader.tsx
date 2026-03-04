@@ -955,21 +955,22 @@ export function StoreHeader() {
           side={drawerSide}
           className="w-[300px] sm:w-[340px] p-0 flex flex-col border-none [&>button]:hidden"
         >
-          {/* Header with close + logo area */}
-          <div className="flex items-center justify-between px-5 pt-[env(safe-area-inset-top,16px)] pb-3 border-b border-border/30">
-            <Link to="/" onClick={() => setDrawerOpen(false)} className="flex items-center gap-2">
-              {theme.logo?.imageUrl ? (
-                <img src={theme.logo.imageUrl} alt="Logo" className="h-7 object-contain" />
-              ) : (
-                <span className="text-[15px] font-semibold tracking-tight">{theme.logo?.text || 'MODA STORE'}</span>
-              )}
-            </Link>
+          {/* Header with close + logo (centered) */}
+          <div className="grid grid-cols-[40px_1fr_40px] items-center px-5 pt-[env(safe-area-inset-top,16px)] pb-3 border-b border-border/30">
             <button
               onClick={() => setDrawerOpen(false)}
               className="h-8 w-8 rounded-full flex items-center justify-center bg-muted/50 hover:bg-muted transition-colors"
             >
               <ChevronLeft className={cn('h-4 w-4', drawerSide === 'right' && 'rotate-180')} />
             </button>
+            <Link to="/" onClick={() => setDrawerOpen(false)} className="flex items-center justify-center">
+              {theme.logo?.imageUrl ? (
+                <img src={theme.logo.imageUrl} alt="Logo" className="h-7 object-contain" />
+              ) : (
+                <span className="text-[15px] font-semibold tracking-tight">{theme.logo?.text || 'MODA STORE'}</span>
+              )}
+            </Link>
+            <div />
           </div>
 
           {/* Search */}
@@ -1022,14 +1023,26 @@ export function StoreHeader() {
           {/* Footer actions */}
           <div className="border-t border-border/30 bg-muted/20 px-5 py-4 pb-[env(safe-area-inset-bottom,16px)] space-y-1">
             {mobile.showAccountInDrawer && (
-              <Link
-                to={user ? '/account' : '/login'}
-                onClick={() => setDrawerOpen(false)}
-                className="flex items-center gap-3 py-2.5 text-[14px] text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-muted/50 px-2 -mx-2"
-              >
-                <CircleUserRound className="h-[18px] w-[18px]" strokeWidth={1.5} />
-                {user ? 'Minha Conta' : 'Entrar / Criar Conta'}
-              </Link>
+              <>
+                <Link
+                  to={user ? '/account' : '/login'}
+                  onClick={() => setDrawerOpen(false)}
+                  className="flex items-center gap-3 py-2.5 text-[14px] text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-muted/50 px-2 -mx-2"
+                >
+                  <CircleUserRound className="h-[18px] w-[18px]" strokeWidth={1.5} />
+                  {user ? 'Minha Conta' : 'Entrar / Criar Conta'}
+                </Link>
+                {user && (
+                  <Link
+                    to="/orders"
+                    onClick={() => setDrawerOpen(false)}
+                    className="flex items-center gap-3 py-2.5 text-[14px] text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-muted/50 px-2 -mx-2"
+                  >
+                    <Package className="h-[18px] w-[18px]" strokeWidth={1.5} />
+                    Meus Pedidos
+                  </Link>
+                )}
+              </>
             )}
             {mobile.showCartInDrawer && (
               <Link
