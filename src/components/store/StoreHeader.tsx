@@ -1106,11 +1106,43 @@ export function StoreHeader() {
           </>
         ) : null}
 
-        {/* When shrunk: show ONLY the nav menu bar */}
+        {/* When shrunk: show logo + nav + actions in compact bar */}
         {shrinkActive && (
-          <nav className="flex items-center justify-center py-2" style={{ gap: '24px' }}>
-            {renderNavItems()}
-          </nav>
+          <div className="flex items-center justify-between" style={{ height: 44, gap: `${container.gap}px` }}>
+            {/* Mobile: hamburger + logo + actions */}
+            <div className="grid grid-cols-[auto_1fr_auto] items-center lg:hidden w-full" style={{ gap: `${Math.min(container.gap, 12)}px` }}>
+              {renderMobileDrawer()}
+              <Link to="/" className="flex items-center gap-2 min-w-0 overflow-hidden justify-start">
+                {theme.logo.imageUrl && (
+                  <img src={theme.logo.imageUrl} alt="Logo" style={{ maxHeight: Math.min(theme.logo.maxHeight, 28) }} className="object-contain shrink-0" />
+                )}
+                {theme.logo.showText && (
+                  <span className="font-display text-sm font-bold tracking-tight truncate">
+                    {theme.logo.text}
+                  </span>
+                )}
+              </Link>
+              {renderActions(true)}
+            </div>
+
+            {/* Desktop: logo + nav + actions */}
+            <Link to="/" className="hidden lg:flex items-center gap-2 shrink-0">
+              {theme.logo.imageUrl && (
+                <img src={theme.logo.imageUrl} alt="Logo" style={{ maxHeight: Math.min(theme.logo.maxHeight, 28) }} className="object-contain shrink-0" />
+              )}
+              {theme.logo.showText && (
+                <span className="font-display text-sm font-bold tracking-tight truncate">
+                  {theme.logo.text}
+                </span>
+              )}
+            </Link>
+            <nav className="hidden lg:flex items-center flex-1 justify-center" style={{ gap: '24px' }}>
+              {renderNavItems()}
+            </nav>
+            <div className="hidden lg:block">
+              {renderActions()}
+            </div>
+          </div>
         )}
 
         {/* Centered nav moved outside container below */}
