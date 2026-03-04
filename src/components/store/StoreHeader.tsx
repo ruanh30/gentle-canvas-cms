@@ -657,6 +657,8 @@ export function StoreHeader() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [headerHidden, setHeaderHidden] = useState(false);
   const lastScrollY = useRef(0);
+  const scrolledRef = useRef(false);
+  const rafId = useRef(0);
 
   // Dynamic Google Font loading for menu typography
   useEffect(() => {
@@ -707,26 +709,38 @@ export function StoreHeader() {
   // Scroll listener + hide-on-scroll for mobile
   useEffect(() => {
     const onScroll = () => {
-      const y = window.scrollY;
-      // Hysteresis: activate at 50px, deactivate at 10px to prevent flickering
-      setScrolled(prev => prev ? y > 10 : y > 50);
+      cancelAnimationFrame(rafId.current);
+      rafId.current = requestAnimationFrame(() => {
+        const y = window.scrollY;
 
-      // Hide on scroll down, show on scroll up (mobile only)
-      const isMobileVp = window.innerWidth < 1024;
-      if (isMobileVp && h.sticky) {
-        const delta = y - lastScrollY.current;
-        if (delta > 8 && y > 80) {
-          setHeaderHidden(true);
-        } else if (delta < -5) {
+        // Hysteresis with large dead-zone to prevent layout-feedback flickering
+        const wasScrolled = scrolledRef.current;
+        const nowScrolled = wasScrolled ? y > 15 : y > 60;
+        if (nowScrolled !== wasScrolled) {
+          scrolledRef.current = nowScrolled;
+          setScrolled(nowScrolled);
+        }
+
+        // Hide on scroll down, show on scroll up (mobile only)
+        const isMobileVp = window.innerWidth < 1024;
+        if (isMobileVp && h.sticky) {
+          const delta = y - lastScrollY.current;
+          if (delta > 8 && y > 80) {
+            setHeaderHidden(true);
+          } else if (delta < -5) {
+            setHeaderHidden(false);
+          }
+        } else {
           setHeaderHidden(false);
         }
-      } else {
-        setHeaderHidden(false);
-      }
-      lastScrollY.current = y;
+        lastScrollY.current = y;
+      });
     };
     window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      cancelAnimationFrame(rafId.current);
+    };
   }, [h.sticky]);
 
   // Auto-close drawer on navigation
