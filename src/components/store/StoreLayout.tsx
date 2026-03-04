@@ -46,7 +46,9 @@ export function StoreLayout() {
     <div className="min-h-screen flex flex-col relative">
       <StoreHeader />
       <main className="flex-1 pb-16 lg:pb-0">
-        <Outlet />
+        <div className="pm-container mx-auto w-full">
+          <Outlet />
+        </div>
       </main>
       <StoreFooter />
       <BottomNav />
