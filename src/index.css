@@ -119,6 +119,7 @@
 }
 
 @layer components {
+  /* Dimensions & typography — applied to ALL store buttons */
   .pm-theme-btn {
     border-radius: var(--pm-btn-radius, 8px) !important;
     padding: var(--pm-btn-py, 10px) var(--pm-btn-px, 16px) !important;
@@ -126,58 +127,61 @@
     font-weight: var(--pm-btn-font-weight, 600) !important;
     text-transform: var(--pm-btn-transform, none) !important;
     box-shadow: var(--pm-btn-shadow, none) !important;
-    border: 1px solid transparent;
     transition: all 0.2s ease;
     /* Override size variant heights so padding controls dimensions */
     height: auto !important;
-    /* Default filled style as fallback */
+  }
+
+  /* Color layer — only for default/themed buttons (not outline, ghost, etc.) */
+  .pm-theme-btn-colors {
+    background-color: hsl(var(--primary));
+    color: hsl(var(--primary-foreground));
+    border: 1px solid transparent;
+  }
+
+  :root[data-pm-btn-style='filled'] .pm-theme-btn-colors {
     background-color: hsl(var(--primary));
     color: hsl(var(--primary-foreground));
   }
 
-  :root[data-pm-btn-style='filled'] .pm-theme-btn {
-    background-color: hsl(var(--primary));
-    color: hsl(var(--primary-foreground));
-  }
-
-  :root[data-pm-btn-style='outline'] .pm-theme-btn {
+  :root[data-pm-btn-style='outline'] .pm-theme-btn-colors {
     background-color: transparent;
     color: hsl(var(--foreground));
     border-color: hsl(var(--foreground));
   }
 
-  :root[data-pm-btn-style='ghost'] .pm-theme-btn {
+  :root[data-pm-btn-style='ghost'] .pm-theme-btn-colors {
     background-color: transparent;
     color: hsl(var(--foreground));
     border-color: transparent;
   }
 
-  :root[data-pm-btn-style='soft'] .pm-theme-btn {
+  :root[data-pm-btn-style='soft'] .pm-theme-btn-colors {
     background-color: hsl(var(--foreground) / 0.1);
     color: hsl(var(--foreground));
     border-color: transparent;
   }
 
-  :root[data-pm-btn-style='gradient'] .pm-theme-btn {
+  :root[data-pm-btn-style='gradient'] .pm-theme-btn-colors {
     background-image: linear-gradient(90deg, hsl(var(--primary)), hsl(var(--primary) / 0.7));
     color: hsl(var(--primary-foreground));
   }
 
-  :root[data-pm-btn-style='3d'] .pm-theme-btn {
+  :root[data-pm-btn-style='3d'] .pm-theme-btn-colors {
     background-color: hsl(var(--primary));
     color: hsl(var(--primary-foreground));
     box-shadow: 0 4px 0 hsl(var(--foreground) / 0.35), var(--pm-btn-shadow, none) !important;
     transform: translateY(-1px);
   }
 
-  :root[data-pm-btn-style='neon'] .pm-theme-btn {
+  :root[data-pm-btn-style='neon'] .pm-theme-btn-colors {
     background-color: transparent;
     color: hsl(var(--foreground));
     border: 2px solid hsl(var(--foreground));
     box-shadow: 0 0 12px hsl(var(--foreground) / 0.35), var(--pm-btn-shadow, none) !important;
   }
 
-  :root[data-pm-btn-style='minimal'] .pm-theme-btn {
+  :root[data-pm-btn-style='minimal'] .pm-theme-btn-colors {
     background-color: transparent;
     color: hsl(var(--foreground));
     border-color: transparent;
