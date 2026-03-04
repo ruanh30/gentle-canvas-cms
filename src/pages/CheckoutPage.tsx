@@ -299,8 +299,8 @@ const CheckoutPage = () => {
             <section className="space-y-4">
               <h2 className="text-lg font-semibold">Contato</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div><Label>Nome completo</Label><Input required placeholder="Seu nome" className="mt-1" defaultValue={isLoggedCustomer ? user.name : ''} /></div>
-                <div><Label>E-mail</Label><Input type="email" required placeholder="email@exemplo.com" className="mt-1" defaultValue={isLoggedCustomer ? user.email : ''} /></div>
+                <div><Label>Nome completo <span className="text-destructive">*</span></Label><Input required placeholder="Seu nome" className="mt-1" defaultValue={isLoggedCustomer ? user.name : ''} /></div>
+                <div><Label>E-mail <span className="text-destructive">*</span></Label><Input type="email" required placeholder="email@exemplo.com" className="mt-1" defaultValue={isLoggedCustomer ? user.email : ''} /></div>
                 <div>
                   <Label>Telefone</Label>
                   <Input
@@ -334,7 +334,7 @@ const CheckoutPage = () => {
               <h2 className="text-lg font-semibold">Endereço de entrega</h2>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
-                  <Label>CEP</Label>
+                  <Label>CEP <span className="text-destructive">*</span></Label>
                   <div className="relative mt-1">
                     <Input
                       required
@@ -352,7 +352,7 @@ const CheckoutPage = () => {
                   )}
                 </div>
                 <div className="md:col-span-2">
-                  <Label>Rua</Label>
+                  <Label>Rua <span className="text-destructive">*</span></Label>
                   <Input
                     required
                     placeholder="Rua / Avenida"
@@ -361,10 +361,10 @@ const CheckoutPage = () => {
                     onChange={e => setStreet(e.target.value)}
                   />
                 </div>
-                <div><Label>Número</Label><Input required placeholder="Nº" className="mt-1" /></div>
+                <div><Label>Número <span className="text-destructive">*</span></Label><Input required placeholder="Nº" className="mt-1" /></div>
                 <div><Label>Complemento</Label><Input placeholder="Apto, bloco..." className="mt-1" /></div>
                 <div>
-                  <Label>Bairro</Label>
+                  <Label>Bairro <span className="text-destructive">*</span></Label>
                   <Input
                     required
                     placeholder="Bairro"
@@ -375,7 +375,7 @@ const CheckoutPage = () => {
                   />
                 </div>
                 <div>
-                  <Label>Estado</Label>
+                  <Label>Estado <span className="text-destructive">*</span></Label>
                   <Select value={selectedState} onValueChange={(val) => { setSelectedState(val); setSelectedCity(''); }}>
                     <SelectTrigger className="mt-1">
                       <SelectValue placeholder="Selecione o estado" />
@@ -388,7 +388,7 @@ const CheckoutPage = () => {
                   </Select>
                 </div>
                 <div>
-                  <Label>Cidade</Label>
+                  <Label>Cidade <span className="text-destructive">*</span></Label>
                   <Select value={selectedCity} onValueChange={setSelectedCity} disabled={!selectedState}>
                     <SelectTrigger className="mt-1">
                       <SelectValue placeholder={selectedState ? "Selecione a cidade" : "Selecione o estado primeiro"} />
