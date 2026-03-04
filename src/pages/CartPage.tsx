@@ -27,7 +27,7 @@ const CartPage = () => {
           Que tal explorar nossos produtos e encontrar algo especial?
         </p>
         <Link to="/products">
-          <Button size="lg" className="rounded-full px-10 font-body">
+          <Button size="lg" className="font-body">
             Explorar produtos
             <ArrowRight className="ml-2 h-4 w-4" />
           </Button>
@@ -190,7 +190,7 @@ const CartPage = () => {
             <Button
               size="lg"
               onClick={() => navigate('/checkout')}
-              className="w-full rounded-lg font-body text-[15px] h-12"
+              className="w-full font-body"
             >
               Finalizar Compra
               <ArrowRight className="ml-2 h-4 w-4" />

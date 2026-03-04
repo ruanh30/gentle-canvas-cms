@@ -211,8 +211,7 @@ const ProductDetailPage = () => {
               size="lg"
               onClick={handleBuyNow}
               disabled={isOutOfStock}
-              className={cn('w-full rounded-lg text-base font-semibold font-body', isOutOfStock && 'opacity-50 cursor-not-allowed')}
-              style={{ backgroundColor: 'hsl(0, 72%, 51%)', color: 'white' }}
+              className={cn('w-full font-body', isOutOfStock && 'opacity-50 cursor-not-allowed')}
             >
               {isOutOfStock ? 'Esgotado' : 'Comprar Agora'}
             </Button>
@@ -221,7 +220,7 @@ const ProductDetailPage = () => {
               variant="outline"
               onClick={handleAddToCart}
               disabled={isOutOfStock}
-              className={cn('w-full rounded-lg text-base font-body', isOutOfStock && 'opacity-50 cursor-not-allowed')}
+              className={cn('w-full font-body', isOutOfStock && 'opacity-50 cursor-not-allowed')}
             >
               <ShoppingBag className="mr-2 h-5 w-5" />
               Adicionar ao Carrinho
