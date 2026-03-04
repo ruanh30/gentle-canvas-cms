@@ -382,37 +382,56 @@ interface HeaderPreset {
 }
 
 const HEADER_PRESETS: HeaderPreset[] = [
-  // ── 1. MINIMAL — Apple-inspired: translucent, tiny text, even spacing ──
+  // ── 1. MINIMAL — Apple-inspired: translucent glass, even spacing, clean ──
   {
     id: 'minimal',
     name: 'Minimal',
-    tagline: 'Inspirado na Apple. Blur sutil, tipografia fina, espaçamento uniforme',
+    tagline: 'Inspirado na Apple. Blur translúcido, tipografia fina, espaçamento uniforme',
     tags: ['Clean', 'Premium'],
     config: {
       layout: 'classic', menuStyle: 'horizontal', menuUppercase: false, menuFontWeight: 400,
       menuFontSize: 13, menuHoverStyle: 'underline', menuSeparator: 'none', menuItemGap: 28,
-      headerSurface: false, borderBottom: false, shadowOnScroll: false, iconStrokeWidth: 1.5,
-      height: 52, sticky: true, shrinkOnScroll: false, iconSize: 18,
+      menuLetterSpacing: 0, menuItemPadding: false,
+      headerSurface: false, dropdownElevated: false, borderBottom: false, shadowOnScroll: false,
+      iconStrokeWidth: 1.5, height: 52, sticky: true, shrinkOnScroll: false, iconSize: 18,
       showSearch: true, searchStyle: 'modal', showAccount: true, showCart: true, cartBadgeStyle: 'dot',
+      menuDividerLine: false,
+      menuTypography: { fontFamily: 'DM Sans', fontWeight: 400, fontSizeDesktop: 13, fontSizeMobile: 14, letterSpacing: 0, textTransform: 'none', lineHeight: 1.2 },
+      container: { width: 'container', maxWidth: 1280, paddingX: 20, gap: 24, verticalAlign: 'center' },
+      mobile: { drawerPosition: 'right', showSearchInDrawer: true, showAccountInDrawer: true, showCartInDrawer: false, maxLevels: 2, groupStyle: 'list' },
+      search: { placeholder: 'Buscar...', showOnDesktop: true, showOnMobile: true, autoSuggest: false, maxResults: 6, shortcutEnabled: true },
+      announcement: { enabled: false },
+      menuColors: { linkColor: '', linkHoverColor: '', linkActiveColor: '', linkBg: '', linkHoverBg: '' },
       states: {
         normal: { backgroundColor: 'rgba(255,255,255,0.8)', textColor: '#1d1d1f', borderBottom: false, borderColor: 'transparent', shadow: 'none', blur: true, height: 52 },
-        sticky: { backgroundColor: 'rgba(255,255,255,0.9)', textColor: '#1d1d1f', borderBottom: true, borderColor: '#d2d2d7', shadow: 'none', blur: true, height: 48 },
+        sticky: { backgroundColor: 'rgba(255,255,255,0.92)', textColor: '#1d1d1f', borderBottom: true, borderColor: '#d2d2d7', shadow: 'none', blur: true, height: 48 },
         transparent: { backgroundColor: 'transparent', textColor: '#ffffff', borderBottom: false, borderColor: 'transparent', shadow: 'none', blur: false, height: 52 },
       },
     },
   },
-  // ── 2. MARKETPLACE — Amazon/Shein-inspired: dense, search-first, functional ──
+
+  // ── 2. MARKETPLACE — Amazon/Shein: double-row, search-first, dense, mega menu ──
   {
     id: 'marketplace',
     name: 'Marketplace',
-    tagline: 'Estilo Amazon/Shein. Busca enorme, mega menu denso, muitos ícones',
+    tagline: 'Estilo Amazon/Shein. Busca inline, mega menu denso, barra de categorias separada',
     tags: ['E-commerce', 'Denso'],
     config: {
       layout: 'double-row', menuStyle: 'mega-menu', menuUppercase: false, menuFontWeight: 500,
       menuFontSize: 14, menuHoverStyle: 'background', menuSeparator: 'none', menuItemGap: 4,
-      menuItemPadding: true, headerSurface: true, dropdownElevated: true, borderBottom: true,
-      shadowOnScroll: true, iconStrokeWidth: 1.5, height: 60, sticky: true, shrinkOnScroll: true, iconSize: 22,
+      menuLetterSpacing: 0, menuItemPadding: true,
+      headerSurface: true, dropdownElevated: true, borderBottom: true, shadowOnScroll: true,
+      iconStrokeWidth: 1.5, height: 60, sticky: true, shrinkOnScroll: true, iconSize: 22,
       showSearch: true, searchStyle: 'inline', showAccount: true, showCart: true, cartBadgeStyle: 'count',
+      menuDividerLine: false,
+      menuTypography: { fontFamily: 'Inter', fontWeight: 500, fontSizeDesktop: 14, fontSizeMobile: 14, letterSpacing: 0, textTransform: 'none', lineHeight: 1.2 },
+      container: { width: 'full', maxWidth: 1600, paddingX: 16, gap: 12, verticalAlign: 'center' },
+      mobile: { drawerPosition: 'left', showSearchInDrawer: true, showAccountInDrawer: true, showCartInDrawer: true, maxLevels: 3, groupStyle: 'accordion' },
+      megaMenuConfig: { columns: 5, width: 'full', showImages: true, showBanner: true, bannerImageUrl: '', bannerLink: '' },
+      search: { placeholder: 'Buscar em toda a loja...', showOnDesktop: true, showOnMobile: true, autoSuggest: true, maxResults: 8, shortcutEnabled: true },
+      menuBar: { enabled: true, backgroundColor: '#f7f7f7', textColor: '#111111', height: 44, fullWidth: true, borderTop: false, borderBottom: true, shadow: 'none' },
+      announcement: { enabled: true, messages: ['Frete grátis acima de R$ 199', 'Até 50% OFF em selecionados'], speed: 4, backgroundColor: '#131921', textColor: '#ffffff', style: 'ticker', direction: 'rtl', showIcon: false, icon: '', link: '', pauseOnHover: true, pageRules: 'all', scheduleEnabled: false, scheduleStart: '', scheduleEnd: '', segmentation: 'all', ctaText: '', ctaLink: '', utmSource: '', utmMedium: '', utmCampaign: '' },
+      menuColors: { linkColor: '#111111', linkHoverColor: '#000000', linkActiveColor: '#e47911', linkBg: '', linkHoverBg: 'rgba(0,0,0,0.04)' },
       states: {
         normal: { backgroundColor: '#ffffff', textColor: '#0f1111', borderBottom: true, borderColor: '#ddd', shadow: 'subtle', blur: false, height: 60 },
         sticky: { backgroundColor: '#f7f7f7', textColor: '#0f1111', borderBottom: true, borderColor: '#ddd', shadow: 'medium', blur: true, height: 52 },
@@ -420,18 +439,27 @@ const HEADER_PRESETS: HeaderPreset[] = [
       },
     },
   },
-  // ── 3. MAISON — Gucci/Dior: centered, serif feel, gold-on-cream ──
+
+  // ── 3. MAISON — Gucci/Dior: centered logo, editorial letter-spacing, serif feel ──
   {
     id: 'fashion-house',
     name: 'Maison',
-    tagline: 'Inspirado em Gucci/Dior. Logo central, tipografia editorial, tom sofisticado',
+    tagline: 'Inspirado em Gucci/Dior. Logo central, tipografia editorial, tom luxuoso',
     tags: ['Luxo', 'Editorial'],
     config: {
       layout: 'centered', menuStyle: 'horizontal', menuUppercase: true, menuFontWeight: 400,
       menuFontSize: 10, menuHoverStyle: 'underline', menuSeparator: 'none', menuItemGap: 40,
-      menuLetterSpacing: 0.25, headerSurface: false, borderBottom: true, shadowOnScroll: false,
+      menuLetterSpacing: 0.25, menuItemPadding: false,
+      headerSurface: false, dropdownElevated: false, borderBottom: true, shadowOnScroll: false,
       iconStrokeWidth: 1, height: 80, sticky: true, shrinkOnScroll: true, iconSize: 18,
       showSearch: true, searchStyle: 'modal', showAccount: true, showCart: true, cartBadgeStyle: 'dot',
+      menuDividerLine: true,
+      menuTypography: { fontFamily: 'Lato', fontWeight: 400, fontSizeDesktop: 10, fontSizeMobile: 12, letterSpacing: 0.25, textTransform: 'uppercase', lineHeight: 1.2 },
+      container: { width: 'container', maxWidth: 1400, paddingX: 32, gap: 32, verticalAlign: 'center' },
+      mobile: { drawerPosition: 'left', showSearchInDrawer: true, showAccountInDrawer: true, showCartInDrawer: false, maxLevels: 2, groupStyle: 'list' },
+      search: { placeholder: 'Pesquisar', showOnDesktop: true, showOnMobile: true, autoSuggest: false, maxResults: 5, shortcutEnabled: false },
+      announcement: { enabled: false },
+      menuColors: { linkColor: '#2c2418', linkHoverColor: '#8a7560', linkActiveColor: '#2c2418', linkBg: '', linkHoverBg: '' },
       states: {
         normal: { backgroundColor: '#faf8f5', textColor: '#2c2418', borderBottom: true, borderColor: '#e0d5c5', shadow: 'none', blur: false, height: 80 },
         sticky: { backgroundColor: '#faf8f5', textColor: '#2c2418', borderBottom: true, borderColor: '#d4c8b0', shadow: 'subtle', blur: true, height: 56 },
@@ -439,7 +467,8 @@ const HEADER_PRESETS: HeaderPreset[] = [
       },
     },
   },
-  // ── 4. ZARA — Ultra-minimal, hamburger desktop, giant logo ──
+
+  // ── 4. ZARA — Hamburger-only desktop, ultra-clean, giant logo, minimal icons ──
   {
     id: 'zara',
     name: 'Zara',
@@ -448,10 +477,17 @@ const HEADER_PRESETS: HeaderPreset[] = [
     config: {
       layout: 'hamburger-only', menuStyle: 'horizontal', menuUppercase: true, menuFontWeight: 300,
       menuFontSize: 13, menuHoverStyle: 'underline', menuSeparator: 'none', menuItemGap: 20,
-      menuLetterSpacing: 0.3, headerSurface: false, borderBottom: false, shadowOnScroll: false,
+      menuLetterSpacing: 0.3, menuItemPadding: false,
+      headerSurface: false, dropdownElevated: false, borderBottom: false, shadowOnScroll: false,
       iconStrokeWidth: 1, height: 72, sticky: true, shrinkOnScroll: true, iconSize: 20,
       showSearch: true, searchStyle: 'modal', showAccount: false, showCart: true, cartBadgeStyle: 'dot',
+      menuDividerLine: false,
+      menuTypography: { fontFamily: 'Inter', fontWeight: 300, fontSizeDesktop: 13, fontSizeMobile: 14, letterSpacing: 0.3, textTransform: 'uppercase', lineHeight: 1.2 },
+      container: { width: 'full', maxWidth: 1920, paddingX: 24, gap: 16, verticalAlign: 'center' },
       mobile: { drawerPosition: 'left', showSearchInDrawer: true, showAccountInDrawer: true, showCartInDrawer: false, maxLevels: 3, groupStyle: 'list' },
+      search: { placeholder: 'BUSCAR', showOnDesktop: true, showOnMobile: true, autoSuggest: false, maxResults: 6, shortcutEnabled: false },
+      announcement: { enabled: false },
+      menuColors: { linkColor: '#000000', linkHoverColor: '#666666', linkActiveColor: '#000000', linkBg: '', linkHoverBg: '' },
       states: {
         normal: { backgroundColor: '#ffffff', textColor: '#000000', borderBottom: false, borderColor: 'transparent', shadow: 'none', blur: false, height: 72 },
         sticky: { backgroundColor: '#ffffff', textColor: '#000000', borderBottom: true, borderColor: '#f0f0f0', shadow: 'none', blur: true, height: 56 },
@@ -459,18 +495,27 @@ const HEADER_PRESETS: HeaderPreset[] = [
       },
     },
   },
-  // ── 5. UNIQLO — White, red accent intent, compact, functional ──
+
+  // ── 5. UNIQLO — Compact functional, dropdown menus, all icons visible ──
   {
     id: 'uniqlo',
     name: 'Uniqlo',
-    tagline: 'Limpo e funcional como Uniqlo. Branco, compacto, borda fina, sem excesso',
+    tagline: 'Limpo e funcional. Compacto, dropdown com sub-menus, todos os ícones visíveis',
     tags: ['Funcional', 'Compacto'],
     config: {
       layout: 'classic', menuStyle: 'dropdown', menuUppercase: false, menuFontWeight: 500,
       menuFontSize: 13, menuHoverStyle: 'both', menuSeparator: 'none', menuItemGap: 16,
+      menuLetterSpacing: 0, menuItemPadding: true,
       headerSurface: true, dropdownElevated: true, borderBottom: true, shadowOnScroll: true,
       iconStrokeWidth: 1.5, height: 52, sticky: true, shrinkOnScroll: false, iconSize: 20,
       showSearch: true, searchStyle: 'modal', showAccount: true, showCart: true, cartBadgeStyle: 'count',
+      menuDividerLine: false,
+      menuTypography: { fontFamily: 'Manrope', fontWeight: 500, fontSizeDesktop: 13, fontSizeMobile: 13, letterSpacing: 0, textTransform: 'none', lineHeight: 1.2 },
+      container: { width: 'container', maxWidth: 1300, paddingX: 16, gap: 16, verticalAlign: 'center' },
+      mobile: { drawerPosition: 'right', showSearchInDrawer: true, showAccountInDrawer: true, showCartInDrawer: true, maxLevels: 2, groupStyle: 'accordion' },
+      search: { placeholder: 'Buscar produtos...', showOnDesktop: true, showOnMobile: true, autoSuggest: true, maxResults: 6, shortcutEnabled: true },
+      announcement: { enabled: false },
+      menuColors: { linkColor: '#1a1a1a', linkHoverColor: '#c41200', linkActiveColor: '#c41200', linkBg: '', linkHoverBg: 'rgba(0,0,0,0.03)' },
       states: {
         normal: { backgroundColor: '#ffffff', textColor: '#1a1a1a', borderBottom: true, borderColor: '#e0e0e0', shadow: 'none', blur: false, height: 52 },
         sticky: { backgroundColor: '#ffffff', textColor: '#1a1a1a', borderBottom: true, borderColor: '#d0d0d0', shadow: 'subtle', blur: true, height: 48 },
@@ -478,18 +523,27 @@ const HEADER_PRESETS: HeaderPreset[] = [
       },
     },
   },
-  // ── 6. PASTEL — Soft pink, delicate, beauty/cosmetics ──
+
+  // ── 6. PASTEL — Beauty/cosmetics, centered, delicate, soft ──
   {
     id: 'pastel',
     name: 'Pastel',
-    tagline: 'Beleza/cosméticos. Rosa suave, ícones finos, feeling feminino e delicado',
+    tagline: 'Beleza e cosméticos. Rosa suave, ícones finos, feeling delicado e feminino',
     tags: ['Beauty', 'Delicado'],
     config: {
       layout: 'centered', menuStyle: 'horizontal', menuUppercase: false, menuFontWeight: 400,
       menuFontSize: 13, menuHoverStyle: 'underline', menuSeparator: 'none', menuItemGap: 28,
-      headerSurface: false, borderBottom: true, shadowOnScroll: false, iconStrokeWidth: 1,
-      height: 68, sticky: true, shrinkOnScroll: true, iconSize: 18,
+      menuLetterSpacing: 0.02, menuItemPadding: false,
+      headerSurface: false, dropdownElevated: false, borderBottom: true, shadowOnScroll: false,
+      iconStrokeWidth: 1, height: 68, sticky: true, shrinkOnScroll: true, iconSize: 18,
       showSearch: true, searchStyle: 'modal', showAccount: true, showCart: true, cartBadgeStyle: 'dot',
+      menuDividerLine: false,
+      menuTypography: { fontFamily: 'Nunito Sans', fontWeight: 400, fontSizeDesktop: 13, fontSizeMobile: 13, letterSpacing: 0.02, textTransform: 'none', lineHeight: 1.3 },
+      container: { width: 'container', maxWidth: 1200, paddingX: 24, gap: 20, verticalAlign: 'center' },
+      mobile: { drawerPosition: 'right', showSearchInDrawer: true, showAccountInDrawer: true, showCartInDrawer: false, maxLevels: 2, groupStyle: 'list' },
+      search: { placeholder: 'O que você procura?', showOnDesktop: true, showOnMobile: true, autoSuggest: false, maxResults: 5, shortcutEnabled: false },
+      announcement: { enabled: true, messages: ['Ganhe uma amostra grátis em compras acima de R$ 150 💕'], speed: 6, backgroundColor: '#fce7f3', textColor: '#9d174d', style: 'static', direction: 'rtl', showIcon: false, icon: '', link: '', pauseOnHover: true, pageRules: 'all', scheduleEnabled: false, scheduleStart: '', scheduleEnd: '', segmentation: 'all', ctaText: '', ctaLink: '', utmSource: '', utmMedium: '', utmCampaign: '' },
+      menuColors: { linkColor: '#831843', linkHoverColor: '#be185d', linkActiveColor: '#831843', linkBg: '', linkHoverBg: '' },
       states: {
         normal: { backgroundColor: '#fdf2f8', textColor: '#831843', borderBottom: true, borderColor: '#fbcfe8', shadow: 'none', blur: false, height: 68 },
         sticky: { backgroundColor: '#fdf2f8', textColor: '#831843', borderBottom: true, borderColor: '#f9a8d4', shadow: 'subtle', blur: true, height: 56 },
@@ -497,18 +551,27 @@ const HEADER_PRESETS: HeaderPreset[] = [
       },
     },
   },
-  // ── 7. LUXURY — Transparent over hero, Rolex/Cartier ──
+
+  // ── 7. LUXURY — Transparent over hero, reveals on scroll, Rolex/Cartier ──
   {
     id: 'luxury',
     name: 'Luxury',
-    tagline: 'Transparente sobre o hero. Aparece só ao rolar. Rolex/Cartier vibe',
+    tagline: 'Transparente sobre o hero. Revela fundo ao rolar. Rolex/Cartier vibe',
     tags: ['Invisível', 'Alto Padrão'],
     config: {
       layout: 'transparent', menuStyle: 'horizontal', menuUppercase: true, menuFontWeight: 300,
       menuFontSize: 11, menuHoverStyle: 'underline', menuSeparator: 'none', menuItemGap: 36,
-      menuLetterSpacing: 0.22, headerSurface: false, borderBottom: false, shadowOnScroll: false,
+      menuLetterSpacing: 0.22, menuItemPadding: false,
+      headerSurface: false, dropdownElevated: false, borderBottom: false, shadowOnScroll: false,
       iconStrokeWidth: 1, height: 80, sticky: true, shrinkOnScroll: true, iconSize: 18,
       showSearch: true, searchStyle: 'modal', showAccount: true, showCart: true, cartBadgeStyle: 'dot',
+      menuDividerLine: false,
+      menuTypography: { fontFamily: 'Lato', fontWeight: 300, fontSizeDesktop: 11, fontSizeMobile: 12, letterSpacing: 0.22, textTransform: 'uppercase', lineHeight: 1.2 },
+      container: { width: 'container', maxWidth: 1400, paddingX: 40, gap: 32, verticalAlign: 'center' },
+      mobile: { drawerPosition: 'left', showSearchInDrawer: true, showAccountInDrawer: true, showCartInDrawer: false, maxLevels: 2, groupStyle: 'list' },
+      search: { placeholder: 'Pesquisar', showOnDesktop: true, showOnMobile: true, autoSuggest: false, maxResults: 5, shortcutEnabled: false },
+      announcement: { enabled: false },
+      menuColors: { linkColor: '', linkHoverColor: '', linkActiveColor: '', linkBg: '', linkHoverBg: '' },
       states: {
         normal: { backgroundColor: 'transparent', textColor: '#ffffff', borderBottom: false, borderColor: 'transparent', shadow: 'none', blur: false, height: 80 },
         sticky: { backgroundColor: 'rgba(255,255,255,0.95)', textColor: '#1a1a1a', borderBottom: true, borderColor: '#e5e7eb', shadow: 'subtle', blur: true, height: 52 },
@@ -516,19 +579,29 @@ const HEADER_PRESETS: HeaderPreset[] = [
       },
     },
   },
-  // ── 8. BUILDER — Full featured double-row, all icons, announcement-ready ──
+
+  // ── 8. BUILDER — Full-featured, double-row, all tools on, announcement bar ──
   {
     id: 'builder',
     name: 'Builder',
-    tagline: 'Tudo ligado. Double-row, todos os ícones, busca inline, mega menu, completo',
+    tagline: 'Tudo ligado. Double-row, mega menu, busca inline, barra de anúncio, completo',
     tags: ['Completo', 'Tudo-em-um'],
     config: {
       layout: 'double-row', menuStyle: 'mega-menu', menuUppercase: false, menuFontWeight: 500,
       menuFontSize: 14, menuHoverStyle: 'both', menuSeparator: 'none', menuItemGap: 8,
-      menuItemPadding: true, headerSurface: true, dropdownElevated: true, borderBottom: true,
-      shadowOnScroll: true, iconStrokeWidth: 1.5, height: 64, sticky: true, shrinkOnScroll: true, iconSize: 20,
+      menuLetterSpacing: 0, menuItemPadding: true,
+      headerSurface: true, dropdownElevated: true, borderBottom: true, shadowOnScroll: true,
+      iconStrokeWidth: 1.5, height: 64, sticky: true, shrinkOnScroll: true, iconSize: 20,
       showSearch: true, searchStyle: 'inline', showAccount: true, showCart: true, cartBadgeStyle: 'count',
-      announcement: { enabled: true, messages: ['Frete grátis acima de R$ 199', '10% OFF na primeira compra'], speed: 4, backgroundColor: '#000000', textColor: '#ffffff', style: 'ticker', direction: 'rtl' },
+      menuDividerLine: false,
+      menuTypography: { fontFamily: 'Inter', fontWeight: 500, fontSizeDesktop: 14, fontSizeMobile: 14, letterSpacing: 0, textTransform: 'none', lineHeight: 1.2 },
+      container: { width: 'container', maxWidth: 1400, paddingX: 16, gap: 16, verticalAlign: 'center' },
+      mobile: { drawerPosition: 'left', showSearchInDrawer: true, showAccountInDrawer: true, showCartInDrawer: true, maxLevels: 3, groupStyle: 'accordion' },
+      megaMenuConfig: { columns: 4, width: 'container', showImages: true, showBanner: true, bannerImageUrl: '', bannerLink: '' },
+      search: { placeholder: 'O que você está buscando?', showOnDesktop: true, showOnMobile: true, autoSuggest: true, maxResults: 8, shortcutEnabled: true },
+      menuBar: { enabled: true, backgroundColor: '#1a1a1a', textColor: '#ffffff', height: 48, fullWidth: true, borderTop: false, borderBottom: false, shadow: 'none' },
+      announcement: { enabled: true, messages: ['Frete grátis acima de R$ 199', '10% OFF na primeira compra — Use: BEMVINDO10'], speed: 4, backgroundColor: '#000000', textColor: '#ffffff', style: 'ticker', direction: 'rtl', showIcon: false, icon: '', link: '', pauseOnHover: true, pageRules: 'all', scheduleEnabled: false, scheduleStart: '', scheduleEnd: '', segmentation: 'all', ctaText: '', ctaLink: '', utmSource: '', utmMedium: '', utmCampaign: '' },
+      menuColors: { linkColor: '#1a1a1a', linkHoverColor: '#2563eb', linkActiveColor: '#2563eb', linkBg: '', linkHoverBg: 'rgba(37,99,235,0.06)' },
       states: {
         normal: { backgroundColor: '#ffffff', textColor: '#1a1a1a', borderBottom: true, borderColor: '#e5e7eb', shadow: 'subtle', blur: false, height: 64 },
         sticky: { backgroundColor: '#ffffff', textColor: '#1a1a1a', borderBottom: true, borderColor: '#d1d5db', shadow: 'medium', blur: true, height: 52 },
