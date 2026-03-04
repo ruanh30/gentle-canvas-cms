@@ -377,13 +377,19 @@ const HomePage = () => {
             ) : (
               <>
                 {/* Desktop */}
-                <div className={cn('hidden md:grid gap-6', gridCols[theme.category?.columnsDesktop || 4] || gridCols[4])}>
+                <div className={cn('hidden lg:grid', gridCols[theme.category?.columnsDesktop || 4] || gridCols[4])} style={{ gap: `${theme.category?.gridGap ?? 24}px` }}>
+                  {desktopProducts.map(product => (
+                    <ProductCard key={product.id} product={product} />
+                  ))}
+                </div>
+                {/* Tablet */}
+                <div className={cn('hidden md:grid lg:hidden', gridCols[theme.category?.columnsTablet || 3] || gridCols[3])} style={{ gap: `${theme.category?.gridGap ?? 24}px` }}>
                   {desktopProducts.map(product => (
                     <ProductCard key={product.id} product={product} />
                   ))}
                 </div>
                 {/* Mobile */}
-                <div className="grid md:hidden grid-cols-2 gap-4">
+                <div className={cn('grid md:hidden', theme.category?.columnsMobile === 1 ? 'grid-cols-1' : 'grid-cols-2')} style={{ gap: `${Math.min(theme.category?.gridGap ?? 16, 16)}px` }}>
                   {mobileProducts.map(product => (
                     <ProductCard key={product.id} product={product} />
                   ))}
@@ -620,13 +626,19 @@ const HomePage = () => {
             ) : (
               <>
                 {/* Desktop */}
-                <div className={cn('hidden md:grid gap-6', gridCols[theme.category?.columnsDesktop || 4] || gridCols[4])}>
+                <div className={cn('hidden lg:grid', gridCols[theme.category?.columnsDesktop || 4] || gridCols[4])} style={{ gap: `${theme.category?.gridGap ?? 24}px` }}>
+                  {desktopProducts.map(product => (
+                    <ProductCard key={product.id} product={product} />
+                  ))}
+                </div>
+                {/* Tablet */}
+                <div className={cn('hidden md:grid lg:hidden', gridCols[theme.category?.columnsTablet || 3] || gridCols[3])} style={{ gap: `${theme.category?.gridGap ?? 24}px` }}>
                   {desktopProducts.map(product => (
                     <ProductCard key={product.id} product={product} />
                   ))}
                 </div>
                 {/* Mobile */}
-                <div className="grid md:hidden grid-cols-2 gap-4">
+                <div className={cn('grid md:hidden', theme.category?.columnsMobile === 1 ? 'grid-cols-1' : 'grid-cols-2')} style={{ gap: `${Math.min(theme.category?.gridGap ?? 16, 16)}px` }}>
                   {mobileProducts.map(product => (
                     <ProductCard key={product.id} product={product} />
                   ))}
