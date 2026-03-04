@@ -673,7 +673,15 @@ const HomePage = () => {
 
   return (
     <>
-      {sections.filter(s => s.enabled).map(renderSection)}
+      {sections.filter(s => s.enabled).map(section => {
+        const rendered = renderSection(section);
+        if (!rendered) return null;
+        return (
+          <div key={section.id} data-highlight="section">
+            {rendered}
+          </div>
+        );
+      })}
     </>
   );
 };

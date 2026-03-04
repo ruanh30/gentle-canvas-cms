@@ -3,6 +3,7 @@ import { Outlet } from 'react-router-dom';
 import { StoreHeader } from './StoreHeader';
 import { StoreFooter } from './StoreFooter';
 import { BottomNav } from './BottomNav';
+import { PreviewHighlightOverlay } from './PreviewHighlightOverlay';
 import { useTheme } from '@/contexts/ThemeContext';
 import { cn } from '@/lib/utils';
 
@@ -42,7 +43,7 @@ function WhatsAppButton() {
 
 export function StoreLayout() {
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col relative">
       <StoreHeader />
       <main className="flex-1 pb-16 lg:pb-0">
         <Outlet />
@@ -50,6 +51,7 @@ export function StoreLayout() {
       <StoreFooter />
       <BottomNav />
       <WhatsAppButton />
+      <PreviewHighlightOverlay />
     </div>
   );
 }
