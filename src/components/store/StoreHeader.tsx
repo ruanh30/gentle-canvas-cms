@@ -984,7 +984,7 @@ export function StoreHeader() {
       activeState?.blur && 'backdrop-blur-md',
       !activeState && 'bg-background/95 backdrop-blur-md supports-[backdrop-filter]:bg-background/80',
       'shadow-[0_1px_3px_0_rgba(0,0,0,0.04)]',
-      h.sticky && 'sticky top-0',
+      (h.sticky || h.shrinkOnScroll) && 'sticky top-0',
       headerHidden && 'lg:translate-y-0 -translate-y-full',
     )} style={{
       ...headerStyle,
