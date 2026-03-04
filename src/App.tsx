@@ -29,6 +29,7 @@ import AdminMedia from "@/pages/admin/AdminMedia";
 
 import PreviewHeader from "@/pages/PreviewHeader";
 import NotFound from "./pages/NotFound";
+import { ScrollToTop } from "@/components/ScrollToTop";
 
 const queryClient = new QueryClient();
 
@@ -41,6 +42,7 @@ const App = () => (
           <Toaster />
           <Sonner />
           <BrowserRouter>
+            <ScrollToTop />
             <Routes>
               {/* Storefront */}
               <Route element={<StoreLayout />}>
