@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
@@ -251,7 +251,13 @@ export function ImageField({ label, value, onChange, placeholder }: {
       <div className="flex items-center gap-1.5">
         <Input
           value={value}
-          onChange={e => onChange(e.target.value)}
+          onChange={e => {
+            const v = e.target.value;
+            // Block dangerous protocols inline
+            const lower = v.toLowerCase().replace(/\s/g, '');
+            if (lower.startsWith('javascript:') || lower.startsWith('vbscript:') || lower.startsWith('data:text') || lower.startsWith('data:application')) return;
+            onChange(v);
+          }}
           placeholder={placeholder || 'https://...'}
           className="h-9 text-sm bg-secondary/30 border-border/50 flex-1"
         />
