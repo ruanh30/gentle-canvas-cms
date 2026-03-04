@@ -33,6 +33,7 @@ import { toast } from 'sonner';
 import { mockCategories } from '@/data/mock';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { PresetConfirmDialog } from '@/components/admin/PresetConfirmDialog';
 
 /* ================================================================== */
 /*  TYPES                                                               */
@@ -1051,6 +1052,7 @@ function StateCard({ label, color, state, onChange, onCopyFrom }: {
 function PresetsSection() {
   const { draft, updateDraftSection } = useTheme();
   const h = draft.header ?? {} as any;
+  const [pendingPreset, setPendingPreset] = React.useState<HeaderPreset | null>(null);
 
   const applyPreset = (preset: HeaderPreset) => {
     updateDraftSection('header', { ...preset.config, preset: preset.id });
@@ -1065,7 +1067,7 @@ function PresetsSection() {
       </div>
       <div className="grid grid-cols-2 gap-3">
         {HEADER_PRESETS.map(p => (
-          <PresetCard key={p.id} preset={p} isActive={h.preset === p.id} onApply={() => applyPreset(p)} />
+          <PresetCard key={p.id} preset={p} isActive={h.preset === p.id} onApply={() => setPendingPreset(p)} />
         ))}
       </div>
       <Button variant="outline" size="sm" className="w-full gap-1.5 text-xs" onClick={() => {
@@ -1074,6 +1076,18 @@ function PresetsSection() {
       }}>
         <RotateCcw className="h-3.5 w-3.5" /> Restaurar Padrão
       </Button>
+
+      {pendingPreset && (
+        <PresetConfirmDialog
+          open={!!pendingPreset}
+          onOpenChange={open => { if (!open) setPendingPreset(null); }}
+          presetName={pendingPreset.name}
+          currentConfig={{ ...h }}
+          presetConfig={pendingPreset.config}
+          onConfirm={() => applyPreset(pendingPreset)}
+          scope="header"
+        />
+      )}
     </div>
   );
 }
