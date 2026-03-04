@@ -186,8 +186,7 @@ export function ProductCard({ product }: Props) {
       <div
         data-highlight="card"
         className={cn(
-          'group relative pm-global-border transition-all duration-300',
-          radiusMap[c.imageBorderRadius],
+          'group relative pm-global-border pm-global-shadow pm-global-radius transition-all duration-300',
           'text-center',
           isFullyOutOfStock && 'opacity-60',
         )}

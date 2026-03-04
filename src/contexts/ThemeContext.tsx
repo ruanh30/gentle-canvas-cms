@@ -183,6 +183,14 @@ function applyThemeCSS(t: ThemeConfig) {
   };
   root.style.setProperty('--pm-border-width', borderWidthMap[t.global.borderStyle] || '0px');
 
+  // Animation speed
+  const animSpeedMap: Record<string, string> = { slow: '0.5s', normal: '0.3s', fast: '0.15s' };
+  root.style.setProperty('--pm-animation-duration', t.global.animationsEnabled ? (animSpeedMap[t.global.animationSpeed] || '0.3s') : '0s');
+  root.classList.toggle('pm-no-animations', !t.global.animationsEnabled);
+
+  // Scroll behavior
+  root.style.setProperty('scroll-behavior', t.global.scrollBehavior === 'auto' ? 'auto' : 'smooth');
+
   root.style.setProperty('--pm-header-height', `${t.header?.height ?? 64}px`);
   root.style.setProperty('--pm-icon-size', `${t.header?.iconSize ?? 20}px`);
   root.style.setProperty('--pm-menu-font-size', `${t.header?.menuFontSize ?? 14}px`);

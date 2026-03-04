@@ -263,6 +263,16 @@
   animation: dropdown-enter 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+/* Container width */
+.pm-container {
+  max-width: var(--pm-container-width, 1280px);
+}
+
+/* Global radius applied to store elements */
+.pm-global-radius {
+  border-radius: var(--pm-radius, 8px) !important;
+}
+
 /* Global shadow applied to elevated elements */
 .pm-global-shadow {
   box-shadow: var(--pm-shadow, none);
@@ -271,4 +281,19 @@
 /* Global border applied to cards and containers */
 .pm-global-border {
   border: var(--pm-border-width, 0px) solid hsl(var(--border));
+}
+
+/* Disable all animations when toggled off */
+.pm-no-animations *,
+.pm-no-animations *::before,
+.pm-no-animations *::after {
+  animation-duration: 0s !important;
+  animation-delay: 0s !important;
+  transition-duration: 0s !important;
+  transition-delay: 0s !important;
+}
+
+/* Animation duration token for store transitions */
+.pm-animate {
+  transition-duration: var(--pm-animation-duration, 0.3s);
 }

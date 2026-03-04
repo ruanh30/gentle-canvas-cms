@@ -148,19 +148,7 @@ const HomePage = () => {
 
     const wrapperClass = isHiddenMobile ? 'hidden md:block' : '';
 
-    // Rhythm: larger sections get more breathing room
-    const sectionSpacingMap: Record<string, string> = {
-      'featured-products': 'py-14 md:py-20',
-      'collections': 'py-12 md:py-16',
-      'categories': sectionPy,
-      'banner': 'py-6 md:py-10',
-      'benefits': 'py-8 md:py-12',
-      'trust-bar': 'py-4 md:py-6',
-      'faq': 'py-10 md:py-14',
-      'countdown': 'py-10 md:py-14',
-      'video': 'py-10 md:py-14',
-    };
-    const rhythmPy = sectionSpacingMap[section.type] || sectionPy;
+    const rhythmPy = sectionPy;
 
     switch (section.type) {
       case 'hero': {
