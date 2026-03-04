@@ -394,7 +394,7 @@ const HEADER_PRESETS: HeaderPreset[] = [
       menuFontSize: 13, menuHoverStyle: 'underline', menuSeparator: 'none', menuItemGap: 28,
       menuLetterSpacing: 0, menuItemPadding: false,
       headerSurface: false, dropdownElevated: false, borderBottom: false, shadowOnScroll: false,
-      iconStrokeWidth: 1.5, height: 52, sticky: true, shrinkOnScroll: false, iconSize: 18,
+      iconStrokeWidth: 1.5, height: 52, sticky: true, shrinkOnScroll: false, shrinkTransparent: false, iconSize: 18,
       showSearch: true, searchStyle: 'modal', showAccount: true, showCart: true, cartBadgeStyle: 'dot',
       menuDividerLine: false,
       menuTypography: { fontFamily: 'DM Sans', fontWeight: 400, fontSizeDesktop: 13, fontSizeMobile: 14, letterSpacing: 0, textTransform: 'none', lineHeight: 1.2 },
@@ -422,7 +422,7 @@ const HEADER_PRESETS: HeaderPreset[] = [
       menuFontSize: 14, menuHoverStyle: 'background', menuSeparator: 'none', menuItemGap: 4,
       menuLetterSpacing: 0, menuItemPadding: true,
       headerSurface: true, dropdownElevated: true, borderBottom: true, shadowOnScroll: true,
-      iconStrokeWidth: 1.5, height: 60, sticky: true, shrinkOnScroll: true, iconSize: 22,
+      iconStrokeWidth: 1.5, height: 60, sticky: true, shrinkOnScroll: true, shrinkTransparent: false, iconSize: 22,
       showSearch: true, searchStyle: 'inline', showAccount: true, showCart: true, cartBadgeStyle: 'count',
       menuDividerLine: false,
       menuTypography: { fontFamily: 'Inter', fontWeight: 500, fontSizeDesktop: 14, fontSizeMobile: 14, letterSpacing: 0, textTransform: 'none', lineHeight: 1.2 },
@@ -452,7 +452,7 @@ const HEADER_PRESETS: HeaderPreset[] = [
       menuFontSize: 10, menuHoverStyle: 'underline', menuSeparator: 'none', menuItemGap: 40,
       menuLetterSpacing: 0.25, menuItemPadding: false,
       headerSurface: false, dropdownElevated: false, borderBottom: true, shadowOnScroll: false,
-      iconStrokeWidth: 1, height: 80, sticky: true, shrinkOnScroll: true, iconSize: 18,
+      iconStrokeWidth: 1, height: 80, sticky: true, shrinkOnScroll: true, shrinkTransparent: false, iconSize: 18,
       showSearch: true, searchStyle: 'modal', showAccount: true, showCart: true, cartBadgeStyle: 'dot',
       menuDividerLine: true,
       menuTypography: { fontFamily: 'Lato', fontWeight: 400, fontSizeDesktop: 10, fontSizeMobile: 12, letterSpacing: 0.25, textTransform: 'uppercase', lineHeight: 1.2 },
@@ -480,7 +480,7 @@ const HEADER_PRESETS: HeaderPreset[] = [
       menuFontSize: 13, menuHoverStyle: 'underline', menuSeparator: 'none', menuItemGap: 20,
       menuLetterSpacing: 0.3, menuItemPadding: false,
       headerSurface: false, dropdownElevated: false, borderBottom: false, shadowOnScroll: false,
-      iconStrokeWidth: 1, height: 72, sticky: true, shrinkOnScroll: true, iconSize: 20,
+      iconStrokeWidth: 1, height: 72, sticky: true, shrinkOnScroll: true, shrinkTransparent: false, iconSize: 20,
       showSearch: true, searchStyle: 'modal', showAccount: false, showCart: true, cartBadgeStyle: 'dot',
       menuDividerLine: false,
       menuTypography: { fontFamily: 'Inter', fontWeight: 300, fontSizeDesktop: 13, fontSizeMobile: 14, letterSpacing: 0.3, textTransform: 'uppercase', lineHeight: 1.2 },
@@ -508,7 +508,7 @@ const HEADER_PRESETS: HeaderPreset[] = [
       menuFontSize: 13, menuHoverStyle: 'both', menuSeparator: 'none', menuItemGap: 16,
       menuLetterSpacing: 0, menuItemPadding: true,
       headerSurface: true, dropdownElevated: true, borderBottom: true, shadowOnScroll: true,
-      iconStrokeWidth: 1.5, height: 52, sticky: true, shrinkOnScroll: false, iconSize: 20,
+      iconStrokeWidth: 1.5, height: 52, sticky: true, shrinkOnScroll: false, shrinkTransparent: false, iconSize: 20,
       showSearch: true, searchStyle: 'modal', showAccount: true, showCart: true, cartBadgeStyle: 'count',
       menuDividerLine: false,
       menuTypography: { fontFamily: 'Manrope', fontWeight: 500, fontSizeDesktop: 13, fontSizeMobile: 13, letterSpacing: 0, textTransform: 'none', lineHeight: 1.2 },
@@ -536,7 +536,7 @@ const HEADER_PRESETS: HeaderPreset[] = [
       menuFontSize: 13, menuHoverStyle: 'underline', menuSeparator: 'none', menuItemGap: 28,
       menuLetterSpacing: 0.02, menuItemPadding: false,
       headerSurface: false, dropdownElevated: false, borderBottom: true, shadowOnScroll: false,
-      iconStrokeWidth: 1, height: 68, sticky: true, shrinkOnScroll: true, iconSize: 18,
+      iconStrokeWidth: 1, height: 68, sticky: true, shrinkOnScroll: true, shrinkTransparent: false, iconSize: 18,
       showSearch: true, searchStyle: 'modal', showAccount: true, showCart: true, cartBadgeStyle: 'dot',
       menuDividerLine: false,
       menuTypography: { fontFamily: 'Nunito Sans', fontWeight: 400, fontSizeDesktop: 13, fontSizeMobile: 13, letterSpacing: 0.02, textTransform: 'none', lineHeight: 1.3 },
@@ -564,7 +564,7 @@ const HEADER_PRESETS: HeaderPreset[] = [
       menuFontSize: 11, menuHoverStyle: 'underline', menuSeparator: 'none', menuItemGap: 36,
       menuLetterSpacing: 0.22, menuItemPadding: false,
       headerSurface: false, dropdownElevated: false, borderBottom: false, shadowOnScroll: false,
-      iconStrokeWidth: 1, height: 80, sticky: true, shrinkOnScroll: true, iconSize: 18,
+      iconStrokeWidth: 1, height: 80, sticky: true, shrinkOnScroll: true, shrinkTransparent: false, iconSize: 18,
       showSearch: true, searchStyle: 'modal', showAccount: true, showCart: true, cartBadgeStyle: 'dot',
       menuDividerLine: false,
       menuTypography: { fontFamily: 'Lato', fontWeight: 300, fontSizeDesktop: 11, fontSizeMobile: 12, letterSpacing: 0.22, textTransform: 'uppercase', lineHeight: 1.2 },
@@ -592,7 +592,7 @@ const HEADER_PRESETS: HeaderPreset[] = [
       menuFontSize: 14, menuHoverStyle: 'both', menuSeparator: 'none', menuItemGap: 8,
       menuLetterSpacing: 0, menuItemPadding: true,
       headerSurface: true, dropdownElevated: true, borderBottom: true, shadowOnScroll: true,
-      iconStrokeWidth: 1.5, height: 64, sticky: true, shrinkOnScroll: true, iconSize: 20,
+      iconStrokeWidth: 1.5, height: 64, sticky: true, shrinkOnScroll: true, shrinkTransparent: false, iconSize: 20,
       showSearch: true, searchStyle: 'inline', showAccount: true, showCart: true, cartBadgeStyle: 'count',
       menuDividerLine: false,
       menuTypography: { fontFamily: 'Inter', fontWeight: 500, fontSizeDesktop: 14, fontSizeMobile: 14, letterSpacing: 0, textTransform: 'none', lineHeight: 1.2 },
@@ -622,7 +622,7 @@ const HEADER_PRESETS: HeaderPreset[] = [
       menuFontSize: 14, menuHoverStyle: 'background', menuSeparator: 'none', menuItemGap: 20,
       menuLetterSpacing: 0, menuItemPadding: true,
       headerSurface: true, dropdownElevated: true, borderBottom: false, shadowOnScroll: true,
-      iconStrokeWidth: 2, height: 60, sticky: true, shrinkOnScroll: false, iconSize: 22,
+      iconStrokeWidth: 2, height: 60, sticky: true, shrinkOnScroll: false, shrinkTransparent: false, iconSize: 22,
       showSearch: true, searchStyle: 'inline', showAccount: true, showCart: true, cartBadgeStyle: 'count',
       menuDividerLine: false,
       menuTypography: { fontFamily: 'Poppins', fontWeight: 600, fontSizeDesktop: 14, fontSizeMobile: 14, letterSpacing: 0, textTransform: 'none', lineHeight: 1.2 },
@@ -650,7 +650,7 @@ const HEADER_PRESETS: HeaderPreset[] = [
       menuFontSize: 15, menuHoverStyle: 'background', menuSeparator: 'none', menuItemGap: 16,
       menuLetterSpacing: 0, menuItemPadding: true,
       headerSurface: true, dropdownElevated: true, borderBottom: false, shadowOnScroll: true,
-      iconStrokeWidth: 2, height: 64, sticky: true, shrinkOnScroll: false, iconSize: 22,
+      iconStrokeWidth: 2, height: 64, sticky: true, shrinkOnScroll: false, shrinkTransparent: false, iconSize: 22,
       showSearch: true, searchStyle: 'inline', showAccount: true, showCart: true, cartBadgeStyle: 'count',
       menuDividerLine: false,
       menuTypography: { fontFamily: 'Nunito Sans', fontWeight: 600, fontSizeDesktop: 15, fontSizeMobile: 14, letterSpacing: 0, textTransform: 'none', lineHeight: 1.2 },
@@ -1011,9 +1011,9 @@ function LayoutSection() {
       ]} />
 
       <ControlGroup title="Comportamento ao Rolar" hint="Como o cabeçalho reage quando o cliente rola a página para baixo">
-        <ToggleRow label="Fixo (sticky)" hint="O cabeçalho permanece sempre visível no topo, mesmo ao rolar a página inteira" checked={h.sticky} onChange={v => set({ sticky: v, ...(v ? { shrinkOnScroll: false } : {}) })} />
-        <ToggleRow label="Encolher ao rolar" hint="A altura do cabeçalho diminui suavemente ao rolar para baixo, liberando mais área de conteúdo" checked={h.shrinkOnScroll} onChange={v => set({ shrinkOnScroll: v, ...(v ? { sticky: false } : {}) })} />
-        
+        <ToggleRow label="Fixo (sticky)" hint="O cabeçalho permanece sempre visível no topo, mesmo ao rolar a página inteira" checked={h.sticky} onChange={v => set({ sticky: v, ...(v ? { shrinkOnScroll: false, shrinkTransparent: false } : {}) })} />
+        <ToggleRow label="Encolher ao rolar" hint="A altura do cabeçalho diminui suavemente ao rolar para baixo, liberando mais área de conteúdo" checked={h.shrinkOnScroll} onChange={v => set({ shrinkOnScroll: v, ...(v ? { sticky: false, shrinkTransparent: false } : {}) })} />
+        <ToggleRow label="Encolher transparente" hint="Igual ao encolher, mas o fundo fica transparente — apenas logo, menu e ícones flutuam sobre o conteúdo" checked={h.shrinkTransparent} onChange={v => set({ shrinkTransparent: v, ...(v ? { sticky: false, shrinkOnScroll: false } : {}) })} />
       </ControlGroup>
 
       <ControlGroup title="Profundidade & Interação" collapsible hint="Controla a superfície visual do cabeçalho e a qualidade de interação dos itens de menu">
