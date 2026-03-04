@@ -8,9 +8,51 @@ export function CategoryPanel() {
   const c = draft.category;
   const set = (u: Partial<typeof c>) => updateDraftSection('category', u);
 
+  const pl = draft.productListing || { limitDesktop: 0, limitMobile: 0 };
+  const setListing = (u: Partial<typeof pl>) => updateDraftSection('productListing', u);
+
+  const limitOptions = [
+    { value: '0', label: 'Todos' },
+    { value: '2', label: '2' },
+    { value: '3', label: '3' },
+    { value: '4', label: '4' },
+    { value: '6', label: '6' },
+    { value: '8', label: '8' },
+    { value: '10', label: '10' },
+    { value: '12', label: '12' },
+  ];
+
   return (
-    <EditorSection icon={Grid3X3} title="Categoria / Busca" description="Configure o layout e funcionalidades da página de listagem de produtos por categoria ou busca">
-      <SectionDivider label="Layout da Página" />
+    <EditorSection icon={Grid3X3} title="Vitrine de Produtos" description="Configure colunas, espaçamento, filtros e limites de exibição da vitrine">
+
+      <SectionDivider label="Colunas e Espaçamento" />
+      <p className="text-[10px] text-muted-foreground/60 leading-relaxed -mt-2">
+        Número de colunas por dispositivo e espaçamento entre os cards.
+      </p>
+      <NumberSlider label="Colunas no desktop" value={c.columnsDesktop} onChange={v => set({ columnsDesktop: v as 2 | 3 | 4 | 5 })} min={2} max={5} />
+      <NumberSlider label="Colunas no tablet" value={c.columnsTablet ?? 3} onChange={v => set({ columnsTablet: v as 2 | 3 | 4 })} min={2} max={4} />
+      <NumberSlider label="Colunas no mobile" value={c.columnsMobile} onChange={v => set({ columnsMobile: v as 1 | 2 })} min={1} max={2} />
+      <NumberSlider label="Espaçamento (gap)" value={c.gridGap ?? 24} onChange={v => set({ gridGap: v })} min={0} max={32} step={4} suffix="px" />
+
+      <SectionDivider label="Limite de Produtos na Home" />
+      <p className="text-[10px] text-muted-foreground/60 leading-relaxed -mt-2">
+        Define a quantidade máxima de produtos exibidos em cada coleção na página inicial.
+        Aplica-se ao modo Grade — no Carrossel todos os produtos são exibidos.
+      </p>
+      <SelectField
+        label="Desktop"
+        value={String(pl.limitDesktop || 0)}
+        onChange={v => setListing({ limitDesktop: Number(v) })}
+        options={limitOptions}
+      />
+      <SelectField
+        label="Mobile"
+        value={String(pl.limitMobile || 0)}
+        onChange={v => setListing({ limitMobile: Number(v) })}
+        options={limitOptions.filter(o => Number(o.value) <= 8)}
+      />
+
+      <SectionDivider label="Layout da Página de Categoria" />
       <p className="text-[10px] text-muted-foreground/60 leading-relaxed -mt-2">
         Define a estrutura geral da página de categoria e onde ficam os filtros.
       </p>
@@ -39,12 +81,7 @@ export function CategoryPanel() {
         </>
       )}
 
-      <SectionDivider label="Colunas e Quantidade" />
-      <p className="text-[10px] text-muted-foreground/60 leading-relaxed -mt-2">
-        Número de colunas na grade e quantidade de produtos por página.
-      </p>
-      <NumberSlider label="Colunas no desktop" value={c.columnsDesktop} onChange={v => set({ columnsDesktop: v as 2 | 3 | 4 | 5 })} min={2} max={5} />
-      <NumberSlider label="Colunas no mobile" value={c.columnsMobile} onChange={v => set({ columnsMobile: v as 1 | 2 })} min={1} max={2} />
+      <SectionDivider label="Produtos por Página" />
       <NumberSlider label="Produtos por página" value={c.productsPerPage} onChange={v => set({ productsPerPage: v })} min={8} max={48} step={4} />
 
       <SectionDivider label="Filtros" />
@@ -59,15 +96,9 @@ export function CategoryPanel() {
       <ToggleRow label="Mostrar contagem nos filtros" hint="Exibe a quantidade de produtos disponíveis ao lado de cada opção de filtro (ex: Azul (12))" checked={c.showFilterCount} onChange={v => set({ showFilterCount: v })} />
 
       <SectionDivider label="Ações na Listagem" />
-      <p className="text-[10px] text-muted-foreground/60 leading-relaxed -mt-2">
-        Ações rápidas disponíveis diretamente na listagem de produtos.
-      </p>
       <ToggleRow label="Botão comprar na listagem" hint="Exibe o botão 'Adicionar ao Carrinho' diretamente nos cards da listagem sem precisar abrir o produto" checked={c.showAddToCartOnListing} onChange={v => set({ showAddToCartOnListing: v })} />
 
       <SectionDivider label="Paginação" />
-      <p className="text-[10px] text-muted-foreground/60 leading-relaxed -mt-2">
-        Como o usuário carrega mais produtos ao chegar ao final da lista.
-      </p>
       <OptionPicker label="Tipo de paginação" value={c.pagination} onChange={v => set({ pagination: v })} options={[
         { value: 'classic', label: 'Clássica', description: 'Páginas numeradas (1, 2, 3...)' },
         { value: 'infinite-scroll', label: 'Scroll infinito', description: 'Carrega automaticamente ao rolar' },

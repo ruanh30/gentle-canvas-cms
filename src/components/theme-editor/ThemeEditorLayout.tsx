@@ -40,7 +40,7 @@ import { PresetsPanel } from './panels/PresetsPanel';
 import { QuickViewPanel } from './panels/QuickViewPanel';
 import { MicrocopyPanel } from './panels/MicrocopyPanel';
 import { ConversionPanel } from './panels/ConversionPanel';
-import { ProductListingPanel } from './panels/ProductListingPanel';
+
 
 export interface EditorSectionItem {
   id: string;
@@ -68,7 +68,7 @@ const sections: EditorSectionItem[] = [
   // Aparência de Produto
   { id: 'product-card', label: 'Card de Produto', icon: Package, group: 'Aparência de Produto' },
   
-  { id: 'category', label: 'Categoria / Busca', icon: SlidersHorizontal, group: 'Aparência de Produto' },
+  { id: 'category', label: 'Vitrine de Produtos', icon: SlidersHorizontal, group: 'Aparência de Produto' },
   { id: 'quick-view', label: 'Quick View', icon: Eye, group: 'Aparência de Produto' },
   // badges moved to Product Status in Admin > Produtos
   // Carrinho & Checkout

@@ -51,6 +51,8 @@ const ProductsPage = () => {
     5: 'grid-cols-2 md:grid-cols-3 lg:grid-cols-5',
   };
 
+  const gap = cat.gridGap ?? 24;
+
   const direction = cat.carouselDirection || 'ltr';
 
   const scrollCarousel = (dir: 'left' | 'right') => {
@@ -155,9 +157,9 @@ const ProductsPage = () => {
 
       case 'masonry':
         return (
-          <div className="columns-2 md:columns-3 lg:columns-4 gap-4 space-y-4">
+          <div className="columns-2 md:columns-3 lg:columns-4" style={{ gap: `${gap}px` }}>
             {filtered.map(product => (
-              <div key={product.id} className="break-inside-avoid">
+              <div key={product.id} className="break-inside-avoid" style={{ marginBottom: `${gap}px` }}>
                 <ProductCard product={product} />
               </div>
             ))}
@@ -166,7 +168,7 @@ const ProductsPage = () => {
 
       default: // grid
         return (
-          <div className={cn('grid gap-6', gridCols[cat.columnsDesktop] || gridCols[4])}>
+          <div className={cn('grid', gridCols[cat.columnsDesktop] || gridCols[4])} style={{ gap: `${gap}px` }}>
             {filtered.map(product => (
               <ProductCard key={product.id} product={product} />
             ))}
