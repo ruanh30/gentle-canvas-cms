@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { toast } from '@/hooks/use-toast';
 import SecureFileUpload from '@/components/admin/SecureFileUpload';
+import { sanitizeImageUrl } from '@/lib/url-sanitizer';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
@@ -191,8 +192,8 @@ function CategoryForm({ category, allCategories, onSave, onBack, onDelete, produ
             <div className="flex gap-2 mt-1">
               <Input placeholder="https://exemplo.com/imagem.jpg" className="flex-1 h-9 text-sm" value={urlInput}
                 onChange={e => setUrlInput(e.target.value)}
-                onKeyDown={e => { if (e.key === 'Enter' && urlInput.trim()) { setForm({ ...form, image: urlInput.trim() }); setUrlInput(''); } }} />
-              <Button variant="outline" size="sm" disabled={!urlInput.trim()} onClick={() => { setForm({ ...form, image: urlInput.trim() }); setUrlInput(''); }}>Usar</Button>
+                onKeyDown={e => { if (e.key === 'Enter' && urlInput.trim()) { const safe = sanitizeImageUrl(urlInput.trim()); if (safe) { setForm({ ...form, image: safe }); setUrlInput(''); } else { toast({ title: 'URL inválida', description: 'Use apenas links https://.', variant: 'destructive' }); } } }} />
+              <Button variant="outline" size="sm" disabled={!urlInput.trim()} onClick={() => { const safe = sanitizeImageUrl(urlInput.trim()); if (safe) { setForm({ ...form, image: safe }); setUrlInput(''); } else { toast({ title: 'URL inválida', description: 'Use apenas links https://.', variant: 'destructive' }); } }}>Usar</Button>
             </div>
           </div>
 
@@ -654,8 +655,14 @@ function ImagesSectionContent({ form, setForm }: { form: Product; setForm: React
   );
 
   const addImage = (url: string) => {
-    if (url && !form.images.includes(url)) {
-      setForm(prev => ({ ...prev, images: [...prev.images, url] }));
+    // Data URLs from SecureFileUpload are already validated; external URLs need sanitization
+    const safe = url.startsWith('data:image/') ? url : sanitizeImageUrl(url);
+    if (!safe) {
+      toast({ title: 'URL inválida', description: 'A URL informada foi bloqueada por segurança. Use apenas links https://.', variant: 'destructive' });
+      return;
+    }
+    if (!form.images.includes(safe)) {
+      setForm(prev => ({ ...prev, images: [...prev.images, safe] }));
     }
   };
 
@@ -1654,8 +1661,8 @@ function CollectionForm({ collection, onSave, onBack, onDelete }: {
                 <div className="flex gap-2 mt-2">
                   <Input placeholder="URL da imagem..." className="flex-1 h-8 text-xs" value={urlInput}
                     onChange={e => setUrlInput(e.target.value)}
-                    onKeyDown={e => { if (e.key === 'Enter' && urlInput.trim()) { setForm({ ...form, image: urlInput.trim() }); setUrlInput(''); } }} />
-                  <Button variant="outline" size="sm" className="h-8 text-xs" disabled={!urlInput.trim()} onClick={() => { setForm({ ...form, image: urlInput.trim() }); setUrlInput(''); }}>Usar</Button>
+                    onKeyDown={e => { if (e.key === 'Enter' && urlInput.trim()) { const safe = sanitizeImageUrl(urlInput.trim()); if (safe) { setForm({ ...form, image: safe }); setUrlInput(''); } else { toast({ title: 'URL inválida', description: 'Use apenas links https://.', variant: 'destructive' }); } } }} />
+                  <Button variant="outline" size="sm" className="h-8 text-xs" disabled={!urlInput.trim()} onClick={() => { const safe = sanitizeImageUrl(urlInput.trim()); if (safe) { setForm({ ...form, image: safe }); setUrlInput(''); } else { toast({ title: 'URL inválida', description: 'Use apenas links https://.', variant: 'destructive' }); } }}>Usar</Button>
                 </div>
                 <div className="mt-2">
                   <button onClick={() => setShowMedia(!showMedia)} className="text-xs font-medium text-foreground flex items-center gap-1.5 hover:text-primary transition-colors">
