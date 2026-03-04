@@ -175,6 +175,7 @@ try {
   }
 } catch {}
 
+
 export const mockOrders: Order[] = [
   {
     id: 'ord-1', orderNumber: '#1001', customerId: 'cust-1', customerName: 'Maria Silva', customerEmail: 'maria@email.com',
@@ -270,6 +271,26 @@ export const mockCollections: ProductCollection[] = [
     order: 3, active: true, createdAt: '2024-06-10',
   },
 ];
+
+// Hydrate mockCategories from localStorage
+try {
+  const savedCats = localStorage.getItem('flashloja_categories');
+  if (savedCats) {
+    const parsed = JSON.parse(savedCats) as Category[];
+    mockCategories.length = 0;
+    parsed.forEach(c => mockCategories.push(c));
+  }
+} catch {}
+
+// Hydrate mockCollections from localStorage
+try {
+  const savedCols = localStorage.getItem('flashloja_collections');
+  if (savedCols) {
+    const parsed = JSON.parse(savedCols) as ProductCollection[];
+    mockCollections.length = 0;
+    parsed.forEach(c => mockCollections.push(c));
+  }
+} catch {}
 
 export const mockAdminUser: User = {
   id: 'admin-1', name: 'Admin', email: 'admin@modastore.com', role: 'admin', createdAt: '2024-01-01',
