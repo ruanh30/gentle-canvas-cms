@@ -950,12 +950,26 @@ function StateCard({ label, color, state, onChange, onCopyFrom }: {
 /* ================================================================== */
 
 function PresetsSection() {
-  const { draft, updateDraftSection } = useTheme();
+  const { draft, updateDraft, updateDraftSection } = useTheme();
   const h = draft.header ?? {} as any;
   const [pendingPreset, setPendingPreset] = React.useState<HeaderPreset | null>(null);
 
   const applyPreset = (preset: HeaderPreset) => {
-    updateDraftSection('header', { ...preset.config, preset: preset.id });
+    // Full replace: preserve only user-content fields, replace everything else
+    const preserved = {
+      searchIcon: h.searchIcon,
+      accountIcon: h.accountIcon,
+      cartIcon: h.cartIcon,
+      bannerBelow: h.bannerBelow,
+      socialBar: h.socialBar,
+    };
+    updateDraft({
+      header: {
+        ...preset.config,
+        ...preserved,
+        preset: preset.id,
+      } as any,
+    });
     toast.success(`Preset "${preset.name}" aplicado`);
   };
 
