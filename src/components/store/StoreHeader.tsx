@@ -715,10 +715,9 @@ export function StoreHeader() {
       rafId.current = requestAnimationFrame(() => {
         const y = window.scrollY;
 
-        // Hysteresis with large dead-zone to prevent layout-feedback flickering
-        const wasScrolled = scrolledRef.current;
-        const nowScrolled = wasScrolled ? y > 15 : y > 60;
-        if (nowScrolled !== wasScrolled) {
+        // Simple threshold — no layout feedback loop because header is position:fixed
+        const nowScrolled = y > 20;
+        if (nowScrolled !== scrolledRef.current) {
           scrolledRef.current = nowScrolled;
           setScrolled(nowScrolled);
         }
@@ -1121,12 +1120,17 @@ export function StoreHeader() {
   const hasNavBarBelow = (isDoubleRow || h.layout === 'centered') && !shrinkActive && !isMenuBarSeparated;
 
   const isSticky = h.sticky || h.shrinkOnScroll || h.shrinkTransparent;
-  const needsSpacer = isSticky && expandedHeight > 0 && !isTransparentLayout;
+  const useFixed = isSticky && (h.shrinkOnScroll || h.shrinkTransparent);
+  const needsSpacer = useFixed && expandedHeight > 0 && !isTransparentLayout;
 
   return (
     <>
+    {/* Spacer: reserves the full expanded height so scroll position never shifts */}
+    {needsSpacer && (
+      <div aria-hidden style={{ height: expandedHeight }} />
+    )}
     <header ref={headerRef} className={cn(
-      'z-50 transition-all duration-300',
+      'z-50 transition-all duration-300 w-full',
       shrinkTransparentActive
         ? 'bg-transparent'
         : (isTransparentLayout && !scrolled)
@@ -1135,7 +1139,7 @@ export function StoreHeader() {
         ? 'backdrop-blur-md'
         : !activeState && 'bg-background/95 backdrop-blur-md supports-[backdrop-filter]:bg-background/80',
       !shrinkTransparentActive && !(isTransparentLayout && !scrolled) && 'shadow-[0_1px_3px_0_rgba(0,0,0,0.04)]',
-      (h.sticky || h.shrinkOnScroll || h.shrinkTransparent) && 'sticky top-0',
+      useFixed ? 'fixed top-0 left-0' : isSticky ? 'sticky top-0' : '',
       isTransparentLayout && !scrolled && 'absolute w-full',
       headerHidden && 'lg:translate-y-0 -translate-y-full',
     )} style={{
@@ -1371,13 +1375,6 @@ export function StoreHeader() {
 
       {!shrinkActive && <BannerBelow />}
     </header>
-    {/* Invisible spacer keeps scroll position stable when header shrinks */}
-    {needsSpacer && (
-      <div
-        aria-hidden
-        style={{ height: expandedHeight, marginTop: -expandedHeight, visibility: 'hidden', pointerEvents: 'none' }}
-      />
-    )}
     </>
   );
 }
