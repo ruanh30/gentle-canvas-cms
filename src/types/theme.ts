@@ -183,8 +183,10 @@ export interface ThemeHeader {
   iconStrokeWidth: number;
   showSearch: boolean;
   searchStyle: 'inline' | 'modal' | 'drawer';
+  searchShape: 'pill' | 'rectangle';
   showAccount: boolean;
   showCart: boolean;
+  showIconLabels: boolean;
   cartBadgeStyle: 'dot' | 'count' | 'none';
   // States
   states: {
