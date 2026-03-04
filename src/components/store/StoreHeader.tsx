@@ -1129,7 +1129,7 @@ export function StoreHeader() {
     {needsSpacer && (
       <div aria-hidden style={{ height: expandedHeight }} />
     )}
-    <header ref={headerRef} className={cn(
+    <header data-highlight="header" ref={headerRef} className={cn(
       'z-50 transition-all duration-300 w-full',
       shrinkTransparentActive
         ? 'bg-transparent'
