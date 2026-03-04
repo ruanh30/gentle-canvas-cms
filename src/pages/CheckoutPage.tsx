@@ -349,7 +349,6 @@ const CheckoutPage = () => {
                     className="mt-1"
                     value={street}
                     onChange={e => setStreet(e.target.value)}
-                    readOnly={addressLocked && !!street}
                   />
                 </div>
                 <div><Label>Número</Label><Input required placeholder="Nº" className="mt-1" /></div>
@@ -362,7 +361,7 @@ const CheckoutPage = () => {
                     className="mt-1"
                     value={neighborhood}
                     onChange={e => setNeighborhood(e.target.value)}
-                    readOnly={addressLocked && !!neighborhood}
+                    
                   />
                 </div>
                 <div>
