@@ -798,14 +798,14 @@ export function StoreHeader() {
       textTransform: mt.textTransform,
       letterSpacing: `${mt.letterSpacing}em`,
       lineHeight: mt.lineHeight,
-      ...(mc.linkColor ? { color: mc.linkColor } : isMenuBarSeparated ? { color: menuBar.textColor } : {}),
+      ...(isMenuBarSeparated ? { color: menuBar.textColor } : mc.linkColor ? { color: mc.linkColor } : {}),
     };
     const itemClass = cn(
       'text-muted-foreground hover:text-foreground transition-all duration-150',
       extraClass,
     );
 
-    const separatorColor = mc.linkColor || (isMenuBarSeparated ? menuBar.textColor : undefined);
+    const separatorColor = isMenuBarSeparated ? menuBar.textColor : (mc.linkColor || undefined);
     const buildItems = (elements: React.ReactNode[]) => {
       if (!separatorChar || elements.length <= 1) return elements;
       const result: React.ReactNode[] = [];
