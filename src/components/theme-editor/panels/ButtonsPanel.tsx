@@ -227,11 +227,6 @@ export function ButtonsPanel() {
 
       {/* ── Dimensions ── */}
       <SectionDivider label="Dimensões" />
-      <p className="text-[10px] text-muted-foreground/60 leading-relaxed -mt-2">
-        Ajuste o tamanho com precisão — o preview atualiza em tempo real.
-      </p>
-      <NumberSlider label="Padding horizontal" value={b.paddingX ?? 16} onChange={v => set({ paddingX: v })} min={4} max={48} step={2} suffix="px" />
-      <NumberSlider label="Padding vertical" value={b.paddingY ?? 10} onChange={v => set({ paddingY: v })} min={2} max={24} step={1} suffix="px" />
       <NumberSlider label="Fonte" value={b.fontSize ?? 14} onChange={v => set({ fontSize: v })} min={10} max={22} step={1} suffix="px" />
 
       {/* ── Typography & effects ── */}
