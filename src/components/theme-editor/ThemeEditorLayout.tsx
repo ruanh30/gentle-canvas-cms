@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { setPreviewIframe } from '@/hooks/use-preview-highlight';
 
 // Sections config
 import {
@@ -147,6 +148,7 @@ export function ThemeEditorLayout({ previewUrl, fullscreen = false }: { previewU
 
   const handleIframeLoad = () => {
     setIframeReady(true);
+    setPreviewIframe(iframeRef.current);
     setTimeout(() => {
       const iframe = iframeRef.current;
       if (iframe?.contentWindow) {

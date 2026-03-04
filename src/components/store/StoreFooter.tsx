@@ -10,7 +10,7 @@ export function StoreFooter() {
   const copyright = f.copyrightText.replace('{storeName}', storeName);
 
   return (
-    <footer className="mt-20" style={{ backgroundColor: f.backgroundColor, color: f.textColor }}>
+    <footer data-highlight="footer" className="mt-20" style={{ backgroundColor: f.backgroundColor, color: f.textColor }}>
       <div className="container mx-auto px-4 py-10 lg:py-12">
         {/* Mobile: 2 cols — Desktop: 4 cols */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
