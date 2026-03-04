@@ -1,0 +1,819 @@
+================================================================================
+EDITOR DE TEMA — MAPA COMPLETO DE OPÇÕES E SUB-OPÇÕES
+================================================================================
+Documento gerado automaticamente com base no código-fonte do Editor de Temas
+da FlashLoja. Contém todas as seções do menu lateral, suas sub-opções,
+controles disponíveis e valores possíveis.
+
+================================================================================
+ESTRUTURA DO MENU LATERAL (SIDEBAR)
+================================================================================
+
+GRUPO: Início Rápido
+  └─ Temas Prontos
+
+GRUPO: Design & Estilo
+  ├─ Cores Global
+  ├─ Tipografia Global
+  ├─ Layout Global
+  └─ Botões Global
+
+GRUPO: Estrutura
+  ├─ Logo & Marca
+  ├─ Hero / Banner
+  ├─ Seções da Home
+  └─ Rodapé
+
+GRUPO: Aparência de Produto
+  ├─ Card de Produto
+  ├─ Categoria / Busca
+  └─ Quick View
+
+GRUPO: Carrinho & Checkout
+  ├─ Carrinho
+  └─ Checkout
+
+GRUPO: Conversão & Textos
+  ├─ Textos do Tema (Microcopy)
+  ├─ Conversão
+  └─ WhatsApp
+
+GRUPO: Avançado
+  └─ Código Custom
+
+
+================================================================================
+1. TEMAS PRONTOS (Presets)
+================================================================================
+Descrição: Selecione um tema base e personalize cada detalhe ao seu gosto.
+Cada preset aplica cores, fontes e estilos ao rascunho.
+
+- Lista de presets disponíveis (definidos em theme-presets.ts)
+- Cada preset contém: nome, descrição, preview de cores (SVG mini)
+- Ao clicar: abre diálogo de confirmação mostrando diferenças
+- Ação: aplica config completa (cores, tipografia, layout, etc.) ao rascunho
+
+
+================================================================================
+2. CORES GLOBAL
+================================================================================
+Descrição: Defina todas as cores da sua loja. Alterações em tempo real no preview.
+
+── Cores Principais ──
+  - Primária (color picker + hex input)
+  - Texto sobre primária (color picker + hex input)
+  - Secundária (color picker + hex input)
+  - Texto sobre secundária (color picker + hex input)
+
+── Superfícies e Fundo ──
+  - Fundo da página
+  - Texto principal
+  - Destaque (accent)
+  - Texto destaque
+  - Fundo suave (muted)
+  - Texto suave
+  - Cor das bordas
+
+── Cores de Status ──
+  - Sucesso
+  - Alerta
+  - Erro
+
+── Botão de Compra ──
+  - Cor do botão (buyNow)
+  - Cor no hover (buyNowHover)
+
+── Links ──
+  - Cor do link
+  - Link no hover
+
+── Preview da Paleta ──
+  - Visualização em blocos coloridos das cores aplicadas
+
+
+================================================================================
+3. TIPOGRAFIA GLOBAL
+================================================================================
+Descrição: Configure as fontes, tamanhos e espaçamentos de texto.
+
+── Fontes ──
+  - Fonte dos títulos (seletor com 20 Google Fonts de display)
+    Opções: Playfair Display, Poppins, Montserrat, Lora, Merriweather,
+    Raleway, Oswald, Cormorant Garamond, DM Serif Display, Libre Baskerville,
+    Bebas Neue, Archivo Black, Quicksand, Josefin Sans, Cinzel,
+    Abril Fatface, Righteous, Alfa Slab One, Bitter, Crimson Text
+  - Fonte do corpo (seletor com 20 Google Fonts de body)
+    Opções: Inter, Roboto, Open Sans, Lato, Nunito, Work Sans, DM Sans,
+    Source Sans 3, Rubik, Manrope, Poppins, Outfit, Plus Jakarta Sans,
+    Mulish, Karla, Figtree, Albert Sans, Lexend, Urbanist, Sora
+
+── Tamanhos e Pesos ──
+  - Tamanho base: slider 12–20px
+  - Peso dos títulos: slider 300–900 (step 100)
+  - Peso do corpo: slider 300–700 (step 100)
+
+── Espaçamento ──
+  - Altura da linha (títulos): slider 0.8–1.8 (step 0.05)
+  - Altura da linha (corpo): slider 1–2 (step 0.05)
+  - Espaço entre letras: slider -0.05–0.2em (step 0.01)
+
+── Preview ──
+  - Título de exemplo com fonte/peso dos títulos
+  - Parágrafo de exemplo com fonte/peso/line-height/letter-spacing do corpo
+
+
+================================================================================
+4. LAYOUT GLOBAL
+================================================================================
+Descrição: Controle container, espaçamentos, arredondamentos e efeitos visuais.
+
+── Container ──
+  - Largura do container (select):
+    • Estreito (1200px)
+    • Padrão (1400px)
+    • Largo (1600px)
+    • Tela cheia
+  - Largura máx. (slider 960–1920px, step 20) — visível quando não é "tela cheia"
+
+── Espaçamento entre seções ──
+  - Espaço entre seções (option picker):
+    • Mínimo (8px)
+    • Compacto (16px)
+    • Normal (32px)
+    • Espaçoso (64px)
+
+── Arredondamento de bordas ──
+  - Arredondamento (option picker):
+    • Nenhum (0px)
+    • Pequeno (4px)
+    • Médio (8px)
+    • Grande (12px)
+    • Máximo (pílula)
+
+── Sombras ──
+  - Nível de sombra (option picker):
+    • Nenhuma
+    • Suave
+    • Média
+    • Forte
+
+── Bordas ──
+  - Estilo de borda (option picker):
+    • Nenhuma
+    • Fina (1px)
+    • Média (2px)
+    • Grossa (3px)
+
+── Animações ──
+  - Animações habilitadas (toggle)
+  - Velocidade (option picker, visível se animações ativas):
+    • Lenta (0.5s)
+    • Normal (0.3s)
+    • Rápida (0.15s)
+
+── Rolagem ──
+  - Rolagem da página (option picker):
+    • Suave
+    • Instantânea
+
+
+================================================================================
+5. BOTÕES GLOBAL
+================================================================================
+Descrição: Personalize estilo, dimensões e comportamento de todos os botões.
+
+── Estilo Visual ──
+  Grid de 8 estilos (4x2) com preview visual de cada:
+  - Sólido (filled)
+  - Contorno (outline)
+  - Fantasma (ghost)
+  - Suave (soft)
+  - Gradiente (gradient)
+  - 3D
+  - Neon
+  - Minimal
+
+── Formato (Arredondamento) ──
+  Visual picker com 5 opções:
+  - Reto (0px)
+  - Sutil (4px)
+  - Médio (8px)
+  - Grande (16px)
+  - Pílula (9999px)
+
+── Dimensões ──
+  - Padding horizontal: slider 4–48px (step 2)
+  - Padding vertical: slider 2–24px (step 1)
+  - Fonte: slider 10–22px (step 1)
+
+── Tipografia & Efeitos ──
+  - Peso da fonte: slider 300–900 (step 100)
+  - Texto MAIÚSCULO (toggle)
+  - Sombra (toggle)
+
+── Preview ao vivo ──
+  - Card simulado com botão "Comprar Agora", "Adicionar" e 3 botões menores
+  - Todos refletem as configurações em tempo real
+
+
+================================================================================
+6. LOGO & MARCA
+================================================================================
+Descrição: Configure o logo exibido no cabeçalho e identidade da loja.
+
+── Identidade ──
+  - Nome da loja (text input)
+  - URL da imagem do logo (image field com media picker)
+  - Mostrar nome como texto (toggle)
+
+── Dimensão e Posição ──
+  - Altura máx. do logo: slider 24–80px
+  - Posição no cabeçalho (option picker):
+    • Esquerda
+    • Centro
+
+── Preview ──
+  - Visualização do logo com imagem + texto conforme configuração
+
+── Atalhos ──
+  - Link para Biblioteca de Mídia
+
+
+================================================================================
+7. HERO / BANNER
+================================================================================
+Descrição: Configure o banner principal do topo da página inicial.
+
+- Exibir hero (toggle)
+
+── Tamanho e Transição ──
+  - Altura (option picker):
+    • 200px (extra compacto)
+    • 300px (compacto)
+    • 400px (médio)
+    • 500px (grande)
+    • Tela cheia
+  - Transição (select):
+    • Fade
+    • Slide
+    • Zoom
+
+── Autoplay e Controles ──
+  - Autoplay (toggle)
+  - Velocidade do autoplay: slider 2–10s (visível se autoplay ativo)
+  - Indicadores/dots (toggle)
+  - Setas de navegação (toggle)
+
+── Slides ──
+  - Tabs de slides (Slide 1, Slide 2, ...)
+  - Botão "Adicionar" novo slide
+  - Botão remover slide (se mais de 1)
+
+  Para cada slide:
+
+  ── Imagem de Fundo ──
+    - URL da imagem (image field com media picker)
+    - Cor do overlay (color picker)
+    - Opacidade do overlay: slider 0–1 (step 0.05)
+
+  ── Visibilidade ──
+    - Exibir textos (toggle)
+    - Exibir botão (toggle)
+
+  ── Conteúdo do Slide (se textos visíveis) ──
+    - Subtítulo (text)
+    - Título (textarea)
+    - Descrição (textarea)
+
+  ── Alinhamento e Posição ──
+    - Alinhamento do conteúdo (option picker): Esquerda / Centro / Direita
+    - Posição horizontal do texto: slider -50% a +50%
+    - Posição vertical do texto: slider -50% a +50%
+
+  ── Botão de Ação / CTA (se botão visível) ──
+    - Texto do botão (text)
+    - Destino do botão (select): URL personalizada / Abrir categoria
+    - Link do botão (text) — se URL
+    - Categoria (select de categorias) — se categoria
+    - Posição horizontal do botão: slider -50% a +50%
+    - Posição vertical do botão: slider -50% a +50%
+
+── Atalhos ──
+  - Link para Biblioteca de Mídia
+
+
+================================================================================
+8. SEÇÕES DA HOME
+================================================================================
+Descrição: Ative, desative, renomeie e reordene as seções da página inicial.
+
+Para cada seção:
+  - Arrastar para reordenar (grip icon)
+  - Renomear (botão lápis → input + salvar/cancelar)
+  - Mostrar/ocultar título da seção (botão olho)
+  - Remover seção (botão lixeira)
+  - Ativar/desativar seção (checkbox)
+  - Mover para cima/baixo (setas)
+
+Tipos de seção disponíveis para adicionar:
+  - Coleção de Produtos
+  - Banner
+  - Banner Duplo
+  - Banner Triplo
+  - Imagem + Texto
+  - Vídeo
+  - Contagem Regressiva
+  - Benefícios
+  - Barra de Confiança
+  - FAQ
+  - Categorias
+  - Produtos em Destaque
+
+Sub-opções para seções de carrossel (categories, featured-products, collections):
+  - Exibição: Grade / Carrossel
+  - Se carrossel:
+    - Velocidade: slider 1–10s
+    - Mostrar setas (checkbox)
+    - Espaçamento (categories only): slider 1–100px
+  - Se grade (categories only):
+    - Espaçamento da grade: slider 0–32px (step 4)
+
+Sub-opções extras para tipo "categories":
+  ── Aparência das Categorias ──
+    - Mostrar imagem (checkbox)
+    - Se imagem visível:
+      - Formato: Circular / Arredondado / Quadrado
+      - Tamanho: slider 60–140px (step 10)
+      - Borda na imagem (checkbox)
+      - Se borda ativa:
+        - Largura da borda: slider 1–6px
+        - Cor da borda (color picker)
+
+  ── Categorias em destaque ──
+    - Seleção de quais categorias aparecem (checkboxes com imagem)
+
+
+================================================================================
+9. RODAPÉ
+================================================================================
+Descrição: Configure colunas, links, newsletter e redes sociais do rodapé.
+
+── Layout e Cores ──
+  - Layout do rodapé (select):
+    • 4 Colunas
+    • 3 Colunas
+    • 2 Colunas
+    • Simples
+    • Centralizado
+  - Cor do fundo (color picker)
+  - Cor do texto (color picker)
+
+── Colunas de Links ──
+  - Toggle para cada coluna de links (ativar/desativar)
+
+── Newsletter ──
+  - Formulário de newsletter (toggle)
+  - Se ativo:
+    - Título (text)
+    - Descrição (text)
+
+── Extras ──
+  - Redes sociais (toggle)
+  - Ícones de pagamento (toggle)
+  - Selos de confiança (toggle)
+  - Botão voltar ao topo (toggle)
+  - Texto de copyright (text)
+
+
+================================================================================
+10. CARD DE PRODUTO
+================================================================================
+Descrição: Visual e comportamento dos cards de produto nas listagens e destaques.
+
+── Imagem ──
+  - Proporção da imagem (select):
+    • 1:1 Quadrado
+    • 3:4 Retrato
+    • 4:5 Instagram
+    • 2:3 Alto
+    • 16:9 Paisagem
+  - Efeito ao passar o mouse (select):
+    • Nenhum
+    • Zoom
+    • Trocar (2ª foto)
+    • Slide
+  - Borda da imagem (select):
+    • Nenhuma (0px)
+    • Pequena (4px)
+    • Média (8px)
+    • Grande (12px)
+
+── Informações exibidas ──
+  - Categoria (toggle)
+
+── Preço ──
+  - Tamanho do preço (option picker): Pequeno / Médio / Grande
+  - Preço comparativo (toggle) — mostra preço riscado
+  - Badge de desconto (toggle)
+  - Se badge ativo:
+    - Formato do desconto (select): Porcentagem / Valor em reais / Badge "OFERTA"
+  - Parcelas (toggle)
+
+── Botões de Ação ──
+  - Botão Comprar Agora (toggle)
+  - Se ativo:
+    - Revelar ao passar o mouse (toggle)
+    - Texto do botão (text)
+    - Ícone do Comprar Agora (grid 5 colunas com 9 ícones):
+      • Raio (Zap), Cartão (CreditCard), Brilho (Sparkles),
+        Foguete (Rocket), Fogo (Flame), Seta (ArrowRight),
+        Selo (BadgeCheck), Enviar (Send), Etiqueta (Tag)
+    - Estilo visual do botão (option picker):
+      • Sólido, Contorno, Pílula, Arredondado, Reto, Gradiente, Sublinhado
+
+── Badges de Desconto ──
+  - Posição do badge (select): Topo esquerdo / Topo direito / Inferior esquerdo
+  - Formato do badge (select): Quadrado / Arredondado / Pílula
+
+── Aparência Geral ──
+  - Espaçamento interno (option picker): Compacto / Normal / Espaçoso
+
+── Atalhos ──
+  - Link para Gerenciar Produtos
+
+
+================================================================================
+11. CATEGORIA / BUSCA
+================================================================================
+Descrição: Layout e funcionalidades da página de listagem de produtos.
+
+── Layout da Página ──
+  - Layout (select):
+    • Sidebar à esquerda
+    • Sidebar à direita
+    • Filtros no topo
+    • Sem filtros
+
+── Modo de Exibição ──
+  - Visualização (option picker):
+    • Grade
+    • Lista
+    • Masonry (Pinterest)
+    • Carrossel
+    • Compacto
+  - Se carrossel:
+    - Autoplay (toggle)
+    - Velocidade: slider 2–10s
+
+── Colunas e Quantidade ──
+  - Colunas no desktop: slider 2–5
+  - Colunas no mobile: slider 1–2
+  - Produtos por página: slider 8–48 (step 4)
+
+── Filtros ──
+  - Estilo dos filtros (select):
+    • Checkbox
+    • Chips
+    • Accordion
+  - Mostrar contagem nos filtros (toggle)
+
+── Ações na Listagem ──
+  - Botão comprar na listagem (toggle)
+
+── Paginação ──
+  - Tipo de paginação (option picker):
+    • Clássica (páginas numeradas)
+    • Scroll infinito
+    • Carregar mais (botão)
+
+
+================================================================================
+12. QUICK VIEW (Produto)
+================================================================================
+Descrição: Mini-PDP que abre ao clicar no produto sem sair da página.
+
+- Ativar Quick View (toggle)
+
+Se ativo, 7 abas internas:
+
+── Aba 1: Modelo ──
+  - Tipo de Quick View (option picker):
+    • Painel Lateral (drawer-right)
+    • Janela Central (modal-center)
+  - Largura do painel: slider 420–520px (se drawer)
+  - Largura do modal: slider 720–920px (se modal)
+  - Opacidade do overlay: slider 35–65
+  - Blur do overlay (option picker): Desligado / Leve / Médio
+
+── Aba 2: Estrutura ──
+  - Avaliação/rating (toggle)
+  - Compartilhar (toggle)
+  - SKU/código (toggle)
+  - Parcelamento no footer (toggle)
+  - Ver página do produto (toggle)
+  - Simulação de frete (toggle)
+  - Descrição (toggle)
+
+── Aba 3: Galeria ──
+  - Layout das miniaturas (option picker):
+    • Lateral esquerda
+    • Abaixo
+    • Oculto
+  - Altura máxima (option picker): 45vh / 55vh / 60vh
+  - Setas de navegação (toggle)
+  - Zoom (option picker): Desligado / Básico
+  - Fit da imagem (option picker): Cover / Contain
+
+── Aba 4: Variações ──
+  - Estilo das variações (option picker):
+    • Chips
+    • Lista Compacta
+    • Dropdown
+  - Mostrar estoque (toggle)
+  - Multivariantes (toggle)
+  - Estilo do stepper (option picker): Compacto / Padrão
+
+── Aba 5: CTAs ──
+  - Texto do botão principal (text)
+  - Botão secundário (toggle)
+  - Se ativo: Texto do botão secundário (text)
+  - Tamanho dos botões (option picker): Normal / Grande
+
+── Aba 6: Aparência ──
+  - Radius do container (option picker): Pequeno (8px) / Médio (12px) / Grande (16px)
+  - Sombra (option picker): Sutil / Média
+  - Borda (toggle)
+  - Padding interno (option picker): 16px / 20px / 24px
+  - Espaçamento entre seções (option picker): 12px / 16px / 20px
+
+── Aba 7: Animação ──
+  - Tipo de animação (option picker): Slide / Fade / Nenhuma
+  - Duração: slider 150–300ms
+
+
+================================================================================
+13. CARRINHO
+================================================================================
+Descrição: Estilo, funcionalidades e textos do carrinho de compras.
+
+── Estilo do Carrinho ──
+  - Tipo de exibição (select):
+    • Página inteira (/cart)
+    • Drawer lateral
+    • Dropdown
+
+── Funcionalidades ──
+  - Thumbnails dos produtos (toggle)
+  - Alterar quantidade (toggle)
+  - Campo de cupom (toggle)
+  - Estimativa de frete (toggle)
+  - Continuar comprando (toggle)
+
+── Barra de Frete Grátis ──
+  - Ativar barra de frete grátis (toggle)
+  - Se ativa:
+    - Valor mínimo: slider R$50–R$1000 (step 10)
+    - Mensagem (text)
+
+── Recomendações ──
+  - Mostrar recomendações (toggle)
+  - Se ativo: Título da seção (text)
+
+── Textos Personalizáveis ──
+  - Mensagem de carrinho vazio (text)
+  - Texto do botão (carrinho vazio) (text)
+
+
+================================================================================
+14. CHECKOUT
+================================================================================
+Descrição: Layout, passos e funcionalidades da página de finalização de compra.
+
+── Layout e Passos ──
+  - Layout do checkout (option picker):
+    • 1 Coluna
+    • 2 Colunas
+  - Estilo dos passos (select):
+    • Numerados (1, 2, 3)
+    • Barra de progresso
+    • Abas
+
+── Funcionalidades ──
+  - Resumo do pedido (toggle)
+  - Campo de cupom (toggle)
+  - Selos de confiança (toggle)
+  - Aceitar termos de uso (toggle)
+  - Se ativo: Texto dos termos (text)
+
+── Página de Sucesso ──
+  - Título de sucesso (text)
+  - Mensagem de sucesso (textarea)
+  - Animação de confetti 🎉 (toggle)
+
+
+================================================================================
+15. TEXTOS DO TEMA (Microcopy)
+================================================================================
+Descrição: Personalize todos os textos padrão da loja.
+
+── Botões ──
+  - Botão Comprar (text)
+  - Botão Adicionar ao Carrinho (text)
+  - Botão Finalizar Compra (text)
+  - Botão Continuar Comprando (text)
+
+── Estoque ──
+  - Sem estoque (text) — usa {count}
+  - Estoque baixo (text) — usa {count}
+
+── Frete e Cupom ──
+  - Frete grátis (text) — usa {value}
+  - Label calcular frete (text)
+  - Placeholder cupom (text)
+  - Botão aplicar cupom (text)
+  - Erro de cupom (text)
+
+── Variações ──
+  - Label de Cor (text)
+  - Label de Tamanho (text)
+
+── Busca ──
+  - Placeholder de busca (text)
+  - Busca sem resultados (text)
+
+── Outros ──
+  - Título de relacionados (text)
+  - Erro no checkout (text)
+
+
+================================================================================
+16. CONVERSÃO
+================================================================================
+Descrição: Ferramentas de conversão: WhatsApp no PDP, prova social, avaliações
+e diferenciais premium.
+
+── WhatsApp na Página do Produto ──
+  - WhatsApp no PDP (toggle)
+  - Se ativo:
+    - Texto do botão (text)
+    - Mensagem (text) — usa {product}
+
+── Prova Social ──
+  - Ativar prova social (toggle)
+  - Se ativa:
+    - Tipo (option picker):
+      • Vendo agora
+      • Vendidos
+      • Compra recente
+    - Texto (text) — usa {count}
+
+── Avaliações ──
+  - Ativar avaliações (toggle)
+  - Se ativo:
+    - Estilo (option picker): Estrelas / Polegares
+
+── Diferenciais Premium ──
+  - Exibir diferenciais (toggle)
+  - Se ativo:
+    - Lista de diferenciais (cada um com):
+      - Ícone (text input)
+      - Título (text input)
+      - Descrição (text input)
+      - Botão remover
+    - Botão "Adicionar diferencial"
+
+
+================================================================================
+17. WHATSAPP
+================================================================================
+Descrição: Botão flutuante de WhatsApp para atendimento rápido.
+
+- Ativar botão de WhatsApp (toggle)
+
+Se ativo:
+
+── Configuração ──
+  - Número com DDD e código do país (text)
+  - Mensagem padrão (textarea)
+
+── Aparência ──
+  - Posição na tela (option picker):
+    • Inferior esquerdo
+    • Inferior direito
+  - Cor de fundo do botão (color picker)
+  - Mostrar texto ao lado do ícone (toggle)
+  - Se ativo: Texto do rótulo (text)
+
+── Comportamento ──
+  - Delay de exibição: slider 0–30s
+
+
+================================================================================
+18. CÓDIGO CUSTOM
+================================================================================
+Descrição: CSS e scripts personalizados para customizações avançadas.
+
+── CSS Personalizado ──
+  - Textarea para CSS custom (injetado no <head>)
+
+── Scripts no Head ──
+  - Textarea para scripts (Google Analytics, Facebook Pixel, etc.)
+  - ⚠️ Aviso de segurança sobre scripts maliciosos
+
+
+================================================================================
+PAINÉIS REGISTRADOS MAS NÃO NO MENU LATERAL
+================================================================================
+
+── Página de Produto (ProductPagePanel) ──
+  Registrado no renderPanel mas não listado no sidebar.
+
+  ── Galeria de Imagens ──
+    - Layout da galeria (select):
+      • Lado a lado
+      • Slider
+      • Grade
+      • Thumbs verticais
+    - Posição da galeria (option picker): Esquerda / Direita
+    - Zoom na imagem (toggle)
+    - Galeria fixa/sticky (toggle)
+
+  ── Confiança e Extras ──
+    - Selos de confiança (toggle)
+    - Estimativa de frete (toggle)
+
+── Listagem de Produtos (ProductListingPanel) ──
+  Registrado no renderPanel mas não listado no sidebar.
+
+  ── Limite por dispositivo ──
+    - Desktop (select): Todos / 2 / 3 / 4 / 6 / 8 / 10 / 12
+    - Mobile (select): Todos / 2 / 3 / 4 / 6 / 8
+
+── Badges / Etiquetas (BadgesPanel) ──
+  Registrado no renderPanel via importação mas não listado no sidebar.
+
+  - Ativar badges (toggle)
+  - Posição nos cards (option picker): Topo Esquerdo / Topo Direito / Inferior Esquerdo
+  - Máximo visível por produto: slider 1–4
+
+  ── Regras de Badges ──
+    Cada regra contém:
+    - Preview visual (pill colorida)
+    - Ativar/desativar regra (switch)
+    - Remover regra (botão)
+    - Texto da badge (text)
+    - Condição (select):
+      • Manual
+      • Novo (por data)
+      • Mais Vendido
+      • Frete Grátis
+      • Estoque Baixo
+      • Em Promoção
+    - Se "Novo": Dias como "novo" (number)
+    - Se "Estoque Baixo": Limiar de estoque (number)
+    - Cor fundo (color picker)
+    - Cor texto (color picker)
+    - Estilo (select): Pílula / Canto / Faixa
+    - Botão "Adicionar regra"
+
+
+================================================================================
+BARRA SUPERIOR DO EDITOR
+================================================================================
+
+── Esquerda ──
+  - Título: "Editor de Tema"
+  - Badge "Rascunho não publicado" (se houver alterações)
+
+── Direita ──
+  - Botão "Versões" → abre diálogo com histórico de versões publicadas
+  - Botão "Restaurar" → reseta para o tema padrão
+  - Botão "Descartar" (se dirty) → descarta rascunho
+  - Botão "Publicar" (se dirty) → publica o rascunho atual
+
+── Device Switcher (abaixo, sobre o preview) ──
+  - Desktop
+  - Tablet (768px)
+  - Mobile (390px)
+
+
+================================================================================
+CONTROLES DISPONÍVEIS (Componentes de UI do Editor)
+================================================================================
+
+- ColorInput: color picker + input hex
+- FontPicker: seletor de fontes Google (heading ou body)
+- NumberSlider: slider com label e valor exibido
+- ToggleRow: switch com label, descrição opcional e tooltip
+- OptionPicker: lista vertical ou grid horizontal de opções (radio-style)
+- SelectField: dropdown select tradicional
+- TextField: input de texto simples ou textarea
+- ImageField: input de URL + botão media picker + preview da imagem
+- SectionDivider: separador visual com label opcional
+- AdminLink: link para outras páginas admin (bordas tracejadas)
+- HintTooltip: ícone de ajuda com tooltip explicativo
+
+
+================================================================================
+FIM DO DOCUMENTO
+================================================================================
