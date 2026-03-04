@@ -1,0 +1,257 @@
+================================================================================
+         FUNÇÕES DISPONÍVEIS — TUDO QUE PODE SER ALTERADO NO ADMIN MENU
+================================================================================
+
+Este documento lista TODAS as funcionalidades e configurações disponíveis
+no painel Admin Menu (/admin/menu), organizadas por seção da sidebar.
+
+================================================================================
+  DESIGN
+================================================================================
+
+────────────────────────────────────────────────────────────────────────────────
+  1. ESTILOS PRONTOS
+────────────────────────────────────────────────────────────────────────────────
+  • Seleção de preset (aplica um conjunto pré-definido de configurações)
+  • Presets disponíveis: Minimal, Marketplace, Maison, Zara, Uniqlo, Pastel, 
+    Luxury, Builder
+  • Botão "Restaurar Padrão" (reseta para configuração default)
+  • Dialog de confirmação antes de aplicar (mostra o que será alterado)
+
+────────────────────────────────────────────────────────────────────────────────
+  2. LAYOUT
+────────────────────────────────────────────────────────────────────────────────
+  • Layout do cabeçalho:
+    - Classic (logo esquerda, menu e ações à direita)
+    - Centered (logo no centro, menu abaixo)
+    - Minimal (compacto, poucos elementos)
+    - Logo-center-nav-left (logo central, navegação à esquerda)
+    - Hamburger-only (só ícone ☰ no desktop)
+    - Top-bar-split (barra superior dividida)
+    - Double-row (duas linhas: logo+ações em cima, menu embaixo)
+    - Sidebar-nav (navegação lateral)
+    - Transparent (transparente sobre o hero)
+
+────────────────────────────────────────────────────────────────────────────────
+  3. ESTADOS
+────────────────────────────────────────────────────────────────────────────────
+  Para cada estado (Normal, Sticky, Transparente):
+  • Cor de fundo (backgroundColor)
+  • Cor do texto (textColor)
+  • Borda inferior (borderBottom) — sim/não
+  • Cor da borda (borderColor)
+  • Sombra (shadow) — none / subtle / medium / strong
+  • Efeito blur (blur) — sim/não
+  • Altura neste estado (height) — 40-96px
+
+────────────────────────────────────────────────────────────────────────────────
+  4. DIMENSÕES (Container)
+────────────────────────────────────────────────────────────────────────────────
+  • Largura do container — Full / Container
+  • Largura máxima (maxWidth) — 1200-1600px
+  • Padding lateral (paddingX) — px
+  • Gap entre blocos (gap) — espaço entre logo/navegação/ações
+  • Alinhamento vertical (verticalAlign) — center / start / end
+  • Altura do header (height) — px
+  • Header fixo (sticky) — sim/não
+  • Encolher ao rolar (shrinkOnScroll) — sim/não
+  • Sombra ao rolar (shadowOnScroll) — sim/não
+
+
+================================================================================
+  NAVEGAÇÃO
+================================================================================
+
+────────────────────────────────────────────────────────────────────────────────
+  5. MENU DESKTOP
+────────────────────────────────────────────────────────────────────────────────
+  • Estilo do menu — Horizontal / Dropdown / Mega Menu
+  • Tamanho da fonte (menuFontSize) — px
+  • Maiúsculas (menuUppercase) — sim/não
+  • Espaçamento de letras (menuLetterSpacing) — em
+  • Peso da fonte (menuFontWeight) — 300-900
+  • Estilo do hover (menuHoverStyle) — Underline / Background / Ambos
+  • Separador visual (menuSeparator) — Nenhum / Linha / Ponto / Barra
+  • Linha divisória entre logo e menu (menuDividerLine) — sim/não
+  • Superfície elevada nos itens (headerSurface) — sim/não
+  • Dropdown elevado (dropdownElevated) — sim/não
+  • Padding nos itens (menuItemPadding) — sim/não
+  • Borda inferior do header (borderBottom) — sim/não
+
+────────────────────────────────────────────────────────────────────────────────
+  6. MEGA MENU
+────────────────────────────────────────────────────────────────────────────────
+  • Número de colunas — 2 / 3 / 4 / 5 / 6
+  • Largura — Auto / Full / Container
+  • Mostrar imagens (showImages) — sim/não
+  • Mostrar banner (showBanner) — sim/não
+  • Imagem do banner (bannerImageUrl) — URL
+  • Link do banner (bannerLink) — URL
+
+────────────────────────────────────────────────────────────────────────────────
+  7. MENU MOBILE
+────────────────────────────────────────────────────────────────────────────────
+  • Posição do drawer — Esquerda / Direita
+  • Busca no drawer (showSearchInDrawer) — sim/não
+  • Conta no drawer (showAccountInDrawer) — sim/não
+  • Carrinho no drawer (showCartInDrawer) — sim/não
+  • Itens fixos no rodapé (fixedFooterItems) — whatsapp, login, track-order
+  • Níveis máximos de navegação (maxLevels) — 2 / 3
+  • Estilo de agrupamento (groupStyle) — Accordion / List
+
+────────────────────────────────────────────────────────────────────────────────
+  8. ITENS DO MENU
+────────────────────────────────────────────────────────────────────────────────
+  • Adicionar/remover itens de menu
+  • Para cada item:
+    - Label (texto exibido)
+    - Link (URL de destino)
+    - Abrir em nova aba (openNewTab)
+    - Badge (ex: "Novo", "Promo", "-30%")
+    - Cor da badge (badgeColor)
+    - Ícone (icon)
+    - Subitens (children) — itens aninhados
+  • Reordenar itens (drag & drop)
+  • Mostrar ícones nos itens (showIcons) — sim/não
+  • Mostrar badges nos itens (showBadges) — sim/não
+
+
+================================================================================
+  ELEMENTOS
+================================================================================
+
+────────────────────────────────────────────────────────────────────────────────
+  9. ÍCONES
+────────────────────────────────────────────────────────────────────────────────
+  • Tamanho dos ícones (iconSize) — px
+  • Espessura do traço (iconStrokeWidth) — px
+  • Mostrar busca (showSearch) — sim/não
+  • Mostrar conta (showAccount) — sim/não
+  • Mostrar carrinho (showCart) — sim/não
+  • Estilo do badge do carrinho (cartBadgeStyle) — Dot / Count / Nenhum
+
+────────────────────────────────────────────────────────────────────────────────
+  10. ESTILO DOS ÍCONES (Icon Picker)
+────────────────────────────────────────────────────────────────────────────────
+  • Ícone da busca (searchIcon) — escolha entre ~10 variantes visuais
+  • Ícone da conta (accountIcon) — escolha entre ~10 variantes visuais
+  • Ícone do carrinho (cartIcon) — escolha entre ~10 variantes visuais
+
+────────────────────────────────────────────────────────────────────────────────
+  11. BUSCA
+────────────────────────────────────────────────────────────────────────────────
+  • Estilo da busca (searchStyle) — Inline / Modal / Drawer
+  • Placeholder do campo de busca
+  • Mostrar no desktop (showOnDesktop) — sim/não
+  • Mostrar no mobile (showOnMobile) — sim/não
+  • Auto-sugestão (autoSuggest) — sim/não
+  • Resultados máximos (maxResults) — número
+  • Atalho de teclado (shortcutEnabled) — Ctrl+K
+
+────────────────────────────────────────────────────────────────────────────────
+  12. CORES DO MENU
+────────────────────────────────────────────────────────────────────────────────
+  • Cor do link (linkColor) — hex
+  • Cor do link no hover (linkHoverColor) — hex
+  • Cor do link ativo (linkActiveColor) — hex
+  • Fundo do link (linkBg) — hex
+  • Fundo do link no hover (linkHoverBg) — hex
+
+
+================================================================================
+  CONTEÚDO
+================================================================================
+
+────────────────────────────────────────────────────────────────────────────────
+  13. BANNERS & ANÚNCIOS
+────────────────────────────────────────────────────────────────────────────────
+
+  BARRA DE ANÚNCIO (Announcement Bar):
+  • Ativar/desativar
+  • Mensagens (múltiplas)
+  • Velocidade da transição (speed) — segundos
+  • Cor de fundo (backgroundColor)
+  • Cor do texto (textColor)
+  • Mostrar ícone (showIcon) — sim/não
+  • Ícone (icon)
+  • Link de destino (link)
+  • Pausar no hover (pauseOnHover) — sim/não
+  • Estilo — Static / Carousel / Ticker
+  • Direção — LTR / RTL
+  • Regras de página (pageRules) — Todas / Apenas Home / Apenas Checkout / Apenas Mobile
+  • Agendamento (scheduleEnabled) — sim/não, com data início/fim
+  • Segmentação — Todos / Primeira visita / Logados / Campanha
+  • Texto do CTA (ctaText)
+  • Link do CTA (ctaLink)
+  • UTM Source / Medium / Campaign
+
+  BANNER ABAIXO DO HEADER (Banner Below):
+  • Ativar/desativar
+  • Imagem (imageUrl)
+  • Múltiplas imagens (images[])
+  • Link de destino
+  • Altura (height) — px
+  • Largura total (fullWidth) — sim/não
+  • Modo carrossel (carousel) — sim/não
+  • Velocidade do carrossel (carouselSpeed) — segundos
+
+
+================================================================================
+  TIPOGRAFIA DO MENU (Menu Typography)
+  Configuração avançada dentro de "Menu Desktop"
+================================================================================
+
+  • Família da fonte (fontFamily)
+  • Peso da fonte (fontWeight) — 400 / 500 / 600 / 700
+  • Tamanho no desktop (fontSizeDesktop) — 12-20px
+  • Tamanho no mobile (fontSizeMobile) — 12-20px
+  • Espaçamento de letras (letterSpacing) — -0.02 a 0.20em
+  • Transformação (textTransform) — none / uppercase
+  • Altura da linha (lineHeight) — 1.0 a 1.6
+
+
+================================================================================
+  BARRA DE MENU SEPARADA (Menu Bar)
+  Quando ativada, o menu aparece em uma barra dedicada abaixo do header
+================================================================================
+
+  • Ativar/desativar (enabled)
+  • Cor de fundo (backgroundColor)
+  • Cor do texto (textColor)
+  • Altura (height) — px
+  • Largura total (fullWidth) — sim/não
+  • Borda superior (borderTop) — sim/não
+  • Borda inferior (borderBottom) — sim/não
+  • Sombra (shadow) — none / subtle / medium
+
+
+================================================================================
+  RESUMO DE TODAS AS PROPRIEDADES ALTERÁVEIS
+================================================================================
+
+  Total de seções na sidebar: 13
+  Total de propriedades configuráveis: ~95+
+
+  DESIGN (4 seções):
+    - 8 presets prontos
+    - 9 layouts de header
+    - 3 estados visuais × 7 propriedades cada = 21 combinações
+    - 9 dimensões do container
+
+  NAVEGAÇÃO (4 seções):
+    - 12 propriedades do menu desktop
+    - 6 configurações do mega menu
+    - 7 configurações do menu mobile
+    - Itens ilimitados com 7 propriedades cada + subitens
+
+  ELEMENTOS (4 seções):
+    - 6 configurações de ícones
+    - 3 ícones personalizáveis (busca/conta/carrinho)
+    - 7 configurações de busca
+    - 5 cores do menu
+
+  CONTEÚDO (1 seção):
+    - 18 configurações da barra de anúncio
+    - 7 configurações do banner abaixo do header
+
+================================================================================

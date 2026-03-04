@@ -1,0 +1,243 @@
+================================================================================
+                    ESTILOS PRONTOS — O QUE CADA UM ALTERA
+================================================================================
+
+Cada estilo pronto do Admin Menu aplica automaticamente um conjunto de
+configurações do cabeçalho. Abaixo, o detalhamento de cada preset.
+
+────────────────────────────────────────────────────────────────────────────────
+1. MINIMAL
+   Inspiração: Apple
+   Tags: Clean, Premium
+────────────────────────────────────────────────────────────────────────────────
+   • Layout ..................... Classic (logo à esquerda, menu horizontal)
+   • Estilo do menu ............. Horizontal
+   • Maiúsculas ................. Não
+   • Peso da fonte .............. 400 (regular)
+   • Tamanho da fonte ........... 13px
+   • Hover ...................... Underline
+   • Separador .................. Nenhum
+   • Gap entre itens ............ 28px
+   • Superfície elevada ......... Não
+   • Borda inferior ............. Não
+   • Sombra ao rolar ............ Não
+   • Espessura dos ícones ....... 1.5
+   • Altura ..................... 52px
+   • Fixo (sticky) .............. Sim
+   • Encolher ao rolar .......... Não
+   • Tamanho dos ícones ......... 18px
+   • Busca ...................... Modal
+   • Conta ...................... Visível
+   • Carrinho ................... Visível (badge: dot)
+   • Estado Normal .............. Fundo: rgba(255,255,255,0.8), Texto: #1d1d1f, Blur: Sim
+   • Estado Sticky .............. Fundo: rgba(255,255,255,0.9), Texto: #1d1d1f, Borda: #d2d2d7, Blur: Sim
+   • Estado Transparente ........ Fundo: transparente, Texto: branco
+
+────────────────────────────────────────────────────────────────────────────────
+2. MARKETPLACE
+   Inspiração: Amazon / Shein
+   Tags: E-commerce, Denso
+────────────────────────────────────────────────────────────────────────────────
+   • Layout ..................... Double-row (duas linhas)
+   • Estilo do menu ............. Mega Menu
+   • Maiúsculas ................. Não
+   • Peso da fonte .............. 500 (medium)
+   • Tamanho da fonte ........... 14px
+   • Hover ...................... Background
+   • Separador .................. Nenhum
+   • Gap entre itens ............ 4px
+   • Padding nos itens .......... Sim
+   • Superfície elevada ......... Sim
+   • Dropdown elevado ........... Sim
+   • Borda inferior ............. Sim
+   • Sombra ao rolar ............ Sim
+   • Espessura dos ícones ....... 1.5
+   • Altura ..................... 60px
+   • Fixo (sticky) .............. Sim
+   • Encolher ao rolar .......... Sim
+   • Tamanho dos ícones ......... 22px
+   • Busca ...................... Inline (campo visível)
+   • Conta ...................... Visível
+   • Carrinho ................... Visível (badge: count)
+   • Estado Normal .............. Fundo: #ffffff, Texto: #0f1111, Borda: #ddd, Sombra: sutil
+   • Estado Sticky .............. Fundo: #f7f7f7, Texto: #0f1111, Sombra: medium, Blur: Sim
+   • Estado Transparente ........ Fundo: transparente, Texto: branco
+
+────────────────────────────────────────────────────────────────────────────────
+3. MAISON
+   Inspiração: Gucci / Dior
+   Tags: Luxo, Editorial
+────────────────────────────────────────────────────────────────────────────────
+   • Layout ..................... Centered (logo central)
+   • Estilo do menu ............. Horizontal
+   • Maiúsculas ................. Sim
+   • Peso da fonte .............. 400 (regular)
+   • Tamanho da fonte ........... 10px
+   • Hover ...................... Underline
+   • Separador .................. Nenhum
+   • Gap entre itens ............ 40px
+   • Espaçamento de letras ...... 0.25em
+   • Superfície elevada ......... Não
+   • Borda inferior ............. Sim
+   • Sombra ao rolar ............ Não
+   • Espessura dos ícones ....... 1
+   • Altura ..................... 80px
+   • Fixo (sticky) .............. Sim
+   • Encolher ao rolar .......... Sim
+   • Tamanho dos ícones ......... 18px
+   • Busca ...................... Modal
+   • Conta ...................... Visível
+   • Carrinho ................... Visível (badge: dot)
+   • Estado Normal .............. Fundo: #faf8f5, Texto: #2c2418, Borda: #e0d5c5
+   • Estado Sticky .............. Fundo: #faf8f5, Texto: #2c2418, Sombra: sutil, Blur: Sim
+   • Estado Transparente ........ Fundo: transparente, Texto: branco
+
+────────────────────────────────────────────────────────────────────────────────
+4. ZARA
+   Inspiração: Zara
+   Tags: Ultra-Clean, Destaque
+────────────────────────────────────────────────────────────────────────────────
+   • Layout ..................... Hamburger-only (menu oculto, só ícone ☰)
+   • Estilo do menu ............. Horizontal
+   • Maiúsculas ................. Sim
+   • Peso da fonte .............. 300 (light)
+   • Tamanho da fonte ........... 13px
+   • Hover ...................... Underline
+   • Separador .................. Nenhum
+   • Gap entre itens ............ 20px
+   • Espaçamento de letras ...... 0.3em
+   • Superfície elevada ......... Não
+   • Borda inferior ............. Não
+   • Sombra ao rolar ............ Não
+   • Espessura dos ícones ....... 1
+   • Altura ..................... 72px
+   • Fixo (sticky) .............. Sim
+   • Encolher ao rolar .......... Sim
+   • Tamanho dos ícones ......... 20px
+   • Busca ...................... Modal
+   • Conta ...................... Oculta
+   • Carrinho ................... Visível (badge: dot)
+   • Mobile Drawer .............. Esquerda, 3 níveis, estilo lista
+   • Estado Normal .............. Fundo: #ffffff, Texto: #000000
+   • Estado Sticky .............. Fundo: #ffffff, Borda: #f0f0f0, Blur: Sim
+   • Estado Transparente ........ Fundo: transparente, Texto: branco
+
+────────────────────────────────────────────────────────────────────────────────
+5. UNIQLO
+   Inspiração: Uniqlo
+   Tags: Funcional, Compacto
+────────────────────────────────────────────────────────────────────────────────
+   • Layout ..................... Classic (logo à esquerda)
+   • Estilo do menu ............. Dropdown
+   • Maiúsculas ................. Não
+   • Peso da fonte .............. 500 (medium)
+   • Tamanho da fonte ........... 13px
+   • Hover ...................... Ambos (underline + background)
+   • Separador .................. Nenhum
+   • Gap entre itens ............ 16px
+   • Superfície elevada ......... Sim
+   • Dropdown elevado ........... Sim
+   • Borda inferior ............. Sim
+   • Sombra ao rolar ............ Sim
+   • Espessura dos ícones ....... 1.5
+   • Altura ..................... 52px
+   • Fixo (sticky) .............. Sim
+   • Encolher ao rolar .......... Não
+   • Tamanho dos ícones ......... 20px
+   • Busca ...................... Modal
+   • Conta ...................... Visível
+   • Carrinho ................... Visível (badge: count)
+   • Estado Normal .............. Fundo: #ffffff, Texto: #1a1a1a, Borda: #e0e0e0
+   • Estado Sticky .............. Fundo: #ffffff, Borda: #d0d0d0, Sombra: sutil, Blur: Sim
+   • Estado Transparente ........ Fundo: transparente, Texto: branco
+
+────────────────────────────────────────────────────────────────────────────────
+6. PASTEL
+   Inspiração: Beleza / Cosméticos
+   Tags: Beauty, Delicado
+────────────────────────────────────────────────────────────────────────────────
+   • Layout ..................... Centered (logo central)
+   • Estilo do menu ............. Horizontal
+   • Maiúsculas ................. Não
+   • Peso da fonte .............. 400 (regular)
+   • Tamanho da fonte ........... 13px
+   • Hover ...................... Underline
+   • Separador .................. Nenhum
+   • Gap entre itens ............ 28px
+   • Superfície elevada ......... Não
+   • Borda inferior ............. Sim
+   • Sombra ao rolar ............ Não
+   • Espessura dos ícones ....... 1
+   • Altura ..................... 68px
+   • Fixo (sticky) .............. Sim
+   • Encolher ao rolar .......... Sim
+   • Tamanho dos ícones ......... 18px
+   • Busca ...................... Modal
+   • Conta ...................... Visível
+   • Carrinho ................... Visível (badge: dot)
+   • Estado Normal .............. Fundo: #fdf2f8, Texto: #831843, Borda: #fbcfe8
+   • Estado Sticky .............. Fundo: #fdf2f8, Borda: #f9a8d4, Sombra: sutil, Blur: Sim
+   • Estado Transparente ........ Fundo: transparente, Texto: branco
+
+────────────────────────────────────────────────────────────────────────────────
+7. LUXURY
+   Inspiração: Rolex / Cartier
+   Tags: Invisível, Alto Padrão
+────────────────────────────────────────────────────────────────────────────────
+   • Layout ..................... Transparent (sobre o hero)
+   • Estilo do menu ............. Horizontal
+   • Maiúsculas ................. Sim
+   • Peso da fonte .............. 300 (light)
+   • Tamanho da fonte ........... 11px
+   • Hover ...................... Underline
+   • Separador .................. Nenhum
+   • Gap entre itens ............ 36px
+   • Espaçamento de letras ...... 0.22em
+   • Superfície elevada ......... Não
+   • Borda inferior ............. Não
+   • Sombra ao rolar ............ Não
+   • Espessura dos ícones ....... 1
+   • Altura ..................... 80px
+   • Fixo (sticky) .............. Sim
+   • Encolher ao rolar .......... Sim
+   • Tamanho dos ícones ......... 18px
+   • Busca ...................... Modal
+   • Conta ...................... Visível
+   • Carrinho ................... Visível (badge: dot)
+   • Estado Normal .............. Fundo: transparente, Texto: #ffffff
+   • Estado Sticky .............. Fundo: rgba(255,255,255,0.95), Texto: #1a1a1a, Sombra: sutil, Blur: Sim
+   • Estado Transparente ........ Fundo: transparente, Texto: branco
+
+────────────────────────────────────────────────────────────────────────────────
+8. BUILDER
+   Inspiração: Loja completa / E-commerce profissional
+   Tags: Completo, Tudo-em-um
+────────────────────────────────────────────────────────────────────────────────
+   • Layout ..................... Double-row (duas linhas)
+   • Estilo do menu ............. Mega Menu
+   • Maiúsculas ................. Não
+   • Peso da fonte .............. 500 (medium)
+   • Tamanho da fonte ........... 14px
+   • Hover ...................... Ambos (underline + background)
+   • Separador .................. Nenhum
+   • Gap entre itens ............ 8px
+   • Padding nos itens .......... Sim
+   • Superfície elevada ......... Sim
+   • Dropdown elevado ........... Sim
+   • Borda inferior ............. Sim
+   • Sombra ao rolar ............ Sim
+   • Espessura dos ícones ....... 1.5
+   • Altura ..................... 64px
+   • Fixo (sticky) .............. Sim
+   • Encolher ao rolar .......... Sim
+   • Tamanho dos ícones ......... 20px
+   • Busca ...................... Inline (campo visível)
+   • Conta ...................... Visível
+   • Carrinho ................... Visível (badge: count)
+   • Barra de Anúncio ........... Ativada (Ticker, fundo preto, texto branco)
+     - Mensagens: "Frete grátis acima de R$ 199", "10% OFF na primeira compra"
+   • Estado Normal .............. Fundo: #ffffff, Texto: #1a1a1a, Borda: #e5e7eb, Sombra: sutil
+   • Estado Sticky .............. Fundo: #ffffff, Borda: #d1d5db, Sombra: medium, Blur: Sim
+   • Estado Transparente ........ Fundo: transparente, Texto: branco
+
+================================================================================
