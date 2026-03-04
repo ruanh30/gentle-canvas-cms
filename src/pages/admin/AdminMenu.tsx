@@ -420,7 +420,7 @@ const HEADER_PRESETS: HeaderPreset[] = [
       },
     },
   },
-  // ── 3. FASHION HOUSE — Gucci/Dior: centered, serif feel, gold-on-cream ──
+  // ── 3. MAISON — Gucci/Dior: centered, serif feel, gold-on-cream ──
   {
     id: 'fashion-house',
     name: 'Maison',
@@ -439,26 +439,7 @@ const HEADER_PRESETS: HeaderPreset[] = [
       },
     },
   },
-  // ── 4. STREETWEAR — Nike/Supreme: black bar, bold uppercase, no borders ──
-  {
-    id: 'streetwear',
-    name: 'Streetwear',
-    tagline: 'Estilo Nike/Supreme. Fundo preto, bold, sem bordas, impacto total',
-    tags: ['Bold', 'Urban'],
-    config: {
-      layout: 'classic', menuStyle: 'horizontal', menuUppercase: true, menuFontWeight: 700,
-      menuFontSize: 12, menuHoverStyle: 'underline', menuSeparator: 'none', menuItemGap: 24,
-      menuLetterSpacing: 0.1, headerSurface: false, borderBottom: false, shadowOnScroll: false,
-      iconStrokeWidth: 2, height: 60, sticky: true, shrinkOnScroll: true, iconSize: 20,
-      showSearch: true, searchStyle: 'modal', showAccount: true, showCart: true, cartBadgeStyle: 'count',
-      states: {
-        normal: { backgroundColor: '#000000', textColor: '#ffffff', borderBottom: false, borderColor: 'transparent', shadow: 'none', blur: false, height: 60 },
-        sticky: { backgroundColor: '#000000', textColor: '#ffffff', borderBottom: false, borderColor: 'transparent', shadow: 'strong', blur: false, height: 52 },
-        transparent: { backgroundColor: 'transparent', textColor: '#ffffff', borderBottom: false, borderColor: 'transparent', shadow: 'none', blur: false, height: 60 },
-      },
-    },
-  },
-  // ── 5. ZARA — Ultra-minimal, hamburger desktop, giant logo ──
+  // ── 4. ZARA — Ultra-minimal, hamburger desktop, giant logo ──
   {
     id: 'zara',
     name: 'Zara',
@@ -478,27 +459,7 @@ const HEADER_PRESETS: HeaderPreset[] = [
       },
     },
   },
-  // ── 6. ASOS — Dark header, prominent inline search, mega menu ──
-  {
-    id: 'asos',
-    name: 'ASOS',
-    tagline: 'Header escuro com busca inline grande e mega menu. Funcional e moderno',
-    tags: ['Fast Fashion', 'Mega Menu'],
-    config: {
-      layout: 'double-row', menuStyle: 'mega-menu', menuUppercase: true, menuFontWeight: 700,
-      menuFontSize: 13, menuHoverStyle: 'background', menuSeparator: 'none', menuItemGap: 0,
-      menuItemPadding: true, menuLetterSpacing: 0.04, headerSurface: false, dropdownElevated: true,
-      borderBottom: false, shadowOnScroll: false, iconStrokeWidth: 1.5, height: 56, sticky: true,
-      shrinkOnScroll: true, iconSize: 20,
-      showSearch: true, searchStyle: 'inline', showAccount: true, showCart: true, cartBadgeStyle: 'count',
-      states: {
-        normal: { backgroundColor: '#2d2d2d', textColor: '#ffffff', borderBottom: false, borderColor: 'transparent', shadow: 'none', blur: false, height: 56 },
-        sticky: { backgroundColor: '#1a1a1a', textColor: '#ffffff', borderBottom: false, borderColor: 'transparent', shadow: 'strong', blur: false, height: 48 },
-        transparent: { backgroundColor: 'transparent', textColor: '#ffffff', borderBottom: false, borderColor: 'transparent', shadow: 'none', blur: false, height: 56 },
-      },
-    },
-  },
-  // ── 7. UNIQLO — White, red accent intent, compact, functional ──
+  // ── 5. UNIQLO — White, red accent intent, compact, functional ──
   {
     id: 'uniqlo',
     name: 'Uniqlo',
@@ -517,102 +478,7 @@ const HEADER_PRESETS: HeaderPreset[] = [
       },
     },
   },
-  // ── 8. H&M — Centered logo, black topbar, nav below, drawer search ──
-  {
-    id: 'hm',
-    name: 'H&M',
-    tagline: 'Logo central em fundo preto, navegação abaixo em branco. Dualidade forte',
-    tags: ['Bicolor', 'Fashion'],
-    config: {
-      layout: 'centered', menuStyle: 'horizontal', menuUppercase: true, menuFontWeight: 600,
-      menuFontSize: 12, menuHoverStyle: 'underline', menuSeparator: 'none', menuItemGap: 24,
-      menuLetterSpacing: 0.08, headerSurface: false, borderBottom: true, shadowOnScroll: false,
-      iconStrokeWidth: 1.5, height: 64, sticky: true, shrinkOnScroll: true, iconSize: 20,
-      showSearch: true, searchStyle: 'drawer', showAccount: true, showCart: true, cartBadgeStyle: 'count',
-      states: {
-        normal: { backgroundColor: '#000000', textColor: '#ffffff', borderBottom: true, borderColor: '#333333', shadow: 'none', blur: false, height: 64 },
-        sticky: { backgroundColor: '#000000', textColor: '#ffffff', borderBottom: true, borderColor: '#222222', shadow: 'medium', blur: false, height: 52 },
-        transparent: { backgroundColor: 'transparent', textColor: '#ffffff', borderBottom: false, borderColor: 'transparent', shadow: 'none', blur: false, height: 64 },
-      },
-    },
-  },
-  // ── 9. GLASS — Frosted glass, translucent, modern webapp feel ──
-  {
-    id: 'glass',
-    name: 'Glass',
-    tagline: 'Glassmorphism real. Blur forte, bordas translúcidas, flutua sobre o conteúdo',
-    tags: ['Moderno', 'Flutuante'],
-    config: {
-      layout: 'classic', menuStyle: 'horizontal', menuUppercase: false, menuFontWeight: 500,
-      menuFontSize: 13, menuHoverStyle: 'background', menuSeparator: 'none', menuItemGap: 20,
-      headerSurface: false, borderBottom: true, shadowOnScroll: false, iconStrokeWidth: 1.5,
-      height: 56, sticky: true, shrinkOnScroll: true, iconSize: 20,
-      showSearch: true, searchStyle: 'modal', showAccount: true, showCart: true, cartBadgeStyle: 'dot',
-      states: {
-        normal: { backgroundColor: 'rgba(255,255,255,0.65)', textColor: '#1a1a1a', borderBottom: true, borderColor: 'rgba(255,255,255,0.35)', shadow: 'subtle', blur: true, height: 56 },
-        sticky: { backgroundColor: 'rgba(255,255,255,0.85)', textColor: '#1a1a1a', borderBottom: true, borderColor: 'rgba(255,255,255,0.5)', shadow: 'medium', blur: true, height: 48 },
-        transparent: { backgroundColor: 'transparent', textColor: '#ffffff', borderBottom: false, borderColor: 'transparent', shadow: 'none', blur: false, height: 56 },
-      },
-    },
-  },
-  // ── 10. BRUTALIST — Raw, anti-design, max contrast, inverts on scroll ──
-  {
-    id: 'brutalist',
-    name: 'Brutalist',
-    tagline: 'Anti-design. Borda grossa, peso máximo, inversão ao rolar. Impacto raw',
-    tags: ['Raw', 'Anti-design'],
-    config: {
-      layout: 'classic', menuStyle: 'horizontal', menuUppercase: true, menuFontWeight: 900,
-      menuFontSize: 14, menuHoverStyle: 'underline', menuSeparator: 'slash', menuItemGap: 16,
-      menuLetterSpacing: 0, headerSurface: false, borderBottom: true, shadowOnScroll: false,
-      iconStrokeWidth: 2.5, height: 64, sticky: true, shrinkOnScroll: false, iconSize: 22,
-      showSearch: true, searchStyle: 'modal', showAccount: true, showCart: true, cartBadgeStyle: 'count',
-      states: {
-        normal: { backgroundColor: '#ffffff', textColor: '#000000', borderBottom: true, borderColor: '#000000', shadow: 'none', blur: false, height: 64 },
-        sticky: { backgroundColor: '#000000', textColor: '#ffffff', borderBottom: true, borderColor: '#ffffff', shadow: 'none', blur: false, height: 56 },
-        transparent: { backgroundColor: 'transparent', textColor: '#ffffff', borderBottom: false, borderColor: 'transparent', shadow: 'none', blur: false, height: 64 },
-      },
-    },
-  },
-  // ── 11. NEON — Cyberpunk, accent-colored text on black ──
-  {
-    id: 'neon',
-    name: 'Neon',
-    tagline: 'Cyberpunk/gamer. Texto neon em fundo total black, borda com glow',
-    tags: ['Gamer', 'Vibrante'],
-    config: {
-      layout: 'classic', menuStyle: 'dropdown', menuUppercase: true, menuFontWeight: 600,
-      menuFontSize: 11, menuHoverStyle: 'background', menuSeparator: 'none', menuItemGap: 16,
-      menuLetterSpacing: 0.12, headerSurface: false, dropdownElevated: true, borderBottom: true,
-      shadowOnScroll: false, iconStrokeWidth: 2, height: 56, sticky: true, shrinkOnScroll: true, iconSize: 18,
-      showSearch: true, searchStyle: 'modal', showAccount: true, showCart: true, cartBadgeStyle: 'count',
-      states: {
-        normal: { backgroundColor: '#0a0a0a', textColor: '#00ff88', borderBottom: true, borderColor: '#00ff8825', shadow: 'none', blur: false, height: 56 },
-        sticky: { backgroundColor: '#050505', textColor: '#00ff88', borderBottom: true, borderColor: '#00ff8835', shadow: 'medium', blur: false, height: 48 },
-        transparent: { backgroundColor: 'transparent', textColor: '#00ff88', borderBottom: false, borderColor: 'transparent', shadow: 'none', blur: false, height: 56 },
-      },
-    },
-  },
-  // ── 12. NAVY GOLD — Luxury classic: deep navy + gold accents ──
-  {
-    id: 'navy-gold',
-    name: 'Navy & Gold',
-    tagline: 'Joalheria/relojoaria. Azul marinho profundo com texto dourado, ultra-premium',
-    tags: ['Joalheria', 'Clássico'],
-    config: {
-      layout: 'centered', menuStyle: 'dropdown', menuUppercase: true, menuFontWeight: 400,
-      menuFontSize: 10, menuHoverStyle: 'underline', menuSeparator: 'dot', menuItemGap: 32,
-      menuLetterSpacing: 0.2, headerSurface: false, dropdownElevated: true, borderBottom: true,
-      shadowOnScroll: false, iconStrokeWidth: 1, height: 72, sticky: true, shrinkOnScroll: true, iconSize: 18,
-      showSearch: true, searchStyle: 'modal', showAccount: true, showCart: true, cartBadgeStyle: 'dot',
-      states: {
-        normal: { backgroundColor: '#0c1a3a', textColor: '#d4a853', borderBottom: true, borderColor: '#1a2d5a', shadow: 'none', blur: false, height: 72 },
-        sticky: { backgroundColor: '#091430', textColor: '#d4a853', borderBottom: true, borderColor: '#1a2d5a', shadow: 'subtle', blur: false, height: 56 },
-        transparent: { backgroundColor: 'transparent', textColor: '#d4a853', borderBottom: false, borderColor: 'transparent', shadow: 'none', blur: false, height: 72 },
-      },
-    },
-  },
-  // ── 13. PASTEL — Soft pink, delicate, beauty/cosmetics ──
+  // ── 6. PASTEL — Soft pink, delicate, beauty/cosmetics ──
   {
     id: 'pastel',
     name: 'Pastel',
@@ -631,26 +497,7 @@ const HEADER_PRESETS: HeaderPreset[] = [
       },
     },
   },
-  // ── 14. EARTH — Organic/eco brand, deep forest greens ──
-  {
-    id: 'earth',
-    name: 'Earth',
-    tagline: 'Marcas eco/orgânicas. Verde floresta profundo, sensação natural e honesta',
-    tags: ['Eco', 'Natural'],
-    config: {
-      layout: 'classic', menuStyle: 'horizontal', menuUppercase: false, menuFontWeight: 400,
-      menuFontSize: 14, menuHoverStyle: 'underline', menuSeparator: 'none', menuItemGap: 28,
-      headerSurface: false, borderBottom: true, shadowOnScroll: false, iconStrokeWidth: 1.5,
-      height: 60, sticky: true, shrinkOnScroll: true, iconSize: 20,
-      showSearch: true, searchStyle: 'drawer', showAccount: true, showCart: true, cartBadgeStyle: 'count',
-      states: {
-        normal: { backgroundColor: '#1a2f23', textColor: '#c8dcc9', borderBottom: true, borderColor: '#2a4a33', shadow: 'none', blur: false, height: 60 },
-        sticky: { backgroundColor: '#142a1d', textColor: '#c8dcc9', borderBottom: true, borderColor: '#2a4a33', shadow: 'subtle', blur: false, height: 52 },
-        transparent: { backgroundColor: 'transparent', textColor: '#ffffff', borderBottom: false, borderColor: 'transparent', shadow: 'none', blur: false, height: 60 },
-      },
-    },
-  },
-  // ── 15. LUXURY TRANSPARENT — Over-hero, appears on scroll, Rolex/Cartier ──
+  // ── 7. LUXURY — Transparent over hero, Rolex/Cartier ──
   {
     id: 'luxury',
     name: 'Luxury',
@@ -669,83 +516,7 @@ const HEADER_PRESETS: HeaderPreset[] = [
       },
     },
   },
-  // ── 16. TECH SaaS — Double-row, inline search, pill-shaped items ──
-  {
-    id: 'tech',
-    name: 'Tech',
-    tagline: 'SaaS/Tech. Double-row, busca inline, mega menu, items em pílula',
-    tags: ['SaaS', 'Funcional'],
-    config: {
-      layout: 'double-row', menuStyle: 'mega-menu', menuUppercase: false, menuFontWeight: 500,
-      menuFontSize: 14, menuHoverStyle: 'background', menuSeparator: 'none', menuItemGap: 8,
-      menuItemPadding: true, headerSurface: true, dropdownElevated: true, borderBottom: true,
-      shadowOnScroll: true, iconStrokeWidth: 1.5, height: 64, sticky: true, shrinkOnScroll: true, iconSize: 20,
-      showSearch: true, searchStyle: 'inline', showAccount: true, showCart: true, cartBadgeStyle: 'count',
-      states: {
-        normal: { backgroundColor: '#ffffff', textColor: '#0f172a', borderBottom: true, borderColor: '#e2e8f0', shadow: 'none', blur: false, height: 64 },
-        sticky: { backgroundColor: '#f8fafc', textColor: '#0f172a', borderBottom: true, borderColor: '#e2e8f0', shadow: 'subtle', blur: true, height: 56 },
-        transparent: { backgroundColor: 'transparent', textColor: '#ffffff', borderBottom: false, borderColor: 'transparent', shadow: 'none', blur: false, height: 64 },
-      },
-    },
-  },
-  // ── 17. MONOCHROME — Grayscale, editorial, magazine-style with separators ──
-  {
-    id: 'monochrome',
-    name: 'Monochrome',
-    tagline: 'Editorial cinza. Separadores entre itens, peso forte, estilo magazine',
-    tags: ['Magazine', 'Sóbrio'],
-    config: {
-      layout: 'classic', menuStyle: 'horizontal', menuUppercase: true, menuFontWeight: 700,
-      menuFontSize: 11, menuHoverStyle: 'underline', menuSeparator: 'line', menuItemGap: 20,
-      menuLetterSpacing: 0.14, headerSurface: false, borderBottom: true, shadowOnScroll: false,
-      iconStrokeWidth: 1.5, height: 56, sticky: true, shrinkOnScroll: true, iconSize: 18,
-      showSearch: true, searchStyle: 'modal', showAccount: true, showCart: true, cartBadgeStyle: 'count',
-      states: {
-        normal: { backgroundColor: '#f5f5f5', textColor: '#262626', borderBottom: true, borderColor: '#d4d4d4', shadow: 'none', blur: false, height: 56 },
-        sticky: { backgroundColor: '#e5e5e5', textColor: '#171717', borderBottom: true, borderColor: '#a3a3a3', shadow: 'subtle', blur: true, height: 48 },
-        transparent: { backgroundColor: 'transparent', textColor: '#ffffff', borderBottom: false, borderColor: 'transparent', shadow: 'none', blur: false, height: 56 },
-      },
-    },
-  },
-  // ── 18. WARM BOUTIQUE — Beige/terracotta, cozy, artisan feel ──
-  {
-    id: 'warm-boutique',
-    name: 'Boutique',
-    tagline: 'Artesanal. Bege e terracota, feeling de loja física acolhedora',
-    tags: ['Artesanal', 'Aconchegante'],
-    config: {
-      layout: 'classic', menuStyle: 'dropdown', menuUppercase: false, menuFontWeight: 400,
-      menuFontSize: 14, menuHoverStyle: 'underline', menuSeparator: 'dot', menuItemGap: 24,
-      headerSurface: false, dropdownElevated: true, borderBottom: true, shadowOnScroll: false,
-      iconStrokeWidth: 1.5, height: 64, sticky: true, shrinkOnScroll: true, iconSize: 20,
-      showSearch: true, searchStyle: 'drawer', showAccount: true, showCart: true, cartBadgeStyle: 'count',
-      states: {
-        normal: { backgroundColor: '#f5ebe0', textColor: '#5c3d2e', borderBottom: true, borderColor: '#ddb892', shadow: 'none', blur: false, height: 64 },
-        sticky: { backgroundColor: '#f5ebe0', textColor: '#5c3d2e', borderBottom: true, borderColor: '#c8a27c', shadow: 'subtle', blur: true, height: 52 },
-        transparent: { backgroundColor: 'transparent', textColor: '#ffffff', borderBottom: false, borderColor: 'transparent', shadow: 'none', blur: false, height: 64 },
-      },
-    },
-  },
-  // ── 19. AURORA — Deep indigo/purple, centered, cosmic feel ──
-  {
-    id: 'aurora',
-    name: 'Aurora',
-    tagline: 'Indigo profundo, feeling cósmico. Centrado, ultra-espaçado, lettering fino',
-    tags: ['Cósmico', 'Inovador'],
-    config: {
-      layout: 'centered', menuStyle: 'horizontal', menuUppercase: true, menuFontWeight: 300,
-      menuFontSize: 11, menuHoverStyle: 'underline', menuSeparator: 'none', menuItemGap: 36,
-      menuLetterSpacing: 0.18, headerSurface: false, borderBottom: false, shadowOnScroll: false,
-      iconStrokeWidth: 1, height: 72, sticky: true, shrinkOnScroll: true, iconSize: 18,
-      showSearch: true, searchStyle: 'modal', showAccount: true, showCart: true, cartBadgeStyle: 'dot',
-      states: {
-        normal: { backgroundColor: '#1e1b4b', textColor: '#c7d2fe', borderBottom: false, borderColor: 'transparent', shadow: 'none', blur: false, height: 72 },
-        sticky: { backgroundColor: '#1e1b4b', textColor: '#c7d2fe', borderBottom: true, borderColor: '#312e81', shadow: 'medium', blur: true, height: 52 },
-        transparent: { backgroundColor: 'transparent', textColor: '#ffffff', borderBottom: false, borderColor: 'transparent', shadow: 'none', blur: false, height: 72 },
-      },
-    },
-  },
-  // ── 20. BUILDER — Full featured double-row, all icons, announcement-ready ──
+  // ── 8. BUILDER — Full featured double-row, all icons, announcement-ready ──
   {
     id: 'builder',
     name: 'Builder',
