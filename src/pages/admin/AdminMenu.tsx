@@ -952,7 +952,7 @@ function StateCard({ label, color, state, onChange, onCopyFrom }: {
 function PresetsSection() {
   const { draft, updateDraft, updateDraftSection } = useTheme();
   const h = draft.header ?? {} as any;
-  const [pendingPreset, setPendingPreset] = React.useState<HeaderPreset | null>(null);
+  
   const [headerHistory, setHeaderHistory] = React.useState<Array<{ config: any; presetName: string; timestamp: string }>>([]);
   const [showHistory, setShowHistory] = React.useState(false);
 
@@ -977,7 +977,6 @@ function PresetsSection() {
         preset: preset.id,
       } as any,
     });
-    setPendingPreset(null);
   };
 
   const restoreVersion = (index: number) => {
@@ -1038,21 +1037,10 @@ function PresetsSection() {
 
       <div className="grid grid-cols-2 gap-3">
         {HEADER_PRESETS.map(p => (
-          <PresetCard key={p.id} preset={p} isActive={h.preset === p.id} onApply={() => setPendingPreset(p)} />
+          <PresetCard key={p.id} preset={p} isActive={h.preset === p.id} onApply={() => applyPreset(p)} />
         ))}
       </div>
 
-      {pendingPreset && (
-        <PresetConfirmDialog
-          open={!!pendingPreset}
-          onOpenChange={open => { if (!open) setPendingPreset(null); }}
-          presetName={pendingPreset.name}
-          currentConfig={{ ...h }}
-          presetConfig={pendingPreset.config}
-          onConfirm={() => applyPreset(pendingPreset)}
-          scope="header"
-        />
-      )}
     </div>
   );
 }
