@@ -63,24 +63,6 @@ export function CategoryPanel() {
         { value: 'no-filters', label: 'Sem filtros — apenas listagem limpa' },
       ]} />
 
-      <SectionDivider label="Modo de Exibição" />
-      <p className="text-[10px] text-muted-foreground/60 leading-relaxed -mt-2">
-        Escolha como os produtos são apresentados na listagem.
-      </p>
-      <OptionPicker label="Visualização" value={c.displayMode} onChange={v => set({ displayMode: v })} options={[
-        { value: 'grid', label: 'Grade', description: 'Cards organizados em colunas e linhas' },
-        { value: 'list', label: 'Lista', description: 'Produtos exibidos linha a linha' },
-        { value: 'masonry', label: 'Masonry', description: 'Grade com alturas variadas (estilo Pinterest)' },
-        { value: 'carousel', label: 'Carrossel', description: 'Deslizar horizontal entre produtos' },
-        { value: 'compact-grid', label: 'Compacto', description: 'Grade densa sem espaçamento entre cards' },
-      ]} />
-      {c.displayMode === 'carousel' && (
-        <>
-          <ToggleRow label="Autoplay" hint="Avança automaticamente entre os produtos do carrossel" checked={c.carouselAutoplay} onChange={v => set({ carouselAutoplay: v })} />
-          <NumberSlider label="Velocidade" value={c.carouselSpeed} onChange={v => set({ carouselSpeed: v })} min={2} max={10} suffix="s" />
-        </>
-      )}
-
       <SectionDivider label="Produtos por Página" />
       <NumberSlider label="Produtos por página" value={c.productsPerPage} onChange={v => set({ productsPerPage: v })} min={8} max={48} step={4} />
 
