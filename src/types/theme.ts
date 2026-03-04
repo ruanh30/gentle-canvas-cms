@@ -589,7 +589,8 @@ export interface ThemeQuickView {
 
 export interface ThemeCustomCode {
   css: string;
-  headScripts: string;
+  /** @deprecated Scripts field removed for security — use integrations instead */
+  headScripts?: string;
 }
 
 // ============================================================
