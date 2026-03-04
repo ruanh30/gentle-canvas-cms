@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '@/contexts/CartContext';
 import { useAuth } from '@/contexts/AuthContext';
@@ -9,9 +9,10 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { mockCoupons } from '@/data/mock';
 import { toast } from 'sonner';
-import { Check, Tag, UserPlus, LogIn, Mail, Lock, ArrowLeft } from 'lucide-react';
+import { Check, Tag, UserPlus, LogIn, Mail, Lock, ArrowLeft, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { brazilianStates } from '@/data/brazilian-locations';
+import { validateCPF, maskCPF, maskCEP, maskPhone, fetchAddressByCEP } from '@/lib/brazilian-utils';
 
 type CheckoutMode = 'choose' | 'guest' | 'login' | 'form';
 
@@ -24,6 +25,22 @@ const CheckoutPage = () => {
   const [loading, setLoading] = useState(false);
   const [selectedState, setSelectedState] = useState('');
   const [selectedCity, setSelectedCity] = useState('');
+
+  // CPF
+  const [cpf, setCpf] = useState('');
+  const [cpfError, setCpfError] = useState('');
+  const [cpfTouched, setCpfTouched] = useState(false);
+
+  // CEP & address
+  const [cep, setCep] = useState('');
+  const [cepLoading, setCepLoading] = useState(false);
+  const [cepNotFound, setCepNotFound] = useState(false);
+  const [street, setStreet] = useState('');
+  const [neighborhood, setNeighborhood] = useState('');
+  const [addressLocked, setAddressLocked] = useState(false);
+
+  // Phone
+  const [phone, setPhone] = useState('');
 
   const isLoggedCustomer = user && user.role === 'customer';
   const [mode, setMode] = useState<CheckoutMode>(isLoggedCustomer ? 'form' : 'choose');
@@ -45,6 +62,81 @@ const CheckoutPage = () => {
       : appliedCoupon.value
     : 0;
   const total = subtotal + shipping - discount;
+
+  // CPF handlers
+  const handleCpfChange = (value: string) => {
+    const masked = maskCPF(value);
+    setCpf(masked);
+    if (cpfTouched) {
+      const cleaned = masked.replace(/\D/g, '');
+      if (cleaned.length === 11) {
+        setCpfError(validateCPF(cleaned) ? '' : 'CPF inválido. Verifique e tente novamente.');
+      } else {
+        setCpfError('');
+      }
+    }
+  };
+
+  const handleCpfBlur = () => {
+    setCpfTouched(true);
+    const cleaned = cpf.replace(/\D/g, '');
+    if (cleaned.length > 0 && cleaned.length < 11) {
+      setCpfError('CPF incompleto.');
+    } else if (cleaned.length === 11) {
+      setCpfError(validateCPF(cleaned) ? '' : 'CPF inválido. Verifique e tente novamente.');
+    } else {
+      setCpfError('');
+    }
+  };
+
+  // CEP handler
+  const handleCepChange = useCallback(async (value: string) => {
+    const masked = maskCEP(value);
+    setCep(masked);
+    const cleaned = masked.replace(/\D/g, '');
+
+    if (cleaned.length === 8) {
+      setCepLoading(true);
+      setCepNotFound(false);
+      const data = await fetchAddressByCEP(cleaned);
+      setCepLoading(false);
+
+      if (data) {
+        setStreet(data.logradouro || '');
+        setNeighborhood(data.bairro || '');
+        setSelectedState(data.uf || '');
+        // Find city match
+        const stateData = brazilianStates.find(s => s.uf === data.uf);
+        if (stateData) {
+          const cityMatch = stateData.cities.find(
+            c => c.toLowerCase() === data.localidade.toLowerCase()
+          );
+          setSelectedCity(cityMatch || data.localidade);
+        } else {
+          setSelectedCity(data.localidade || '');
+        }
+        setAddressLocked(true);
+        toast.success('Endereço encontrado!');
+      } else {
+        setCepNotFound(true);
+        setAddressLocked(false);
+        setStreet('');
+        setNeighborhood('');
+        setSelectedState('');
+        setSelectedCity('');
+        toast.error('CEP não encontrado. Preencha o endereço manualmente.');
+      }
+    } else {
+      if (addressLocked) {
+        setAddressLocked(false);
+        setStreet('');
+        setNeighborhood('');
+        setSelectedState('');
+        setSelectedCity('');
+      }
+      setCepNotFound(false);
+    }
+  }, [addressLocked]);
 
   const applyCoupon = () => {
     const found = mockCoupons.find(c => c.code.toLowerCase() === couponCode.toLowerCase() && c.active);
@@ -77,6 +169,14 @@ const CheckoutPage = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    // Validate CPF before submit
+    const cleanedCpf = cpf.replace(/\D/g, '');
+    if (cleanedCpf.length > 0 && !validateCPF(cleanedCpf)) {
+      setCpfTouched(true);
+      setCpfError('CPF inválido. Verifique e tente novamente.');
+      toast.error('Corrija o CPF antes de continuar.');
+      return;
+    }
     setLoading(true);
     setTimeout(() => {
       clearCart();
@@ -192,8 +292,30 @@ const CheckoutPage = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div><Label>Nome completo</Label><Input required placeholder="Seu nome" className="mt-1" defaultValue={isLoggedCustomer ? user.name : ''} /></div>
                 <div><Label>E-mail</Label><Input type="email" required placeholder="email@exemplo.com" className="mt-1" defaultValue={isLoggedCustomer ? user.email : ''} /></div>
-                <div><Label>Telefone</Label><Input placeholder="(11) 99999-0000" className="mt-1" /></div>
-                <div><Label>CPF</Label><Input placeholder="000.000.000-00" className="mt-1" /></div>
+                <div>
+                  <Label>Telefone</Label>
+                  <Input
+                    placeholder="(11) 99999-0000"
+                    className="mt-1"
+                    value={phone}
+                    onChange={e => setPhone(maskPhone(e.target.value))}
+                    maxLength={15}
+                  />
+                </div>
+                <div>
+                  <Label>CPF</Label>
+                  <Input
+                    placeholder="000.000.000-00"
+                    className={cn("mt-1", cpfError && "border-destructive focus-visible:ring-destructive")}
+                    value={cpf}
+                    onChange={e => handleCpfChange(e.target.value)}
+                    onBlur={handleCpfBlur}
+                    maxLength={14}
+                  />
+                  {cpfError && (
+                    <p className="text-xs text-destructive mt-1">{cpfError}</p>
+                  )}
+                </div>
               </div>
             </section>
 
@@ -201,11 +323,48 @@ const CheckoutPage = () => {
             <section className="space-y-4">
               <h2 className="text-lg font-semibold">Endereço de entrega</h2>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div><Label>CEP</Label><Input required placeholder="00000-000" className="mt-1" /></div>
-                <div className="md:col-span-2"><Label>Rua</Label><Input required placeholder="Rua / Avenida" className="mt-1" /></div>
+                <div>
+                  <Label>CEP</Label>
+                  <div className="relative mt-1">
+                    <Input
+                      required
+                      placeholder="00000-000"
+                      value={cep}
+                      onChange={e => handleCepChange(e.target.value)}
+                      maxLength={9}
+                    />
+                    {cepLoading && (
+                      <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin text-muted-foreground" />
+                    )}
+                  </div>
+                  {cepNotFound && (
+                    <p className="text-xs text-destructive mt-1">CEP não encontrado. Preencha manualmente.</p>
+                  )}
+                </div>
+                <div className="md:col-span-2">
+                  <Label>Rua</Label>
+                  <Input
+                    required
+                    placeholder="Rua / Avenida"
+                    className="mt-1"
+                    value={street}
+                    onChange={e => setStreet(e.target.value)}
+                    readOnly={addressLocked && !!street}
+                  />
+                </div>
                 <div><Label>Número</Label><Input required placeholder="Nº" className="mt-1" /></div>
                 <div><Label>Complemento</Label><Input placeholder="Apto, bloco..." className="mt-1" /></div>
-                <div><Label>Bairro</Label><Input required placeholder="Bairro" className="mt-1" /></div>
+                <div>
+                  <Label>Bairro</Label>
+                  <Input
+                    required
+                    placeholder="Bairro"
+                    className="mt-1"
+                    value={neighborhood}
+                    onChange={e => setNeighborhood(e.target.value)}
+                    readOnly={addressLocked && !!neighborhood}
+                  />
+                </div>
                 <div>
                   <Label>Estado</Label>
                   <Select value={selectedState} onValueChange={(val) => { setSelectedState(val); setSelectedCity(''); }}>
