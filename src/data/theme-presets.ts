@@ -545,7 +545,6 @@ export const defaultThemeConfig: ThemeConfig = {
 
   customCode: {
     css: '',
-    headScripts: '',
   },
 };
 
