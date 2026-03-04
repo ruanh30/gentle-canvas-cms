@@ -984,14 +984,21 @@ export function StoreHeader() {
       'z-50 transition-all duration-300',
       shrinkTransparentActive
         ? 'bg-transparent'
+        : (isTransparentLayout && !scrolled)
+        ? 'bg-transparent'
         : activeState?.blur
         ? 'backdrop-blur-md'
         : !activeState && 'bg-background/95 backdrop-blur-md supports-[backdrop-filter]:bg-background/80',
-      !shrinkTransparentActive && 'shadow-[0_1px_3px_0_rgba(0,0,0,0.04)]',
+      !shrinkTransparentActive && !(isTransparentLayout && !scrolled) && 'shadow-[0_1px_3px_0_rgba(0,0,0,0.04)]',
       (h.sticky || h.shrinkOnScroll || h.shrinkTransparent) && 'sticky top-0',
+      isTransparentLayout && !scrolled && 'absolute w-full',
       headerHidden && 'lg:translate-y-0 -translate-y-full',
     )} style={{
-      ...(shrinkTransparentActive ? { backgroundColor: 'transparent', borderColor: 'transparent' } : headerStyle),
+      ...(shrinkTransparentActive
+        ? { backgroundColor: 'transparent', borderColor: 'transparent' }
+        : (isTransparentLayout && !scrolled)
+        ? { backgroundColor: 'transparent', color: activeState?.textColor, borderColor: 'transparent' }
+        : headerStyle),
       paddingTop: 'env(safe-area-inset-top, 0px)',
     }}>
 
