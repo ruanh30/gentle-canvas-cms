@@ -953,9 +953,16 @@ function PresetsSection() {
   const { draft, updateDraft, updateDraftSection } = useTheme();
   const h = draft.header ?? {} as any;
   const [pendingPreset, setPendingPreset] = React.useState<HeaderPreset | null>(null);
+  const [headerHistory, setHeaderHistory] = React.useState<Array<{ config: any; presetName: string; timestamp: string }>>([]);
+  const [showHistory, setShowHistory] = React.useState(false);
 
   const applyPreset = (preset: HeaderPreset) => {
-    // Full replace: preserve only user-content fields, replace everything else
+    // Save current state to history before applying
+    setHeaderHistory(prev => [
+      { config: { ...h }, presetName: h.preset ? (HEADER_PRESETS.find(p => p.id === h.preset)?.name || 'Personalizado') : 'Personalizado', timestamp: new Date().toISOString() },
+      ...prev,
+    ].slice(0, 10));
+
     const preserved = {
       searchIcon: h.searchIcon,
       accountIcon: h.accountIcon,
@@ -970,26 +977,70 @@ function PresetsSection() {
         preset: preset.id,
       } as any,
     });
-    toast.success(`Preset "${preset.name}" aplicado`);
+    setPendingPreset(null);
+  };
+
+  const restoreVersion = (index: number) => {
+    const version = headerHistory[index];
+    // Save current before restoring
+    setHeaderHistory(prev => [
+      { config: { ...h }, presetName: h.preset ? (HEADER_PRESETS.find(p => p.id === h.preset)?.name || 'Personalizado') : 'Personalizado', timestamp: new Date().toISOString() },
+      ...prev.filter((_, i) => i !== index),
+    ].slice(0, 10));
+    updateDraft({ header: version.config });
+  };
+
+  const formatTime = (iso: string) => {
+    const d = new Date(iso);
+    return d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
   };
 
   return (
     <div className="space-y-5">
       <div>
         <h3 className="text-[15px] font-semibold text-foreground">Estilos Prontos</h3>
-        <p className="text-[12px] text-muted-foreground/60 mt-0.5">Escolha um ponto de partida profissional e personalize depois. Cada preset configura layout, estados, ícones e interações automaticamente.</p>
+        <p className="text-[12px] text-muted-foreground/60 mt-0.5">Escolha um ponto de partida profissional e personalize depois.</p>
       </div>
+
+      {/* Version history */}
+      {headerHistory.length > 0 && (
+        <div className="space-y-2">
+          <button
+            onClick={() => setShowHistory(!showHistory)}
+            className="flex items-center gap-2 text-[12px] font-medium text-muted-foreground hover:text-foreground transition-colors w-full"
+          >
+            <RotateCcw className="h-3.5 w-3.5" />
+            <span>Versões anteriores ({headerHistory.length})</span>
+            <ChevronDown className={cn('h-3 w-3 ml-auto transition-transform', showHistory && 'rotate-180')} />
+          </button>
+          {showHistory && (
+            <div className="space-y-1.5 pl-1">
+              {headerHistory.map((v, i) => (
+                <div key={i} className="flex items-center gap-2 rounded-lg border border-border/40 bg-muted/20 px-3 py-2">
+                  <div className="flex-1 min-w-0">
+                    <p className="text-[12px] font-medium text-foreground truncate">{v.presetName}</p>
+                    <p className="text-[10px] text-muted-foreground/50">{formatTime(v.timestamp)}</p>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-7 text-[11px] gap-1 text-muted-foreground hover:text-foreground shrink-0"
+                    onClick={() => restoreVersion(i)}
+                  >
+                    <RotateCcw className="h-3 w-3" /> Restaurar
+                  </Button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
       <div className="grid grid-cols-2 gap-3">
         {HEADER_PRESETS.map(p => (
           <PresetCard key={p.id} preset={p} isActive={h.preset === p.id} onApply={() => setPendingPreset(p)} />
         ))}
       </div>
-      <Button variant="outline" size="sm" className="w-full gap-1.5 text-xs" onClick={() => {
-        updateDraftSection('header', { preset: 'custom' });
-        toast.success('Resetado para padrão');
-      }}>
-        <RotateCcw className="h-3.5 w-3.5" /> Restaurar Padrão
-      </Button>
 
       {pendingPreset && (
         <PresetConfirmDialog
