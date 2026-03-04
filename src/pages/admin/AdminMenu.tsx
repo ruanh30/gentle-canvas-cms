@@ -1013,7 +1013,7 @@ function LayoutSection() {
       <ControlGroup title="Comportamento ao Rolar" hint="Como o cabeçalho reage quando o cliente rola a página para baixo">
         <ToggleRow label="Fixo (sticky)" hint="O cabeçalho permanece sempre visível no topo, mesmo ao rolar a página inteira" checked={h.sticky} onChange={v => set({ sticky: v })} />
         <ToggleRow label="Encolher ao rolar" hint="A altura do cabeçalho diminui suavemente ao rolar para baixo, liberando mais área de conteúdo" checked={h.shrinkOnScroll} onChange={v => set({ shrinkOnScroll: v })} />
-        <ToggleRow label="Sombra ao rolar" hint="Uma sombra sutil aparece no cabeçalho quando a página é rolada, criando profundidade" checked={h.shadowOnScroll} onChange={v => set({ shadowOnScroll: v })} />
+        
       </ControlGroup>
 
       <ControlGroup title="Profundidade & Interação" collapsible hint="Controla a superfície visual do cabeçalho e a qualidade de interação dos itens de menu">
