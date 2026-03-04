@@ -348,13 +348,17 @@ function CategoriesTab() {
             return;
           }
           const isNewCat = !categories.find(x => x.id === cat.id);
-          setCategories(prev => prev.find(x => x.id === cat.id) ? prev.map(x => x.id === cat.id ? cat : x) : [...prev, cat]);
+          const updated = categories.find(x => x.id === cat.id) ? categories.map(x => x.id === cat.id ? cat : x) : [...categories, cat];
+          setCategories(updated);
+          persistCategories(updated);
           if (isNewCat) autoAddCategoryToHome(cat);
           setEditing(null);
         }}
         onBack={() => setEditing(null)}
         onDelete={!isNew ? () => {
-          setCategories(prev => prev.filter(x => x.id !== editing.id));
+          const updated = categories.filter(x => x.id !== editing.id);
+          setCategories(updated);
+          persistCategories(updated);
           setEditing(null);
           toast({ title: 'Categoria excluída', description: `"${editing.name}" foi removida.` });
         } : undefined}
@@ -437,6 +441,22 @@ function persistProducts(products: Product[]) {
     localStorage.setItem('flashloja_products', JSON.stringify(products));
     mockProducts.length = 0;
     products.forEach(p => mockProducts.push(p));
+  } catch {}
+}
+
+function persistCategories(categories: Category[]) {
+  try {
+    localStorage.setItem('flashloja_categories', JSON.stringify(categories));
+    mockCategories.length = 0;
+    categories.forEach(c => mockCategories.push(c));
+  } catch {}
+}
+
+function persistCollections(collections: ProductCollection[]) {
+  try {
+    localStorage.setItem('flashloja_collections', JSON.stringify(collections));
+    mockCollections.length = 0;
+    collections.forEach(c => mockCollections.push(c));
   } catch {}
 }
 
@@ -1494,13 +1514,17 @@ function CollectionsTab() {
             return;
           }
           const isNewCol = !collections.find(x => x.id === c.id);
-          setCollections(prev => prev.find(x => x.id === c.id) ? prev.map(x => x.id === c.id ? c : x) : [...prev, c]);
+          const updated = collections.find(x => x.id === c.id) ? collections.map(x => x.id === c.id ? c : x) : [...collections, c];
+          setCollections(updated);
+          persistCollections(updated);
           if (isNewCol) autoAddCollectionToHome(c);
           setEditing(null);
         }}
         onBack={() => setEditing(null)}
         onDelete={!isNew ? () => {
-          setCollections(prev => prev.filter(x => x.id !== editing.id));
+          const updated = collections.filter(x => x.id !== editing.id);
+          setCollections(updated);
+          persistCollections(updated);
           setEditing(null);
           toast({ title: 'Coleção excluída', description: `"${editing.name}" foi removida.` });
         } : undefined}
