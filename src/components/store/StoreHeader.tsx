@@ -659,6 +659,8 @@ export function StoreHeader() {
   const lastScrollY = useRef(0);
   const scrolledRef = useRef(false);
   const rafId = useRef(0);
+  const headerRef = useRef<HTMLElement>(null);
+  const [expandedHeight, setExpandedHeight] = useState(0);
 
   // Dynamic Google Font loading for menu typography
   useEffect(() => {
@@ -742,6 +744,23 @@ export function StoreHeader() {
       cancelAnimationFrame(rafId.current);
     };
   }, [h.sticky]);
+
+  // Measure expanded header height once to create stable spacer
+  useEffect(() => {
+    const el = headerRef.current;
+    if (!el) return;
+    // Measure when not scrolled (full height)
+    const measure = () => {
+      if (!scrolledRef.current) {
+        const h = el.getBoundingClientRect().height;
+        if (h > 0) setExpandedHeight(h);
+      }
+    };
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [h.layout, h.height, h.menuBar?.enabled, h.announcement?.enabled]);
 
   // Auto-close drawer on navigation
   useEffect(() => {
@@ -1101,8 +1120,12 @@ export function StoreHeader() {
 
   const hasNavBarBelow = (isDoubleRow || h.layout === 'centered') && !shrinkActive && !isMenuBarSeparated;
 
+  const isSticky = h.sticky || h.shrinkOnScroll || h.shrinkTransparent;
+  const needsSpacer = isSticky && expandedHeight > 0 && !isTransparentLayout;
+
   return (
-    <header className={cn(
+    <>
+    <header ref={headerRef} className={cn(
       'z-50 transition-all duration-300',
       shrinkTransparentActive
         ? 'bg-transparent'
@@ -1348,6 +1371,14 @@ export function StoreHeader() {
 
       {!shrinkActive && <BannerBelow />}
     </header>
+    {/* Invisible spacer keeps scroll position stable when header shrinks */}
+    {needsSpacer && (
+      <div
+        aria-hidden
+        style={{ height: expandedHeight, marginTop: -expandedHeight, visibility: 'hidden', pointerEvents: 'none' }}
+      />
+    )}
+    </>
   );
 }
 
