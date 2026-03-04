@@ -34,6 +34,7 @@ import { mockCategories } from '@/data/mock';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { PresetConfirmDialog } from '@/components/admin/PresetConfirmDialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 
 /* ================================================================== */
 /*  TYPES                                                               */
@@ -952,17 +953,8 @@ function StateCard({ label, color, state, onChange, onCopyFrom }: {
 function PresetsSection() {
   const { draft, updateDraft, updateDraftSection } = useTheme();
   const h = draft.header ?? {} as any;
-  
-  const [headerHistory, setHeaderHistory] = React.useState<Array<{ config: any; presetName: string; timestamp: string }>>([]);
-  const [showHistory, setShowHistory] = React.useState(false);
 
   const applyPreset = (preset: HeaderPreset) => {
-    // Save current state to history before applying
-    setHeaderHistory(prev => [
-      { config: { ...h }, presetName: h.preset ? (HEADER_PRESETS.find(p => p.id === h.preset)?.name || 'Personalizado') : 'Personalizado', timestamp: new Date().toISOString() },
-      ...prev,
-    ].slice(0, 10));
-
     const preserved = {
       searchIcon: h.searchIcon,
       accountIcon: h.accountIcon,
@@ -979,61 +971,12 @@ function PresetsSection() {
     });
   };
 
-  const restoreVersion = (index: number) => {
-    const version = headerHistory[index];
-    // Save current before restoring
-    setHeaderHistory(prev => [
-      { config: { ...h }, presetName: h.preset ? (HEADER_PRESETS.find(p => p.id === h.preset)?.name || 'Personalizado') : 'Personalizado', timestamp: new Date().toISOString() },
-      ...prev.filter((_, i) => i !== index),
-    ].slice(0, 10));
-    updateDraft({ header: version.config });
-  };
-
-  const formatTime = (iso: string) => {
-    const d = new Date(iso);
-    return d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-  };
-
   return (
     <div className="space-y-5">
       <div>
         <h3 className="text-[15px] font-semibold text-foreground">Estilos Prontos</h3>
         <p className="text-[12px] text-muted-foreground/60 mt-0.5">Escolha um ponto de partida profissional e personalize depois.</p>
       </div>
-
-      {/* Version history */}
-      {headerHistory.length > 0 && (
-        <div className="space-y-2">
-          <button
-            onClick={() => setShowHistory(!showHistory)}
-            className="flex items-center gap-2 text-[12px] font-medium text-muted-foreground hover:text-foreground transition-colors w-full"
-          >
-            <RotateCcw className="h-3.5 w-3.5" />
-            <span>Versões anteriores ({headerHistory.length})</span>
-            <ChevronDown className={cn('h-3 w-3 ml-auto transition-transform', showHistory && 'rotate-180')} />
-          </button>
-          {showHistory && (
-            <div className="space-y-1.5 pl-1">
-              {headerHistory.map((v, i) => (
-                <div key={i} className="flex items-center gap-2 rounded-lg border border-border/40 bg-muted/20 px-3 py-2">
-                  <div className="flex-1 min-w-0">
-                    <p className="text-[12px] font-medium text-foreground truncate">{v.presetName}</p>
-                    <p className="text-[10px] text-muted-foreground/50">{formatTime(v.timestamp)}</p>
-                  </div>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="h-7 text-[11px] gap-1 text-muted-foreground hover:text-foreground shrink-0"
-                    onClick={() => restoreVersion(i)}
-                  >
-                    <RotateCcw className="h-3 w-3" /> Restaurar
-                  </Button>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
 
       <div className="grid grid-cols-2 gap-3">
         {HEADER_PRESETS.map(p => (
@@ -1877,8 +1820,9 @@ const SECTION_COMPONENTS: Record<SectionKey, React.FC> = {
 
 export default function AdminMenu() {
   const [activeSection, setActiveSection] = useState<SectionKey>('presets');
-  const { isDirty, publish } = useTheme();
+  const { isDirty, publish, versions, rollback } = useTheme();
   const navigate = useNavigate();
+  const [showVersions, setShowVersions] = useState(false);
 
   const handleSave = () => {
     publish('Atualização do cabeçalho');
@@ -1915,6 +1859,9 @@ export default function AdminMenu() {
           <Button variant="outline" size="sm" className="gap-1.5 text-xs h-8" onClick={() => navigate('/admin/customization')}>
             <Palette className="h-3.5 w-3.5" /> Aparência
           </Button>
+          <Button variant="ghost" size="sm" className="gap-1.5 text-xs h-8 text-muted-foreground" onClick={() => setShowVersions(true)}>
+            <RotateCcw className="h-3.5 w-3.5" /> Versões
+          </Button>
           {isDirty && (
             <Button size="sm" className="gap-1.5 text-xs h-8 bg-[hsl(var(--flash-brand-deep))] hover:bg-[hsl(var(--flash-brand-darker))] text-white" onClick={handleSave}>
               <Save className="h-3.5 w-3.5" /> Publicar
@@ -1922,6 +1869,39 @@ export default function AdminMenu() {
           )}
         </div>
       </div>
+
+      {/* Versions dialog */}
+      <Dialog open={showVersions} onOpenChange={setShowVersions}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Histórico de Versões</DialogTitle>
+            <DialogDescription>Restaure uma versão anterior do tema</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-2 max-h-80 overflow-y-auto">
+            {versions.length === 0 && (
+              <p className="text-sm text-muted-foreground text-center py-8">Nenhuma versão publicada ainda.</p>
+            )}
+            {versions.map(v => (
+              <div key={v.version} className="flex items-center justify-between p-3 bg-secondary rounded-lg">
+                <div>
+                  <p className="text-sm font-medium">Versão {v.version}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {new Date(v.publishedAt).toLocaleString('pt-BR')}
+                    {v.note && ` — ${v.note}`}
+                  </p>
+                </div>
+                <Button variant="outline" size="sm" className="h-7 text-xs" onClick={() => {
+                  rollback(v.version);
+                  setShowVersions(false);
+                  toast.info(`Versão ${v.version} restaurada como rascunho.`);
+                }}>
+                  Restaurar
+                </Button>
+              </div>
+            ))}
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* Live preview */}
       <LiveHeaderPreview />
