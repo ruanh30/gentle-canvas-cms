@@ -169,12 +169,21 @@ const CheckoutPage = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Validate CPF before submit
+    // Validate CPF
     const cleanedCpf = cpf.replace(/\D/g, '');
-    if (cleanedCpf.length > 0 && !validateCPF(cleanedCpf)) {
+    if (!cleanedCpf || !validateCPF(cleanedCpf)) {
       setCpfTouched(true);
-      setCpfError('CPF inválido. Verifique e tente novamente.');
+      setCpfError(cleanedCpf ? 'CPF inválido. Verifique e tente novamente.' : 'CPF é obrigatório.');
       toast.error('Corrija o CPF antes de continuar.');
+      return;
+    }
+    // Validate state & city
+    if (!selectedState) {
+      toast.error('Selecione o estado.');
+      return;
+    }
+    if (!selectedCity) {
+      toast.error('Selecione a cidade.');
       return;
     }
     setLoading(true);
@@ -303,8 +312,9 @@ const CheckoutPage = () => {
                   />
                 </div>
                 <div>
-                  <Label>CPF</Label>
+                  <Label>CPF <span className="text-destructive">*</span></Label>
                   <Input
+                    required
                     placeholder="000.000.000-00"
                     className={cn("mt-1", cpfError && "border-destructive focus-visible:ring-destructive")}
                     value={cpf}
