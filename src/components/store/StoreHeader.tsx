@@ -708,7 +708,8 @@ export function StoreHeader() {
   useEffect(() => {
     const onScroll = () => {
       const y = window.scrollY;
-      setScrolled(y > 10);
+      // Hysteresis: activate at 50px, deactivate at 10px to prevent flickering
+      setScrolled(prev => prev ? y > 10 : y > 50);
 
       // Hide on scroll down, show on scroll up (mobile only)
       const isMobileVp = window.innerWidth < 1024;
