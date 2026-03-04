@@ -1,7 +1,8 @@
-/* cache-bust-v3 */
+/* cache-bust-v4 */
 import React, { createContext, useContext, useState, useEffect, useCallback, useRef, type ReactNode } from 'react';
-import { ThemeConfig, ThemeVersion } from '@/types/theme';
+import { ThemeConfig, ThemeVersion, ThemeHomepageSection } from '@/types/theme';
 import { defaultThemeConfig } from '@/data/theme-presets';
+import { mockCollections } from '@/data/mock';
 
 // ============================================================
 // Provider Props — standalone (localStorage) + Inertia (server) modes
@@ -249,6 +250,31 @@ function migrateTheme(config: ThemeConfig): ThemeConfig {
     if (!pc.buttonStyle) pc.buttonStyle = 'solid';
     c.productCard = pc;
   }
+
+  // Ensure active collections are present in homepageSections
+  if (c.homepageSections) {
+    const sections = [...c.homepageSections];
+    const activeCollections = mockCollections.filter(col => col.active);
+    const missing = activeCollections.filter(col =>
+      !sections.some(s =>
+        s.id === col.id ||
+        s.id === `col-section-${col.id}` ||
+        (s.type === 'collections' && (s.settings?.collectionId as string) === col.id)
+      )
+    );
+    if (missing.length > 0) {
+      const newSections: ThemeHomepageSection[] = missing.map(col => ({
+        id: col.id,
+        type: 'collections' as const,
+        enabled: true,
+        title: col.name,
+        showTitle: true,
+        settings: { collectionId: col.id },
+      }));
+      c.homepageSections = [...sections, ...newSections];
+    }
+  }
+
   return c;
 }
 
