@@ -377,24 +377,15 @@ const HomePage = () => {
             ) : (
               <>
                 {/* Desktop */}
-                <div className="hidden md:flex flex-wrap justify-center gap-6">
+                <div className={cn('hidden md:grid gap-6', gridCols[theme.category?.columnsDesktop || 4] || gridCols[4])}>
                   {desktopProducts.map(product => (
-                    <div key={product.id} className={cn(
-                      theme.category?.columnsDesktop === 2 ? 'w-[calc(50%-12px)]' :
-                      theme.category?.columnsDesktop === 3 ? 'w-[calc(33.333%-16px)]' :
-                      theme.category?.columnsDesktop === 5 ? 'w-[calc(20%-19.2px)]' :
-                      'w-[calc(25%-18px)]'
-                    )}>
-                      <ProductCard product={product} />
-                    </div>
+                    <ProductCard key={product.id} product={product} />
                   ))}
                 </div>
                 {/* Mobile */}
-                <div className="flex md:hidden flex-wrap justify-center gap-6">
+                <div className="grid md:hidden grid-cols-2 gap-4">
                   {mobileProducts.map(product => (
-                    <div key={product.id} className="w-[calc(50%-12px)]">
-                      <ProductCard product={product} />
-                    </div>
+                    <ProductCard key={product.id} product={product} />
                   ))}
                 </div>
               </>
@@ -629,24 +620,15 @@ const HomePage = () => {
             ) : (
               <>
                 {/* Desktop */}
-                <div className="hidden md:flex flex-wrap justify-center gap-6">
+                <div className={cn('hidden md:grid gap-6', gridCols[theme.category?.columnsDesktop || 4] || gridCols[4])}>
                   {desktopProducts.map(product => (
-                    <div key={product.id} className={cn(
-                      theme.category?.columnsDesktop === 2 ? 'w-[calc(50%-12px)]' :
-                      theme.category?.columnsDesktop === 3 ? 'w-[calc(33.333%-16px)]' :
-                      theme.category?.columnsDesktop === 5 ? 'w-[calc(20%-19.2px)]' :
-                      'w-[calc(25%-18px)]'
-                    )}>
-                      <ProductCard product={product} />
-                    </div>
+                    <ProductCard key={product.id} product={product} />
                   ))}
                 </div>
                 {/* Mobile */}
-                <div className="flex md:hidden flex-wrap justify-center gap-6">
+                <div className="grid md:hidden grid-cols-2 gap-4">
                   {mobileProducts.map(product => (
-                    <div key={product.id} className="w-[calc(50%-12px)]">
-                      <ProductCard product={product} />
-                    </div>
+                    <ProductCard key={product.id} product={product} />
                   ))}
                 </div>
               </>
