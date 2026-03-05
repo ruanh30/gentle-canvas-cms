@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState, useMemo } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Link } from 'react-router-dom';
 import { mockProducts, mockCategories, mockCollections } from '@/data/mock';
@@ -213,10 +213,6 @@ const HomePage = () => {
 
   const renderSection = (section: ThemeHomepageSection) => {
     const isCarousel = (section.settings?.displayMode as string) === 'carousel';
-    const mobileDisplayMode = (section.settings?.mobileDisplayMode as string) || 'same';
-    const effectiveCarousel = section.type === 'categories' && mobileDisplayMode !== 'same' && isMobile
-      ? mobileDisplayMode === 'carousel'
-      : isCarousel;
     const carouselSpeed = (section.settings?.carouselSpeed as number) || 4;
     const carouselShowArrows = (section.settings?.showArrows as boolean) ?? true;
     const isHiddenMobile = hiddenMobile.includes(section.id);
@@ -365,9 +361,10 @@ const HomePage = () => {
       case 'categories': {
         const showImage = (section.settings?.showImage as boolean) !== false;
         const imageShape = (section.settings?.imageShape as string) || 'circle';
-        const imageSize = (section.settings?.imageSize as number) || 80;
+        const imageSize = isMobile ? ((section.settings?.imageSizeMobile as number) || (section.settings?.imageSize as number) || 80) : ((section.settings?.imageSize as number) || 80);
         const imageBorder = (section.settings?.imageBorder as boolean) ?? false;
         const imageBorderColor = (section.settings?.imageBorderColor as string) || '#e91e8c';
+        const imageBorderWidth = isMobile ? ((section.settings?.imageBorderWidthMobile as number) || (section.settings?.imageBorderWidth as number) || 2) : ((section.settings?.imageBorderWidth as number) || 2);
         const shapeClass = imageShape === 'circle' ? 'rounded-full' : imageShape === 'rounded' ? 'rounded-xl' : 'rounded-none';
         const selectedIds = (section.settings?.selectedCategoryIds as string[]) || [];
         const filteredCategories = selectedIds.length > 0 ? mockCategories.filter(c => selectedIds.includes(c.id)) : mockCategories;
@@ -397,7 +394,7 @@ const HomePage = () => {
                   style={{
                     width: imageSize,
                     height: imageSize,
-                    ...(imageBorder ? { border: `${(section.settings?.imageBorderWidth as number) || 2}px solid ${imageBorderColor}` } : {}),
+                    ...(imageBorder ? { border: `${imageBorderWidth}px solid ${imageBorderColor}` } : {}),
                   }}
                 >
                   <img src={cat.image} alt={cat.name} className={cn('w-full h-full object-cover transition-transform duration-500 group-hover:scale-110', shapeClass)} loading="lazy" />
@@ -413,8 +410,8 @@ const HomePage = () => {
             {section.showTitle !== false && (
               <SectionHeader title={section.title} size="md" subtitle="Encontre o que procura" align={(section.settings?.titleAlign as 'left'|'center'|'right') || 'center'} />
             )}
-            {effectiveCarousel ? (
-              <SectionCarousel speed={carouselSpeed} showArrows={carouselShowArrows} centered gap={(section.settings?.carouselGap as number) ?? 16}>
+            {isCarousel ? (
+              <SectionCarousel speed={carouselSpeed} showArrows={carouselShowArrows} centered gap={isMobile ? ((section.settings?.carouselGapMobile as number) ?? (section.settings?.carouselGap as number) ?? 16) : ((section.settings?.carouselGap as number) ?? 16)}>
                 {filteredCategories.map(categoryCard)}
               </SectionCarousel>
             ) : (

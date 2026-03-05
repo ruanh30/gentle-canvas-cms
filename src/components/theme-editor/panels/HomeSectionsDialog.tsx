@@ -447,12 +447,10 @@ interface SettingsProps {
 
 function CarouselSettings({ section, setSetting }: SettingsProps) {
   const mode = (section.settings?.displayMode as string) || 'grid';
-  const mobileMode = (section.settings?.mobileDisplayMode as string) || 'same';
-  const isAnyCarousel = mode === 'carousel' || (section.type === 'categories' && mobileMode === 'carousel');
   return (
     <SettingsCard title="Modo de exibição">
       <TwoCol>
-        <FieldGroup label="Desktop">
+        <FieldGroup label="Exibição">
           <select
             value={mode}
             onChange={e => setSetting(section.id, 'displayMode', e.target.value)}
@@ -462,59 +460,60 @@ function CarouselSettings({ section, setSetting }: SettingsProps) {
             <option value="carousel">Carrossel</option>
           </select>
         </FieldGroup>
-        {section.type === 'categories' && (
-          <FieldGroup label="Mobile" hint="Modo de exibição específico para celular">
-            <select
-              value={mobileMode}
-              onChange={e => setSetting(section.id, 'mobileDisplayMode', e.target.value)}
-              className="w-full h-9 text-sm rounded-md border border-border bg-background px-3"
-            >
-              <option value="same">Igual ao desktop</option>
-              <option value="grid">Grade</option>
-              <option value="carousel">Carrossel</option>
-            </select>
+        {mode === 'carousel' && (
+          <FieldGroup label="Velocidade" hint="Segundos entre transições">
+            <div className="flex items-center gap-2">
+              <input type="range" min={1} max={10}
+                value={(section.settings?.carouselSpeed as number) || 4}
+                onChange={e => setSetting(section.id, 'carouselSpeed', Number(e.target.value))}
+                className="flex-1"
+              />
+              <span className="text-xs text-muted-foreground w-6 text-right">{(section.settings?.carouselSpeed as number) || 4}s</span>
+            </div>
           </FieldGroup>
         )}
       </TwoCol>
-      {isAnyCarousel && (
-        <>
-          <TwoCol>
-            <FieldGroup label="Velocidade" hint="Segundos entre transições">
-              <div className="flex items-center gap-2">
-                <input type="range" min={1} max={10}
-                  value={(section.settings?.carouselSpeed as number) || 4}
-                  onChange={e => setSetting(section.id, 'carouselSpeed', Number(e.target.value))}
-                  className="flex-1"
-                />
-                <span className="text-xs text-muted-foreground w-6 text-right">{(section.settings?.carouselSpeed as number) || 4}s</span>
-              </div>
-            </FieldGroup>
-          </TwoCol>
-          <div className="flex items-center gap-3">
-            <Switch
-              checked={(section.settings?.showArrows as boolean) ?? true}
-              onCheckedChange={v => setSetting(section.id, 'showArrows', v)}
-            />
-            <Label className="text-xs">Mostrar setas de navegação</Label>
-          </div>
-        </>
+      {mode === 'carousel' && (
+        <div className="flex items-center gap-3">
+          <Switch
+            checked={(section.settings?.showArrows as boolean) ?? true}
+            onCheckedChange={v => setSetting(section.id, 'showArrows', v)}
+          />
+          <Label className="text-xs">Mostrar setas de navegação</Label>
+        </div>
       )}
       {section.type === 'categories' && (
-        <FieldGroup label={mode === 'carousel' ? 'Espaçamento do carrossel' : 'Espaçamento da grade'}>
-          <div className="flex items-center gap-2">
-            <input type="range"
-              min={mode === 'carousel' ? 1 : 0}
-              max={mode === 'carousel' ? 100 : 32}
-              step={mode === 'carousel' ? 1 : 4}
-              value={(section.settings?.[mode === 'carousel' ? 'carouselGap' : 'gridGap'] as number) ?? 16}
-              onChange={e => setSetting(section.id, mode === 'carousel' ? 'carouselGap' : 'gridGap', Number(e.target.value))}
-              className="flex-1"
-            />
-            <span className="text-xs text-muted-foreground w-8 text-right">
-              {(section.settings?.[mode === 'carousel' ? 'carouselGap' : 'gridGap'] as number) ?? 16}px
-            </span>
-          </div>
-        </FieldGroup>
+        <>
+          <FieldGroup label={mode === 'carousel' ? 'Espaçamento do carrossel' : 'Espaçamento da grade'}>
+            <div className="flex items-center gap-2">
+              <input type="range"
+                min={mode === 'carousel' ? 1 : 0}
+                max={mode === 'carousel' ? 100 : 32}
+                step={mode === 'carousel' ? 1 : 4}
+                value={(section.settings?.[mode === 'carousel' ? 'carouselGap' : 'gridGap'] as number) ?? 16}
+                onChange={e => setSetting(section.id, mode === 'carousel' ? 'carouselGap' : 'gridGap', Number(e.target.value))}
+                className="flex-1"
+              />
+              <span className="text-xs text-muted-foreground w-8 text-right">
+                {(section.settings?.[mode === 'carousel' ? 'carouselGap' : 'gridGap'] as number) ?? 16}px
+              </span>
+            </div>
+          </FieldGroup>
+          {mode === 'carousel' && (
+            <FieldGroup label="Espaçamento do carrossel mobile" hint="Espaçamento entre itens no celular">
+              <div className="flex items-center gap-2">
+                <input type="range" min={1} max={100} step={1}
+                  value={(section.settings?.carouselGapMobile as number) ?? (section.settings?.carouselGap as number) ?? 16}
+                  onChange={e => setSetting(section.id, 'carouselGapMobile', Number(e.target.value))}
+                  className="flex-1"
+                />
+                <span className="text-xs text-muted-foreground w-8 text-right">
+                  {(section.settings?.carouselGapMobile as number) ?? (section.settings?.carouselGap as number) ?? 16}px
+                </span>
+              </div>
+            </FieldGroup>
+          )}
+        </>
       )}
     </SettingsCard>
   );
@@ -1419,6 +1418,16 @@ function CategorySettings({ section, setSetting }: SettingsProps) {
                 </div>
               </FieldGroup>
             </TwoCol>
+            <FieldGroup label="Tamanho mobile" hint="Tamanho da imagem em telas pequenas">
+              <div className="flex items-center gap-2">
+                <input type="range" min={40} max={120} step={10}
+                  value={(section.settings?.imageSizeMobile as number) || (section.settings?.imageSize as number) || 80}
+                  onChange={e => setSetting(section.id, 'imageSizeMobile', Number(e.target.value))}
+                  className="flex-1"
+                />
+                <span className="text-xs text-muted-foreground w-10 text-right">{(section.settings?.imageSizeMobile as number) || (section.settings?.imageSize as number) || 80}px</span>
+              </div>
+            </FieldGroup>
             <div className="flex items-center gap-3">
               <Switch
                 checked={(section.settings?.imageBorder as boolean) ?? false}
@@ -1427,28 +1436,40 @@ function CategorySettings({ section, setSetting }: SettingsProps) {
               <Label className="text-xs">Borda na imagem</Label>
             </div>
             {(section.settings?.imageBorder as boolean) && (
-              <TwoCol>
-                <FieldGroup label="Largura da borda">
+              <>
+                <TwoCol>
+                  <FieldGroup label="Largura da borda">
+                    <div className="flex items-center gap-2">
+                      <input type="range" min={1} max={6} step={1}
+                        value={(section.settings?.imageBorderWidth as number) || 2}
+                        onChange={e => setSetting(section.id, 'imageBorderWidth', Number(e.target.value))}
+                        className="flex-1"
+                      />
+                      <span className="text-xs text-muted-foreground w-6 text-right">{(section.settings?.imageBorderWidth as number) || 2}px</span>
+                    </div>
+                  </FieldGroup>
+                  <FieldGroup label="Cor da borda">
+                    <div className="flex items-center gap-2">
+                      <input type="color"
+                        value={(section.settings?.imageBorderColor as string) || '#e91e8c'}
+                        onChange={e => setSetting(section.id, 'imageBorderColor', e.target.value)}
+                        className="h-9 w-10 rounded-md border border-border cursor-pointer"
+                      />
+                      <Input value={(section.settings?.imageBorderColor as string) || '#e91e8c'} onChange={e => setSetting(section.id, 'imageBorderColor', e.target.value)} className="h-9 font-mono text-xs" maxLength={7} />
+                    </div>
+                  </FieldGroup>
+                </TwoCol>
+                <FieldGroup label="Largura da borda mobile" hint="Largura da borda em telas pequenas">
                   <div className="flex items-center gap-2">
                     <input type="range" min={1} max={6} step={1}
-                      value={(section.settings?.imageBorderWidth as number) || 2}
-                      onChange={e => setSetting(section.id, 'imageBorderWidth', Number(e.target.value))}
+                      value={(section.settings?.imageBorderWidthMobile as number) || (section.settings?.imageBorderWidth as number) || 2}
+                      onChange={e => setSetting(section.id, 'imageBorderWidthMobile', Number(e.target.value))}
                       className="flex-1"
                     />
-                    <span className="text-xs text-muted-foreground w-6 text-right">{(section.settings?.imageBorderWidth as number) || 2}px</span>
+                    <span className="text-xs text-muted-foreground w-6 text-right">{(section.settings?.imageBorderWidthMobile as number) || (section.settings?.imageBorderWidth as number) || 2}px</span>
                   </div>
                 </FieldGroup>
-                <FieldGroup label="Cor da borda">
-                  <div className="flex items-center gap-2">
-                    <input type="color"
-                      value={(section.settings?.imageBorderColor as string) || '#e91e8c'}
-                      onChange={e => setSetting(section.id, 'imageBorderColor', e.target.value)}
-                      className="h-9 w-10 rounded-md border border-border cursor-pointer"
-                    />
-                    <Input value={(section.settings?.imageBorderColor as string) || '#e91e8c'} onChange={e => setSetting(section.id, 'imageBorderColor', e.target.value)} className="h-9 font-mono text-xs" maxLength={7} />
-                  </div>
-                </FieldGroup>
-              </TwoCol>
+              </>
             )}
           </>
         )}
