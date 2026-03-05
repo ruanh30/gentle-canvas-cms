@@ -849,7 +849,7 @@ function CountdownSettings({ section, setSetting }: SettingsProps) {
 
         {bgType === 'image' && (
           <>
-            <FieldGroup label="Imagem de fundo">
+            <FieldGroup label="Imagem de fundo" hint="Recomendado: 1440 × 500px">
               {(section.settings?.bgImage as string) ? (
                 <div className="space-y-2">
                   <div className="rounded-lg overflow-hidden border border-border/50 h-24">
@@ -924,7 +924,7 @@ function ImageTextSettings({ section, setSetting }: SettingsProps) {
     <>
       {/* ── Imagem ── */}
       <SettingsCard title="Imagem">
-        <FieldGroup label="Imagem da seção">
+        <FieldGroup label="Imagem da seção" hint="Recomendado: 800 × 800px ou 1200 × 800px">
           {imageUrl ? (
             <div className="space-y-2">
               <div className="rounded-lg overflow-hidden border border-border/50 h-28">
@@ -1085,6 +1085,14 @@ function ImageTextSettings({ section, setSetting }: SettingsProps) {
               </div>
             </FieldGroup>
           </>
+        )}
+        {bgType === 'none' && (
+          <FieldGroup label="Cor do texto">
+            <div className="flex items-center gap-2">
+              <input type="color" value={(section.settings?.textColor as string) || ''} onChange={e => setSetting(section.id, 'textColor', e.target.value)} className="h-9 w-10 rounded-md border border-border cursor-pointer" />
+              <Input value={(section.settings?.textColor as string) || ''} onChange={e => setSetting(section.id, 'textColor', e.target.value)} className="h-9 font-mono text-xs uppercase" maxLength={7} placeholder="Padrão" />
+            </div>
+          </FieldGroup>
         )}
         <TwoCol>
           <FieldGroup label="Cantos arredondados">
