@@ -25,6 +25,18 @@ export function CategoryPanel() {
   return (
     <EditorSection icon={Grid3X3} title="Vitrine de Produtos" description="Configure colunas, espaçamento, filtros e limites de exibição da vitrine">
 
+      <SectionDivider label="Proporção da Imagem" />
+      <p className="text-[10px] text-muted-foreground/60 leading-relaxed -mt-2">
+        Define o formato visual das imagens dos produtos na vitrine. Afeta diretamente quantas colunas funcionam bem.
+      </p>
+      <SelectField label="Proporção" value={draft.productCard.imageAspect} onChange={v => updateDraftSection('productCard', { imageAspect: v })} options={[
+        { value: '1:1', label: '1:1 Quadrado — altura igual à largura' },
+        { value: '3:4', label: '3:4 Retrato — levemente vertical' },
+        { value: '4:5', label: '4:5 Instagram — formato de post' },
+        { value: '2:3', label: '2:3 Alto — imagem mais alongada' },
+        { value: '16:9', label: '16:9 Paisagem — formato widescreen' },
+      ]} />
+
       <SectionDivider label="Colunas e Espaçamento" />
       <p className="text-[10px] text-muted-foreground/60 leading-relaxed -mt-2">
         Número de colunas por dispositivo e espaçamento entre os cards.

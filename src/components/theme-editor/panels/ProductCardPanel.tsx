@@ -50,13 +50,6 @@ export function ProductCardPanel() {
   return (
     <EditorSection icon={Package} title="Card de Produto" description="Visual e comportamento dos cards de produto nas listagens e destaques">
       <SectionDivider label="Imagem" />
-      <SelectField label="Proporção da imagem" value={c.imageAspect} onChange={v => set({ imageAspect: v })} options={[
-        { value: '1:1', label: '1:1 Quadrado — altura igual à largura' },
-        { value: '3:4', label: '3:4 Retrato — levemente vertical' },
-        { value: '4:5', label: '4:5 Instagram — formato de post' },
-        { value: '2:3', label: '2:3 Alto — imagem mais alongada' },
-        { value: '16:9', label: '16:9 Paisagem — formato widescreen' },
-      ]} />
       <SelectField label="Efeito ao passar o mouse" value={c.imageHover} onChange={v => set({ imageHover: v })} options={[
         { value: 'none', label: 'Nenhum — sem efeito na imagem' },
         { value: 'zoom', label: 'Zoom — amplia levemente a imagem' },
