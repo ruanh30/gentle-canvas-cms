@@ -130,6 +130,9 @@ export function HeroPanel() {
               <p className="text-[10px] text-muted-foreground/60 leading-relaxed -mt-2">
                 Imagem de fundo do slide. Use o overlay para melhorar a legibilidade.
               </p>
+              <p className="text-[10px] text-primary/80 font-medium -mt-1">
+                📐 Tamanho recomendado: 1920×600px (desktop) · 768×500px (mobile)
+              </p>
               <ImageField label="URL da imagem" value={slide.backgroundImage || ''} onChange={v => setSlide({ backgroundImage: v })} />
               {slide.backgroundImage && (
                 <>
