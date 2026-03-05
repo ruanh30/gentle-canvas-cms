@@ -16,6 +16,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 
 export interface BannerItemData {
   backgroundImage: string;
+  mobileImage: string;
   title: string;
   subtitle: string;
   description: string;
@@ -42,6 +43,7 @@ export interface BannerItemData {
 
 export const defaultBannerItem: BannerItemData = {
   backgroundImage: '',
+  mobileImage: '',
   title: '',
   subtitle: '',
   description: '',
@@ -145,15 +147,55 @@ function SegmentedControl<T extends string>({ options, value, onChange }: {
   );
 }
 
+/* ── Image size recommendations ── */
+
+function ImageSizeHint({ type, position }: { type?: string; position?: string }) {
+  const hints: Record<string, { desktop: string; mobile: string }> = {
+    'banner': { desktop: '1440 × 400px', mobile: '768 × 400px' },
+    'double-banner:side-by-side': { desktop: '720 × 400px', mobile: '768 × 400px' },
+    'double-banner:stacked': { desktop: '1440 × 400px', mobile: '768 × 400px' },
+    'double-banner:2-1:0': { desktop: '960 × 400px', mobile: '768 × 400px' },
+    'double-banner:2-1:1': { desktop: '480 × 400px', mobile: '768 × 400px' },
+    'double-banner:1-2:0': { desktop: '480 × 400px', mobile: '768 × 400px' },
+    'double-banner:1-2:1': { desktop: '960 × 400px', mobile: '768 × 400px' },
+    'triple-banner:equal-row': { desktop: '480 × 400px', mobile: '768 × 300px' },
+    'triple-banner:stacked': { desktop: '1440 × 300px', mobile: '768 × 300px' },
+    'triple-banner:1-big-2-small:0': { desktop: '720 × 600px', mobile: '768 × 300px' },
+    'triple-banner:1-big-2-small:1': { desktop: '720 × 290px', mobile: '768 × 300px' },
+    'triple-banner:1-big-2-small:2': { desktop: '720 × 290px', mobile: '768 × 300px' },
+    'triple-banner:2-small-1-big:0': { desktop: '720 × 290px', mobile: '768 × 300px' },
+    'triple-banner:2-small-1-big:1': { desktop: '720 × 290px', mobile: '768 × 300px' },
+    'triple-banner:2-small-1-big:2': { desktop: '720 × 600px', mobile: '768 × 300px' },
+  };
+
+  const key = position || type || 'banner';
+  const hint = hints[key] || hints['banner'];
+
+  return (
+    <div className="flex items-center gap-3 px-3 py-2 rounded-lg bg-secondary/40 border border-border/30">
+      <div className="flex items-center gap-1.5">
+        <Monitor className="h-3 w-3 text-muted-foreground/60" />
+        <span className="text-[10px] text-muted-foreground">{hint.desktop}</span>
+      </div>
+      <div className="w-px h-3 bg-border/50" />
+      <div className="flex items-center gap-1.5">
+        <Smartphone className="h-3 w-3 text-muted-foreground/60" />
+        <span className="text-[10px] text-muted-foreground">{hint.mobile}</span>
+      </div>
+    </div>
+  );
+}
+
 /* ── Image Picker (gallery + upload) ── */
 
-function BannerImagePicker({ value, onChange }: { value: string; onChange: (url: string) => void }) {
+function BannerImagePicker({ value, onChange, label, hint }: { value: string; onChange: (url: string) => void; label?: string; hint?: string }) {
   const [pickerOpen, setPickerOpen] = useState(false);
   const [showUpload, setShowUpload] = useState(false);
 
   return (
     <div className="space-y-2">
-      <Label className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">Imagem de fundo</Label>
+      <Label className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">{label || 'Imagem de fundo'}</Label>
+      {hint && <p className="text-[10px] text-muted-foreground/60 -mt-1">{hint}</p>}
 
       {/* Preview */}
       {value && (
@@ -268,17 +310,24 @@ function LinkDestinationPicker({ linkType, link, category, onLinkTypeChange, onL
 
 /* ── Individual Banner Item Editor ── */
 
-function BannerItemEditor({ data, onChange, label }: {
+function BannerItemEditor({ data, onChange, label, sizeHintKey }: {
   data: BannerItemData;
   onChange: (updates: Partial<BannerItemData>) => void;
   label: string;
+  sizeHintKey?: string;
 }) {
   return (
     <div className="space-y-3">
       <p className="text-xs font-bold text-foreground border-b border-border/50 pb-2">{label}</p>
 
-      {/* Image */}
-      <BannerImagePicker value={data.backgroundImage} onChange={v => onChange({ backgroundImage: v })} />
+      {/* Size recommendation */}
+      <ImageSizeHint position={sizeHintKey} />
+
+      {/* Desktop Image */}
+      <BannerImagePicker value={data.backgroundImage} onChange={v => onChange({ backgroundImage: v })} label="Imagem Desktop" hint="Imagem principal exibida em computadores" />
+
+      {/* Mobile Image (optional) */}
+      <BannerImagePicker value={data.mobileImage || ''} onChange={v => onChange({ mobileImage: v })} label="Imagem Mobile (opcional)" hint="Se vazio, usa a imagem desktop. Recomendado para melhor enquadramento em celulares" />
 
       {/* Clickable image (whole banner as link) */}
       <SettingsCard title="Link da imagem" icon={Link2}>
@@ -495,7 +544,7 @@ export function SingleBannerEditor({ section, setSetting }: BannerEditorProps) {
       </SettingsCard>
 
       {/* Banner content */}
-      <BannerItemEditor data={bannerData} onChange={update} label="Conteúdo do Banner" />
+      <BannerItemEditor data={bannerData} onChange={update} label="Conteúdo do Banner" sizeHintKey="banner" />
     </div>
   );
 }
@@ -623,6 +672,7 @@ export function MultiBannerEditor({ section, setSetting }: BannerEditorProps) {
           data={items[activeTab]}
           onChange={updates => updateItem(activeTab, updates)}
           label={`Banner ${activeTab + 1}`}
+          sizeHintKey={`${section.type}:${layout}:${activeTab}`}
         />
       </div>
     </div>
