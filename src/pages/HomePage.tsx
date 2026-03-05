@@ -467,24 +467,6 @@ const HomePage = () => {
         );
       }
 
-      case 'faq': {
-        const items = (section.settings?.items as { question: string; answer: string }[]) || [];
-        return (
-          <section key={section.id} className={cn('container mx-auto px-4 max-w-3xl', rhythmPy, wrapperClass)}>
-            {section.showTitle !== false && (
-              <SectionHeader title={section.title} size="sm" subtitle="Tire suas dúvidas" align={(section.settings?.titleAlign as 'left'|'center'|'right') || 'center'} />
-            )}
-            <Accordion type="multiple" className="w-full">
-              {items.map((item, i) => (
-                <AccordionItem key={i} value={`faq-${i}`}>
-                  <AccordionTrigger className="text-left">{item.question}</AccordionTrigger>
-                  <AccordionContent>{item.answer}</AccordionContent>
-                </AccordionItem>
-              ))}
-            </Accordion>
-          </section>
-        );
-      }
 
       case 'benefits': {
         const benefits = [
