@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect, useRef } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { mockProducts, mockCategories } from '@/data/mock';
 import { ProductCard } from '@/components/store/ProductCard';
@@ -16,10 +16,12 @@ const ProductsPage = () => {
   const [sortBy, setSortBy] = useState('featured');
   const { theme } = useTheme();
   const cat = theme.category;
-  const [localDisplay, setLocalDisplay] = useState(cat.displayMode);
-  const scrollRef = useRef<HTMLDivElement>(null);
+  // Carousel não faz sentido na listagem completa — fallback para grid
+  const safeDisplay = cat.displayMode === 'carousel' ? 'grid' : cat.displayMode;
+  const [localDisplay, setLocalDisplay] = useState(safeDisplay);
+  
 
-  useEffect(() => { setLocalDisplay(cat.displayMode); }, [cat.displayMode]);
+  useEffect(() => { setLocalDisplay(safeDisplay); }, [safeDisplay]);
 
   const filtered = useMemo(() => {
     let products = mockProducts.filter(p => p.active);
@@ -56,45 +58,7 @@ const ProductsPage = () => {
 
   const gap = cat.gridGap ?? 24;
 
-  const direction = cat.carouselDirection || 'ltr';
 
-  const scrollCarousel = (dir: 'left' | 'right') => {
-    if (scrollRef.current) {
-      const amount = 300;
-      scrollRef.current.scrollBy({ left: dir === 'left' ? -amount : amount, behavior: 'smooth' });
-    }
-  };
-
-  // Auto-scroll for carousel
-  useEffect(() => {
-    if (localDisplay !== 'carousel' || !cat.carouselAutoplay || !scrollRef.current) return;
-    const scrollAmount = direction === 'ltr' ? 280 : -280;
-    const interval = setInterval(() => {
-      const el = scrollRef.current;
-      if (!el) return;
-      if (direction === 'ltr') {
-        if (el.scrollLeft + el.clientWidth >= el.scrollWidth - 10) {
-          el.scrollTo({ left: 0, behavior: 'smooth' });
-        } else {
-          el.scrollBy({ left: scrollAmount, behavior: 'smooth' });
-        }
-      } else {
-        if (el.scrollLeft <= 10) {
-          el.scrollTo({ left: el.scrollWidth, behavior: 'smooth' });
-        } else {
-          el.scrollBy({ left: scrollAmount, behavior: 'smooth' });
-        }
-      }
-    }, cat.carouselSpeed * 1000);
-    return () => clearInterval(interval);
-  }, [localDisplay, cat.carouselAutoplay, cat.carouselSpeed, direction]);
-
-  // For RTL carousel, start scrolled to the right
-  useEffect(() => {
-    if (localDisplay === 'carousel' && direction === 'rtl' && scrollRef.current) {
-      scrollRef.current.scrollLeft = scrollRef.current.scrollWidth;
-    }
-  }, [localDisplay, direction]);
 
   const renderProducts = () => {
     if (filtered.length === 0) {
@@ -106,25 +70,6 @@ const ProductsPage = () => {
     }
 
     switch (localDisplay) {
-      case 'carousel':
-        return (
-          <div className="relative">
-            <button onClick={() => scrollCarousel('left')} className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-background/90 backdrop-blur-sm p-2 rounded-full shadow-md hover:bg-background">
-              <ChevronLeft className="h-5 w-5" />
-            </button>
-            <div ref={scrollRef} className="flex gap-4 overflow-x-auto scroll-smooth pb-4 px-8 snap-x snap-mandatory" style={{ scrollbarWidth: 'none' }}>
-              {filtered.map(product => (
-                <div key={product.id} className="min-w-[260px] max-w-[280px] snap-start flex-shrink-0">
-                  <ProductCard product={product} />
-                </div>
-              ))}
-            </div>
-            <button onClick={() => scrollCarousel('right')} className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-background/90 backdrop-blur-sm p-2 rounded-full shadow-md hover:bg-background">
-              <ChevronRight className="h-5 w-5" />
-            </button>
-          </div>
-        );
-
       case 'list':
         return (
           <div className="space-y-4">
