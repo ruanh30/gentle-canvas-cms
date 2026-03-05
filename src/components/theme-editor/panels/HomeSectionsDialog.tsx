@@ -352,7 +352,11 @@ export function HomeSectionsDialog({ open, onOpenChange }: HomeSectionsDialogPro
 
 
                         <button
-                          onClick={() => removeSection(selectedSection.id)}
+                          onClick={() => {
+                            if (window.confirm(`Tem certeza que deseja remover a seção "${selectedSection.title}"? Essa ação não pode ser desfeita.`)) {
+                              removeSection(selectedSection.id);
+                            }
+                          }}
                           className="flex items-center gap-3 p-3 rounded-xl border border-destructive/20 bg-destructive/5 hover:bg-destructive/10 transition-colors text-left"
                         >
                           <div className="w-8 h-8 rounded-lg bg-background flex items-center justify-center shrink-0 border border-destructive/20">
