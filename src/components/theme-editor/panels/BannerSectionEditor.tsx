@@ -172,16 +172,26 @@ function ImageSizeHint({ type, position }: { type?: string; position?: string })
   const hint = hints[key] || hints['banner'];
 
   return (
-    <div className="flex items-center gap-3 px-3 py-2 rounded-lg bg-secondary/40 border border-border/30">
-      <div className="flex items-center gap-1.5">
-        <Monitor className="h-3 w-3 text-muted-foreground/60" />
-        <span className="text-[10px] text-muted-foreground">{hint.desktop}</span>
+    <div className="rounded-lg bg-secondary/40 border border-border/30 px-3 py-2.5 space-y-1.5">
+      <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">📐 Tamanho recomendado de imagem</p>
+      <div className="flex items-center gap-4">
+        <div className="flex items-center gap-1.5">
+          <Monitor className="h-3.5 w-3.5 text-muted-foreground/70" />
+          <div>
+            <p className="text-[10px] text-muted-foreground/60 leading-none">Desktop</p>
+            <p className="text-[11px] font-medium text-foreground/80">{hint.desktop}</p>
+          </div>
+        </div>
+        <div className="w-px h-6 bg-border/50" />
+        <div className="flex items-center gap-1.5">
+          <Smartphone className="h-3.5 w-3.5 text-muted-foreground/70" />
+          <div>
+            <p className="text-[10px] text-muted-foreground/60 leading-none">Mobile</p>
+            <p className="text-[11px] font-medium text-foreground/80">{hint.mobile}</p>
+          </div>
+        </div>
       </div>
-      <div className="w-px h-3 bg-border/50" />
-      <div className="flex items-center gap-1.5">
-        <Smartphone className="h-3 w-3 text-muted-foreground/60" />
-        <span className="text-[10px] text-muted-foreground">{hint.mobile}</span>
-      </div>
+      <p className="text-[9px] text-muted-foreground/50 leading-snug">Use imagens com essas dimensões para melhor qualidade e enquadramento.</p>
     </div>
   );
 }
