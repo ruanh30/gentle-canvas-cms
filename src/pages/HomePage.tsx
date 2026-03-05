@@ -108,11 +108,16 @@ const HomePage = () => {
   };
   const sectionPy = spacingMap[theme.global?.sectionSpacing] || 'py-10';
 
-  const gridCols: Record<number, string> = {
-    2: 'grid-cols-1 md:grid-cols-2',
-    3: 'grid-cols-2 md:grid-cols-3',
-    4: 'grid-cols-2 md:grid-cols-3 lg:grid-cols-4',
-    5: 'grid-cols-2 md:grid-cols-3 lg:grid-cols-5',
+  const desktopGridCols: Record<number, string> = {
+    2: 'grid-cols-2',
+    3: 'grid-cols-3',
+    4: 'grid-cols-4',
+    5: 'grid-cols-5',
+  };
+  const tabletGridCols: Record<number, string> = {
+    2: 'grid-cols-2',
+    3: 'grid-cols-3',
+    4: 'grid-cols-4',
   };
 
   const heroAlign: Record<string, string> = {
@@ -377,13 +382,13 @@ const HomePage = () => {
             ) : (
               <>
                 {/* Desktop */}
-                <div className={cn('hidden lg:grid', gridCols[theme.category?.columnsDesktop || 4] || gridCols[4])} style={{ gap: `${theme.category?.gridGap ?? 24}px` }}>
+                <div className={cn('hidden lg:grid', desktopGridCols[theme.category?.columnsDesktop || 4] || desktopGridCols[4])} style={{ gap: `${theme.category?.gridGap ?? 24}px` }}>
                   {desktopProducts.map(product => (
                     <ProductCard key={product.id} product={product} />
                   ))}
                 </div>
                 {/* Tablet */}
-                <div className={cn('hidden md:grid lg:hidden', gridCols[theme.category?.columnsTablet || 3] || gridCols[3])} style={{ gap: `${theme.category?.gridGap ?? 24}px` }}>
+                <div className={cn('hidden md:grid lg:hidden', tabletGridCols[theme.category?.columnsTablet || 3] || tabletGridCols[3])} style={{ gap: `${theme.category?.gridGap ?? 24}px` }}>
                   {desktopProducts.map(product => (
                     <ProductCard key={product.id} product={product} />
                   ))}
@@ -626,13 +631,13 @@ const HomePage = () => {
             ) : (
               <>
                 {/* Desktop */}
-                <div className={cn('hidden lg:grid', gridCols[theme.category?.columnsDesktop || 4] || gridCols[4])} style={{ gap: `${theme.category?.gridGap ?? 24}px` }}>
+                <div className={cn('hidden lg:grid', desktopGridCols[theme.category?.columnsDesktop || 4] || desktopGridCols[4])} style={{ gap: `${theme.category?.gridGap ?? 24}px` }}>
                   {desktopProducts.map(product => (
                     <ProductCard key={product.id} product={product} />
                   ))}
                 </div>
                 {/* Tablet */}
-                <div className={cn('hidden md:grid lg:hidden', gridCols[theme.category?.columnsTablet || 3] || gridCols[3])} style={{ gap: `${theme.category?.gridGap ?? 24}px` }}>
+                <div className={cn('hidden md:grid lg:hidden', tabletGridCols[theme.category?.columnsTablet || 3] || tabletGridCols[3])} style={{ gap: `${theme.category?.gridGap ?? 24}px` }}>
                   {desktopProducts.map(product => (
                     <ProductCard key={product.id} product={product} />
                   ))}
