@@ -590,39 +590,65 @@ function VideoSettings({ section, setSetting, setSettings }: SettingsProps) {
 
       {provider === 'gallery' && (
         <FieldGroup label="Vídeo da galeria">
-          {url && (
-            <div className="flex items-center gap-2 p-2 rounded-lg bg-secondary/50 border border-border/30 mb-2">
-              <Video className="h-4 w-4 text-muted-foreground shrink-0" />
-              <span className="text-xs text-foreground truncate flex-1">{url}</span>
-              <button onClick={() => setSetting(section.id, 'url', '')} className="text-[10px] text-muted-foreground hover:text-foreground">Remover</button>
+          {url ? (
+            <div className="space-y-2">
+              <div className="flex items-center gap-2 p-2.5 rounded-lg bg-secondary/50 border border-border/30">
+                <Video className="h-4 w-4 text-muted-foreground shrink-0" />
+                <span className="text-xs text-foreground truncate flex-1">Vídeo selecionado</span>
+              </div>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setPickerOpen(true)}
+                  className="flex-1 flex items-center justify-center gap-1.5 h-9 rounded-lg border border-border/50 bg-secondary/30 hover:bg-secondary text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  <Image className="h-3.5 w-3.5" />
+                  Trocar
+                </button>
+                <button
+                  onClick={() => setSetting(section.id, 'url', '')}
+                  className="flex items-center justify-center gap-1.5 h-9 px-3 rounded-lg border border-destructive/30 bg-destructive/5 hover:bg-destructive/10 text-xs font-medium text-destructive transition-colors"
+                >
+                  <Trash2 className="h-3.5 w-3.5" />
+                  Remover
+                </button>
+              </div>
             </div>
+          ) : (
+            <button
+              onClick={() => setPickerOpen(true)}
+              className="w-full flex items-center justify-center gap-1.5 h-9 rounded-lg border border-border/50 bg-secondary/30 hover:bg-secondary text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <Image className="h-3.5 w-3.5" />
+              Selecionar da galeria
+            </button>
           )}
-          <button
-            onClick={() => setPickerOpen(true)}
-            className="w-full flex items-center justify-center gap-1.5 h-9 rounded-lg border border-border/50 bg-secondary/30 hover:bg-secondary text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
-          >
-            <Image className="h-3.5 w-3.5" />
-            Selecionar da galeria
-          </button>
           <MediaPickerModal
             open={pickerOpen}
             onClose={() => setPickerOpen(false)}
             onSelect={(v) => setSetting(section.id, 'url', v)}
             currentValue={url}
+            accept="video/mp4,video/webm,.mp4,.webm"
           />
         </FieldGroup>
       )}
 
       {provider === 'upload' && (
         <FieldGroup label="Upload de vídeo">
-          {url && (
-            <div className="flex items-center gap-2 p-2 rounded-lg bg-secondary/50 border border-border/30 mb-2">
-              <Video className="h-4 w-4 text-muted-foreground shrink-0" />
-              <span className="text-xs text-foreground truncate flex-1">Vídeo carregado</span>
-              <button onClick={() => setSetting(section.id, 'url', '')} className="text-[10px] text-muted-foreground hover:text-foreground">Remover</button>
+          {url ? (
+            <div className="space-y-2">
+              <div className="flex items-center gap-2 p-2.5 rounded-lg bg-secondary/50 border border-border/30">
+                <Video className="h-4 w-4 text-muted-foreground shrink-0" />
+                <span className="text-xs text-foreground truncate flex-1">Vídeo carregado</span>
+              </div>
+              <button
+                onClick={() => setSetting(section.id, 'url', '')}
+                className="w-full flex items-center justify-center gap-1.5 h-9 rounded-lg border border-destructive/30 bg-destructive/5 hover:bg-destructive/10 text-xs font-medium text-destructive transition-colors"
+              >
+                <Trash2 className="h-3.5 w-3.5" />
+                Remover vídeo
+              </button>
             </div>
-          )}
-          {!url && (
+          ) : (
             <SecureFileUpload
               onFileAccepted={(dataUrl) => setSetting(section.id, 'url', dataUrl)}
               accept="video/mp4,video/webm,.mp4,.webm"
