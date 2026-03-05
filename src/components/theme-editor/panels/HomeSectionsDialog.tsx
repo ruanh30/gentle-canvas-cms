@@ -83,11 +83,14 @@ export function HomeSectionsDialog({ open, onOpenChange }: HomeSectionsDialogPro
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-4xl h-[80vh] p-0 gap-0 flex flex-col">
-        <DialogHeader className="px-6 pt-5 pb-3 border-b shrink-0">
+        <DialogHeader className="px-6 pt-5 pb-3 border-b shrink-0 space-y-2">
           <DialogTitle className="text-base">Editor de Seções da Home</DialogTitle>
           <DialogDescription className="text-xs text-muted-foreground">
             Selecione uma seção à esquerda para editar suas configurações à direita.
           </DialogDescription>
+          <p className="text-xs font-semibold text-destructive bg-destructive/10 border border-destructive/20 rounded-lg px-3 py-2">
+            ⚠️ A ordem das seções na lista é exatamente a ordem em que elas aparecem no seu site. Arraste ou use os botões para reorganizar.
+          </p>
         </DialogHeader>
 
         <div className="flex flex-1 min-h-0">
