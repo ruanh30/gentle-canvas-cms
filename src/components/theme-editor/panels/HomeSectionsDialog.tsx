@@ -73,6 +73,14 @@ export function HomeSectionsDialog({ open, onOpenChange }: HomeSectionsDialogPro
     });
   };
 
+  const setSettings = (id: string, updates: Record<string, unknown>) => {
+    updateDraft({
+      homepageSections: sections.map(s =>
+        s.id === id ? { ...s, settings: { ...s.settings, ...updates } } : s
+      ),
+    });
+  };
+
   const removeSection = (id: string) => {
     updateDraft({ homepageSections: sections.filter(s => s.id !== id) });
     if (selectedId === id) {
@@ -367,7 +375,7 @@ export function HomeSectionsDialog({ open, onOpenChange }: HomeSectionsDialogPro
                   {(selectedSection.type === 'double-banner' || selectedSection.type === 'triple-banner') && (
                     <MultiBannerEditor section={selectedSection} setSetting={setSetting} />
                   )}
-                  {selectedSection.type === 'video' && <VideoSettings section={selectedSection} setSetting={setSetting} />}
+                  {selectedSection.type === 'video' && <VideoSettings section={selectedSection} setSetting={setSetting} setSettings={setSettings} />}
                   {selectedSection.type === 'countdown' && <CountdownSettings section={selectedSection} setSetting={setSetting} />}
                   {selectedSection.type === 'image-text' && <ImageTextSettings section={selectedSection} setSetting={setSetting} />}
                   {selectedSection.type === 'categories' && <CategorySettings section={selectedSection} setSetting={setSetting} />}
@@ -427,6 +435,7 @@ function SettingsCard({ title, children }: { title: string; children: React.Reac
 interface SettingsProps {
   section: ThemeHomepageSection;
   setSetting: (id: string, key: string, value: unknown) => void;
+  setSettings?: (id: string, updates: Record<string, unknown>) => void;
 }
 
 /* ── Type-specific settings ── */
@@ -541,7 +550,7 @@ function MultiBannerSettings({ section, setSetting }: SettingsProps) {
   );
 }
 
-function VideoSettings({ section, setSetting }: SettingsProps) {
+function VideoSettings({ section, setSetting, setSettings }: SettingsProps) {
   const [pickerOpen, setPickerOpen] = useState(false);
   const [showUpload, setShowUpload] = useState(false);
   const provider = (section.settings?.provider as string) || 'youtube';
@@ -553,8 +562,7 @@ function VideoSettings({ section, setSetting }: SettingsProps) {
         <select
           value={provider}
           onChange={e => {
-            setSetting(section.id, 'provider', e.target.value);
-            setSetting(section.id, 'url', '');
+            setSettings?.(section.id, { provider: e.target.value, url: '' });
           }}
           className="w-full h-9 text-sm rounded-md border border-border bg-background px-3"
         >
@@ -617,7 +625,7 @@ function VideoSettings({ section, setSetting }: SettingsProps) {
           {!url && (
             <SecureFileUpload
               onFileAccepted={(dataUrl) => setSetting(section.id, 'url', dataUrl)}
-              accept="video/mp4,video/webm,video/ogg,.mp4,.webm,.ogg"
+              accept="video/mp4,video/webm,.mp4,.webm"
               compact
             />
           )}

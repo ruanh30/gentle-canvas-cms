@@ -447,7 +447,21 @@ const HomePage = () => {
           return url;
         };
 
-        if (!videoUrl) return null;
+        if (!videoUrl) {
+          return (
+            <section key={section.id} className={cn('container mx-auto px-4', rhythmPy, wrapperClass)}>
+              {section.showTitle !== false && (
+                <SectionHeader title={section.title} size="sm" align={(section.settings?.titleAlign as 'left'|'center'|'right') || 'center'} />
+              )}
+              <div className="w-full max-w-4xl mx-auto rounded-xl overflow-hidden border border-border/30 bg-secondary/50 aspect-video flex items-center justify-center">
+                <div className="flex flex-col items-center gap-2 text-muted-foreground">
+                  <Play className="h-8 w-8 opacity-40" />
+                  <span className="text-sm">Nenhum vídeo configurado</span>
+                </div>
+              </div>
+            </section>
+          );
+        }
 
         return (
           <section key={section.id} className={cn('container mx-auto px-4', rhythmPy, wrapperClass)}>
