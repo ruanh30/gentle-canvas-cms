@@ -12,7 +12,11 @@ import { HintTooltip } from '../EditorControls';
 import {
   ChevronDown, ChevronUp, Eye, EyeOff, Trash2, Plus,
   Image, Video, Timer, LayoutGrid, ShoppingBag,
-  FolderTree, Sparkles, Star, Type as TypeIcon, MousePointer
+  FolderTree, Sparkles, Star, Type as TypeIcon, MousePointer,
+  Truck, RefreshCw, ShieldCheck, CreditCard, Lock, DatabaseBackup, PackageCheck,
+  Heart, Gift, Clock, Headphones, MapPin, Zap, Award, ThumbsUp, CheckCircle,
+  Phone, Mail, Globe, Percent, Tag, Flame, BadgeCheck, Gem, Crown,
+  icons as lucideIcons
 } from 'lucide-react';
 import { SingleBannerEditor, MultiBannerEditor } from './BannerSectionEditor';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -378,10 +382,12 @@ export function HomeSectionsDialog({ open, onOpenChange }: HomeSectionsDialogPro
                   {selectedSection.type === 'countdown' && <CountdownSettings section={selectedSection} setSetting={setSetting} />}
                   {selectedSection.type === 'image-text' && <ImageTextSettings section={selectedSection} setSetting={setSetting} />}
                   {selectedSection.type === 'categories' && <CategorySettings section={selectedSection} setSetting={setSetting} />}
+                  {selectedSection.type === 'benefits' && <BenefitsSettings section={selectedSection} setSetting={setSetting} />}
+                  {selectedSection.type === 'trust-bar' && <TrustBarSettings section={selectedSection} setSetting={setSetting} />}
 
                   {/* Fallback for types without settings */}
                   {!carouselSections.includes(selectedSection.type) &&
-                    !['banner', 'double-banner', 'triple-banner', 'video', 'countdown', 'image-text', 'categories'].includes(selectedSection.type) && (
+                    !['banner', 'double-banner', 'triple-banner', 'video', 'countdown', 'image-text', 'categories', 'benefits', 'trust-bar'].includes(selectedSection.type) && (
                     <div className="text-center py-8 text-muted-foreground">
                       <MousePointer className="h-8 w-8 mx-auto mb-2 opacity-30" />
                       <p className="text-sm">Esta seção não possui configurações adicionais.</p>
@@ -1110,6 +1116,248 @@ function ImageTextSettings({ section, setSetting }: SettingsProps) {
               <option value="contained">Contida</option>
               <option value="wide">Larga</option>
               <option value="full">Tela inteira</option>
+            </select>
+          </FieldGroup>
+        </TwoCol>
+      </SettingsCard>
+    </>
+  );
+}
+
+/* ── Icon Picker for Benefits / Trust Bar ── */
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const ICON_OPTIONS: { name: string; icon: any }[] = [
+  { name: 'Truck', icon: Truck },
+  { name: 'RefreshCw', icon: RefreshCw },
+  { name: 'ShieldCheck', icon: ShieldCheck },
+  { name: 'CreditCard', icon: CreditCard },
+  { name: 'Lock', icon: Lock },
+  { name: 'DatabaseBackup', icon: DatabaseBackup },
+  { name: 'PackageCheck', icon: PackageCheck },
+  { name: 'Heart', icon: Heart },
+  { name: 'Gift', icon: Gift },
+  { name: 'Clock', icon: Clock },
+  { name: 'Headphones', icon: Headphones },
+  { name: 'MapPin', icon: MapPin },
+  { name: 'Zap', icon: Zap },
+  { name: 'Award', icon: Award },
+  { name: 'ThumbsUp', icon: ThumbsUp },
+  { name: 'CheckCircle', icon: CheckCircle },
+  { name: 'Star', icon: Star },
+  { name: 'Phone', icon: Phone },
+  { name: 'Mail', icon: Mail },
+  { name: 'Globe', icon: Globe },
+  { name: 'Percent', icon: Percent },
+  { name: 'Tag', icon: Tag },
+  { name: 'Flame', icon: Flame },
+  { name: 'BadgeCheck', icon: BadgeCheck },
+  { name: 'Gem', icon: Gem },
+  { name: 'Crown', icon: Crown },
+  { name: 'Sparkles', icon: Sparkles },
+];
+
+function getIconByName(name: string) {
+  return ICON_OPTIONS.find(i => i.name === name)?.icon || ShieldCheck;
+}
+
+function IconPicker({ value, onChange }: { value: string; onChange: (name: string) => void }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="relative">
+      <button
+        type="button"
+        onClick={() => setOpen(!open)}
+        className="flex items-center gap-2 h-9 px-3 rounded-md border border-border bg-background hover:bg-muted/50 transition-colors w-full"
+      >
+        {(() => { const Icon = getIconByName(value); return <Icon className="h-4 w-4 text-foreground" strokeWidth={1.5} />; })()}
+        <span className="text-xs text-muted-foreground flex-1 text-left truncate">{value || 'Selecionar'}</span>
+        <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
+      </button>
+      {open && (
+        <div className="absolute z-50 top-full mt-1 left-0 right-0 bg-background border border-border rounded-lg shadow-xl p-2 grid grid-cols-6 gap-1 max-h-48 overflow-y-auto">
+          {ICON_OPTIONS.map(opt => (
+            <button
+              key={opt.name}
+              type="button"
+              onClick={() => { onChange(opt.name); setOpen(false); }}
+              className={cn(
+                'p-2 rounded-md flex items-center justify-center transition-colors',
+                value === opt.name ? 'bg-primary/10 ring-1 ring-primary' : 'hover:bg-muted/60'
+              )}
+              title={opt.name}
+            >
+              <opt.icon className="h-4 w-4" strokeWidth={1.5} />
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ── Benefits Settings ── */
+
+interface BenefitItem { icon: string; label: string; desc: string }
+
+const DEFAULT_BENEFITS: BenefitItem[] = [
+  { icon: 'Truck', label: 'Frete Grátis', desc: 'Para todo o Brasil' },
+  { icon: 'RefreshCw', label: 'Troca Fácil', desc: 'Até 30 dias' },
+  { icon: 'ShieldCheck', label: 'Compra Segura', desc: '100% protegida' },
+  { icon: 'CreditCard', label: '12x sem juros', desc: 'No cartão de crédito' },
+];
+
+function BenefitsSettings({ section, setSetting }: SettingsProps) {
+  const items: BenefitItem[] = (section.settings?.items as BenefitItem[]) || DEFAULT_BENEFITS;
+
+  const updateItem = (index: number, updates: Partial<BenefitItem>) => {
+    const next = items.map((item, i) => i === index ? { ...item, ...updates } : item);
+    setSetting(section.id, 'items', next);
+  };
+  const removeItem = (index: number) => {
+    setSetting(section.id, 'items', items.filter((_, i) => i !== index));
+  };
+  const addItem = () => {
+    setSetting(section.id, 'items', [...items, { icon: 'Star', label: 'Novo benefício', desc: 'Descrição' }]);
+  };
+
+  return (
+    <>
+      <SettingsCard title="Itens">
+        <div className="space-y-3">
+          {items.map((item, i) => (
+            <div key={i} className="p-3 rounded-xl border border-border/50 bg-muted/20 space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">Item {i + 1}</span>
+                {items.length > 1 && (
+                  <button onClick={() => removeItem(i)} className="text-destructive hover:text-destructive/80 transition-colors">
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </button>
+                )}
+              </div>
+              <FieldGroup label="Ícone">
+                <IconPicker value={item.icon} onChange={v => updateItem(i, { icon: v })} />
+              </FieldGroup>
+              <TwoCol>
+                <FieldGroup label="Título">
+                  <Input value={item.label} onChange={e => updateItem(i, { label: e.target.value })} className="h-8 text-xs" />
+                </FieldGroup>
+                <FieldGroup label="Descrição">
+                  <Input value={item.desc} onChange={e => updateItem(i, { desc: e.target.value })} className="h-8 text-xs" />
+                </FieldGroup>
+              </TwoCol>
+            </div>
+          ))}
+        </div>
+        {items.length < 8 && (
+          <button onClick={addItem} className="w-full flex items-center justify-center gap-1.5 h-9 rounded-lg border border-dashed border-border/60 hover:border-primary/40 hover:bg-muted/30 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors mt-2">
+            <Plus className="h-3.5 w-3.5" /> Adicionar benefício
+          </button>
+        )}
+      </SettingsCard>
+      <SettingsCard title="Estilo">
+        <TwoCol>
+          <FieldGroup label="Layout">
+            <select value={(section.settings?.layout as string) || 'grid'} onChange={e => setSetting(section.id, 'layout', e.target.value)} className="w-full h-9 text-sm rounded-md border border-border bg-background px-3">
+              <option value="grid">Grade</option>
+              <option value="inline">Linha</option>
+            </select>
+          </FieldGroup>
+          <FieldGroup label="Estilo visual">
+            <select value={(section.settings?.style as string) || 'cards'} onChange={e => setSetting(section.id, 'style', e.target.value)} className="w-full h-9 text-sm rounded-md border border-border bg-background px-3">
+              <option value="cards">Cards</option>
+              <option value="minimal">Minimalista</option>
+              <option value="outlined">Contorno</option>
+            </select>
+          </FieldGroup>
+        </TwoCol>
+        <TwoCol>
+          <FieldGroup label="Cor do ícone">
+            <div className="flex items-center gap-2">
+              <input type="color" value={(section.settings?.iconColor as string) || '#000000'} onChange={e => setSetting(section.id, 'iconColor', e.target.value)} className="h-9 w-10 rounded-md border border-border cursor-pointer" />
+              <Input value={(section.settings?.iconColor as string) || ''} onChange={e => setSetting(section.id, 'iconColor', e.target.value)} className="h-9 font-mono text-xs" maxLength={7} placeholder="Padrão" />
+            </div>
+          </FieldGroup>
+          <FieldGroup label="Cor de fundo">
+            <div className="flex items-center gap-2">
+              <input type="color" value={(section.settings?.bgColor as string) || '#f5f5f5'} onChange={e => setSetting(section.id, 'bgColor', e.target.value)} className="h-9 w-10 rounded-md border border-border cursor-pointer" />
+              <Input value={(section.settings?.bgColor as string) || ''} onChange={e => setSetting(section.id, 'bgColor', e.target.value)} className="h-9 font-mono text-xs" maxLength={7} placeholder="Padrão" />
+            </div>
+          </FieldGroup>
+        </TwoCol>
+      </SettingsCard>
+    </>
+  );
+}
+
+/* ── Trust Bar Settings ── */
+
+interface TrustItem { icon: string; label: string }
+
+const DEFAULT_TRUSTS: TrustItem[] = [
+  { icon: 'Lock', label: 'Compra Segura' },
+  { icon: 'DatabaseBackup', label: 'Dados Protegidos' },
+  { icon: 'PackageCheck', label: 'Entrega Garantida' },
+];
+
+function TrustBarSettings({ section, setSetting }: SettingsProps) {
+  const items: TrustItem[] = (section.settings?.items as TrustItem[]) || DEFAULT_TRUSTS;
+
+  const updateItem = (index: number, updates: Partial<TrustItem>) => {
+    const next = items.map((item, i) => i === index ? { ...item, ...updates } : item);
+    setSetting(section.id, 'items', next);
+  };
+  const removeItem = (index: number) => {
+    setSetting(section.id, 'items', items.filter((_, i) => i !== index));
+  };
+  const addItem = () => {
+    setSetting(section.id, 'items', [...items, { icon: 'CheckCircle', label: 'Novo selo' }]);
+  };
+
+  return (
+    <>
+      <SettingsCard title="Selos de Confiança">
+        <div className="space-y-3">
+          {items.map((item, i) => (
+            <div key={i} className="p-3 rounded-xl border border-border/50 bg-muted/20 space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">Selo {i + 1}</span>
+                {items.length > 1 && (
+                  <button onClick={() => removeItem(i)} className="text-destructive hover:text-destructive/80 transition-colors">
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </button>
+                )}
+              </div>
+              <TwoCol>
+                <FieldGroup label="Ícone">
+                  <IconPicker value={item.icon} onChange={v => updateItem(i, { icon: v })} />
+                </FieldGroup>
+                <FieldGroup label="Texto">
+                  <Input value={item.label} onChange={e => updateItem(i, { label: e.target.value })} className="h-8 text-xs" />
+                </FieldGroup>
+              </TwoCol>
+            </div>
+          ))}
+        </div>
+        {items.length < 6 && (
+          <button onClick={addItem} className="w-full flex items-center justify-center gap-1.5 h-9 rounded-lg border border-dashed border-border/60 hover:border-primary/40 hover:bg-muted/30 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors mt-2">
+            <Plus className="h-3.5 w-3.5" /> Adicionar selo
+          </button>
+        )}
+      </SettingsCard>
+      <SettingsCard title="Estilo">
+        <TwoCol>
+          <FieldGroup label="Cor do texto">
+            <div className="flex items-center gap-2">
+              <input type="color" value={(section.settings?.textColor as string) || '#666666'} onChange={e => setSetting(section.id, 'textColor', e.target.value)} className="h-9 w-10 rounded-md border border-border cursor-pointer" />
+              <Input value={(section.settings?.textColor as string) || ''} onChange={e => setSetting(section.id, 'textColor', e.target.value)} className="h-9 font-mono text-xs" maxLength={7} placeholder="Padrão" />
+            </div>
+          </FieldGroup>
+          <FieldGroup label="Tamanho do texto">
+            <select value={(section.settings?.fontSize as string) || 'sm'} onChange={e => setSetting(section.id, 'fontSize', e.target.value)} className="w-full h-9 text-sm rounded-md border border-border bg-background px-3">
+              <option value="xs">Pequeno</option>
+              <option value="sm">Médio</option>
+              <option value="base">Grande</option>
             </select>
           </FieldGroup>
         </TwoCol>

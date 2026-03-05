@@ -4,7 +4,7 @@ import { mockProducts, mockCategories, mockCollections } from '@/data/mock';
 import { useTheme } from '@/contexts/ThemeContext';
 import { ProductCard } from '@/components/store/ProductCard';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, ChevronLeft, ChevronRight, Truck, RefreshCw, ShieldCheck, CreditCard, Lock, DatabaseBackup, PackageCheck, Play } from 'lucide-react';
+import { ArrowRight, ChevronLeft, ChevronRight, Truck, RefreshCw, ShieldCheck, CreditCard, Lock, DatabaseBackup, PackageCheck, Play, Heart, Gift, Clock, Headphones, MapPin, Zap, Award, ThumbsUp, CheckCircle, Phone, Mail, Globe, Percent, Tag, Flame, BadgeCheck, Gem, Crown, Sparkles, Star } from 'lucide-react';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { cn } from '@/lib/utils';
 import { ThemeHomepageSection } from '@/types/theme';
@@ -760,47 +760,86 @@ const HomePage = () => {
 
 
       case 'benefits': {
-        const benefits = [
-          { icon: Truck, label: 'Frete Grátis', desc: 'Para todo o Brasil' },
-          { icon: RefreshCw, label: 'Troca Fácil', desc: 'Até 30 dias' },
-          { icon: ShieldCheck, label: 'Compra Segura', desc: '100% protegida' },
-          { icon: CreditCard, label: '12x sem juros', desc: 'No cartão de crédito' },
+        const ICON_MAP: Record<string, any> = { Truck, RefreshCw, ShieldCheck, CreditCard, Lock, DatabaseBackup, PackageCheck, Heart, Gift, Clock, Headphones, MapPin, Zap, Award, ThumbsUp, CheckCircle, Star, Phone, Mail, Globe, Percent, Tag, Flame, BadgeCheck, Gem, Crown, Sparkles };
+        const defaultItems = [
+          { icon: 'Truck', label: 'Frete Grátis', desc: 'Para todo o Brasil' },
+          { icon: 'RefreshCw', label: 'Troca Fácil', desc: 'Até 30 dias' },
+          { icon: 'ShieldCheck', label: 'Compra Segura', desc: '100% protegida' },
+          { icon: 'CreditCard', label: '12x sem juros', desc: 'No cartão de crédito' },
         ];
+        const items = (section.settings?.items as { icon: string; label: string; desc: string }[]) || defaultItems;
+        const layout = (section.settings?.layout as string) || 'grid';
+        const style = (section.settings?.style as string) || 'cards';
+        const iconColor = (section.settings?.iconColor as string) || '';
+        const bgColor = (section.settings?.bgColor as string) || '';
+
         return (
           <section key={section.id} className={cn('container mx-auto px-4', rhythmPy, wrapperClass)}>
             {section.showTitle !== false && (
               <SectionHeader title={section.title} size="sm" accent={false} align={(section.settings?.titleAlign as 'left'|'center'|'right') || 'center'} />
             )}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-              {benefits.map((b, i) => (
-                <div key={i} className="flex flex-col items-center text-center p-6 rounded-xl bg-secondary/50">
-                  <div className="p-3 rounded-full bg-foreground/5 mb-3">
-                    <b.icon className="h-5 w-5 text-foreground" strokeWidth={1.5} />
+            <div className={cn(
+              layout === 'inline'
+                ? 'flex flex-wrap items-center justify-center gap-6 md:gap-10'
+                : `grid grid-cols-2 md:grid-cols-${Math.min(items.length, 4)} gap-4 md:gap-6`
+            )}>
+              {items.map((b, i) => {
+                const Icon = ICON_MAP[b.icon] || ShieldCheck;
+                if (layout === 'inline') {
+                  return (
+                    <div key={i} className="flex items-center gap-2">
+                      <Icon className="h-4 w-4" strokeWidth={1.5} style={iconColor ? { color: iconColor } : undefined} />
+                      <div>
+                        <p className="text-sm font-semibold">{b.label}</p>
+                        {b.desc && <p className="text-[10px] text-muted-foreground">{b.desc}</p>}
+                      </div>
+                    </div>
+                  );
+                }
+                return (
+                  <div key={i} className={cn(
+                    'flex flex-col items-center text-center p-5 md:p-6 rounded-xl transition-colors',
+                    style === 'cards' && 'bg-secondary/50',
+                    style === 'outlined' && 'border border-border',
+                    style === 'minimal' && '',
+                  )} style={bgColor && style === 'cards' ? { backgroundColor: bgColor } : undefined}>
+                    <div className={cn('p-3 rounded-full mb-3', style !== 'minimal' ? 'bg-foreground/5' : '')}>
+                      <Icon className="h-5 w-5" strokeWidth={1.5} style={iconColor ? { color: iconColor } : undefined} />
+                    </div>
+                    <p className="text-sm font-semibold">{b.label}</p>
+                    {b.desc && <p className="text-xs text-muted-foreground mt-0.5">{b.desc}</p>}
                   </div>
-                  <p className="text-sm font-semibold">{b.label}</p>
-                  <p className="text-xs text-muted-foreground mt-0.5">{b.desc}</p>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </section>
         );
       }
 
       case 'trust-bar': {
-        const trusts = [
-          { icon: Lock, label: 'Compra Segura' },
-          { icon: DatabaseBackup, label: 'Dados Protegidos' },
-          { icon: PackageCheck, label: 'Entrega Garantida' },
+        const ICON_MAP: Record<string, any> = { Truck, RefreshCw, ShieldCheck, CreditCard, Lock, DatabaseBackup, PackageCheck, Heart, Gift, Clock, Headphones, MapPin, Zap, Award, ThumbsUp, CheckCircle, Star, Phone, Mail, Globe, Percent, Tag, Flame, BadgeCheck, Gem, Crown, Sparkles };
+        const defaultTrusts = [
+          { icon: 'Lock', label: 'Compra Segura' },
+          { icon: 'DatabaseBackup', label: 'Dados Protegidos' },
+          { icon: 'PackageCheck', label: 'Entrega Garantida' },
         ];
+        const items = (section.settings?.items as { icon: string; label: string }[]) || defaultTrusts;
+        const txtColor = (section.settings?.textColor as string) || '';
+        const fontSize = (section.settings?.fontSize as string) || 'sm';
+        const fontSizeClass = fontSize === 'xs' ? 'text-[10px] md:text-xs' : fontSize === 'base' ? 'text-sm md:text-base' : 'text-xs md:text-sm';
+
         return (
           <section key={section.id} className={cn('container mx-auto px-4 py-8', wrapperClass)}>
-            <div className="flex flex-wrap items-center justify-center gap-4 md:gap-10 text-muted-foreground text-xs md:text-sm">
-              {trusts.map((t, i) => (
-                <span key={i} className="flex items-center gap-1.5 md:gap-2">
-                  <t.icon className="h-3.5 md:h-4 w-3.5 md:w-4" strokeWidth={1.5} />
-                  {t.label}
-                </span>
-              ))}
+            <div className={cn('flex flex-wrap items-center justify-center gap-4 md:gap-10', fontSizeClass)} style={txtColor ? { color: txtColor } : undefined}>
+              {items.map((t, i) => {
+                const Icon = ICON_MAP[t.icon] || ShieldCheck;
+                return (
+                  <span key={i} className="flex items-center gap-1.5 md:gap-2 text-muted-foreground" style={txtColor ? { color: txtColor } : undefined}>
+                    <Icon className="h-3.5 md:h-4 w-3.5 md:w-4" strokeWidth={1.5} />
+                    {t.label}
+                  </span>
+                );
+              })}
             </div>
           </section>
         );
