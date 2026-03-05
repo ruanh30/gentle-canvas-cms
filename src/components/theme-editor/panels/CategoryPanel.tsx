@@ -25,6 +25,12 @@ export function CategoryPanel() {
   return (
     <EditorSection icon={Grid3X3} title="Vitrine de Produtos" description="Configure colunas, espaçamento, filtros e limites de exibição da vitrine">
 
+      <SectionDivider label="Container da Vitrine" />
+      <p className="text-[10px] text-muted-foreground/60 leading-relaxed -mt-2">
+        Define a largura máxima do conteúdo da vitrine de produtos em telas grandes. Independente do container global da loja.
+      </p>
+      <NumberSlider label="Largura máxima" value={c.containerMaxWidth ?? 1400} onChange={v => set({ containerMaxWidth: v })} min={960} max={1920} step={20} suffix="px" />
+
       <SectionDivider label="Proporção da Imagem" />
       <p className="text-[10px] text-muted-foreground/60 leading-relaxed -mt-2">
         Define o formato visual das imagens dos produtos na vitrine. Afeta diretamente quantas colunas funcionam bem.

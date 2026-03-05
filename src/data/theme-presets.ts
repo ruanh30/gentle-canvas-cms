@@ -349,6 +349,7 @@ export const defaultThemeConfig: ThemeConfig = {
     columnsTablet: 3,
     columnsMobile: 2,
     gridGap: 24,
+    containerMaxWidth: 1400,
     filterStyle: 'accordion',
     showFilterCount: true,
     sortStyle: 'dropdown',
