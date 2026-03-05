@@ -9,6 +9,7 @@ import type { BannerItemData } from '@/components/theme-editor/panels/BannerSect
 
 const defaultItem: BannerItemData = {
   backgroundImage: '',
+  mobileImage: '',
   title: '',
   subtitle: '',
   description: '',
@@ -41,10 +42,12 @@ function BannerBlock({ data, height, borderRadius, className }: {
   borderRadius: number;
   className?: string;
 }) {
+  const isMobile = useIsMobile();
   const alignX = data.contentAlign === 'left' ? 'items-start text-left' : data.contentAlign === 'right' ? 'items-end text-right' : 'items-center text-center';
   const alignY = data.verticalAlign === 'top' ? 'justify-start' : data.verticalAlign === 'bottom' ? 'justify-end' : 'justify-center';
 
   const ctaVariant = data.ctaStyle === 'outline' ? 'outline' : data.ctaStyle === 'ghost' ? 'ghost' : 'default';
+  const bgImage = (isMobile && data.mobileImage) ? data.mobileImage : data.backgroundImage;
 
   const content = (
     <div
@@ -52,7 +55,7 @@ function BannerBlock({ data, height, borderRadius, className }: {
       style={{
         height,
         borderRadius,
-        backgroundImage: data.backgroundImage ? `url(${data.backgroundImage})` : undefined,
+        backgroundImage: bgImage ? `url(${bgImage})` : undefined,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
       }}
