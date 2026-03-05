@@ -35,6 +35,7 @@ export interface BannerItemData {
   textColor: string;
   contentAlign: 'left' | 'center' | 'right';
   verticalAlign: 'top' | 'center' | 'bottom';
+  buttonAlign: 'left' | 'center' | 'right';
   paddingX: number;
   paddingY: number;
 }
@@ -60,6 +61,7 @@ export const defaultBannerItem: BannerItemData = {
   textColor: '#ffffff',
   contentAlign: 'center',
   verticalAlign: 'center',
+  buttonAlign: 'center',
   paddingX: 32,
   paddingY: 32,
 };
@@ -347,7 +349,7 @@ function BannerItemEditor({ data, onChange, label }: {
       </SettingsCard>
 
       {/* Alignment */}
-      {data.showText && (
+      {(data.showText || data.showButton) && (
         <SettingsCard title="Alinhamento" icon={AlignCenter} collapsible>
           <FieldGroup label="Horizontal">
             <SegmentedControl
@@ -368,6 +370,17 @@ function BannerItemEditor({ data, onChange, label }: {
                 { value: 'top' as const, label: 'Topo', icon: AlignVerticalJustifyStart },
                 { value: 'center' as const, label: 'Centro', icon: AlignVerticalJustifyCenter },
                 { value: 'bottom' as const, label: 'Base', icon: AlignVerticalJustifyEnd },
+              ]}
+            />
+          </FieldGroup>
+          <FieldGroup label="Botão">
+            <SegmentedControl
+              value={data.buttonAlign || data.contentAlign}
+              onChange={v => onChange({ buttonAlign: v })}
+              options={[
+                { value: 'left' as const, label: 'Esquerda', icon: AlignLeft },
+                { value: 'center' as const, label: 'Centro', icon: AlignCenter },
+                { value: 'right' as const, label: 'Direita', icon: AlignRight },
               ]}
             />
           </FieldGroup>
