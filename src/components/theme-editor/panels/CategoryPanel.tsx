@@ -1,47 +1,74 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useTheme } from '@/contexts/ThemeContext';
 import { EditorSection, ToggleRow, SelectField, NumberSlider, OptionPicker, SectionDivider } from '../EditorControls';
 import { Grid3X3 } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+
+const PRESET_VALUES = [0, 2, 3, 4, 6, 8, 10, 12];
+
+function LimitField({ label, value, onChange, maxPreset }: { label: string; value: number; onChange: (v: number) => void; maxPreset?: number }) {
+  const isCustom = value > 0 && !PRESET_VALUES.includes(value);
+  const [showCustom, setShowCustom] = useState(isCustom);
+  const filteredPresets = maxPreset ? PRESET_VALUES.filter(v => v <= maxPreset) : PRESET_VALUES;
+
+  const options = [
+    ...filteredPresets.map(v => ({ value: String(v), label: v === 0 ? 'Todos' : String(v) })),
+    { value: 'custom', label: 'Personalizado' },
+  ];
+
+  const selectValue = showCustom || isCustom ? 'custom' : String(value);
+
+  return (
+    <div className="space-y-1.5">
+      <SelectField
+        label={label}
+        value={selectValue}
+        onChange={v => {
+          if (v === 'custom') {
+            setShowCustom(true);
+            if (value === 0) onChange(16);
+          } else {
+            setShowCustom(false);
+            onChange(Number(v));
+          }
+        }}
+        options={options}
+      />
+      {(showCustom || isCustom) && (
+        <div className="ml-[calc(40%+4px)]">
+          <Input
+            type="number"
+            min={1}
+            max={100}
+            value={value || 16}
+            onChange={e => {
+              const n = Math.max(1, Math.min(100, Number(e.target.value) || 1));
+              onChange(n);
+            }}
+            className="h-7 text-xs w-20"
+          />
+        </div>
+      )}
+    </div>
+  );
+}
 
 export function CategoryPanel() {
   const { draft, updateDraftSection } = useTheme();
   const c = draft.category;
   const set = (u: Partial<typeof c>) => updateDraftSection('category', u);
-
   const pl = draft.productListing || { limitDesktop: 0, limitMobile: 0 };
   const setListing = (u: Partial<typeof pl>) => updateDraftSection('productListing', u);
-
-  const limitOptions = [
-    { value: '0', label: 'Todos' },
-    { value: '2', label: '2' },
-    { value: '3', label: '3' },
-    { value: '4', label: '4' },
-    { value: '6', label: '6' },
-    { value: '8', label: '8' },
-    { value: '10', label: '10' },
-    { value: '12', label: '12' },
-  ];
 
   return (
     <EditorSection icon={Grid3X3} title="Vitrine de Produtos" description="Configure colunas, espaçamento, filtros e limites de exibição da vitrine">
 
       <SectionDivider label="Container da Vitrine" />
       <p className="text-[10px] text-muted-foreground/60 leading-relaxed -mt-2">
-        Define a largura máxima do conteúdo da vitrine de produtos em telas grandes. Independente do container global da loja.
+        Define a largura máxima do conteúdo da vitrine em telas grandes.
       </p>
       <NumberSlider label="Largura máxima" value={c.containerMaxWidth ?? 1400} onChange={v => set({ containerMaxWidth: v })} min={960} max={1920} step={20} suffix="px" />
 
-      <SectionDivider label="Proporção da Imagem" />
-      <p className="text-[10px] text-muted-foreground/60 leading-relaxed -mt-2">
-        Define o formato visual das imagens dos produtos na vitrine. Afeta diretamente quantas colunas funcionam bem.
-      </p>
-      <SelectField label="Proporção" value={draft.productCard.imageAspect} onChange={v => updateDraftSection('productCard', { imageAspect: v })} options={[
-        { value: '1:1', label: '1:1 Quadrado — altura igual à largura' },
-        { value: '3:4', label: '3:4 Retrato — levemente vertical' },
-        { value: '4:5', label: '4:5 Instagram — formato de post' },
-        { value: '2:3', label: '2:3 Alto — imagem mais alongada' },
-        { value: '16:9', label: '16:9 Paisagem — formato widescreen' },
-      ]} />
 
       <SectionDivider label="Colunas e Espaçamento" />
       <p className="text-[10px] text-muted-foreground/60 leading-relaxed -mt-2">
@@ -57,17 +84,16 @@ export function CategoryPanel() {
         Define a quantidade máxima de produtos exibidos em cada coleção na página inicial.
         Aplica-se ao modo Grade — no Carrossel todos os produtos são exibidos.
       </p>
-      <SelectField
+      <LimitField
         label="Desktop"
-        value={String(pl.limitDesktop || 0)}
-        onChange={v => setListing({ limitDesktop: Number(v) })}
-        options={limitOptions}
+        value={pl.limitDesktop || 0}
+        onChange={v => setListing({ limitDesktop: v })}
       />
-      <SelectField
+      <LimitField
         label="Mobile"
-        value={String(pl.limitMobile || 0)}
-        onChange={v => setListing({ limitMobile: Number(v) })}
-        options={limitOptions.filter(o => Number(o.value) <= 8)}
+        value={pl.limitMobile || 0}
+        onChange={v => setListing({ limitMobile: v })}
+        maxPreset={8}
       />
 
       <SectionDivider label="Layout da Página de Categoria" />
