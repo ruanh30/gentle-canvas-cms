@@ -216,7 +216,40 @@ export function HomeSectionsDialog({ open, onOpenChange }: HomeSectionsDialogPro
                           </div>
                         </button>
 
-                        {/* Delete */}
+                        {/* Title alignment - only when title is visible */}
+                        {selectedSection.showTitle !== false && (
+                          <div className="col-span-2 flex items-center gap-3 p-3 rounded-xl border border-border bg-muted/30">
+                            <div className="w-8 h-8 rounded-lg bg-background flex items-center justify-center shrink-0 border border-border/50">
+                              <TypeIcon className="h-4 w-4" />
+                            </div>
+                            <div className="flex-1">
+                              <p className="text-xs font-medium">Alinhamento do título</p>
+                              <p className="text-[10px] text-muted-foreground">Define onde o título aparece na seção</p>
+                            </div>
+                            <div className="flex items-center gap-1 bg-background rounded-lg border border-border/50 p-0.5">
+                              {([
+                                { value: 'left', label: 'Esquerda' },
+                                { value: 'center', label: 'Centro' },
+                                { value: 'right', label: 'Direita' },
+                              ] as const).map(opt => (
+                                <button
+                                  key={opt.value}
+                                  onClick={() => setSetting(selectedSection.id, 'titleAlign', opt.value)}
+                                  className={cn(
+                                    'px-3 py-1.5 rounded-md text-[11px] font-medium transition-colors',
+                                    (selectedSection.settings?.titleAlign as string || 'left') === opt.value
+                                      ? 'bg-foreground text-background'
+                                      : 'text-muted-foreground hover:text-foreground'
+                                  )}
+                                >
+                                  {opt.label}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+
                         <button
                           onClick={() => removeSection(selectedSection.id)}
                           className="flex items-center gap-3 p-3 rounded-xl border border-destructive/20 bg-destructive/5 hover:bg-destructive/10 transition-colors text-left"

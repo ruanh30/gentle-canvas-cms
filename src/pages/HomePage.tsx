@@ -344,7 +344,7 @@ const HomePage = () => {
         return (
           <section key={section.id} className={cn('container mx-auto px-4 flex flex-col items-center justify-center', rhythmPy, wrapperClass)}>
             {section.showTitle !== false && (
-              <SectionHeader title={section.title} size="md" subtitle="Encontre o que procura" />
+              <SectionHeader title={section.title} size="md" subtitle="Encontre o que procura" align={(section.settings?.titleAlign as 'left'|'center'|'right') || 'center'} />
             )}
             {isCarousel ? (
               <SectionCarousel speed={carouselSpeed} showArrows={carouselShowArrows} centered gap={(section.settings?.carouselGap as number) ?? 16}>
@@ -368,7 +368,7 @@ const HomePage = () => {
           <section key={section.id} className={cn('pm-showcase-container px-4', rhythmPy, wrapperClass)}>
             <div className="flex items-center justify-between mb-8">
               {section.showTitle !== false && (
-                <SectionHeader title={section.title} size="lg" subtitle="Peças selecionadas para você" align="left" className="mb-0" />
+                <SectionHeader title={section.title} size="lg" subtitle="Peças selecionadas para você" align={(section.settings?.titleAlign as 'left'|'center'|'right') || 'left'} className="mb-0" />
               )}
               <Link to="/products" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1 ml-auto shrink-0">
                 Ver todos <ArrowRight className="h-4 w-4" />
@@ -437,7 +437,7 @@ const HomePage = () => {
           <section key={section.id} className={cn('py-12', wrapperClass)} style={{ backgroundColor: s.backgroundColor || '#1a1a1a', color: s.textColor || '#ffffff' }}>
             <div className="container mx-auto px-4 text-center">
               {section.showTitle !== false && (
-                <SectionHeader title={section.title} size="lg" />
+                <SectionHeader title={section.title} size="lg" align={(section.settings?.titleAlign as 'left'|'center'|'right') || 'center'} />
               )}
               <p className="text-sm opacity-80 mb-6">{s.label || 'Promoção termina em'}</p>
               {s.targetDate ? (
@@ -459,7 +459,7 @@ const HomePage = () => {
         return (
           <section key={section.id} className={cn('container mx-auto px-4', rhythmPy, wrapperClass)}>
             {section.showTitle !== false && (
-              <SectionHeader title={section.title} size="sm" />
+              <SectionHeader title={section.title} size="sm" align={(section.settings?.titleAlign as 'left'|'center'|'right') || 'center'} />
             )}
             <div className="aspect-video rounded-2xl overflow-hidden bg-secondary">
               {isYouTube && videoId ? (
@@ -494,7 +494,7 @@ const HomePage = () => {
         return (
           <section key={section.id} className={cn('container mx-auto px-4 py-8', wrapperClass)}>
             {section.showTitle !== false && (
-              <SectionHeader title={section.title} size="sm" />
+              <SectionHeader title={section.title} size="sm" align={(section.settings?.titleAlign as 'left'|'center'|'right') || 'center'} />
             )}
             <div className={cn('grid gap-4', isTriple ? 'grid-cols-1 md:grid-cols-3' : 'grid-cols-1 md:grid-cols-2')}>
               {banners.map((b, i) => {
@@ -552,7 +552,7 @@ const HomePage = () => {
         return (
           <section key={section.id} className={cn('container mx-auto px-4 max-w-3xl', rhythmPy, wrapperClass)}>
             {section.showTitle !== false && (
-              <SectionHeader title={section.title} size="sm" subtitle="Tire suas dúvidas" />
+              <SectionHeader title={section.title} size="sm" subtitle="Tire suas dúvidas" align={(section.settings?.titleAlign as 'left'|'center'|'right') || 'center'} />
             )}
             <Accordion type="multiple" className="w-full">
               {items.map((item, i) => (
@@ -576,7 +576,7 @@ const HomePage = () => {
         return (
           <section key={section.id} className={cn('container mx-auto px-4', rhythmPy, wrapperClass)}>
             {section.showTitle !== false && (
-              <SectionHeader title={section.title} size="sm" accent={false} />
+              <SectionHeader title={section.title} size="sm" accent={false} align={(section.settings?.titleAlign as 'left'|'center'|'right') || 'center'} />
             )}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
               {benefits.map((b, i) => (
@@ -629,7 +629,7 @@ const HomePage = () => {
         return (
           <section key={section.id} className={cn('pm-showcase-container px-4', rhythmPy, wrapperClass)}>
             {section.showTitle !== false && (
-              <SectionHeader title={section.title} size="md" />
+              <SectionHeader title={section.title} size="md" align={(section.settings?.titleAlign as 'left'|'center'|'right') || 'center'} />
             )}
             {isCarousel ? (
               <SectionCarousel speed={carouselSpeed} showArrows={carouselShowArrows} centered>
