@@ -990,7 +990,7 @@ const HomePage = () => {
         return (
           <div key={section.id} data-highlight="section">
             {showSort && (
-              <div className="container mx-auto px-4 pt-4 pb-2 flex justify-start">
+              <div className="container mx-auto px-4 pt-4 pb-2 flex justify-end">
                 <ProductSortSelect value={globalSort} onChange={setGlobalSort} />
               </div>
             )}
