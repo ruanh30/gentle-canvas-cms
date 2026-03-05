@@ -190,9 +190,7 @@ const HomePage = () => {
   const { theme } = useTheme();
   const isMobile = useIsMobile();
   const featured = mockProducts.filter(p => p.featured);
-  const [sectionSorts, setSectionSorts] = useState<Record<string, SortOption>>({});
-  const getSectionSort = (id: string): SortOption => sectionSorts[id] || 'featured';
-  const setSectionSort = (id: string, sort: SortOption) => setSectionSorts(prev => ({ ...prev, [id]: sort }));
+  const [globalSort, setGlobalSort] = useState<SortOption>('featured');
   const sections = theme.homepageSections;
   const activeCollections = mockCollections
     .filter(c => c.active)
@@ -469,24 +467,19 @@ const HomePage = () => {
 
       case 'featured-products': {
         const pl = theme.productListing || { limitDesktop: 0, limitMobile: 0 };
-        const sortedFeatured = sortProducts(featured, getSectionSort(section.id));
+        const sortedFeatured = sortProducts(featured, globalSort);
         const desktopProducts = pl.limitDesktop > 0 ? sortedFeatured.slice(0, pl.limitDesktop) : sortedFeatured;
         const mobileProducts = pl.limitMobile > 0 ? sortedFeatured.slice(0, pl.limitMobile) : sortedFeatured;
 
         return (
           <section key={section.id} className={cn('pm-showcase-container px-4', rhythmPy, wrapperClass)}>
-            <div className="flex items-center justify-between mb-8 gap-3 flex-wrap">
-              <div className="flex items-center gap-3 flex-1 min-w-0">
-                {section.showTitle !== false && (
-                  <SectionHeader title={section.title} size="lg" subtitle="Peças selecionadas para você" align={(section.settings?.titleAlign as 'left'|'center'|'right') || 'left'} className="mb-0" />
-                )}
-              </div>
-              <div className="flex items-center gap-3 shrink-0">
-                <ProductSortSelect value={getSectionSort(section.id)} onChange={v => setSectionSort(section.id, v)} />
-                <Link to="/products" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1 shrink-0">
-                  Ver todos <ArrowRight className="h-4 w-4" />
-                </Link>
-              </div>
+            <div className="flex items-center justify-between mb-8">
+              {section.showTitle !== false && (
+                <SectionHeader title={section.title} size="lg" subtitle="Peças selecionadas para você" align={(section.settings?.titleAlign as 'left'|'center'|'right') || 'left'} className="mb-0" />
+              )}
+              <Link to="/products" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1 ml-auto shrink-0">
+                Ver todos <ArrowRight className="h-4 w-4" />
+              </Link>
             </div>
             {isCarousel ? (
               <SectionCarousel speed={carouselSpeed} showArrows={carouselShowArrows} centered>
@@ -929,7 +922,7 @@ const HomePage = () => {
         if (!collection) return null;
         const allCollectionProducts = sortProducts(
           mockProducts.filter(p => collection.productIds.includes(p.id)),
-          getSectionSort(section.id)
+          globalSort
         );
         if (allCollectionProducts.length === 0) return null;
 
@@ -939,14 +932,9 @@ const HomePage = () => {
 
         return (
           <section key={section.id} className={cn('pm-showcase-container px-4', rhythmPy, wrapperClass)}>
-            <div className="flex items-center justify-between mb-6 gap-3">
-              {section.showTitle !== false && (
-                <SectionHeader title={section.title} size="md" align={(section.settings?.titleAlign as 'left'|'center'|'right') || 'center'} className="mb-0" />
-              )}
-              <div className="shrink-0">
-                <ProductSortSelect value={getSectionSort(section.id)} onChange={v => setSectionSort(section.id, v)} />
-              </div>
-            </div>
+            {section.showTitle !== false && (
+              <SectionHeader title={section.title} size="md" align={(section.settings?.titleAlign as 'left'|'center'|'right') || 'center'} />
+            )}
             {isCarousel ? (
               <SectionCarousel speed={carouselSpeed} showArrows={carouselShowArrows} centered>
                 {allCollectionProducts.map(product => (
@@ -986,13 +974,26 @@ const HomePage = () => {
     }
   };
 
+  const enabledSections = sections.filter(s => s.enabled);
+  const hasProductSections = enabledSections.some(s => s.type === 'featured-products' || s.type === 'collections');
+  let sortRendered = false;
+
   return (
     <>
-      {sections.filter(s => s.enabled).map(section => {
+      {enabledSections.map(section => {
+        const isProductSection = section.type === 'featured-products' || section.type === 'collections';
+        const showSort = hasProductSections && isProductSection && !sortRendered;
+        if (showSort) sortRendered = true;
+
         const rendered = renderSection(section);
         if (!rendered) return null;
         return (
           <div key={section.id} data-highlight="section">
+            {showSort && (
+              <div className="container mx-auto px-4 pt-4 pb-2 flex justify-start">
+                <ProductSortSelect value={globalSort} onChange={setGlobalSort} />
+              </div>
+            )}
             {rendered}
           </div>
         );
