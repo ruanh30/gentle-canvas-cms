@@ -1,4 +1,5 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, useMemo } from 'react';
+import { useIsMobile } from '@/hooks/use-mobile';
 import { Link } from 'react-router-dom';
 import { mockProducts, mockCategories, mockCollections } from '@/data/mock';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -151,6 +152,7 @@ function CountdownTimer({ targetDate, style = 'boxes', showDays = true, showHour
 
 const HomePage = () => {
   const { theme } = useTheme();
+  const isMobile = useIsMobile();
   const featured = mockProducts.filter(p => p.featured);
   const sections = theme.homepageSections;
   const activeCollections = mockCollections
@@ -211,6 +213,10 @@ const HomePage = () => {
 
   const renderSection = (section: ThemeHomepageSection) => {
     const isCarousel = (section.settings?.displayMode as string) === 'carousel';
+    const mobileDisplayMode = (section.settings?.mobileDisplayMode as string) || 'same';
+    const effectiveCarousel = section.type === 'categories' && mobileDisplayMode !== 'same' && isMobile
+      ? mobileDisplayMode === 'carousel'
+      : isCarousel;
     const carouselSpeed = (section.settings?.carouselSpeed as number) || 4;
     const carouselShowArrows = (section.settings?.showArrows as boolean) ?? true;
     const isHiddenMobile = hiddenMobile.includes(section.id);
@@ -407,7 +413,7 @@ const HomePage = () => {
             {section.showTitle !== false && (
               <SectionHeader title={section.title} size="md" subtitle="Encontre o que procura" align={(section.settings?.titleAlign as 'left'|'center'|'right') || 'center'} />
             )}
-            {isCarousel ? (
+            {effectiveCarousel ? (
               <SectionCarousel speed={carouselSpeed} showArrows={carouselShowArrows} centered gap={(section.settings?.carouselGap as number) ?? 16}>
                 {filteredCategories.map(categoryCard)}
               </SectionCarousel>

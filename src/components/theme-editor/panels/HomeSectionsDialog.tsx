@@ -447,10 +447,12 @@ interface SettingsProps {
 
 function CarouselSettings({ section, setSetting }: SettingsProps) {
   const mode = (section.settings?.displayMode as string) || 'grid';
+  const mobileMode = (section.settings?.mobileDisplayMode as string) || 'same';
+  const isAnyCarousel = mode === 'carousel' || (section.type === 'categories' && mobileMode === 'carousel');
   return (
     <SettingsCard title="Modo de exibição">
       <TwoCol>
-        <FieldGroup label="Exibição">
+        <FieldGroup label="Desktop">
           <select
             value={mode}
             onChange={e => setSetting(section.id, 'displayMode', e.target.value)}
@@ -460,27 +462,42 @@ function CarouselSettings({ section, setSetting }: SettingsProps) {
             <option value="carousel">Carrossel</option>
           </select>
         </FieldGroup>
-        {mode === 'carousel' && (
-          <FieldGroup label="Velocidade" hint="Segundos entre transições">
-            <div className="flex items-center gap-2">
-              <input type="range" min={1} max={10}
-                value={(section.settings?.carouselSpeed as number) || 4}
-                onChange={e => setSetting(section.id, 'carouselSpeed', Number(e.target.value))}
-                className="flex-1"
-              />
-              <span className="text-xs text-muted-foreground w-6 text-right">{(section.settings?.carouselSpeed as number) || 4}s</span>
-            </div>
+        {section.type === 'categories' && (
+          <FieldGroup label="Mobile" hint="Modo de exibição específico para celular">
+            <select
+              value={mobileMode}
+              onChange={e => setSetting(section.id, 'mobileDisplayMode', e.target.value)}
+              className="w-full h-9 text-sm rounded-md border border-border bg-background px-3"
+            >
+              <option value="same">Igual ao desktop</option>
+              <option value="grid">Grade</option>
+              <option value="carousel">Carrossel</option>
+            </select>
           </FieldGroup>
         )}
       </TwoCol>
-      {mode === 'carousel' && (
-        <div className="flex items-center gap-3">
-          <Switch
-            checked={(section.settings?.showArrows as boolean) ?? true}
-            onCheckedChange={v => setSetting(section.id, 'showArrows', v)}
-          />
-          <Label className="text-xs">Mostrar setas de navegação</Label>
-        </div>
+      {isAnyCarousel && (
+        <>
+          <TwoCol>
+            <FieldGroup label="Velocidade" hint="Segundos entre transições">
+              <div className="flex items-center gap-2">
+                <input type="range" min={1} max={10}
+                  value={(section.settings?.carouselSpeed as number) || 4}
+                  onChange={e => setSetting(section.id, 'carouselSpeed', Number(e.target.value))}
+                  className="flex-1"
+                />
+                <span className="text-xs text-muted-foreground w-6 text-right">{(section.settings?.carouselSpeed as number) || 4}s</span>
+              </div>
+            </FieldGroup>
+          </TwoCol>
+          <div className="flex items-center gap-3">
+            <Switch
+              checked={(section.settings?.showArrows as boolean) ?? true}
+              onCheckedChange={v => setSetting(section.id, 'showArrows', v)}
+            />
+            <Label className="text-xs">Mostrar setas de navegação</Label>
+          </div>
+        </>
       )}
       {section.type === 'categories' && (
         <FieldGroup label={mode === 'carousel' ? 'Espaçamento do carrossel' : 'Espaçamento da grade'}>
