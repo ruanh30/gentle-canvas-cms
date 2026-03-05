@@ -266,13 +266,18 @@ const HomePage = () => {
                 exit={v.exit}
                 transition={v.transition}
                 className="absolute inset-0"
-                style={slide.backgroundImage ? {
-                  backgroundImage: `url(${slide.backgroundImage})`,
-                  backgroundSize: 'cover',
-                  backgroundPosition: 'center',
-                } : undefined}
+                style={(() => {
+                  const mobileImg = slide.backgroundImageMobile;
+                  const desktopImg = slide.backgroundImage;
+                  const img = isMobile && mobileImg ? mobileImg : desktopImg;
+                  return img ? {
+                    backgroundImage: `url(${img})`,
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                  } : undefined;
+                })()}
               >
-                {slide.backgroundImage && (
+                {(slide.backgroundImage || slide.backgroundImageMobile) && (
                   <div className="absolute inset-0" style={{ backgroundColor: slide.overlayColor || '#000', opacity: slide.overlayOpacity ?? 0 }} />
                 )}
                 <div

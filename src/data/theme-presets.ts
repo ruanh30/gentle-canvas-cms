@@ -15,6 +15,7 @@ const defaultSlide = {
   ctaCategory: '',
   ctaStyle: 'filled' as const,
   backgroundImage: '',
+  backgroundImageMobile: '',
   backgroundVideo: '',
   overlayColor: '#000000',
   overlayOpacity: 0,
