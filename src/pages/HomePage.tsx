@@ -651,30 +651,107 @@ const HomePage = () => {
       }
 
       case 'image-text': {
-        const s = section.settings as { imageUrl?: string; title?: string; description?: string; ctaText?: string; ctaLink?: string; imagePosition?: string };
-        const imgLeft = (s.imagePosition || 'left') === 'left';
+        const s = section.settings || {};
+        const imageUrl = (s.imageUrl as string) || '';
+        const title = (s.title as string) || section.title;
+        const subtitle = (s.subtitle as string) || '';
+        const description = (s.description as string) || '';
+        const ctaText = (s.ctaText as string) || '';
+        const ctaDestType = (s.ctaDestType as string) || 'custom';
+        const ctaCollectionId = (s.ctaCollectionId as string) || '';
+        const ctaCustomLink = (s.ctaLink as string) || '';
+        const ctaLink = ctaDestType === 'catalog' ? '/produtos'
+          : ctaDestType === 'collection' && ctaCollectionId ? `/produtos?collection=${ctaCollectionId}`
+          : ctaCustomLink;
+        const imgLeft = ((s.imagePosition as string) || 'left') === 'left';
+        const textAlign = (s.textAlign as string) || 'left';
+        const verticalAlign = (s.verticalAlign as string) || 'center';
+        const sectionHeight = (s.sectionHeight as string) || 'auto';
+        const bgType = (s.bgType as string) || 'none';
+        const bgColor = (s.backgroundColor as string) || '#f5f5f5';
+        const txtColor = (s.textColor as string) || '';
+        const gradientFrom = (s.gradientFrom as string) || '#f5f5f5';
+        const gradientTo = (s.gradientTo as string) || '#e0e0e0';
+        const borderRadius = (s.borderRadius as string) || 'lg';
+        const sectionWidth = (s.sectionWidth as string) || 'contained';
+        const imageRatio = (s.imageRatio as string) || 'auto';
+
+        const heightMap: Record<string, string> = {
+          compact: 'min-h-0',
+          auto: 'min-h-0',
+          tall: 'md:min-h-[500px]',
+          hero: 'md:min-h-[600px]',
+        };
+        const imgHeightMap: Record<string, string> = {
+          compact: 'h-48 md:h-64',
+          auto: 'h-64 md:h-96',
+          tall: 'h-72 md:h-[500px]',
+          hero: 'h-80 md:h-[600px]',
+        };
+        const ratioMap: Record<string, string> = {
+          auto: '',
+          square: 'aspect-square',
+          portrait: 'aspect-[3/4]',
+          landscape: 'aspect-[4/3]',
+        };
+        const vertMap: Record<string, string> = {
+          top: 'justify-start',
+          center: 'justify-center',
+          bottom: 'justify-end',
+        };
+        const radiusMap: Record<string, string> = {
+          none: 'rounded-none',
+          md: 'rounded-lg',
+          lg: 'rounded-2xl',
+          xl: 'rounded-3xl',
+        };
+
+        let sectionStyle: React.CSSProperties = {};
+        if (bgType === 'solid') sectionStyle = { backgroundColor: bgColor, color: txtColor };
+        else if (bgType === 'gradient') sectionStyle = { background: `linear-gradient(135deg, ${gradientFrom}, ${gradientTo})`, color: txtColor };
+
+        const containerClass = sectionWidth === 'full' ? 'w-full px-0' : sectionWidth === 'wide' ? 'container mx-auto px-2 max-w-7xl' : 'container mx-auto px-4';
+
         return (
-          <section key={section.id} className={cn('container mx-auto px-4', rhythmPy, wrapperClass)}>
-            <div className={cn('grid md:grid-cols-2 gap-8 items-center', !imgLeft && 'direction-rtl')}>
-              <div className={cn('rounded-2xl overflow-hidden bg-secondary', !imgLeft && 'md:order-2')}>
-                {s.imageUrl ? (
-                  <img src={s.imageUrl} alt={s.title || ''} className="w-full h-64 md:h-96 object-cover" loading="lazy" />
-                ) : (
-                  <div className="w-full h-64 md:h-96 flex items-center justify-center">
-                    <span className="text-muted-foreground text-sm">Imagem</span>
-                  </div>
-                )}
-              </div>
-              <div className={cn('flex flex-col justify-center', !imgLeft && 'md:order-1')}>
-                <h2 className="text-xl md:text-3xl font-display font-bold mb-3 md:mb-4">{s.title || section.title}</h2>
-                <p className="text-muted-foreground mb-4 md:mb-6 text-sm md:text-base font-body leading-relaxed">{s.description || ''}</p>
-                {s.ctaText && (
-                  <Link to={s.ctaLink || '#'}>
-                    <Button size="default" className="rounded-full px-5 md:px-8 text-sm md:text-base font-body">
-                      {s.ctaText} <ArrowRight className="ml-1.5 md:ml-2 h-3.5 md:h-4 w-3.5 md:w-4" />
-                    </Button>
-                  </Link>
-                )}
+          <section key={section.id} className={cn(rhythmPy, wrapperClass)} style={sectionStyle}>
+            <div className={containerClass}>
+              <div className={cn('grid md:grid-cols-2 gap-6 md:gap-8', heightMap[sectionHeight])}>
+                {/* Image */}
+                <div className={cn(
+                  radiusMap[borderRadius],
+                  'overflow-hidden bg-secondary',
+                  !imgLeft && 'md:order-2',
+                  ratioMap[imageRatio] || imgHeightMap[sectionHeight],
+                )}>
+                  {imageUrl ? (
+                    <img src={imageUrl} alt={title} className="w-full h-full object-cover" loading="lazy" />
+                  ) : (
+                    <div className="w-full h-full min-h-[200px] flex items-center justify-center">
+                      <span className="text-muted-foreground text-sm">Imagem</span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Text */}
+                <div className={cn(
+                  'flex flex-col gap-3 md:gap-4 px-2 md:px-4',
+                  !imgLeft && 'md:order-1',
+                  vertMap[verticalAlign],
+                  textAlign === 'center' && 'text-center items-center',
+                  textAlign === 'right' && 'text-right items-end',
+                  textAlign === 'left' && 'text-left items-start',
+                )}>
+                  {title && <h2 className="text-xl md:text-3xl font-display font-bold leading-tight">{title}</h2>}
+                  {subtitle && <p className="text-sm md:text-lg font-medium opacity-80">{subtitle}</p>}
+                  {description && <p className="text-muted-foreground text-sm md:text-base font-body leading-relaxed max-w-lg">{description}</p>}
+                  {ctaText && (
+                    <Link to={ctaLink || '#'} className="mt-2">
+                      <Button size="default" className="rounded-full px-5 md:px-8 text-sm md:text-base font-body">
+                        {ctaText} <ArrowRight className="ml-1.5 md:ml-2 h-3.5 md:h-4 w-3.5 md:w-4" />
+                      </Button>
+                    </Link>
+                  )}
+                </div>
               </div>
             </div>
           </section>
