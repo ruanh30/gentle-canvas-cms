@@ -436,6 +436,77 @@ const HomePage = () => {
         );
       }
 
+      case 'video': {
+        const videoUrl = (section.settings?.url as string) || '';
+        const provider = (section.settings?.provider as string) || 'youtube';
+        const autoplay = (section.settings?.autoplay as boolean) ?? false;
+
+        const getYoutubeEmbedUrl = (url: string) => {
+          const match = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+          if (match) return `https://www.youtube.com/embed/${match[1]}?rel=0${autoplay ? '&autoplay=1&mute=1' : ''}`;
+          return url;
+        };
+
+        if (!videoUrl) return null;
+
+        return (
+          <section key={section.id} className={cn('container mx-auto px-4', rhythmPy, wrapperClass)}>
+            {section.showTitle !== false && (
+              <SectionHeader title={section.title} size="sm" align={(section.settings?.titleAlign as 'left'|'center'|'right') || 'center'} />
+            )}
+            <div className="w-full max-w-4xl mx-auto rounded-xl overflow-hidden border border-border/30 shadow-sm aspect-video">
+              {provider === 'youtube' ? (
+                <iframe
+                  src={getYoutubeEmbedUrl(videoUrl)}
+                  className="w-full h-full"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                  title={section.title || 'Vídeo'}
+                  loading="lazy"
+                />
+              ) : (
+                <video
+                  src={videoUrl}
+                  className="w-full h-full object-cover"
+                  controls
+                  autoPlay={autoplay}
+                  muted={autoplay}
+                  playsInline
+                />
+              )}
+            </div>
+          </section>
+        );
+      }
+
+      case 'countdown': {
+        const targetDate = (section.settings?.targetDate as string) || '';
+        const label = (section.settings?.label as string) || 'Promoção termina em';
+        const bgColor = (section.settings?.backgroundColor as string) || '#1a1a1a';
+        const txtColor = (section.settings?.textColor as string) || '#ffffff';
+
+        if (!targetDate) return null;
+
+        return (
+          <section key={section.id} className={cn(rhythmPy, wrapperClass)}>
+            {section.showTitle !== false && (
+              <div className="container mx-auto px-4">
+                <SectionHeader title={section.title} size="sm" align={(section.settings?.titleAlign as 'left'|'center'|'right') || 'center'} />
+              </div>
+            )}
+            <div
+              className="w-full py-6 md:py-10"
+              style={{ backgroundColor: bgColor, color: txtColor }}
+            >
+              <div className="container mx-auto px-4 flex flex-col items-center gap-3 md:gap-4">
+                <p className="text-xs md:text-sm uppercase tracking-[0.2em] opacity-80 font-body">{label}</p>
+                <CountdownTimer targetDate={targetDate} />
+              </div>
+            </div>
+          </section>
+        );
+      }
+
       case 'image-text': {
         const s = section.settings as { imageUrl?: string; title?: string; description?: string; ctaText?: string; ctaLink?: string; imagePosition?: string };
         const imgLeft = (s.imagePosition || 'left') === 'left';
