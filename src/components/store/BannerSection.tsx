@@ -28,6 +28,7 @@ const defaultItem: BannerItemData = {
   textColor: '#ffffff',
   contentAlign: 'center',
   verticalAlign: 'center',
+  buttonAlign: 'center',
   paddingX: 32,
   paddingY: 32,
 };
@@ -91,6 +92,10 @@ function BannerBlock({ data, height, borderRadius, className }: {
             </>
           )}
           {data.showButton && data.ctaText && (
+            <div className={cn(
+              'w-full flex',
+              (data.buttonAlign || data.contentAlign) === 'left' ? 'justify-start' : (data.buttonAlign || data.contentAlign) === 'right' ? 'justify-end' : 'justify-center',
+            )}>
             <Link to={data.ctaLink || '/products'} onClick={e => e.stopPropagation()}>
               <Button
                 variant={ctaVariant}
@@ -105,6 +110,7 @@ function BannerBlock({ data, height, borderRadius, className }: {
                 <ArrowRight className="ml-1.5 h-3.5 w-3.5" />
               </Button>
             </Link>
+            </div>
           )}
         </div>
       )}
