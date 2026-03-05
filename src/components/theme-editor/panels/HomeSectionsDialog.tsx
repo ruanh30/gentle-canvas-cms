@@ -14,6 +14,7 @@ import {
   Image, Video, Timer, LayoutGrid, ShoppingBag,
   FolderTree, Sparkles, Star, Type as TypeIcon, MousePointer
 } from 'lucide-react';
+import { SingleBannerEditor, MultiBannerEditor } from './BannerSectionEditor';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
 const sectionTypeIcons: Record<string, React.ElementType> = {
@@ -360,9 +361,9 @@ export function HomeSectionsDialog({ open, onOpenChange }: HomeSectionsDialogPro
                   {carouselSections.includes(selectedSection.type) && (
                     <CarouselSettings section={selectedSection} setSetting={setSetting} />
                   )}
-                  {selectedSection.type === 'banner' && <BannerSettings section={selectedSection} setSetting={setSetting} />}
+                  {selectedSection.type === 'banner' && <SingleBannerEditor section={selectedSection} setSetting={setSetting} />}
                   {(selectedSection.type === 'double-banner' || selectedSection.type === 'triple-banner') && (
-                    <MultiBannerSettings section={selectedSection} setSetting={setSetting} />
+                    <MultiBannerEditor section={selectedSection} setSetting={setSetting} />
                   )}
                   {selectedSection.type === 'video' && <VideoSettings section={selectedSection} setSetting={setSetting} />}
                   {selectedSection.type === 'countdown' && <CountdownSettings section={selectedSection} setSetting={setSetting} />}
