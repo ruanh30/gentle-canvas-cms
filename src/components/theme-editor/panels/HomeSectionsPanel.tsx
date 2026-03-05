@@ -20,7 +20,6 @@ const availableSectionTypes: { type: ThemeHomepageSection['type']; label: string
   { type: 'countdown', label: 'Contagem Regressiva' },
   { type: 'benefits', label: 'Benefícios' },
   { type: 'trust-bar', label: 'Barra de Confiança' },
-  { type: 'faq', label: 'FAQ' },
   { type: 'categories', label: 'Categorias' },
   { type: 'featured-products', label: 'Produtos em Destaque' },
 ];
@@ -34,6 +33,7 @@ export function HomeSectionsPanel() {
   const [showAddMenu, setShowAddMenu] = useState(false);
   const [newSectionType, setNewSectionType] = useState(availableSectionTypes[0].type);
   const [newSectionName, setNewSectionName] = useState('');
+  const [selectedCollectionId, setSelectedCollectionId] = useState('');
 
   const startEdit = (id: string, title: string) => {
     setEditingId(id);
@@ -359,6 +359,7 @@ export function HomeSectionsPanel() {
               setShowAddMenu(true);
               setNewSectionType(availableSectionTypes[0].type);
               setNewSectionName('');
+              setSelectedCollectionId('');
             }}
             className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-lg border border-dashed border-border text-sm text-muted-foreground hover:text-foreground hover:border-foreground/30 transition-colors"
           >
@@ -370,9 +371,15 @@ export function HomeSectionsPanel() {
             <select
               value={newSectionType}
               onChange={e => {
-                setNewSectionType(e.target.value as ThemeHomepageSection['type']);
-                const found = availableSectionTypes.find(s => s.type === e.target.value);
-                if (found && !newSectionName) setNewSectionName(found.label);
+                const type = e.target.value as ThemeHomepageSection['type'];
+                setNewSectionType(type);
+                setSelectedCollectionId('');
+                if (type !== 'collections') {
+                  const found = availableSectionTypes.find(s => s.type === type);
+                  if (found && !newSectionName) setNewSectionName(found.label);
+                } else {
+                  setNewSectionName('');
+                }
               }}
               className="w-full h-8 text-sm rounded border border-border bg-background px-2"
             >
@@ -380,33 +387,56 @@ export function HomeSectionsPanel() {
                 <option key={st.type} value={st.type}>{st.label}</option>
               ))}
             </select>
-            <Input
-              value={newSectionName}
-              onChange={e => setNewSectionName(e.target.value)}
-              placeholder="Nome da seção"
-              className="h-8 text-sm"
-            />
+            {newSectionType === 'collections' ? (
+              <>
+                <p className="text-[10px] text-muted-foreground">Selecione a coleção:</p>
+                <select
+                  value={selectedCollectionId}
+                  onChange={e => {
+                    setSelectedCollectionId(e.target.value);
+                    const col = mockCollections.find(c => c.id === e.target.value);
+                    if (col) setNewSectionName(col.name);
+                  }}
+                  className="w-full h-8 text-sm rounded border border-border bg-background px-2"
+                >
+                  <option value="">— Escolha uma coleção —</option>
+                  {mockCollections.filter(c => c.active).map(col => (
+                    <option key={col.id} value={col.id}>{col.name}</option>
+                  ))}
+                </select>
+              </>
+            ) : (
+              <Input
+                value={newSectionName}
+                onChange={e => setNewSectionName(e.target.value)}
+                placeholder="Nome da seção"
+                className="h-8 text-sm"
+              />
+            )}
             <div className="flex gap-2">
               <button
                 onClick={() => {
+                  if (newSectionType === 'collections' && !selectedCollectionId) return;
                   const label = newSectionName.trim() || availableSectionTypes.find(s => s.type === newSectionType)?.label || 'Nova seção';
                   const newSection: ThemeHomepageSection = {
-                    id: `${newSectionType}-${Date.now()}`,
+                    id: newSectionType === 'collections' ? selectedCollectionId : `${newSectionType}-${Date.now()}`,
                     type: newSectionType,
                     enabled: true,
                     title: label,
                     showTitle: true,
-                    settings: {},
+                    settings: newSectionType === 'collections' ? { collectionId: selectedCollectionId } : {},
                   };
                   updateDraft({ homepageSections: [...sections, newSection] });
                   setShowAddMenu(false);
                   setNewSectionName('');
+                  setSelectedCollectionId('');
                   setTimeout(() => {
                     const el = document.getElementById(`section-${newSection.id}`);
                     el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
                   }, 150);
                 }}
-                className="flex-1 h-8 rounded-lg bg-foreground text-background text-sm font-medium hover:opacity-90 transition-opacity"
+                disabled={newSectionType === 'collections' && !selectedCollectionId}
+                className="flex-1 h-8 rounded-lg bg-foreground text-background text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-40"
               >
                 Adicionar
               </button>
