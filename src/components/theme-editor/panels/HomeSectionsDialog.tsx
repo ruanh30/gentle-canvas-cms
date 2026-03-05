@@ -201,7 +201,7 @@ export function HomeSectionsDialog({ open, onOpenChange }: HomeSectionsDialogPro
                           type: newSectionType,
                           enabled: true,
                           title: label,
-                          showTitle: true,
+                          showTitle: !['trust-bar', 'benefits', 'video', 'banner', 'double-banner', 'triple-banner'].includes(newSectionType),
                           settings: newSectionType === 'collections' ? { collectionId: newCollectionId } : {},
                         };
                         updateDraft({ homepageSections: [...sections, newSection] });
