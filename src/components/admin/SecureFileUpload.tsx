@@ -66,10 +66,17 @@ function isExtensionAllowed(name: string): boolean {
   return Object.values(ALLOWED_TYPES).flat().includes(ext);
 }
 
-/** Reject filenames with multiple extensions (e.g. image.jpg.php) */
+/** Reject filenames where any non-final extension is a known media or dangerous type (e.g. image.jpg.php) */
 function hasDoubleExtension(name: string): boolean {
   const allExts = getAllExtensions(name);
-  return allExts.length > 1;
+  if (allExts.length <= 1) return false;
+  // Only flag if an intermediate "extension" is a recognized media or blocked type
+  const knownExts = new Set([
+    ...Object.values(ALLOWED_TYPES).flat(),
+    ...BLOCKED_EXTENSIONS,
+  ]);
+  const intermediate = allExts.slice(0, -1);
+  return intermediate.some(ext => knownExts.has(ext));
 }
 
 function isMimeAllowed(mime: string): boolean {
