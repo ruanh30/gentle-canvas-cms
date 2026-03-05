@@ -47,7 +47,7 @@ export function CategoryPanel() {
       <p className="text-[10px] text-muted-foreground/60 leading-relaxed -mt-2">
         Número de colunas por dispositivo e espaçamento entre os cards.
       </p>
-      <NumberSlider label="Colunas no desktop" value={c.columnsDesktop} onChange={v => set({ columnsDesktop: v as 2 | 3 | 4 | 5 })} min={2} max={5} />
+      <NumberSlider label="Colunas no desktop" value={c.columnsDesktop} onChange={v => set({ columnsDesktop: v as 2 | 3 | 4 | 5 | 6 | 7 | 8 })} min={2} max={8} />
       <NumberSlider label="Colunas no tablet" value={c.columnsTablet ?? 3} onChange={v => set({ columnsTablet: v as 2 | 3 | 4 })} min={2} max={4} />
       <NumberSlider label="Colunas no mobile" value={c.columnsMobile} onChange={v => set({ columnsMobile: v as 1 | 2 })} min={1} max={2} />
       <NumberSlider label="Espaçamento (gap)" value={c.gridGap ?? 24} onChange={v => set({ gridGap: v })} min={0} max={32} step={4} suffix="px" />

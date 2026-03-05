@@ -324,7 +324,7 @@ export interface ThemeProductPage {
 export interface ThemeCategory {
   layout: 'sidebar-left' | 'sidebar-right' | 'top-filters' | 'no-filters';
   displayMode: 'grid' | 'list' | 'masonry' | 'carousel' | 'compact-grid';
-  columnsDesktop: 2 | 3 | 4 | 5;
+  columnsDesktop: 2 | 3 | 4 | 5 | 6 | 7 | 8;
   columnsTablet: 2 | 3 | 4;
   columnsMobile: 1 | 2;
   gridGap: number;            // px (0-32, step 4)
