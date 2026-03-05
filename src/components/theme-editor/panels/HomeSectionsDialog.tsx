@@ -84,8 +84,7 @@ export function HomeSectionsDialog({ open, onOpenChange }: HomeSectionsDialogPro
   const removeSection = (id: string) => {
     updateDraft({ homepageSections: sections.filter(s => s.id !== id) });
     if (selectedId === id) {
-      const remaining = sections.filter(s => s.id !== id);
-      setSelectedId(remaining[0]?.id || null);
+      setSelectedId(null);
     }
   };
 
@@ -352,11 +351,7 @@ export function HomeSectionsDialog({ open, onOpenChange }: HomeSectionsDialogPro
 
 
                         <button
-                          onClick={() => {
-                            if (window.confirm(`Tem certeza que deseja remover a seção "${selectedSection.title}"? Essa ação não pode ser desfeita.`)) {
-                              removeSection(selectedSection.id);
-                            }
-                          }}
+                          onClick={() => removeSection(selectedSection.id)}
                           className="flex items-center gap-3 p-3 rounded-xl border border-destructive/20 bg-destructive/5 hover:bg-destructive/10 transition-colors text-left"
                         >
                           <div className="w-8 h-8 rounded-lg bg-background flex items-center justify-center shrink-0 border border-destructive/20">
