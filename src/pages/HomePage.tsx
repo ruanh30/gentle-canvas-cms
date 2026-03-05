@@ -361,10 +361,10 @@ const HomePage = () => {
       case 'categories': {
         const showImage = (section.settings?.showImage as boolean) !== false;
         const imageShape = (section.settings?.imageShape as string) || 'circle';
-        const imageSize = isMobile ? ((section.settings?.imageSizeMobile as number) || (section.settings?.imageSize as number) || 80) : ((section.settings?.imageSize as number) || 80);
+        const imageSize = isMobile ? ((section.settings?.imageSizeMobile as number) || 80) : ((section.settings?.imageSize as number) || 80);
         const imageBorder = (section.settings?.imageBorder as boolean) ?? false;
         const imageBorderColor = (section.settings?.imageBorderColor as string) || '#e91e8c';
-        const imageBorderWidth = isMobile ? ((section.settings?.imageBorderWidthMobile as number) || (section.settings?.imageBorderWidth as number) || 2) : ((section.settings?.imageBorderWidth as number) || 2);
+        const imageBorderWidth = isMobile ? ((section.settings?.imageBorderWidthMobile as number) || 1) : ((section.settings?.imageBorderWidth as number) || 2);
         const shapeClass = imageShape === 'circle' ? 'rounded-full' : imageShape === 'rounded' ? 'rounded-xl' : 'rounded-none';
         const selectedIds = (section.settings?.selectedCategoryIds as string[]) || [];
         const filteredCategories = selectedIds.length > 0 ? mockCategories.filter(c => selectedIds.includes(c.id)) : mockCategories;
@@ -411,7 +411,7 @@ const HomePage = () => {
               <SectionHeader title={section.title} size="md" subtitle="Encontre o que procura" align={(section.settings?.titleAlign as 'left'|'center'|'right') || 'center'} />
             )}
             {isCarousel ? (
-              <SectionCarousel speed={carouselSpeed} showArrows={carouselShowArrows} centered gap={isMobile ? ((section.settings?.carouselGapMobile as number) ?? (section.settings?.carouselGap as number) ?? 16) : ((section.settings?.carouselGap as number) ?? 16)}>
+              <SectionCarousel speed={carouselSpeed} showArrows={carouselShowArrows} centered gap={isMobile ? ((section.settings?.carouselGapMobile as number) ?? 10) : ((section.settings?.carouselGap as number) ?? 16)}>
                 {filteredCategories.map(categoryCard)}
               </SectionCarousel>
             ) : (

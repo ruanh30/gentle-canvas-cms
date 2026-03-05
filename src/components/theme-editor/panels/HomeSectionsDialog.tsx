@@ -503,12 +503,12 @@ function CarouselSettings({ section, setSetting }: SettingsProps) {
             <FieldGroup label="Espaçamento do carrossel mobile" hint="Espaçamento entre itens no celular">
               <div className="flex items-center gap-2">
                 <input type="range" min={1} max={100} step={1}
-                  value={(section.settings?.carouselGapMobile as number) ?? (section.settings?.carouselGap as number) ?? 16}
+                  value={(section.settings?.carouselGapMobile as number) ?? 10}
                   onChange={e => setSetting(section.id, 'carouselGapMobile', Number(e.target.value))}
                   className="flex-1"
                 />
                 <span className="text-xs text-muted-foreground w-8 text-right">
-                  {(section.settings?.carouselGapMobile as number) ?? (section.settings?.carouselGap as number) ?? 16}px
+                  {(section.settings?.carouselGapMobile as number) ?? 10}px
                 </span>
               </div>
             </FieldGroup>
@@ -1421,11 +1421,11 @@ function CategorySettings({ section, setSetting }: SettingsProps) {
             <FieldGroup label="Tamanho mobile" hint="Tamanho da imagem em telas pequenas">
               <div className="flex items-center gap-2">
                 <input type="range" min={40} max={120} step={10}
-                  value={(section.settings?.imageSizeMobile as number) || (section.settings?.imageSize as number) || 80}
+                  value={(section.settings?.imageSizeMobile as number) || 80}
                   onChange={e => setSetting(section.id, 'imageSizeMobile', Number(e.target.value))}
                   className="flex-1"
                 />
-                <span className="text-xs text-muted-foreground w-10 text-right">{(section.settings?.imageSizeMobile as number) || (section.settings?.imageSize as number) || 80}px</span>
+                <span className="text-xs text-muted-foreground w-10 text-right">{(section.settings?.imageSizeMobile as number) || 80}px</span>
               </div>
             </FieldGroup>
             <div className="flex items-center gap-3">
@@ -1462,11 +1462,11 @@ function CategorySettings({ section, setSetting }: SettingsProps) {
                 <FieldGroup label="Largura da borda mobile" hint="Largura da borda em telas pequenas">
                   <div className="flex items-center gap-2">
                     <input type="range" min={1} max={6} step={1}
-                      value={(section.settings?.imageBorderWidthMobile as number) || (section.settings?.imageBorderWidth as number) || 2}
+                      value={(section.settings?.imageBorderWidthMobile as number) || 1}
                       onChange={e => setSetting(section.id, 'imageBorderWidthMobile', Number(e.target.value))}
                       className="flex-1"
                     />
-                    <span className="text-xs text-muted-foreground w-6 text-right">{(section.settings?.imageBorderWidthMobile as number) || (section.settings?.imageBorderWidth as number) || 2}px</span>
+                    <span className="text-xs text-muted-foreground w-6 text-right">{(section.settings?.imageBorderWidthMobile as number) || 1}px</span>
                   </div>
                 </FieldGroup>
               </>
