@@ -849,7 +849,8 @@ function CountdownSettings({ section, setSetting }: SettingsProps) {
 
         {bgType === 'image' && (
           <>
-            <FieldGroup label="Imagem de fundo" hint="Recomendado: 1440 × 500px">
+            <FieldGroup label="Imagem de fundo">
+              <p className="text-[10px] text-muted-foreground -mt-0.5 mb-1.5">Recomendado: 1440 × 500px</p>
               {(section.settings?.bgImage as string) ? (
                 <div className="space-y-2">
                   <div className="rounded-lg overflow-hidden border border-border/50 h-24">
@@ -924,7 +925,8 @@ function ImageTextSettings({ section, setSetting }: SettingsProps) {
     <>
       {/* ── Imagem ── */}
       <SettingsCard title="Imagem">
-        <FieldGroup label="Imagem da seção" hint="Recomendado: 800 × 800px ou 1200 × 800px">
+        <FieldGroup label="Imagem da seção">
+          <p className="text-[10px] text-muted-foreground -mt-0.5 mb-1.5">Recomendado: 800 × 800px ou 1200 × 800px</p>
           {imageUrl ? (
             <div className="space-y-2">
               <div className="rounded-lg overflow-hidden border border-border/50 h-28">
