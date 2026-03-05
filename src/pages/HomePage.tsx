@@ -193,10 +193,10 @@ const HomePage = () => {
   };
 
   const heroHeightMap: Record<string, string> = {
-    '200': 'min-h-[200px]',
-    '300': 'min-h-[300px]',
-    '400': 'min-h-[400px]',
-    '500': 'min-h-[500px]',
+    '200': 'min-h-[160px] md:min-h-[200px]',
+    '300': 'min-h-[220px] md:min-h-[300px]',
+    '400': 'min-h-[300px] md:min-h-[400px]',
+    '500': 'min-h-[360px] md:min-h-[500px]',
     fullscreen: 'min-h-screen',
   };
 
