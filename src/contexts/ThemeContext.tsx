@@ -164,6 +164,7 @@ function applyThemeCSS(t: ThemeConfig) {
 
   root.style.setProperty('--pm-radius', getRadiusPx(t.global.borderRadius));
   root.style.setProperty('--pm-container-width', t.global.containerWidth === 'full' ? '100%' : (t.global.containerMaxPx ? `${t.global.containerMaxPx}px` : '1280px'));
+  root.style.setProperty('--pm-showcase-container-width', `${t.category?.containerMaxWidth ?? 1400}px`);
 
   // Shadow level
   const shadowMap: Record<string, string> = {
