@@ -232,7 +232,7 @@ export function HomeSectionsPanel() {
                     type: newSectionType,
                     enabled: true,
                     title: label,
-                    showTitle: true,
+                    showTitle: !['trust-bar', 'benefits', 'video', 'banner', 'double-banner', 'triple-banner'].includes(newSectionType),
                     settings: newSectionType === 'collections' ? { collectionId: selectedCollectionId } : {},
                   };
                   updateDraft({ homepageSections: [...sections, newSection] });
