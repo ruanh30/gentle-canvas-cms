@@ -10,21 +10,7 @@ export function GlobalPanel() {
   const set = (u: Partial<typeof g>) => updateDraftSection('global', u);
 
   return (
-    <EditorSection icon={Layout} title="Layout Global" description="Controle o container, espaçamentos, arredondamentos e efeitos visuais de toda a loja">
-      <SectionDivider label="Container" />
-      <p className="text-[10px] text-muted-foreground/60 leading-relaxed -mt-2">
-        Define a largura máxima do conteúdo em telas grandes. Tela cheia ocupa 100% da largura.
-      </p>
-      <SelectField label="Largura do container" value={g.containerWidth} onChange={v => {
-        const pxMap = { narrow: 1200, default: 1400, wide: 1600, full: 1920 } as const;
-        set({ containerWidth: v, containerMaxPx: pxMap[v] });
-      }} options={[
-        { value: 'narrow', label: 'Estreito (1200px)' }, { value: 'default', label: 'Padrão (1400px)' },
-        { value: 'wide', label: 'Largo (1600px)' }, { value: 'full', label: 'Tela cheia' },
-      ]} />
-      {g.containerWidth !== 'full' && (
-        <NumberSlider label="Largura máx." value={g.containerMaxPx} onChange={v => set({ containerMaxPx: v })} min={960} max={1920} step={20} suffix="px" />
-      )}
+    <EditorSection icon={Layout} title="Layout Global" description="Controle espaçamentos, arredondamentos e efeitos visuais de toda a loja">
 
       <SectionDivider label="Espaçamento entre seções" />
       <p className="text-[10px] text-muted-foreground/60 leading-relaxed -mt-2">
