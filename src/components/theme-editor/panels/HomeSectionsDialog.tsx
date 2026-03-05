@@ -41,14 +41,14 @@ const sectionTypeLabels: Record<string, string> = {
   banner: 'Banner',
   'double-banner': 'Banner Duplo',
   'triple-banner': 'Banner Triplo',
-  video: 'Vídeo',
+  'trust-bar': 'Barra de Confiança',
+  benefits: 'Benefícios',
+  categories: 'Categorias',
+  collections: 'Coleção de Produtos',
   countdown: 'Contagem Regressiva',
   'image-text': 'Imagem + Texto',
-  collections: 'Coleção de Produtos',
-  categories: 'Categorias',
   'featured-products': 'Produtos em Destaque',
-  benefits: 'Benefícios',
-  'trust-bar': 'Barra de Confiança',
+  video: 'Vídeo',
 };
 
 const carouselSections = ['categories', 'featured-products', 'collections'];
