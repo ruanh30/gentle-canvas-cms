@@ -52,7 +52,17 @@ function SectionCarousel({ children, speed, showArrows = true, centered = false,
   );
 }
 
-function CountdownTimer({ targetDate }: { targetDate: string }) {
+interface CountdownTimerProps {
+  targetDate: string;
+  style?: 'minimal' | 'boxes' | 'bold';
+  showDays?: boolean;
+  showHours?: boolean;
+  showMinutes?: boolean;
+  showSeconds?: boolean;
+  expired?: boolean;
+}
+
+function CountdownTimer({ targetDate, style = 'boxes', showDays = true, showHours = true, showMinutes = true, showSeconds = true, expired = false }: CountdownTimerProps) {
   const [time, setTime] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
 
   useEffect(() => {
@@ -70,20 +80,58 @@ function CountdownTimer({ targetDate }: { targetDate: string }) {
     return () => clearInterval(interval);
   }, [targetDate]);
 
-  const pad = (n: number) => String(n).padStart(2, '0');
+  if (expired) return null;
 
+  const pad = (n: number) => String(n).padStart(2, '0');
+  const units = [
+    showDays && { val: time.days, label: 'Dias' },
+    showHours && { val: time.hours, label: 'Horas' },
+    showMinutes && { val: time.minutes, label: 'Min' },
+    showSeconds && { val: time.seconds, label: 'Seg' },
+  ].filter(Boolean) as { val: number; label: string }[];
+
+  if (style === 'minimal') {
+    return (
+      <div className="flex items-center gap-4 md:gap-6">
+        {units.map((unit, i) => (
+          <div key={i} className="flex flex-col items-center">
+            <span className="text-2xl md:text-4xl font-display font-light tabular-nums">{pad(unit.val)}</span>
+            <span className="text-[10px] md:text-xs uppercase tracking-wider opacity-60 mt-1">{unit.label}</span>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  if (style === 'bold') {
+    return (
+      <div className="flex items-center gap-3 md:gap-5">
+        {units.map((unit, i) => (
+          <React.Fragment key={i}>
+            <div className="flex flex-col items-center">
+              <span className="text-4xl md:text-6xl font-display font-black tabular-nums leading-none">{pad(unit.val)}</span>
+              <span className="text-[10px] md:text-xs uppercase tracking-[0.2em] opacity-70 mt-2 font-medium">{unit.label}</span>
+            </div>
+            {i < units.length - 1 && <span className="text-3xl md:text-5xl font-display font-light opacity-30 -mt-4">:</span>}
+          </React.Fragment>
+        ))}
+      </div>
+    );
+  }
+
+  // boxes (default)
   return (
-    <div className="flex items-center gap-3">
-      {[
-        { val: time.days, label: 'Dias' },
-        { val: time.hours, label: 'Horas' },
-        { val: time.minutes, label: 'Min' },
-        { val: time.seconds, label: 'Seg' },
-      ].map((unit, i) => (
-        <div key={i} className="flex flex-col items-center">
-          <span className="text-3xl md:text-5xl font-display font-bold tabular-nums">{pad(unit.val)}</span>
-          <span className="text-xs uppercase tracking-wider opacity-70">{unit.label}</span>
-        </div>
+    <div className="flex items-center gap-2.5 md:gap-4">
+      {units.map((unit, i) => (
+        <React.Fragment key={i}>
+          <div className="flex flex-col items-center gap-1.5">
+            <div className="bg-white/10 backdrop-blur-sm rounded-xl px-3 py-2.5 md:px-5 md:py-4 border border-white/10">
+              <span className="text-2xl md:text-5xl font-display font-bold tabular-nums leading-none">{pad(unit.val)}</span>
+            </div>
+            <span className="text-[10px] md:text-xs uppercase tracking-wider opacity-70">{unit.label}</span>
+          </div>
+          {i < units.length - 1 && <span className="text-xl md:text-3xl font-display opacity-30 -mt-5">:</span>}
+        </React.Fragment>
       ))}
     </div>
   );
@@ -496,10 +544,57 @@ const HomePage = () => {
       case 'countdown': {
         const targetDate = (section.settings?.targetDate as string) || '';
         const label = (section.settings?.label as string) || 'Promoção termina em';
+        const headline = (section.settings?.headline as string) || '';
+        const subtitle = (section.settings?.subtitle as string) || '';
+        const ctaText = (section.settings?.ctaText as string) || '';
+        const ctaLink = (section.settings?.ctaLink as string) || '';
+        const bgType = (section.settings?.bgType as string) || 'solid';
         const bgColor = (section.settings?.backgroundColor as string) || '#1a1a1a';
         const txtColor = (section.settings?.textColor as string) || '#ffffff';
+        const gradientFrom = (section.settings?.gradientFrom as string) || '#1a1a1a';
+        const gradientTo = (section.settings?.gradientTo as string) || '#4a1a8a';
+        const bgImage = (section.settings?.bgImage as string) || '';
+        const overlayColor = (section.settings?.overlayColor as string) || '#000000';
+        const overlayOpacity = (section.settings?.overlayOpacity as number) ?? 50;
+        const align = (section.settings?.align as string) || 'center';
+        const sectionHeight = (section.settings?.sectionHeight as string) || 'auto';
+        const counterStyle = (section.settings?.counterStyle as string) || 'boxes';
+        const showDays = (section.settings?.showDays as boolean) ?? true;
+        const showHours = (section.settings?.showHours as boolean) ?? true;
+        const showMinutes = (section.settings?.showMinutes as boolean) ?? true;
+        const showSeconds = (section.settings?.showSeconds as boolean) ?? true;
+        const expiryBehavior = (section.settings?.expiryBehavior as string) || 'hide';
+        const expiryMessage = (section.settings?.expiryMessage as string) || 'Promoção encerrada!';
+
+        // Check if expired
+        const isExpired = targetDate ? new Date(targetDate).getTime() <= Date.now() : false;
 
         if (!targetDate) return null;
+        if (isExpired && expiryBehavior === 'hide') return null;
+
+        const heightMap: Record<string, string> = {
+          compact: 'py-4 md:py-6',
+          auto: 'py-8 md:py-12',
+          tall: 'py-12 md:py-20',
+          hero: 'py-20 md:py-32',
+        };
+        const alignMap: Record<string, string> = {
+          left: 'items-start text-left',
+          center: 'items-center text-center',
+          right: 'items-end text-right',
+        };
+
+        let bgStyle: React.CSSProperties = { backgroundColor: bgColor, color: txtColor };
+        if (bgType === 'gradient') {
+          bgStyle = { background: `linear-gradient(135deg, ${gradientFrom}, ${gradientTo})`, color: txtColor };
+        } else if (bgType === 'image') {
+          bgStyle = {
+            backgroundImage: bgImage ? `url(${bgImage})` : undefined,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            color: txtColor,
+          };
+        }
 
         return (
           <section key={section.id} className={cn(rhythmPy, wrapperClass)}>
@@ -509,12 +604,41 @@ const HomePage = () => {
               </div>
             )}
             <div
-              className="w-full py-6 md:py-10"
-              style={{ backgroundColor: bgColor, color: txtColor }}
+              className={cn('w-full relative overflow-hidden', heightMap[sectionHeight] || heightMap.auto)}
+              style={bgStyle}
             >
-              <div className="container mx-auto px-4 flex flex-col items-center gap-3 md:gap-4">
-                <p className="text-xs md:text-sm uppercase tracking-[0.2em] opacity-80 font-body">{label}</p>
-                <CountdownTimer targetDate={targetDate} />
+              {/* Overlay for image bg */}
+              {bgType === 'image' && bgImage && (
+                <div className="absolute inset-0" style={{ backgroundColor: overlayColor, opacity: overlayOpacity / 100 }} />
+              )}
+
+              <div className={cn('container mx-auto px-4 flex flex-col gap-3 md:gap-5 relative z-10', alignMap[align] || alignMap.center)}>
+                {isExpired && expiryBehavior === 'message' ? (
+                  <p className="text-lg md:text-2xl font-display font-bold">{expiryMessage}</p>
+                ) : (
+                  <>
+                    {headline && <h3 className="text-xl md:text-3xl font-display font-bold leading-tight">{headline}</h3>}
+                    {subtitle && <p className="text-sm md:text-base opacity-80 font-body max-w-xl">{subtitle}</p>}
+                    {label && <p className="text-xs md:text-sm uppercase tracking-[0.2em] opacity-70 font-body">{label}</p>}
+                    <CountdownTimer
+                      targetDate={targetDate}
+                      style={counterStyle as 'minimal' | 'boxes' | 'bold'}
+                      showDays={showDays}
+                      showHours={showHours}
+                      showMinutes={showMinutes}
+                      showSeconds={showSeconds}
+                      expired={isExpired && expiryBehavior === 'keep'}
+                    />
+                    {ctaText && (
+                      <Link
+                        to={ctaLink || '#'}
+                        className="inline-flex items-center justify-center mt-2 px-6 py-2.5 rounded-lg bg-white/20 hover:bg-white/30 backdrop-blur-sm border border-white/20 text-sm font-medium transition-colors"
+                      >
+                        {ctaText}
+                      </Link>
+                    )}
+                  </>
+                )}
               </div>
             </div>
           </section>
