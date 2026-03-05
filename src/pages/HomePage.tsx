@@ -547,7 +547,12 @@ const HomePage = () => {
         const headline = (section.settings?.headline as string) || '';
         const subtitle = (section.settings?.subtitle as string) || '';
         const ctaText = (section.settings?.ctaText as string) || '';
-        const ctaLink = (section.settings?.ctaLink as string) || '';
+        const ctaDestType = (section.settings?.ctaDestType as string) || 'custom';
+        const ctaCollectionId = (section.settings?.ctaCollectionId as string) || '';
+        const ctaCustomLink = (section.settings?.ctaLink as string) || '';
+        const ctaLink = ctaDestType === 'catalog' ? '/produtos'
+          : ctaDestType === 'collection' && ctaCollectionId ? `/produtos?collection=${ctaCollectionId}`
+          : ctaCustomLink;
         const bgType = (section.settings?.bgType as string) || 'solid';
         const bgColor = (section.settings?.backgroundColor as string) || '#1a1a1a';
         const txtColor = (section.settings?.textColor as string) || '#ffffff';
