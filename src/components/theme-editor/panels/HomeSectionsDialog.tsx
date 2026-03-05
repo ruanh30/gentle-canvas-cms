@@ -33,6 +33,7 @@ const sectionTypeIcons: Record<string, React.ElementType> = {
   collections: ShoppingBag,
   categories: FolderTree,
   'featured-products': Star,
+  'all-products': ShoppingBag,
   benefits: Sparkles,
   'trust-bar': Sparkles,
 };
@@ -48,10 +49,11 @@ const sectionTypeLabels: Record<string, string> = {
   countdown: 'Contagem Regressiva',
   'image-text': 'Imagem + Texto',
   'featured-products': 'Produtos em Destaque',
+  'all-products': 'Todos os Produtos',
   video: 'Vídeo',
 };
 
-const carouselSections = ['categories', 'featured-products', 'collections'];
+const carouselSections = ['categories', 'featured-products', 'all-products', 'collections'];
 
 interface HomeSectionsDialogProps {
   open: boolean;
