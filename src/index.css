@@ -118,6 +118,15 @@
   }
 }
 
+/* Hide scrollbar for carousel components */
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
 @layer components {
   /* Dimensions & typography — applied to ALL store buttons */
   .pm-theme-btn {

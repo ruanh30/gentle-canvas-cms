@@ -34,24 +34,36 @@ function SectionCarousel({ children, speed, showArrows = true, centered = false,
   };
 
   return (
-    <div className="relative">
+    <div className="relative w-full">
       {showArrows && (
-        <button onClick={() => scroll('left')} className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-background/90 backdrop-blur-sm p-2 rounded-full shadow-md hover:bg-background">
-          <ChevronLeft className="h-5 w-5" />
+        <button
+          onClick={() => scroll('left')}
+          className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-background/90 backdrop-blur-sm p-1.5 md:p-2 rounded-full shadow-md hover:bg-background hidden md:flex items-center justify-center"
+        >
+          <ChevronLeft className="h-4 w-4 md:h-5 md:w-5" />
         </button>
       )}
-      <div ref={scrollRef} className={cn("flex overflow-x-auto scroll-smooth pb-4 snap-x snap-mandatory", showArrows ? "px-8" : "px-2", centered && "justify-center")} style={{ scrollbarWidth: 'none', gap: `${gap}px` }}>
+      <div
+        ref={scrollRef}
+        className={cn(
+          "flex overflow-x-auto scroll-smooth pb-2 snap-x snap-mandatory no-scrollbar",
+          showArrows ? "md:px-10 px-1" : "px-1",
+        )}
+        style={{ gap: `${gap}px` }}
+      >
         {children}
       </div>
       {showArrows && (
-        <button onClick={() => scroll('right')} className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-background/90 backdrop-blur-sm p-2 rounded-full shadow-md hover:bg-background">
-          <ChevronRight className="h-5 w-5" />
+        <button
+          onClick={() => scroll('right')}
+          className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-background/90 backdrop-blur-sm p-1.5 md:p-2 rounded-full shadow-md hover:bg-background hidden md:flex items-center justify-center"
+        >
+          <ChevronRight className="h-4 w-4 md:h-5 md:w-5" />
         </button>
       )}
     </div>
   );
 }
-
 interface CountdownTimerProps {
   targetDate: string;
   style?: 'minimal' | 'boxes' | 'bold';
