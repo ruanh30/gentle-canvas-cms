@@ -692,10 +692,37 @@ function CountdownSettings({ section, setSetting }: SettingsProps) {
           <FieldGroup label="Texto do botão">
             <Input value={(section.settings?.ctaText as string) || ''} onChange={e => setSetting(section.id, 'ctaText', e.target.value)} placeholder="Ver ofertas" className="h-9" />
           </FieldGroup>
-          <FieldGroup label="Link do botão">
-            <Input value={(section.settings?.ctaLink as string) || ''} onChange={e => setSetting(section.id, 'ctaLink', e.target.value)} placeholder="/produtos" className="h-9" />
+          <FieldGroup label="Destino do botão">
+            <select
+              value={(section.settings?.ctaDestType as string) || 'custom'}
+              onChange={e => setSetting(section.id, 'ctaDestType', e.target.value)}
+              className="w-full h-9 text-sm rounded-md border border-border bg-background px-3"
+            >
+              <option value="catalog">Catálogo (todos os produtos)</option>
+              <option value="collection">Coleção</option>
+              <option value="custom">Link personalizado</option>
+            </select>
           </FieldGroup>
         </TwoCol>
+        {(section.settings?.ctaDestType as string) === 'collection' && (
+          <FieldGroup label="Coleção">
+            <select
+              value={(section.settings?.ctaCollectionId as string) || ''}
+              onChange={e => setSetting(section.id, 'ctaCollectionId', e.target.value)}
+              className="w-full h-9 text-sm rounded-md border border-border bg-background px-3"
+            >
+              <option value="">Selecione...</option>
+              {mockCollections.filter(c => c.active).map(c => (
+                <option key={c.id} value={c.id}>{c.name}</option>
+              ))}
+            </select>
+          </FieldGroup>
+        )}
+        {(section.settings?.ctaDestType as string) === 'custom' && (
+          <FieldGroup label="Link personalizado">
+            <Input value={(section.settings?.ctaLink as string) || ''} onChange={e => setSetting(section.id, 'ctaLink', e.target.value)} placeholder="/produtos" className="h-9" />
+          </FieldGroup>
+        )}
       </SettingsCard>
 
       {/* ── Contador ── */}
