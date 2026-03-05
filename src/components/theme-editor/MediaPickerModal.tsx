@@ -1,9 +1,10 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { X, Search, ImageIcon, Check } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { mockProducts, mockCategories } from '@/data/mock';
+import SecureFileUpload from '@/components/admin/SecureFileUpload';
 
 function getAllMedia() {
   const items: { id: string; url: string; source: string; name: string }[] = [];
@@ -33,41 +34,61 @@ interface MediaPickerModalProps {
   onClose: () => void;
   onSelect: (url: string) => void;
   currentValue?: string;
+  accept?: string;
 }
 
-export function MediaPickerModal({ open, onClose, onSelect, currentValue }: MediaPickerModalProps) {
+export function MediaPickerModal({ open, onClose, onSelect, currentValue, accept }: MediaPickerModalProps) {
   const [search, setSearch] = useState('');
-  const [filter, setFilter] = useState<'all' | 'Produto' | 'Categoria'>('all');
+  const [filter, setFilter] = useState<'all' | 'Produto' | 'Categoria' | 'Upload'>('all');
+  const [uploadedItems, setUploadedItems] = useState<{ id: string; url: string; name: string }[]>([]);
   const allMedia = useMemo(() => getAllMedia(), []);
 
+  const allItems = useMemo(() => [
+    ...allMedia,
+    ...uploadedItems.map(u => ({ ...u, source: 'Upload' })),
+  ], [allMedia, uploadedItems]);
+
   const filtered = useMemo(() =>
-    allMedia
+    allItems
       .filter(m => filter === 'all' || m.source === filter)
       .filter(m => m.name.toLowerCase().includes(search.toLowerCase())),
-    [allMedia, filter, search]
+    [allItems, filter, search]
   );
+
+  const handleUpload = useCallback((dataUrl: string, file: File) => {
+    const name = file.name.replace(/\.[^/.]+$/, '');
+    setUploadedItems(prev => [{
+      id: `picker-upload-${Date.now()}`,
+      url: dataUrl,
+      name,
+    }, ...prev]);
+    setFilter('Upload');
+  }, []);
 
   if (!open) return null;
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center">
-      {/* Backdrop */}
       <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
 
-      {/* Modal */}
       <div className="relative bg-background rounded-2xl shadow-2xl border border-border/50 w-[90vw] max-w-3xl max-h-[80vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200">
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-border/50">
           <div>
             <h2 className="text-base font-semibold text-foreground">Biblioteca de Mídia</h2>
-            <p className="text-xs text-muted-foreground mt-0.5">{allMedia.length} imagens disponíveis</p>
+            <p className="text-xs text-muted-foreground mt-0.5">{allItems.length} arquivos disponíveis</p>
           </div>
-          <button
-            onClick={onClose}
-            className="p-2 rounded-xl hover:bg-muted/80 transition-colors"
-          >
-            <X className="h-5 w-5 text-muted-foreground" />
-          </button>
+          <div className="flex items-center gap-2">
+            <SecureFileUpload
+              onFileAccepted={handleUpload}
+              multiple
+              compact
+              accept={accept}
+            />
+            <button onClick={onClose} className="p-2 rounded-xl hover:bg-muted/80 transition-colors">
+              <X className="h-5 w-5 text-muted-foreground" />
+            </button>
+          </div>
         </div>
 
         {/* Filters */}
@@ -75,7 +96,7 @@ export function MediaPickerModal({ open, onClose, onSelect, currentValue }: Medi
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="Buscar imagem..."
+              placeholder="Buscar..."
               className="pl-9 h-9 bg-secondary/30 border-border/50"
               value={search}
               onChange={e => setSearch(e.target.value)}
@@ -83,7 +104,7 @@ export function MediaPickerModal({ open, onClose, onSelect, currentValue }: Medi
             />
           </div>
           <div className="flex gap-1.5">
-            {(['all', 'Produto', 'Categoria'] as const).map(f => (
+            {(['all', 'Produto', 'Categoria', 'Upload'] as const).map(f => (
               <button
                 key={f}
                 onClick={() => setFilter(f)}
@@ -94,7 +115,7 @@ export function MediaPickerModal({ open, onClose, onSelect, currentValue }: Medi
                     : 'bg-secondary/50 text-muted-foreground border-border/50 hover:bg-secondary hover:text-foreground'
                 )}
               >
-                {f === 'all' ? 'Todas' : f === 'Produto' ? 'Produtos' : 'Categorias'}
+                {f === 'all' ? 'Todas' : f === 'Upload' ? 'Uploads' : f === 'Produto' ? 'Produtos' : 'Categorias'}
               </button>
             ))}
           </div>
@@ -109,10 +130,7 @@ export function MediaPickerModal({ open, onClose, onSelect, currentValue }: Medi
                 return (
                   <button
                     key={file.id}
-                    onClick={() => {
-                      onSelect(file.url);
-                      onClose();
-                    }}
+                    onClick={() => { onSelect(file.url); onClose(); }}
                     className={cn(
                       'group border rounded-xl overflow-hidden text-left transition-all hover:shadow-md',
                       isSelected
@@ -147,6 +165,7 @@ export function MediaPickerModal({ open, onClose, onSelect, currentValue }: Medi
             <div className="py-16 text-center">
               <ImageIcon className="h-10 w-10 text-muted-foreground/20 mx-auto mb-3" />
               <p className="text-sm text-muted-foreground">Nenhuma imagem encontrada.</p>
+              <p className="text-xs text-muted-foreground mt-1">Use o botão Upload acima para adicionar.</p>
             </div>
           )}
         </div>
