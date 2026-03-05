@@ -89,7 +89,7 @@ export function HomeSectionsDialog({ open, onOpenChange }: HomeSectionsDialogPro
             Selecione uma seção à esquerda para editar suas configurações à direita.
           </DialogDescription>
           <p className="text-xs font-semibold text-destructive bg-destructive/10 border border-destructive/20 rounded-lg px-3 py-2">
-            ⚠️ A ordem das seções na lista é exatamente a ordem em que elas aparecem no seu site. Arraste ou use os botões para reorganizar.
+            A ordem das seções na lista é exatamente a ordem em que elas aparecem no seu site. Arraste ou use os botões para reorganizar.
           </p>
         </DialogHeader>
 
