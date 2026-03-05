@@ -4,7 +4,7 @@ import { mockProducts, mockCategories, mockCollections } from '@/data/mock';
 import { useTheme } from '@/contexts/ThemeContext';
 import { ProductCard } from '@/components/store/ProductCard';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, ChevronLeft, ChevronRight, Truck, RefreshCw, ShieldCheck, CreditCard, Lock, DatabaseBackup, PackageCheck, Play, Heart, Gift, Clock, Headphones, MapPin, Zap, Award, ThumbsUp, CheckCircle, Phone, Mail, Globe, Percent, Tag, Flame, BadgeCheck, Gem, Crown, Sparkles, Star } from 'lucide-react';
+import { ArrowRight, ChevronLeft, ChevronRight, Truck, RefreshCw, ShieldCheck, CreditCard, Lock, DatabaseBackup, PackageCheck, Play, Heart, Gift, Clock, Headphones, MapPin, Zap, Award, ThumbsUp, CheckCircle, Phone, Mail, Globe, Percent, Tag, Flame, BadgeCheck, Gem, Crown, Sparkles, Star, Timer } from 'lucide-react';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { cn } from '@/lib/utils';
 import { ThemeHomepageSection } from '@/types/theme';
@@ -574,7 +574,18 @@ const HomePage = () => {
         // Check if expired
         const isExpired = targetDate ? new Date(targetDate).getTime() <= Date.now() : false;
 
-        if (!targetDate) return null;
+        if (!targetDate) {
+          return (
+            <section key={section.id} className={cn(rhythmPy, wrapperClass)}>
+              <div className="w-full py-8 md:py-12 bg-secondary/50">
+                <div className="container mx-auto px-4 flex flex-col items-center gap-3 text-muted-foreground">
+                  <Timer className="h-8 w-8 opacity-40" />
+                  <span className="text-sm">Configure a data alvo da contagem regressiva</span>
+                </div>
+              </div>
+            </section>
+          );
+        }
         if (isExpired && expiryBehavior === 'hide') return null;
 
         const heightMap: Record<string, string> = {
@@ -758,7 +769,6 @@ const HomePage = () => {
         );
       }
 
-
       case 'benefits': {
         const ICON_MAP: Record<string, any> = { Truck, RefreshCw, ShieldCheck, CreditCard, Lock, DatabaseBackup, PackageCheck, Heart, Gift, Clock, Headphones, MapPin, Zap, Award, ThumbsUp, CheckCircle, Star, Phone, Mail, Globe, Percent, Tag, Flame, BadgeCheck, Gem, Crown, Sparkles };
         const defaultItems = [
@@ -781,7 +791,8 @@ const HomePage = () => {
             <div className={cn(
               layout === 'inline'
                 ? 'flex flex-wrap items-center justify-center gap-6 md:gap-10'
-                : `grid grid-cols-2 md:grid-cols-${Math.min(items.length, 4)} gap-4 md:gap-6`
+                : 'grid gap-4 md:gap-6',
+              layout !== 'inline' && (items.length <= 2 ? 'grid-cols-2' : items.length === 3 ? 'grid-cols-2 md:grid-cols-3' : 'grid-cols-2 md:grid-cols-4'),
             )}>
               {items.map((b, i) => {
                 const Icon = ICON_MAP[b.icon] || ShieldCheck;
