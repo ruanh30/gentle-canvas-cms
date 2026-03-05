@@ -1,17 +1,19 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, useMemo, useCallback } from 'react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Link } from 'react-router-dom';
 import { mockProducts, mockCategories, mockCollections } from '@/data/mock';
 import { useTheme } from '@/contexts/ThemeContext';
 import { ProductCard } from '@/components/store/ProductCard';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, ChevronLeft, ChevronRight, Truck, RefreshCw, ShieldCheck, CreditCard, Lock, DatabaseBackup, PackageCheck, Play, Heart, Gift, Clock, Headphones, MapPin, Zap, Award, ThumbsUp, CheckCircle, Phone, Mail, Globe, Percent, Tag, Flame, BadgeCheck, Gem, Crown, Sparkles, Star, Timer } from 'lucide-react';
+import { ArrowRight, ChevronLeft, ChevronRight, Truck, RefreshCw, ShieldCheck, CreditCard, Lock, DatabaseBackup, PackageCheck, Play, Heart, Gift, Clock, Headphones, MapPin, Zap, Award, ThumbsUp, CheckCircle, Phone, Mail, Globe, Percent, Tag, Flame, BadgeCheck, Gem, Crown, Sparkles, Star, Timer, ChevronDown } from 'lucide-react';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { cn } from '@/lib/utils';
 import { ThemeHomepageSection } from '@/types/theme';
 import { AnimatePresence, motion } from 'framer-motion';
 import { SectionHeader } from '@/components/store/SectionHeader';
 import { SingleBannerSection, MultiBannerSection } from '@/components/store/BannerSection';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Product } from '@/types';
 
 function SectionCarousel({ children, speed, showArrows = true, centered = false, gap = 16 }: { children: React.ReactNode[]; speed: number; showArrows?: boolean; centered?: boolean; gap?: number }) {
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -65,6 +67,40 @@ function SectionCarousel({ children, speed, showArrows = true, centered = false,
     </div>
   );
 }
+
+type SortOption = 'featured' | 'newest' | 'price-asc' | 'price-desc';
+
+function sortProducts(products: Product[], sort: SortOption): Product[] {
+  const sorted = [...products];
+  switch (sort) {
+    case 'newest':
+      return sorted.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+    case 'price-asc':
+      return sorted.sort((a, b) => a.price - b.price);
+    case 'price-desc':
+      return sorted.sort((a, b) => b.price - a.price);
+    case 'featured':
+    default:
+      return sorted;
+  }
+}
+
+function ProductSortSelect({ value, onChange }: { value: SortOption; onChange: (v: SortOption) => void }) {
+  return (
+    <Select value={value} onValueChange={v => onChange(v as SortOption)}>
+      <SelectTrigger className="h-9 w-auto min-w-[140px] text-xs font-medium border-border/60 bg-background rounded-lg gap-1.5">
+        <SelectValue />
+      </SelectTrigger>
+      <SelectContent>
+        <SelectItem value="featured">Destaques</SelectItem>
+        <SelectItem value="newest">Mais recentes</SelectItem>
+        <SelectItem value="price-asc">Menor preço</SelectItem>
+        <SelectItem value="price-desc">Maior preço</SelectItem>
+      </SelectContent>
+    </Select>
+  );
+}
+
 interface CountdownTimerProps {
   targetDate: string;
   style?: 'minimal' | 'boxes' | 'bold';
@@ -154,6 +190,9 @@ const HomePage = () => {
   const { theme } = useTheme();
   const isMobile = useIsMobile();
   const featured = mockProducts.filter(p => p.featured);
+  const [sectionSorts, setSectionSorts] = useState<Record<string, SortOption>>({});
+  const getSectionSort = (id: string): SortOption => sectionSorts[id] || 'featured';
+  const setSectionSort = (id: string, sort: SortOption) => setSectionSorts(prev => ({ ...prev, [id]: sort }));
   const sections = theme.homepageSections;
   const activeCollections = mockCollections
     .filter(c => c.active)
@@ -430,22 +469,28 @@ const HomePage = () => {
 
       case 'featured-products': {
         const pl = theme.productListing || { limitDesktop: 0, limitMobile: 0 };
-        const desktopProducts = pl.limitDesktop > 0 ? featured.slice(0, pl.limitDesktop) : featured;
-        const mobileProducts = pl.limitMobile > 0 ? featured.slice(0, pl.limitMobile) : featured;
+        const sortedFeatured = sortProducts(featured, getSectionSort(section.id));
+        const desktopProducts = pl.limitDesktop > 0 ? sortedFeatured.slice(0, pl.limitDesktop) : sortedFeatured;
+        const mobileProducts = pl.limitMobile > 0 ? sortedFeatured.slice(0, pl.limitMobile) : sortedFeatured;
 
         return (
           <section key={section.id} className={cn('pm-showcase-container px-4', rhythmPy, wrapperClass)}>
-            <div className="flex items-center justify-between mb-8">
-              {section.showTitle !== false && (
-                <SectionHeader title={section.title} size="lg" subtitle="Peças selecionadas para você" align={(section.settings?.titleAlign as 'left'|'center'|'right') || 'left'} className="mb-0" />
-              )}
-              <Link to="/products" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1 ml-auto shrink-0">
-                Ver todos <ArrowRight className="h-4 w-4" />
-              </Link>
+            <div className="flex items-center justify-between mb-8 gap-3 flex-wrap">
+              <div className="flex items-center gap-3 flex-1 min-w-0">
+                {section.showTitle !== false && (
+                  <SectionHeader title={section.title} size="lg" subtitle="Peças selecionadas para você" align={(section.settings?.titleAlign as 'left'|'center'|'right') || 'left'} className="mb-0" />
+                )}
+              </div>
+              <div className="flex items-center gap-3 shrink-0">
+                <ProductSortSelect value={getSectionSort(section.id)} onChange={v => setSectionSort(section.id, v)} />
+                <Link to="/products" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1 shrink-0">
+                  Ver todos <ArrowRight className="h-4 w-4" />
+                </Link>
+              </div>
             </div>
             {isCarousel ? (
               <SectionCarousel speed={carouselSpeed} showArrows={carouselShowArrows} centered>
-                {featured.map(product => (
+                {sortedFeatured.map(product => (
                   <div key={product.id} className="min-w-[260px] max-w-[280px] snap-start flex-shrink-0">
                     <ProductCard product={product} />
                   </div>
@@ -882,7 +927,10 @@ const HomePage = () => {
           ? mockCollections.find(c => c.id === collectionId)
           : mockCollections.find(c => c.slug === section.id || c.name === section.title);
         if (!collection) return null;
-        const allCollectionProducts = mockProducts.filter(p => collection.productIds.includes(p.id));
+        const allCollectionProducts = sortProducts(
+          mockProducts.filter(p => collection.productIds.includes(p.id)),
+          getSectionSort(section.id)
+        );
         if (allCollectionProducts.length === 0) return null;
 
         const pl = theme.productListing || { limitDesktop: 0, limitMobile: 0 };
@@ -891,9 +939,14 @@ const HomePage = () => {
 
         return (
           <section key={section.id} className={cn('pm-showcase-container px-4', rhythmPy, wrapperClass)}>
-            {section.showTitle !== false && (
-              <SectionHeader title={section.title} size="md" align={(section.settings?.titleAlign as 'left'|'center'|'right') || 'center'} />
-            )}
+            <div className="flex items-center justify-between mb-6 gap-3">
+              {section.showTitle !== false && (
+                <SectionHeader title={section.title} size="md" align={(section.settings?.titleAlign as 'left'|'center'|'right') || 'center'} className="mb-0" />
+              )}
+              <div className="shrink-0">
+                <ProductSortSelect value={getSectionSort(section.id)} onChange={v => setSectionSort(section.id, v)} />
+              </div>
+            </div>
             {isCarousel ? (
               <SectionCarousel speed={carouselSpeed} showArrows={carouselShowArrows} centered>
                 {allCollectionProducts.map(product => (
