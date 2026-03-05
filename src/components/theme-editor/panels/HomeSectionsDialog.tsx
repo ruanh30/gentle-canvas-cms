@@ -916,48 +916,195 @@ function CountdownSettings({ section, setSetting }: SettingsProps) {
 }
 
 function ImageTextSettings({ section, setSetting }: SettingsProps) {
+  const [imgPickerOpen, setImgPickerOpen] = useState(false);
+  const imageUrl = (section.settings?.imageUrl as string) || '';
+  const bgType = (section.settings?.bgType as string) || 'none';
+
   return (
-    <SettingsCard title="Imagem + Texto">
-      <FieldGroup label="Imagem (URL)">
-        <Input value={(section.settings?.imageUrl as string) || ''} onChange={e => setSetting(section.id, 'imageUrl', e.target.value)} placeholder="https://exemplo.com/imagem.jpg" className="h-9" />
-        {(section.settings?.imageUrl as string) && (
-          <div className="mt-2 rounded-lg overflow-hidden border border-border/50 h-28">
-            <img src={section.settings.imageUrl as string} alt="Preview" className="w-full h-full object-cover" />
-          </div>
-        )}
-      </FieldGroup>
-      <TwoCol>
+    <>
+      {/* ── Imagem ── */}
+      <SettingsCard title="Imagem">
+        <FieldGroup label="Imagem da seção">
+          {imageUrl ? (
+            <div className="space-y-2">
+              <div className="rounded-lg overflow-hidden border border-border/50 h-28">
+                <img src={imageUrl} alt="Preview" className="w-full h-full object-cover" />
+              </div>
+              <div className="flex gap-2">
+                <button onClick={() => setImgPickerOpen(true)} className="flex-1 flex items-center justify-center gap-1.5 h-8 rounded-lg border border-border/50 bg-secondary/30 hover:bg-secondary text-xs font-medium text-muted-foreground hover:text-foreground transition-colors">
+                  <Image className="h-3.5 w-3.5" /> Trocar
+                </button>
+                <button onClick={() => setSetting(section.id, 'imageUrl', '')} className="flex items-center justify-center gap-1.5 h-8 px-3 rounded-lg border border-destructive/30 bg-destructive/5 hover:bg-destructive/10 text-xs font-medium text-destructive transition-colors">
+                  <Trash2 className="h-3.5 w-3.5" /> Remover
+                </button>
+              </div>
+            </div>
+          ) : (
+            <button onClick={() => setImgPickerOpen(true)} className="w-full flex items-center justify-center gap-1.5 h-9 rounded-lg border border-border/50 bg-secondary/30 hover:bg-secondary text-xs font-medium text-muted-foreground hover:text-foreground transition-colors">
+              <Image className="h-3.5 w-3.5" /> Selecionar imagem
+            </button>
+          )}
+          <MediaPickerModal open={imgPickerOpen} onClose={() => setImgPickerOpen(false)} onSelect={v => setSetting(section.id, 'imageUrl', v)} currentValue={imageUrl} />
+        </FieldGroup>
+        <TwoCol>
+          <FieldGroup label="Posição da imagem">
+            <select value={(section.settings?.imagePosition as string) || 'left'} onChange={e => setSetting(section.id, 'imagePosition', e.target.value)} className="w-full h-9 text-sm rounded-md border border-border bg-background px-3">
+              <option value="left">Esquerda</option>
+              <option value="right">Direita</option>
+            </select>
+          </FieldGroup>
+          <FieldGroup label="Proporção da imagem">
+            <select value={(section.settings?.imageRatio as string) || 'auto'} onChange={e => setSetting(section.id, 'imageRatio', e.target.value)} className="w-full h-9 text-sm rounded-md border border-border bg-background px-3">
+              <option value="auto">Automática</option>
+              <option value="square">Quadrada (1:1)</option>
+              <option value="portrait">Retrato (3:4)</option>
+              <option value="landscape">Paisagem (4:3)</option>
+            </select>
+          </FieldGroup>
+        </TwoCol>
+      </SettingsCard>
+
+      {/* ── Conteúdo ── */}
+      <SettingsCard title="Conteúdo">
         <FieldGroup label="Título">
           <Input value={(section.settings?.title as string) || ''} onChange={e => setSetting(section.id, 'title', e.target.value)} placeholder="Título da seção" className="h-9" />
         </FieldGroup>
-        <FieldGroup label="Posição da imagem">
-          <select
-            value={(section.settings?.imagePosition as string) || 'left'}
-            onChange={e => setSetting(section.id, 'imagePosition', e.target.value)}
-            className="w-full h-9 text-sm rounded-md border border-border bg-background px-3"
-          >
-            <option value="left">Esquerda</option>
-            <option value="right">Direita</option>
+        <FieldGroup label="Subtítulo">
+          <Input value={(section.settings?.subtitle as string) || ''} onChange={e => setSetting(section.id, 'subtitle', e.target.value)} placeholder="Subtítulo opcional" className="h-9" />
+        </FieldGroup>
+        <FieldGroup label="Descrição">
+          <textarea
+            value={(section.settings?.description as string) || ''}
+            onChange={e => setSetting(section.id, 'description', e.target.value)}
+            placeholder="Texto descritivo..."
+            className="w-full text-sm rounded-md border border-border bg-background px-3 py-2 min-h-[80px] resize-y"
+          />
+        </FieldGroup>
+        <TwoCol>
+          <FieldGroup label="Texto do botão">
+            <Input value={(section.settings?.ctaText as string) || ''} onChange={e => setSetting(section.id, 'ctaText', e.target.value)} placeholder="Saiba mais" className="h-9" />
+          </FieldGroup>
+          <FieldGroup label="Destino do botão">
+            <select value={(section.settings?.ctaDestType as string) || 'custom'} onChange={e => setSetting(section.id, 'ctaDestType', e.target.value)} className="w-full h-9 text-sm rounded-md border border-border bg-background px-3">
+              <option value="catalog">Catálogo (todos os produtos)</option>
+              <option value="collection">Coleção</option>
+              <option value="custom">Link personalizado</option>
+            </select>
+          </FieldGroup>
+        </TwoCol>
+        {(section.settings?.ctaDestType as string) === 'collection' && (
+          <FieldGroup label="Coleção">
+            <select value={(section.settings?.ctaCollectionId as string) || ''} onChange={e => setSetting(section.id, 'ctaCollectionId', e.target.value)} className="w-full h-9 text-sm rounded-md border border-border bg-background px-3">
+              <option value="">Selecione...</option>
+              {mockCollections.filter(c => c.active).map(c => (
+                <option key={c.id} value={c.id}>{c.name}</option>
+              ))}
+            </select>
+          </FieldGroup>
+        )}
+        {((section.settings?.ctaDestType as string) === 'custom' || !(section.settings?.ctaDestType)) && (
+          <FieldGroup label="Link personalizado">
+            <Input value={(section.settings?.ctaLink as string) || ''} onChange={e => setSetting(section.id, 'ctaLink', e.target.value)} placeholder="/produtos" className="h-9" />
+          </FieldGroup>
+        )}
+      </SettingsCard>
+
+      {/* ── Layout ── */}
+      <SettingsCard title="Layout">
+        <TwoCol>
+          <FieldGroup label="Alinhamento do texto">
+            <select value={(section.settings?.textAlign as string) || 'left'} onChange={e => setSetting(section.id, 'textAlign', e.target.value)} className="w-full h-9 text-sm rounded-md border border-border bg-background px-3">
+              <option value="left">Esquerda</option>
+              <option value="center">Centro</option>
+              <option value="right">Direita</option>
+            </select>
+          </FieldGroup>
+          <FieldGroup label="Alinhamento vertical">
+            <select value={(section.settings?.verticalAlign as string) || 'center'} onChange={e => setSetting(section.id, 'verticalAlign', e.target.value)} className="w-full h-9 text-sm rounded-md border border-border bg-background px-3">
+              <option value="top">Topo</option>
+              <option value="center">Centro</option>
+              <option value="bottom">Base</option>
+            </select>
+          </FieldGroup>
+        </TwoCol>
+        <FieldGroup label="Altura da seção">
+          <select value={(section.settings?.sectionHeight as string) || 'auto'} onChange={e => setSetting(section.id, 'sectionHeight', e.target.value)} className="w-full h-9 text-sm rounded-md border border-border bg-background px-3">
+            <option value="compact">Compacta</option>
+            <option value="auto">Normal</option>
+            <option value="tall">Grande</option>
+            <option value="hero">Destaque (hero)</option>
           </select>
         </FieldGroup>
-      </TwoCol>
-      <FieldGroup label="Descrição">
-        <textarea
-          value={(section.settings?.description as string) || ''}
-          onChange={e => setSetting(section.id, 'description', e.target.value)}
-          placeholder="Texto descritivo..."
-          className="w-full text-sm rounded-md border border-border bg-background px-3 py-2 min-h-[80px] resize-y"
-        />
-      </FieldGroup>
-      <TwoCol>
-        <FieldGroup label="Texto do botão">
-          <Input value={(section.settings?.ctaText as string) || ''} onChange={e => setSetting(section.id, 'ctaText', e.target.value)} placeholder="Saiba mais" className="h-9" />
+      </SettingsCard>
+
+      {/* ── Estilo Visual ── */}
+      <SettingsCard title="Estilo Visual">
+        <FieldGroup label="Fundo da seção">
+          <select value={bgType} onChange={e => setSetting(section.id, 'bgType', e.target.value)} className="w-full h-9 text-sm rounded-md border border-border bg-background px-3">
+            <option value="none">Padrão (sem fundo)</option>
+            <option value="solid">Cor sólida</option>
+            <option value="gradient">Gradiente</option>
+          </select>
         </FieldGroup>
-        <FieldGroup label="Link do botão">
-          <Input value={(section.settings?.ctaLink as string) || ''} onChange={e => setSetting(section.id, 'ctaLink', e.target.value)} placeholder="/products" className="h-9" />
-        </FieldGroup>
-      </TwoCol>
-    </SettingsCard>
+        {bgType === 'solid' && (
+          <TwoCol>
+            <FieldGroup label="Cor de fundo">
+              <div className="flex items-center gap-2">
+                <input type="color" value={(section.settings?.backgroundColor as string) || '#f5f5f5'} onChange={e => setSetting(section.id, 'backgroundColor', e.target.value)} className="h-9 w-10 rounded-md border border-border cursor-pointer" />
+                <Input value={(section.settings?.backgroundColor as string) || '#f5f5f5'} onChange={e => setSetting(section.id, 'backgroundColor', e.target.value)} className="h-9 font-mono text-xs uppercase" maxLength={7} />
+              </div>
+            </FieldGroup>
+            <FieldGroup label="Cor do texto">
+              <div className="flex items-center gap-2">
+                <input type="color" value={(section.settings?.textColor as string) || '#1a1a1a'} onChange={e => setSetting(section.id, 'textColor', e.target.value)} className="h-9 w-10 rounded-md border border-border cursor-pointer" />
+                <Input value={(section.settings?.textColor as string) || '#1a1a1a'} onChange={e => setSetting(section.id, 'textColor', e.target.value)} className="h-9 font-mono text-xs uppercase" maxLength={7} />
+              </div>
+            </FieldGroup>
+          </TwoCol>
+        )}
+        {bgType === 'gradient' && (
+          <>
+            <TwoCol>
+              <FieldGroup label="Cor inicial">
+                <div className="flex items-center gap-2">
+                  <input type="color" value={(section.settings?.gradientFrom as string) || '#f5f5f5'} onChange={e => setSetting(section.id, 'gradientFrom', e.target.value)} className="h-9 w-10 rounded-md border border-border cursor-pointer" />
+                  <Input value={(section.settings?.gradientFrom as string) || '#f5f5f5'} onChange={e => setSetting(section.id, 'gradientFrom', e.target.value)} className="h-9 font-mono text-xs uppercase" maxLength={7} />
+                </div>
+              </FieldGroup>
+              <FieldGroup label="Cor final">
+                <div className="flex items-center gap-2">
+                  <input type="color" value={(section.settings?.gradientTo as string) || '#e0e0e0'} onChange={e => setSetting(section.id, 'gradientTo', e.target.value)} className="h-9 w-10 rounded-md border border-border cursor-pointer" />
+                  <Input value={(section.settings?.gradientTo as string) || '#e0e0e0'} onChange={e => setSetting(section.id, 'gradientTo', e.target.value)} className="h-9 font-mono text-xs uppercase" maxLength={7} />
+                </div>
+              </FieldGroup>
+            </TwoCol>
+            <FieldGroup label="Cor do texto">
+              <div className="flex items-center gap-2">
+                <input type="color" value={(section.settings?.textColor as string) || '#1a1a1a'} onChange={e => setSetting(section.id, 'textColor', e.target.value)} className="h-9 w-10 rounded-md border border-border cursor-pointer" />
+                <Input value={(section.settings?.textColor as string) || '#1a1a1a'} onChange={e => setSetting(section.id, 'textColor', e.target.value)} className="h-9 font-mono text-xs uppercase" maxLength={7} />
+              </div>
+            </FieldGroup>
+          </>
+        )}
+        <TwoCol>
+          <FieldGroup label="Cantos arredondados">
+            <select value={(section.settings?.borderRadius as string) || 'lg'} onChange={e => setSetting(section.id, 'borderRadius', e.target.value)} className="w-full h-9 text-sm rounded-md border border-border bg-background px-3">
+              <option value="none">Sem arredondamento</option>
+              <option value="md">Médio</option>
+              <option value="lg">Grande</option>
+              <option value="xl">Extra grande</option>
+            </select>
+          </FieldGroup>
+          <FieldGroup label="Largura da seção">
+            <select value={(section.settings?.sectionWidth as string) || 'contained'} onChange={e => setSetting(section.id, 'sectionWidth', e.target.value)} className="w-full h-9 text-sm rounded-md border border-border bg-background px-3">
+              <option value="contained">Contida</option>
+              <option value="wide">Larga</option>
+              <option value="full">Tela inteira</option>
+            </select>
+          </FieldGroup>
+        </TwoCol>
+      </SettingsCard>
+    </>
   );
 }
 
