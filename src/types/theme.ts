@@ -236,6 +236,7 @@ export interface ThemeHeroSlide {
   ctaCategory: string;
   ctaStyle: 'filled' | 'outline' | 'ghost';
   backgroundImage: string;
+  backgroundImageMobile: string;
   backgroundVideo: string;
   overlayColor: string;
   overlayOpacity: number;

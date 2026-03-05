@@ -23,6 +23,7 @@ const emptySlide: ThemeHeroSlide = {
   ctaCategory: '',
   ctaStyle: 'filled',
   backgroundImage: '',
+  backgroundImageMobile: '',
   backgroundVideo: '',
   overlayColor: '#000000',
   overlayOpacity: 0,
@@ -133,8 +134,9 @@ export function HeroPanel() {
               <p className="text-[10px] text-primary/80 font-medium -mt-1">
                 📐 Tamanho recomendado: 1920×600px (desktop) · 768×500px (mobile)
               </p>
-              <ImageField label="URL da imagem" value={slide.backgroundImage || ''} onChange={v => setSlide({ backgroundImage: v })} />
-              {slide.backgroundImage && (
+              <ImageField label="Imagem desktop" value={slide.backgroundImage || ''} onChange={v => setSlide({ backgroundImage: v })} />
+              <ImageField label="Imagem mobile (opcional)" value={slide.backgroundImageMobile || ''} onChange={v => setSlide({ backgroundImageMobile: v })} />
+              {(slide.backgroundImage || slide.backgroundImageMobile) && (
                 <>
                   <ColorInput label="Cor do overlay" value={slide.overlayColor || '#000000'} onChange={v => setSlide({ overlayColor: v })} />
                   <NumberSlider label="Opacidade do overlay" value={slide.overlayOpacity ?? 0} onChange={v => setSlide({ overlayOpacity: v })} min={0} max={1} step={0.05} />
