@@ -8,11 +8,11 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { cn } from '@/lib/utils';
 import { ThemeHomepageSection } from '@/types/theme';
 import { mockCategories, mockCollections } from '@/data/mock';
-import { HintTooltip, SectionDivider } from '../EditorControls';
+import { HintTooltip } from '../EditorControls';
 import {
-  ChevronDown, ChevronUp, GripVertical, Eye, EyeOff, Trash2,
-  Pencil, Check, X, Image, Video, Timer, LayoutGrid, ShoppingBag,
-  FolderTree, Sparkles, Type, Star
+  ChevronDown, ChevronUp, Eye, EyeOff, Trash2,
+  Image, Video, Timer, LayoutGrid, ShoppingBag,
+  FolderTree, Sparkles, Star, Type as TypeIcon, MousePointer
 } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
@@ -54,7 +54,9 @@ interface HomeSectionsDialogProps {
 export function HomeSectionsDialog({ open, onOpenChange }: HomeSectionsDialogProps) {
   const { draft, toggleSection, reorderSections, updateDraft } = useTheme();
   const sections = draft.homepageSections;
-  const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [selectedId, setSelectedId] = useState<string | null>(sections[0]?.id || null);
+
+  const selectedSection = sections.find(s => s.id === selectedId);
 
   const setSetting = (id: string, key: string, value: unknown) => {
     updateDraft({
@@ -66,7 +68,10 @@ export function HomeSectionsDialog({ open, onOpenChange }: HomeSectionsDialogPro
 
   const removeSection = (id: string) => {
     updateDraft({ homepageSections: sections.filter(s => s.id !== id) });
-    if (expandedId === id) setExpandedId(null);
+    if (selectedId === id) {
+      const remaining = sections.filter(s => s.id !== id);
+      setSelectedId(remaining[0]?.id || null);
+    }
   };
 
   const renameSection = (id: string, newTitle: string) => {
@@ -77,152 +82,158 @@ export function HomeSectionsDialog({ open, onOpenChange }: HomeSectionsDialogPro
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[85vh] p-0 gap-0">
-        <DialogHeader className="px-6 pt-6 pb-4 border-b">
-          <DialogTitle className="text-lg">Editor de Seções da Home</DialogTitle>
-          <DialogDescription className="text-sm text-muted-foreground">
-            Gerencie, edite e personalize cada seção da sua página inicial. Clique em uma seção para expandir suas configurações.
+      <DialogContent className="max-w-4xl h-[80vh] p-0 gap-0 flex flex-col">
+        <DialogHeader className="px-6 pt-5 pb-3 border-b shrink-0">
+          <DialogTitle className="text-base">Editor de Seções da Home</DialogTitle>
+          <DialogDescription className="text-xs text-muted-foreground">
+            Selecione uma seção à esquerda para editar suas configurações à direita.
           </DialogDescription>
         </DialogHeader>
 
-        <ScrollArea className="flex-1 max-h-[calc(85vh-120px)]">
-          <div className="p-6 space-y-3">
-            {sections.map((section, idx) => {
-              const Icon = sectionTypeIcons[section.type] || Sparkles;
-              const typeLabel = sectionTypeLabels[section.type] || section.type;
-              const isExpanded = expandedId === section.id;
+        <div className="flex flex-1 min-h-0">
+          {/* LEFT: Section list */}
+          <div className="w-64 border-r flex flex-col shrink-0">
+            <ScrollArea className="flex-1">
+              <div className="p-2 space-y-0.5">
+                {sections.map((section, idx) => {
+                  const Icon = sectionTypeIcons[section.type] || Sparkles;
+                  const isSelected = selectedId === section.id;
 
-              return (
-                <div
-                  key={section.id}
-                  className={cn(
-                    'rounded-xl border transition-all duration-200',
-                    isExpanded ? 'border-primary/30 shadow-sm' : 'border-border',
-                    !section.enabled && 'opacity-50'
-                  )}
-                >
-                  {/* Section header row */}
-                  <div
-                    className={cn(
-                      'flex items-center gap-3 px-4 py-3 cursor-pointer select-none',
-                      isExpanded && 'border-b bg-muted/30'
-                    )}
-                    onClick={() => setExpandedId(isExpanded ? null : section.id)}
-                  >
-                    <div className="flex items-center gap-2 flex-1 min-w-0">
-                      <div className={cn(
-                        'w-8 h-8 rounded-lg flex items-center justify-center shrink-0',
-                        section.enabled ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground'
-                      )}>
-                        <Icon className="h-4 w-4" />
-                      </div>
-                      <div className="min-w-0">
-                        <p className="text-sm font-medium truncate">{section.title}</p>
-                        <p className="text-[11px] text-muted-foreground">{typeLabel}</p>
-                      </div>
+                  return (
+                    <div key={section.id} className="group">
+                      <button
+                        onClick={() => setSelectedId(section.id)}
+                        className={cn(
+                          'w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-left transition-all duration-150',
+                          isSelected
+                            ? 'bg-primary/10 text-foreground ring-1 ring-primary/20'
+                            : 'hover:bg-muted/60 text-muted-foreground hover:text-foreground',
+                          !section.enabled && 'opacity-50'
+                        )}
+                      >
+                        <div className={cn(
+                          'w-7 h-7 rounded-md flex items-center justify-center shrink-0 transition-colors',
+                          isSelected ? 'bg-primary/15 text-primary' : 'bg-muted text-muted-foreground'
+                        )}>
+                          <Icon className="h-3.5 w-3.5" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-xs font-medium truncate">{section.title}</p>
+                          <p className="text-[10px] text-muted-foreground truncate">{sectionTypeLabels[section.type]}</p>
+                        </div>
+                        {!section.enabled && (
+                          <EyeOff className="h-3 w-3 text-muted-foreground shrink-0" />
+                        )}
+                      </button>
+
+                      {/* Reorder buttons on hover */}
+                      {isSelected && (
+                        <div className="flex items-center justify-center gap-1 py-1">
+                          <button
+                            onClick={() => { if (idx > 0) reorderSections(idx, idx - 1); }}
+                            disabled={idx === 0}
+                            className="p-1 rounded hover:bg-muted transition-colors disabled:opacity-20"
+                            title="Mover para cima"
+                          >
+                            <ChevronUp className="h-3 w-3" />
+                          </button>
+                          <button
+                            onClick={() => { if (idx < sections.length - 1) reorderSections(idx, idx + 1); }}
+                            disabled={idx === sections.length - 1}
+                            className="p-1 rounded hover:bg-muted transition-colors disabled:opacity-20"
+                            title="Mover para baixo"
+                          >
+                            <ChevronDown className="h-3 w-3" />
+                          </button>
+                          <div className="w-px h-4 bg-border mx-1" />
+                          <button
+                            onClick={() => updateDraft({
+                              homepageSections: sections.map(s => s.id === section.id ? { ...s, showTitle: !(s.showTitle ?? true) } : s),
+                            })}
+                            className="p-1 rounded hover:bg-muted transition-colors"
+                            title={section.showTitle !== false ? 'Ocultar título' : 'Mostrar título'}
+                          >
+                            {section.showTitle !== false ? <Eye className="h-3 w-3" /> : <EyeOff className="h-3 w-3" />}
+                          </button>
+                          <button
+                            onClick={() => removeSection(section.id)}
+                            className="p-1 rounded hover:bg-destructive/10 text-destructive transition-colors"
+                            title="Remover"
+                          >
+                            <Trash2 className="h-3 w-3" />
+                          </button>
+                        </div>
+                      )}
                     </div>
+                  );
+                })}
+              </div>
+            </ScrollArea>
+          </div>
 
-                    <div className="flex items-center gap-1.5 shrink-0" onClick={e => e.stopPropagation()}>
-                      {/* Reorder */}
-                      <button
-                        onClick={() => idx > 0 && reorderSections(idx, idx - 1)}
-                        disabled={idx === 0}
-                        className="p-1.5 rounded-md hover:bg-secondary transition-colors disabled:opacity-30"
-                        title="Mover para cima"
-                      >
-                        <ChevronUp className="h-3.5 w-3.5" />
-                      </button>
-                      <button
-                        onClick={() => idx < sections.length - 1 && reorderSections(idx, idx + 1)}
-                        disabled={idx === sections.length - 1}
-                        className="p-1.5 rounded-md hover:bg-secondary transition-colors disabled:opacity-30"
-                        title="Mover para baixo"
-                      >
-                        <ChevronDown className="h-3.5 w-3.5" />
-                      </button>
-
-                      {/* Toggle title visibility */}
-                      <button
-                        onClick={() => updateDraft({
-                          homepageSections: sections.map(s => s.id === section.id ? { ...s, showTitle: !(s.showTitle ?? true) } : s),
-                        })}
-                        className="p-1.5 rounded-md hover:bg-secondary transition-colors"
-                        title={section.showTitle !== false ? 'Ocultar título' : 'Mostrar título'}
-                      >
-                        {section.showTitle !== false ? <Eye className="h-3.5 w-3.5" /> : <EyeOff className="h-3.5 w-3.5" />}
-                      </button>
-
-                      {/* Delete */}
-                      <button
-                        onClick={() => removeSection(section.id)}
-                        className="p-1.5 rounded-md hover:bg-destructive/10 text-destructive transition-colors"
-                        title="Remover seção"
-                      >
-                        <Trash2 className="h-3.5 w-3.5" />
-                      </button>
-
-                      {/* Enable/disable */}
-                      <Switch
-                        checked={section.enabled}
-                        onCheckedChange={() => toggleSection(section.id)}
-                        className="scale-90"
+          {/* RIGHT: Settings panel */}
+          <div className="flex-1 min-w-0">
+            <ScrollArea className="h-full">
+              {selectedSection ? (
+                <div className="p-6 space-y-5">
+                  {/* Header */}
+                  <div className="flex items-center justify-between gap-4">
+                    <div className="flex-1 space-y-1.5">
+                      <Label className="text-xs font-medium text-muted-foreground">Nome da seção</Label>
+                      <Input
+                        value={selectedSection.title}
+                        onChange={e => renameSection(selectedSection.id, e.target.value)}
+                        className="h-9"
                       />
                     </div>
-
-                    <ChevronDown className={cn(
-                      'h-4 w-4 text-muted-foreground transition-transform duration-200 shrink-0',
-                      isExpanded && 'rotate-180'
-                    )} />
+                    <div className="flex items-center gap-2 pt-5">
+                      <Label className="text-xs text-muted-foreground">Ativa</Label>
+                      <Switch
+                        checked={selectedSection.enabled}
+                        onCheckedChange={() => toggleSection(selectedSection.id)}
+                      />
+                    </div>
                   </div>
 
-                  {/* Expanded settings */}
-                  {isExpanded && (
-                    <div className="p-4 space-y-4">
-                      {/* Rename */}
-                      <div className="space-y-1.5">
-                        <Label className="text-xs font-medium">Nome da seção</Label>
-                        <Input
-                          value={section.title}
-                          onChange={e => renameSection(section.id, e.target.value)}
-                          className="h-9"
-                        />
-                      </div>
+                  {/* Type-specific settings */}
+                  {carouselSections.includes(selectedSection.type) && (
+                    <CarouselSettings section={selectedSection} setSetting={setSetting} />
+                  )}
+                  {selectedSection.type === 'banner' && <BannerSettings section={selectedSection} setSetting={setSetting} />}
+                  {(selectedSection.type === 'double-banner' || selectedSection.type === 'triple-banner') && (
+                    <MultiBannerSettings section={selectedSection} setSetting={setSetting} />
+                  )}
+                  {selectedSection.type === 'video' && <VideoSettings section={selectedSection} setSetting={setSetting} />}
+                  {selectedSection.type === 'countdown' && <CountdownSettings section={selectedSection} setSetting={setSetting} />}
+                  {selectedSection.type === 'image-text' && <ImageTextSettings section={selectedSection} setSetting={setSetting} />}
+                  {selectedSection.type === 'categories' && <CategorySettings section={selectedSection} setSetting={setSetting} />}
 
-                      {/* Carousel/grid settings for applicable types */}
-                      {carouselSections.includes(section.type) && (
-                        <CarouselSettings section={section} setSetting={setSetting} />
-                      )}
-
-                      {/* Type-specific settings */}
-                      {section.type === 'banner' && <BannerSettings section={section} setSetting={setSetting} />}
-                      {(section.type === 'double-banner' || section.type === 'triple-banner') && (
-                        <MultiBannerSettings section={section} setSetting={setSetting} />
-                      )}
-                      {section.type === 'video' && <VideoSettings section={section} setSetting={setSetting} />}
-                      {section.type === 'countdown' && <CountdownSettings section={section} setSetting={setSetting} />}
-                      {section.type === 'image-text' && <ImageTextSettings section={section} setSetting={setSetting} />}
-                      {section.type === 'categories' && <CategorySettings section={section} setSetting={setSetting} />}
+                  {/* Fallback for types without settings */}
+                  {!carouselSections.includes(selectedSection.type) &&
+                    !['banner', 'double-banner', 'triple-banner', 'video', 'countdown', 'image-text', 'categories'].includes(selectedSection.type) && (
+                    <div className="text-center py-8 text-muted-foreground">
+                      <MousePointer className="h-8 w-8 mx-auto mb-2 opacity-30" />
+                      <p className="text-sm">Esta seção não possui configurações adicionais.</p>
                     </div>
                   )}
                 </div>
-              );
-            })}
-
-            {sections.length === 0 && (
-              <div className="text-center py-12 text-muted-foreground">
-                <LayoutGrid className="h-10 w-10 mx-auto mb-3 opacity-30" />
-                <p className="text-sm">Nenhuma seção adicionada ainda.</p>
-                <p className="text-xs mt-1">Adicione seções pelo painel lateral.</p>
-              </div>
-            )}
+              ) : (
+                <div className="flex items-center justify-center h-full text-muted-foreground">
+                  <div className="text-center py-16">
+                    <MousePointer className="h-10 w-10 mx-auto mb-3 opacity-20" />
+                    <p className="text-sm">Selecione uma seção à esquerda</p>
+                  </div>
+                </div>
+              )}
+            </ScrollArea>
           </div>
-        </ScrollArea>
+        </div>
       </DialogContent>
     </Dialog>
   );
 }
 
-/* ── Setting sub-components ── */
+/* ── Reusable layout helpers ── */
 
 function FieldGroup({ label, children, hint }: { label: string; children: React.ReactNode; hint?: string }) {
   return (
@@ -240,16 +251,26 @@ function TwoCol({ children }: { children: React.ReactNode }) {
   return <div className="grid grid-cols-2 gap-4">{children}</div>;
 }
 
+function SettingsCard({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <div className="space-y-3 p-4 rounded-xl bg-muted/30 border border-border/50">
+      <p className="text-xs font-semibold text-foreground">{title}</p>
+      {children}
+    </div>
+  );
+}
+
 interface SettingsProps {
   section: ThemeHomepageSection;
   setSetting: (id: string, key: string, value: unknown) => void;
 }
 
+/* ── Type-specific settings ── */
+
 function CarouselSettings({ section, setSetting }: SettingsProps) {
   const mode = (section.settings?.displayMode as string) || 'grid';
   return (
-    <div className="space-y-3 p-3 rounded-lg bg-muted/30 border border-border/50">
-      <p className="text-xs font-semibold text-foreground">Modo de exibição</p>
+    <SettingsCard title="Modo de exibição">
       <TwoCol>
         <FieldGroup label="Exibição">
           <select
@@ -264,8 +285,7 @@ function CarouselSettings({ section, setSetting }: SettingsProps) {
         {mode === 'carousel' && (
           <FieldGroup label="Velocidade" hint="Segundos entre transições">
             <div className="flex items-center gap-2">
-              <input
-                type="range" min={1} max={10}
+              <input type="range" min={1} max={10}
                 value={(section.settings?.carouselSpeed as number) || 4}
                 onChange={e => setSetting(section.id, 'carouselSpeed', Number(e.target.value))}
                 className="flex-1"
@@ -287,8 +307,7 @@ function CarouselSettings({ section, setSetting }: SettingsProps) {
       {section.type === 'categories' && (
         <FieldGroup label={mode === 'carousel' ? 'Espaçamento do carrossel' : 'Espaçamento da grade'}>
           <div className="flex items-center gap-2">
-            <input
-              type="range"
+            <input type="range"
               min={mode === 'carousel' ? 1 : 0}
               max={mode === 'carousel' ? 100 : 32}
               step={mode === 'carousel' ? 1 : 4}
@@ -302,14 +321,13 @@ function CarouselSettings({ section, setSetting }: SettingsProps) {
           </div>
         </FieldGroup>
       )}
-    </div>
+    </SettingsCard>
   );
 }
 
 function BannerSettings({ section, setSetting }: SettingsProps) {
   return (
-    <div className="space-y-3 p-3 rounded-lg bg-muted/30 border border-border/50">
-      <p className="text-xs font-semibold text-foreground">Conteúdo do Banner</p>
+    <SettingsCard title="Conteúdo do Banner">
       <TwoCol>
         <FieldGroup label="Título">
           <Input value={(section.settings?.title as string) || ''} onChange={e => setSetting(section.id, 'title', e.target.value)} placeholder="Título do banner" className="h-9" />
@@ -321,7 +339,7 @@ function BannerSettings({ section, setSetting }: SettingsProps) {
       <FieldGroup label="Imagem de fundo (URL)">
         <Input value={(section.settings?.backgroundImage as string) || ''} onChange={e => setSetting(section.id, 'backgroundImage', e.target.value)} placeholder="https://exemplo.com/imagem.jpg" className="h-9" />
         {(section.settings?.backgroundImage as string) && (
-          <div className="mt-2 rounded-lg overflow-hidden border border-border/50 h-24">
+          <div className="mt-2 rounded-lg overflow-hidden border border-border/50 h-28">
             <img src={section.settings.backgroundImage as string} alt="Preview" className="w-full h-full object-cover" />
           </div>
         )}
@@ -334,15 +352,14 @@ function BannerSettings({ section, setSetting }: SettingsProps) {
           <Input value={(section.settings?.ctaLink as string) || ''} onChange={e => setSetting(section.id, 'ctaLink', e.target.value)} placeholder="/products" className="h-9" />
         </FieldGroup>
       </TwoCol>
-    </div>
+    </SettingsCard>
   );
 }
 
 function MultiBannerSettings({ section, setSetting }: SettingsProps) {
   const count = section.type === 'triple-banner' ? 3 : 2;
   return (
-    <div className="space-y-3 p-3 rounded-lg bg-muted/30 border border-border/50">
-      <p className="text-xs font-semibold text-foreground">Imagens e Links</p>
+    <SettingsCard title="Imagens e Links">
       <div className={cn('grid gap-4', count === 3 ? 'grid-cols-3' : 'grid-cols-2')}>
         {Array.from({ length: count }, (_, i) => i + 1).map(n => (
           <div key={n} className="space-y-2 p-3 rounded-lg bg-background border border-border/30">
@@ -356,14 +373,13 @@ function MultiBannerSettings({ section, setSetting }: SettingsProps) {
           </div>
         ))}
       </div>
-    </div>
+    </SettingsCard>
   );
 }
 
 function VideoSettings({ section, setSetting }: SettingsProps) {
   return (
-    <div className="space-y-3 p-3 rounded-lg bg-muted/30 border border-border/50">
-      <p className="text-xs font-semibold text-foreground">Configuração do Vídeo</p>
+    <SettingsCard title="Configuração do Vídeo">
       <FieldGroup label="URL do vídeo" hint="Cole o link do YouTube ou URL direta do vídeo">
         <Input value={(section.settings?.url as string) || ''} onChange={e => setSetting(section.id, 'url', e.target.value)} placeholder="https://youtube.com/watch?v=..." className="h-9" />
       </FieldGroup>
@@ -388,14 +404,13 @@ function VideoSettings({ section, setSetting }: SettingsProps) {
           </div>
         </FieldGroup>
       </TwoCol>
-    </div>
+    </SettingsCard>
   );
 }
 
 function CountdownSettings({ section, setSetting }: SettingsProps) {
   return (
-    <div className="space-y-3 p-3 rounded-lg bg-muted/30 border border-border/50">
-      <p className="text-xs font-semibold text-foreground">Contagem Regressiva</p>
+    <SettingsCard title="Contagem Regressiva">
       <TwoCol>
         <FieldGroup label="Data alvo">
           <Input type="datetime-local" value={(section.settings?.targetDate as string) || ''} onChange={e => setSetting(section.id, 'targetDate', e.target.value)} className="h-9" />
@@ -418,18 +433,17 @@ function CountdownSettings({ section, setSetting }: SettingsProps) {
           </div>
         </FieldGroup>
       </TwoCol>
-    </div>
+    </SettingsCard>
   );
 }
 
 function ImageTextSettings({ section, setSetting }: SettingsProps) {
   return (
-    <div className="space-y-3 p-3 rounded-lg bg-muted/30 border border-border/50">
-      <p className="text-xs font-semibold text-foreground">Imagem + Texto</p>
+    <SettingsCard title="Imagem + Texto">
       <FieldGroup label="Imagem (URL)">
         <Input value={(section.settings?.imageUrl as string) || ''} onChange={e => setSetting(section.id, 'imageUrl', e.target.value)} placeholder="https://exemplo.com/imagem.jpg" className="h-9" />
         {(section.settings?.imageUrl as string) && (
-          <div className="mt-2 rounded-lg overflow-hidden border border-border/50 h-24">
+          <div className="mt-2 rounded-lg overflow-hidden border border-border/50 h-28">
             <img src={section.settings.imageUrl as string} alt="Preview" className="w-full h-full object-cover" />
           </div>
         )}
@@ -465,16 +479,14 @@ function ImageTextSettings({ section, setSetting }: SettingsProps) {
           <Input value={(section.settings?.ctaLink as string) || ''} onChange={e => setSetting(section.id, 'ctaLink', e.target.value)} placeholder="/products" className="h-9" />
         </FieldGroup>
       </TwoCol>
-    </div>
+    </SettingsCard>
   );
 }
 
 function CategorySettings({ section, setSetting }: SettingsProps) {
   return (
     <div className="space-y-4">
-      {/* Appearance */}
-      <div className="space-y-3 p-3 rounded-lg bg-muted/30 border border-border/50">
-        <p className="text-xs font-semibold text-foreground">Aparência das Categorias</p>
+      <SettingsCard title="Aparência das Categorias">
         <div className="flex items-center gap-3">
           <Switch
             checked={(section.settings?.showImage as boolean) ?? true}
@@ -483,32 +495,30 @@ function CategorySettings({ section, setSetting }: SettingsProps) {
           <Label className="text-xs">Mostrar imagem da categoria</Label>
         </div>
         {(section.settings?.showImage as boolean) !== false && (
-          <TwoCol>
-            <FieldGroup label="Formato">
-              <select
-                value={(section.settings?.imageShape as string) || 'circle'}
-                onChange={e => setSetting(section.id, 'imageShape', e.target.value)}
-                className="w-full h-9 text-sm rounded-md border border-border bg-background px-3"
-              >
-                <option value="circle">Circular</option>
-                <option value="rounded">Arredondado</option>
-                <option value="square">Quadrado</option>
-              </select>
-            </FieldGroup>
-            <FieldGroup label="Tamanho">
-              <div className="flex items-center gap-2">
-                <input type="range" min={60} max={140} step={10}
-                  value={(section.settings?.imageSize as number) || 80}
-                  onChange={e => setSetting(section.id, 'imageSize', Number(e.target.value))}
-                  className="flex-1"
-                />
-                <span className="text-xs text-muted-foreground w-10 text-right">{(section.settings?.imageSize as number) || 80}px</span>
-              </div>
-            </FieldGroup>
-          </TwoCol>
-        )}
-        {(section.settings?.showImage as boolean) !== false && (
           <>
+            <TwoCol>
+              <FieldGroup label="Formato">
+                <select
+                  value={(section.settings?.imageShape as string) || 'circle'}
+                  onChange={e => setSetting(section.id, 'imageShape', e.target.value)}
+                  className="w-full h-9 text-sm rounded-md border border-border bg-background px-3"
+                >
+                  <option value="circle">Circular</option>
+                  <option value="rounded">Arredondado</option>
+                  <option value="square">Quadrado</option>
+                </select>
+              </FieldGroup>
+              <FieldGroup label="Tamanho">
+                <div className="flex items-center gap-2">
+                  <input type="range" min={60} max={140} step={10}
+                    value={(section.settings?.imageSize as number) || 80}
+                    onChange={e => setSetting(section.id, 'imageSize', Number(e.target.value))}
+                    className="flex-1"
+                  />
+                  <span className="text-xs text-muted-foreground w-10 text-right">{(section.settings?.imageSize as number) || 80}px</span>
+                </div>
+              </FieldGroup>
+            </TwoCol>
             <div className="flex items-center gap-3">
               <Switch
                 checked={(section.settings?.imageBorder as boolean) ?? false}
@@ -542,11 +552,9 @@ function CategorySettings({ section, setSetting }: SettingsProps) {
             )}
           </>
         )}
-      </div>
+      </SettingsCard>
 
-      {/* Category selection */}
-      <div className="space-y-3 p-3 rounded-lg bg-muted/30 border border-border/50">
-        <p className="text-xs font-semibold text-foreground">Categorias em destaque</p>
+      <SettingsCard title="Categorias em destaque">
         <p className="text-[11px] text-muted-foreground">Selecione quais categorias aparecem nesta seção:</p>
         <div className="grid grid-cols-2 gap-1.5 max-h-48 overflow-y-auto">
           {mockCategories.map(cat => {
@@ -580,7 +588,7 @@ function CategorySettings({ section, setSetting }: SettingsProps) {
         {((section.settings?.selectedCategoryIds as string[]) || []).length === 0 && (
           <p className="text-[11px] text-amber-500">Nenhuma selecionada — todas serão exibidas por padrão.</p>
         )}
-      </div>
+      </SettingsCard>
     </div>
   );
 }
