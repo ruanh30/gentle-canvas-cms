@@ -411,7 +411,7 @@ export interface ThemeWhatsApp {
 
 export interface ThemeHomepageSection {
   id: string;
-  type: 'hero' | 'categories' | 'featured-products' | 'banner' | 'double-banner' |
+  type: 'hero' | 'categories' | 'featured-products' | 'all-products' | 'banner' | 'double-banner' |
         'triple-banner' | 'testimonials' | 'brands' | 'newsletter' | 'benefits' | 'faq' |
         'collections' | 'trust-bar' | 'blog-preview' | 'custom-html' |
         'countdown' | 'video' | 'image-text';

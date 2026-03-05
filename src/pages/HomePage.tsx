@@ -515,6 +515,54 @@ const HomePage = () => {
         );
       }
 
+      case 'all-products': {
+        const pl = theme.productListing || { limitDesktop: 0, limitMobile: 0 };
+        const allActive = mockProducts.filter(p => p.active);
+        const sortedAll = sortProducts(allActive, globalSort);
+        const desktopAll = pl.limitDesktop > 0 ? sortedAll.slice(0, pl.limitDesktop) : sortedAll;
+        const mobileAll = pl.limitMobile > 0 ? sortedAll.slice(0, pl.limitMobile) : sortedAll;
+
+        return (
+          <section key={section.id} className={cn('pm-showcase-container px-4', rhythmPy, wrapperClass)}>
+            <div className="flex items-center justify-between mb-8">
+              {section.showTitle !== false && (
+                <SectionHeader title={section.title} size="lg" subtitle="Explore nosso catálogo completo" align={(section.settings?.titleAlign as 'left'|'center'|'right') || 'left'} className="mb-0" />
+              )}
+              <Link to="/products" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1 ml-auto shrink-0">
+                Ver todos <ArrowRight className="h-4 w-4" />
+              </Link>
+            </div>
+            {isCarousel ? (
+              <SectionCarousel speed={carouselSpeed} showArrows={carouselShowArrows} centered>
+                {sortedAll.map(product => (
+                  <div key={product.id} className="min-w-[260px] max-w-[280px] snap-start flex-shrink-0">
+                    <ProductCard product={product} />
+                  </div>
+                ))}
+              </SectionCarousel>
+            ) : (
+              <>
+                <div className={cn('hidden lg:grid', desktopGridCols[theme.category?.columnsDesktop || 4] || desktopGridCols[4])} style={{ gap: `${theme.category?.gridGap ?? 24}px` }}>
+                  {desktopAll.map(product => (
+                    <ProductCard key={product.id} product={product} />
+                  ))}
+                </div>
+                <div className={cn('hidden md:grid lg:hidden', tabletGridCols[theme.category?.columnsTablet || 3] || tabletGridCols[3])} style={{ gap: `${theme.category?.gridGap ?? 24}px` }}>
+                  {desktopAll.map(product => (
+                    <ProductCard key={product.id} product={product} />
+                  ))}
+                </div>
+                <div className={cn('grid md:hidden', theme.category?.columnsMobile === 1 ? 'grid-cols-1' : 'grid-cols-2')} style={{ gap: `${Math.min(theme.category?.gridGap ?? 16, 16)}px` }}>
+                  {mobileAll.map(product => (
+                    <ProductCard key={product.id} product={product} />
+                  ))}
+                </div>
+              </>
+            )}
+          </section>
+        );
+      }
+
       case 'banner': {
         return (
           <div key={section.id} className={wrapperClass}>

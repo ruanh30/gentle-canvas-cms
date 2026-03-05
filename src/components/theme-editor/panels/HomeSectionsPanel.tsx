@@ -20,6 +20,7 @@ const availableSectionTypes: { type: ThemeHomepageSection['type']; label: string
   { type: 'countdown', label: 'Contagem Regressiva' },
   { type: 'image-text', label: 'Imagem + Texto' },
   { type: 'featured-products', label: 'Produtos em Destaque' },
+  { type: 'all-products', label: 'Todos os Produtos' },
   { type: 'video', label: 'Vídeo' },
 ];
 
