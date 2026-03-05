@@ -10,17 +10,17 @@ import { mockCategories, mockCollections } from '@/data/mock';
 import { HomeSectionsDialog } from './HomeSectionsDialog';
 
 const availableSectionTypes: { type: ThemeHomepageSection['type']; label: string }[] = [
-  { type: 'collections', label: 'Coleção de Produtos' },
   { type: 'banner', label: 'Banner' },
   { type: 'double-banner', label: 'Banner Duplo' },
   { type: 'triple-banner', label: 'Banner Triplo' },
-  { type: 'image-text', label: 'Imagem + Texto' },
-  { type: 'video', label: 'Vídeo' },
-  { type: 'countdown', label: 'Contagem Regressiva' },
-  { type: 'benefits', label: 'Benefícios' },
   { type: 'trust-bar', label: 'Barra de Confiança' },
+  { type: 'benefits', label: 'Benefícios' },
   { type: 'categories', label: 'Categorias' },
+  { type: 'collections', label: 'Coleção de Produtos' },
+  { type: 'countdown', label: 'Contagem Regressiva' },
+  { type: 'image-text', label: 'Imagem + Texto' },
   { type: 'featured-products', label: 'Produtos em Destaque' },
+  { type: 'video', label: 'Vídeo' },
 ];
 
 export function HomeSectionsPanel() {
