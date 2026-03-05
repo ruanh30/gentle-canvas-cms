@@ -78,17 +78,17 @@ function BannerBlock({ data, height, borderRadius, className }: {
           {data.showText && (
             <>
               {data.subtitle && (
-                <p className="text-xs uppercase tracking-[0.2em] mb-2 opacity-80 font-body" style={{ color: data.textColor }}>
+                <p className="text-[10px] md:text-xs uppercase tracking-[0.2em] mb-1 md:mb-2 opacity-80 font-body" style={{ color: data.textColor }}>
                   {data.subtitle}
                 </p>
               )}
               {data.title && (
-                <h3 className="text-xl md:text-2xl font-display font-bold mb-2 leading-tight" style={{ color: data.textColor }}>
+                <h3 className="text-base md:text-2xl font-display font-bold mb-1 md:mb-2 leading-tight" style={{ color: data.textColor }}>
                   {data.title}
                 </h3>
               )}
               {data.description && (
-                <p className="text-sm mb-4 opacity-80 font-body max-w-md" style={{ color: data.textColor }}>
+                <p className="text-xs md:text-sm mb-2 md:mb-4 opacity-80 font-body max-w-md" style={{ color: data.textColor }}>
                   {data.description}
                 </p>
               )}
@@ -104,13 +104,13 @@ function BannerBlock({ data, height, borderRadius, className }: {
                 variant={ctaVariant}
                 size="sm"
                 className={cn(
-                  'rounded-full px-6 font-body',
+                  'rounded-full px-4 md:px-6 text-xs md:text-sm h-8 md:h-9 font-body',
                   data.ctaStyle === 'outline' && 'border-current',
                 )}
                 style={data.ctaStyle === 'outline' || data.ctaStyle === 'ghost' ? { color: data.textColor, borderColor: data.textColor } : undefined}
               >
                 {data.ctaText}
-                <ArrowRight className="ml-1.5 h-3.5 w-3.5" />
+                <ArrowRight className="ml-1 md:ml-1.5 h-3 md:h-3.5 w-3 md:w-3.5" />
               </Button>
             </Link>
             </div>
