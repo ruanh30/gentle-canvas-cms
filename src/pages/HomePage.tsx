@@ -362,7 +362,7 @@ const HomePage = () => {
         const mobileProducts = pl.limitMobile > 0 ? featured.slice(0, pl.limitMobile) : featured;
 
         return (
-          <section key={section.id} className={cn('container mx-auto px-4', rhythmPy, wrapperClass)}>
+          <section key={section.id} className={cn('pm-showcase-container px-4', rhythmPy, wrapperClass)}>
             <div className="flex items-center justify-between mb-8">
               {section.showTitle !== false && (
                 <SectionHeader title={section.title} size="lg" subtitle="Peças selecionadas para você" align="left" className="mb-0" />
@@ -616,7 +616,7 @@ const HomePage = () => {
         const mobileProducts = pl.limitMobile > 0 ? allCollectionProducts.slice(0, pl.limitMobile) : allCollectionProducts;
 
         return (
-          <section key={section.id} className={cn('container mx-auto px-4', rhythmPy, wrapperClass)}>
+          <section key={section.id} className={cn('pm-showcase-container px-4', rhythmPy, wrapperClass)}>
             {section.showTitle !== false && (
               <SectionHeader title={section.title} size="md" />
             )}

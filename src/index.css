@@ -267,6 +267,11 @@
 .pm-container {
   max-width: var(--pm-container-width, 1280px);
 }
+.pm-showcase-container {
+  max-width: var(--pm-showcase-container-width, 1400px);
+  margin-left: auto;
+  margin-right: auto;
+}
 
 /* Global radius applied to containers — capped at 16px to prevent pill distortion */
 .pm-global-radius {
