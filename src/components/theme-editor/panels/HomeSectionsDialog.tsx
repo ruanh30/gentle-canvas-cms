@@ -10,7 +10,7 @@ import { ThemeHomepageSection } from '@/types/theme';
 import { mockCategories, mockCollections } from '@/data/mock';
 import { HintTooltip } from '../EditorControls';
 import {
-  ChevronDown, ChevronUp, Eye, EyeOff, Trash2,
+  ChevronDown, ChevronUp, Eye, EyeOff, Trash2, Plus,
   Image, Video, Timer, LayoutGrid, ShoppingBag,
   FolderTree, Sparkles, Star, Type as TypeIcon, MousePointer
 } from 'lucide-react';
@@ -55,6 +55,10 @@ export function HomeSectionsDialog({ open, onOpenChange }: HomeSectionsDialogPro
   const { draft, toggleSection, reorderSections, updateDraft } = useTheme();
   const sections = draft.homepageSections;
   const [selectedId, setSelectedId] = useState<string | null>(sections[0]?.id || null);
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [newSectionType, setNewSectionType] = useState<ThemeHomepageSection['type']>('banner');
+  const [newSectionName, setNewSectionName] = useState('');
+  const [newCollectionId, setNewCollectionId] = useState('');
 
   const selectedSection = sections.find(s => s.id === selectedId);
 
@@ -133,6 +137,92 @@ export function HomeSectionsDialog({ open, onOpenChange }: HomeSectionsDialogPro
                 })}
               </div>
             </ScrollArea>
+
+            {/* Add section button/form */}
+            <div className="border-t p-2 shrink-0">
+              {!showAddForm ? (
+                <button
+                  onClick={() => { setShowAddForm(true); setNewSectionType('banner'); setNewSectionName(''); setNewCollectionId(''); }}
+                  className="w-full flex items-center justify-center gap-2 py-2 rounded-lg border border-dashed border-border text-xs text-muted-foreground hover:text-foreground hover:border-foreground/30 transition-colors"
+                >
+                  <Plus className="h-3.5 w-3.5" />
+                  Adicionar seção
+                </button>
+              ) : (
+                <div className="space-y-2">
+                  <select
+                    value={newSectionType}
+                    onChange={e => {
+                      const t = e.target.value as ThemeHomepageSection['type'];
+                      setNewSectionType(t);
+                      setNewCollectionId('');
+                      if (t !== 'collections') {
+                        setNewSectionName(sectionTypeLabels[t] || '');
+                      } else {
+                        setNewSectionName('');
+                      }
+                    }}
+                    className="w-full h-8 text-xs rounded-md border border-border bg-background px-2"
+                  >
+                    {Object.entries(sectionTypeLabels).map(([type, label]) => (
+                      <option key={type} value={type}>{label}</option>
+                    ))}
+                  </select>
+                  {newSectionType === 'collections' ? (
+                    <select
+                      value={newCollectionId}
+                      onChange={e => {
+                        setNewCollectionId(e.target.value);
+                        const col = mockCollections.find(c => c.id === e.target.value);
+                        if (col) setNewSectionName(col.name);
+                      }}
+                      className="w-full h-8 text-xs rounded-md border border-border bg-background px-2"
+                    >
+                      <option value="">— Escolha uma coleção —</option>
+                      {mockCollections.filter(c => c.active).map(col => (
+                        <option key={col.id} value={col.id}>{col.name}</option>
+                      ))}
+                    </select>
+                  ) : (
+                    <Input
+                      value={newSectionName}
+                      onChange={e => setNewSectionName(e.target.value)}
+                      placeholder="Nome da seção"
+                      className="h-8 text-xs"
+                    />
+                  )}
+                  <div className="flex gap-1.5">
+                    <button
+                      onClick={() => {
+                        if (newSectionType === 'collections' && !newCollectionId) return;
+                        const label = newSectionName.trim() || sectionTypeLabels[newSectionType] || 'Nova seção';
+                        const newSection: ThemeHomepageSection = {
+                          id: newSectionType === 'collections' ? newCollectionId : `${newSectionType}-${Date.now()}`,
+                          type: newSectionType,
+                          enabled: true,
+                          title: label,
+                          showTitle: true,
+                          settings: newSectionType === 'collections' ? { collectionId: newCollectionId } : {},
+                        };
+                        updateDraft({ homepageSections: [...sections, newSection] });
+                        setSelectedId(newSection.id);
+                        setShowAddForm(false);
+                      }}
+                      disabled={newSectionType === 'collections' && !newCollectionId}
+                      className="flex-1 h-8 rounded-lg bg-foreground text-background text-xs font-medium hover:opacity-90 transition-opacity disabled:opacity-40"
+                    >
+                      Adicionar
+                    </button>
+                    <button
+                      onClick={() => setShowAddForm(false)}
+                      className="flex-1 h-8 rounded-lg border border-border text-xs font-medium hover:bg-muted/50 transition-colors"
+                    >
+                      Cancelar
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
 
           {/* RIGHT: Settings panel */}
