@@ -121,49 +121,10 @@ export function HomeSectionsDialog({ open, onOpenChange }: HomeSectionsDialogPro
                           <p className="text-xs font-medium truncate">{section.title}</p>
                           <p className="text-[10px] text-muted-foreground truncate">{sectionTypeLabels[section.type]}</p>
                         </div>
-                        {!section.enabled && (
+                      {!section.enabled && (
                           <EyeOff className="h-3 w-3 text-muted-foreground shrink-0" />
                         )}
                       </button>
-
-                      {/* Reorder buttons on hover */}
-                      {isSelected && (
-                        <div className="flex items-center justify-center gap-1 py-1">
-                          <button
-                            onClick={() => { if (idx > 0) reorderSections(idx, idx - 1); }}
-                            disabled={idx === 0}
-                            className="p-1 rounded hover:bg-muted transition-colors disabled:opacity-20"
-                            title="Mover para cima"
-                          >
-                            <ChevronUp className="h-3 w-3" />
-                          </button>
-                          <button
-                            onClick={() => { if (idx < sections.length - 1) reorderSections(idx, idx + 1); }}
-                            disabled={idx === sections.length - 1}
-                            className="p-1 rounded hover:bg-muted transition-colors disabled:opacity-20"
-                            title="Mover para baixo"
-                          >
-                            <ChevronDown className="h-3 w-3" />
-                          </button>
-                          <div className="w-px h-4 bg-border mx-1" />
-                          <button
-                            onClick={() => updateDraft({
-                              homepageSections: sections.map(s => s.id === section.id ? { ...s, showTitle: !(s.showTitle ?? true) } : s),
-                            })}
-                            className="p-1 rounded hover:bg-muted transition-colors"
-                            title={section.showTitle !== false ? 'Ocultar título' : 'Mostrar título'}
-                          >
-                            {section.showTitle !== false ? <Eye className="h-3 w-3" /> : <EyeOff className="h-3 w-3" />}
-                          </button>
-                          <button
-                            onClick={() => removeSection(section.id)}
-                            className="p-1 rounded hover:bg-destructive/10 text-destructive transition-colors"
-                            title="Remover"
-                          >
-                            <Trash2 className="h-3 w-3" />
-                          </button>
-                        </div>
-                      )}
                     </div>
                   );
                 })}
@@ -176,7 +137,7 @@ export function HomeSectionsDialog({ open, onOpenChange }: HomeSectionsDialogPro
             <ScrollArea className="h-full">
               {selectedSection ? (
                 <div className="p-6 space-y-5">
-                  {/* Header */}
+                  {/* Header: name + active toggle */}
                   <div className="flex items-center justify-between gap-4">
                     <div className="flex-1 space-y-1.5">
                       <Label className="text-xs font-medium text-muted-foreground">Nome da seção</Label>
@@ -194,6 +155,80 @@ export function HomeSectionsDialog({ open, onOpenChange }: HomeSectionsDialogPro
                       />
                     </div>
                   </div>
+
+                  {/* Ordering, visibility & delete controls */}
+                  {(() => {
+                    const idx = sections.findIndex(s => s.id === selectedSection.id);
+                    return (
+                      <div className="grid grid-cols-2 gap-3">
+                        {/* Move up */}
+                        <button
+                          onClick={() => { if (idx > 0) reorderSections(idx, idx - 1); }}
+                          disabled={idx === 0}
+                          className="flex items-center gap-3 p-3 rounded-xl border border-border bg-muted/30 hover:bg-muted/60 transition-colors disabled:opacity-30 text-left"
+                        >
+                          <div className="w-8 h-8 rounded-lg bg-background flex items-center justify-center shrink-0 border border-border/50">
+                            <ChevronUp className="h-4 w-4" />
+                          </div>
+                          <div>
+                            <p className="text-xs font-medium">Mover para cima</p>
+                            <p className="text-[10px] text-muted-foreground">Sobe a posição desta seção na página</p>
+                          </div>
+                        </button>
+
+                        {/* Move down */}
+                        <button
+                          onClick={() => { if (idx < sections.length - 1) reorderSections(idx, idx + 1); }}
+                          disabled={idx === sections.length - 1}
+                          className="flex items-center gap-3 p-3 rounded-xl border border-border bg-muted/30 hover:bg-muted/60 transition-colors disabled:opacity-30 text-left"
+                        >
+                          <div className="w-8 h-8 rounded-lg bg-background flex items-center justify-center shrink-0 border border-border/50">
+                            <ChevronDown className="h-4 w-4" />
+                          </div>
+                          <div>
+                            <p className="text-xs font-medium">Mover para baixo</p>
+                            <p className="text-[10px] text-muted-foreground">Desce a posição desta seção na página</p>
+                          </div>
+                        </button>
+
+                        {/* Toggle title */}
+                        <button
+                          onClick={() => updateDraft({
+                            homepageSections: sections.map(s => s.id === selectedSection.id ? { ...s, showTitle: !(s.showTitle ?? true) } : s),
+                          })}
+                          className="flex items-center gap-3 p-3 rounded-xl border border-border bg-muted/30 hover:bg-muted/60 transition-colors text-left"
+                        >
+                          <div className="w-8 h-8 rounded-lg bg-background flex items-center justify-center shrink-0 border border-border/50">
+                            {selectedSection.showTitle !== false ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
+                          </div>
+                          <div>
+                            <p className="text-xs font-medium">
+                              {selectedSection.showTitle !== false ? 'Título visível' : 'Título oculto'}
+                            </p>
+                            <p className="text-[10px] text-muted-foreground">
+                              {selectedSection.showTitle !== false
+                                ? 'O título desta seção aparece na loja'
+                                : 'O título desta seção está oculto na loja'}
+                            </p>
+                          </div>
+                        </button>
+
+                        {/* Delete */}
+                        <button
+                          onClick={() => removeSection(selectedSection.id)}
+                          className="flex items-center gap-3 p-3 rounded-xl border border-destructive/20 bg-destructive/5 hover:bg-destructive/10 transition-colors text-left"
+                        >
+                          <div className="w-8 h-8 rounded-lg bg-background flex items-center justify-center shrink-0 border border-destructive/20">
+                            <Trash2 className="h-4 w-4 text-destructive" />
+                          </div>
+                          <div>
+                            <p className="text-xs font-medium text-destructive">Remover seção</p>
+                            <p className="text-[10px] text-muted-foreground">Remove permanentemente esta seção da home</p>
+                          </div>
+                        </button>
+                      </div>
+                    );
+                  })()}
 
                   {/* Type-specific settings */}
                   {carouselSections.includes(selectedSection.type) && (
