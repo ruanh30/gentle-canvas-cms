@@ -10,6 +10,7 @@ import { cn } from '@/lib/utils';
 import { ThemeHomepageSection } from '@/types/theme';
 import { AnimatePresence, motion } from 'framer-motion';
 import { SectionHeader } from '@/components/store/SectionHeader';
+import { SingleBannerSection, MultiBannerSection } from '@/components/store/BannerSection';
 
 function SectionCarousel({ children, speed, showArrows = true, centered = false, gap = 16 }: { children: React.ReactNode[]; speed: number; showArrows?: boolean; centered?: boolean; gap?: number }) {
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -409,110 +410,29 @@ const HomePage = () => {
       }
 
       case 'banner': {
-        const settings = section.settings as { title?: string; description?: string; backgroundImage?: string; ctaText?: string; ctaLink?: string };
         return (
-          <section key={section.id} className={cn('container mx-auto px-4 py-8', wrapperClass)}>
-            <div
-              className="bg-secondary rounded-2xl p-8 md:p-16 text-center bg-cover bg-center relative overflow-hidden"
-              style={settings.backgroundImage ? { backgroundImage: `url(${settings.backgroundImage})` } : undefined}
-            >
-              {settings.backgroundImage && <div className="absolute inset-0 bg-black/30 rounded-2xl" />}
-              <div className="relative z-10">
-                <h2 className={cn('text-3xl md:text-4xl font-display font-bold mb-3', settings.backgroundImage && 'text-white')}>{settings.title || 'Banner'}</h2>
-                <p className={cn('text-muted-foreground mb-6 font-body', settings.backgroundImage && 'text-white/80')}>{settings.description || ''}</p>
-                {(settings.ctaText || !settings.backgroundImage) && (
-                  <Link to={settings.ctaLink || '/login'}>
-                    <Button variant="outline" size="lg" className={cn('rounded-full px-8 font-body', settings.backgroundImage && 'border-white text-white hover:bg-white/20')}>{settings.ctaText || 'Criar conta'}</Button>
-                  </Link>
-                )}
-              </div>
-            </div>
-          </section>
-        );
-      }
-
-      case 'countdown': {
-        const s = section.settings as { targetDate?: string; label?: string; backgroundColor?: string; textColor?: string };
-        return (
-          <section key={section.id} className={cn('py-12', wrapperClass)} style={{ backgroundColor: s.backgroundColor || '#1a1a1a', color: s.textColor || '#ffffff' }}>
-            <div className="container mx-auto px-4 text-center">
-              {section.showTitle !== false && (
-                <SectionHeader title={section.title} size="lg" align={(section.settings?.titleAlign as 'left'|'center'|'right') || 'center'} />
-              )}
-              <p className="text-sm opacity-80 mb-6">{s.label || 'Promoção termina em'}</p>
-              {s.targetDate ? (
-                <div className="flex justify-center">
-                  <CountdownTimer targetDate={s.targetDate} />
-                </div>
-              ) : (
-                <p className="text-sm opacity-60">Configure a data alvo nas configurações da seção</p>
-              )}
-            </div>
-          </section>
-        );
-      }
-
-      case 'video': {
-        const s = section.settings as { url?: string; provider?: string; autoplay?: boolean };
-        const isYouTube = (s.provider || 'youtube') === 'youtube';
-        const videoId = s.url?.match(/(?:v=|\/embed\/|youtu\.be\/)([\w-]+)/)?.[1];
-        return (
-          <section key={section.id} className={cn('container mx-auto px-4', rhythmPy, wrapperClass)}>
+          <div key={section.id} className={wrapperClass}>
             {section.showTitle !== false && (
-              <SectionHeader title={section.title} size="sm" align={(section.settings?.titleAlign as 'left'|'center'|'right') || 'center'} />
+              <div className="container mx-auto px-4">
+                <SectionHeader title={section.title} size="sm" align={(section.settings?.titleAlign as 'left'|'center'|'right') || 'center'} />
+              </div>
             )}
-            <div className="aspect-video rounded-2xl overflow-hidden bg-secondary">
-              {isYouTube && videoId ? (
-                <iframe
-                  src={`https://www.youtube.com/embed/${videoId}${s.autoplay ? '?autoplay=1&mute=1' : ''}`}
-                  className="w-full h-full"
-                  allow="autoplay; encrypted-media"
-                  allowFullScreen
-                  title={section.title}
-                />
-              ) : s.url ? (
-                <video src={s.url} className="w-full h-full object-cover" controls autoPlay={s.autoplay} muted={s.autoplay} />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center">
-                  <Play className="h-12 w-12 text-muted-foreground" />
-                  <p className="text-muted-foreground ml-3">Configure a URL do vídeo</p>
-                </div>
-              )}
-            </div>
-          </section>
+            <SingleBannerSection section={section} wrapperClass="" />
+          </div>
         );
       }
 
       case 'double-banner':
       case 'triple-banner': {
-        const s = section.settings as Record<string, string>;
-        const isTriple = section.type === 'triple-banner';
-        const banners = isTriple
-          ? [{ img: s.image1, link: s.link1 }, { img: s.image2, link: s.link2 }, { img: s.image3, link: s.link3 }]
-          : [{ img: s.image1, link: s.link1 }, { img: s.image2, link: s.link2 }];
-
         return (
-          <section key={section.id} className={cn('container mx-auto px-4 py-8', wrapperClass)}>
+          <div key={section.id} className={wrapperClass}>
             {section.showTitle !== false && (
-              <SectionHeader title={section.title} size="sm" align={(section.settings?.titleAlign as 'left'|'center'|'right') || 'center'} />
+              <div className="container mx-auto px-4">
+                <SectionHeader title={section.title} size="sm" align={(section.settings?.titleAlign as 'left'|'center'|'right') || 'center'} />
+              </div>
             )}
-            <div className={cn('grid gap-4', isTriple ? 'grid-cols-1 md:grid-cols-3' : 'grid-cols-1 md:grid-cols-2')}>
-              {banners.map((b, i) => {
-                const content = b.img ? (
-                  <img src={b.img} alt={`Banner ${i + 1}`} className="w-full h-48 md:h-64 object-cover rounded-xl" loading="lazy" />
-                ) : (
-                  <div className="w-full h-48 md:h-64 bg-secondary rounded-xl flex items-center justify-center">
-                    <span className="text-muted-foreground text-sm">Banner {i + 1}</span>
-                  </div>
-                );
-                return b.link ? (
-                  <Link key={i} to={b.link} className="block hover:opacity-90 transition-opacity">{content}</Link>
-                ) : (
-                  <div key={i}>{content}</div>
-                );
-              })}
-            </div>
-          </section>
+            <MultiBannerSection section={section} wrapperClass="" />
+          </div>
         );
       }
 
