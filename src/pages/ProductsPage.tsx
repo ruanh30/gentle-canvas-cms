@@ -177,8 +177,10 @@ const ProductsPage = () => {
     }
   };
 
+  const showcaseMaxWidth = cat.containerMaxWidth ?? 1400;
+
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="mx-auto px-4 py-8" style={{ maxWidth: `${showcaseMaxWidth}px` }}>
       <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
         <div>
           <h1 className="text-3xl font-display font-bold">

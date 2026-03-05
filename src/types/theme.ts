@@ -328,6 +328,7 @@ export interface ThemeCategory {
   columnsTablet: 2 | 3 | 4;
   columnsMobile: 1 | 2;
   gridGap: number;            // px (0-32, step 4)
+  containerMaxWidth: number;  // px — largura máxima da vitrine (960-1920)
   filterStyle: 'checkbox' | 'chips' | 'accordion';
   showFilterCount: boolean;
   sortStyle: 'dropdown' | 'chips';
