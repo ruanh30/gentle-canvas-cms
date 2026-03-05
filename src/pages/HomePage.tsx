@@ -225,16 +225,16 @@ const HomePage = () => {
                   >
                     {slide.showText !== false && (
                       <>
-                        <p className="text-sm uppercase tracking-[0.3em] text-muted-foreground mb-4 font-body">
+                        <p className="text-xs md:text-sm uppercase tracking-[0.3em] text-muted-foreground mb-2 md:mb-4 font-body">
                           {slide.subtitle}
                         </p>
                         <h1
-                          className="text-4xl md:text-6xl font-display font-bold leading-tight mb-6 whitespace-pre-line"
+                          className="text-2xl md:text-4xl lg:text-6xl font-display font-bold leading-tight mb-3 md:mb-6 whitespace-pre-line"
                           style={{ fontSize: responsive?.heroTitleSizeMobile ? `clamp(${responsive.heroTitleSizeMobile}px, 5vw, 3.75rem)` : undefined }}
                         >
                           {slide.title}
                         </h1>
-                        <p className="text-muted-foreground mb-8 text-lg font-body">
+                        <p className="text-muted-foreground mb-4 md:mb-8 text-sm md:text-lg font-body">
                           {slide.description}
                         </p>
                       </>
@@ -247,9 +247,9 @@ const HomePage = () => {
                         }}
                       >
                         <Link to={slide.ctaLink || '/products'}>
-                          <Button size="lg" className="rounded-full px-8 font-body">
+                          <Button size="default" className="rounded-full px-5 md:px-8 text-sm md:text-base font-body">
                             {slide.ctaText}
-                            <ArrowRight className="ml-2 h-4 w-4" />
+                            <ArrowRight className="ml-1.5 md:ml-2 h-3.5 md:h-4 w-3.5 md:w-4" />
                           </Button>
                         </Link>
                       </div>
@@ -452,12 +452,12 @@ const HomePage = () => {
                 )}
               </div>
               <div className={cn('flex flex-col justify-center', !imgLeft && 'md:order-1')}>
-                <h2 className="text-3xl font-display font-bold mb-4">{s.title || section.title}</h2>
-                <p className="text-muted-foreground mb-6 font-body leading-relaxed">{s.description || ''}</p>
+                <h2 className="text-xl md:text-3xl font-display font-bold mb-3 md:mb-4">{s.title || section.title}</h2>
+                <p className="text-muted-foreground mb-4 md:mb-6 text-sm md:text-base font-body leading-relaxed">{s.description || ''}</p>
                 {s.ctaText && (
                   <Link to={s.ctaLink || '#'}>
-                    <Button size="lg" className="rounded-full px-8 font-body">
-                      {s.ctaText} <ArrowRight className="ml-2 h-4 w-4" />
+                    <Button size="default" className="rounded-full px-5 md:px-8 text-sm md:text-base font-body">
+                      {s.ctaText} <ArrowRight className="ml-1.5 md:ml-2 h-3.5 md:h-4 w-3.5 md:w-4" />
                     </Button>
                   </Link>
                 )}
@@ -521,10 +521,10 @@ const HomePage = () => {
         ];
         return (
           <section key={section.id} className={cn('container mx-auto px-4 py-8', wrapperClass)}>
-            <div className="flex items-center justify-center gap-10 text-muted-foreground text-sm">
+            <div className="flex flex-wrap items-center justify-center gap-4 md:gap-10 text-muted-foreground text-xs md:text-sm">
               {trusts.map((t, i) => (
-                <span key={i} className="flex items-center gap-2">
-                  <t.icon className="h-4 w-4" strokeWidth={1.5} />
+                <span key={i} className="flex items-center gap-1.5 md:gap-2">
+                  <t.icon className="h-3.5 md:h-4 w-3.5 md:w-4" strokeWidth={1.5} />
                   {t.label}
                 </span>
               ))}
