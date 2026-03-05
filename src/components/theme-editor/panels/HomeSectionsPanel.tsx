@@ -348,6 +348,233 @@ export function HomeSectionsPanel() {
                 )}
               </div>
             )}
+
+            {/* ── Banner Settings ── */}
+            {section.type === 'banner' && section.enabled && (
+              <div className="ml-6 mt-1 mb-2 p-2 bg-muted/30 rounded-md space-y-2">
+                <SectionDivider label="Conteúdo do Banner" />
+                <div className="space-y-1.5">
+                  <label className="text-[11px] text-muted-foreground">Título:</label>
+                  <Input
+                    value={(section.settings?.title as string) || ''}
+                    onChange={e => setSetting(section.id, 'title', e.target.value)}
+                    placeholder="Título do banner"
+                    className="h-7 text-xs"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-[11px] text-muted-foreground">Descrição:</label>
+                  <Input
+                    value={(section.settings?.description as string) || ''}
+                    onChange={e => setSetting(section.id, 'description', e.target.value)}
+                    placeholder="Descrição do banner"
+                    className="h-7 text-xs"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-[11px] text-muted-foreground">Imagem de fundo (URL):</label>
+                  <Input
+                    value={(section.settings?.backgroundImage as string) || ''}
+                    onChange={e => setSetting(section.id, 'backgroundImage', e.target.value)}
+                    placeholder="https://exemplo.com/imagem.jpg"
+                    className="h-7 text-xs"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-[11px] text-muted-foreground">Texto do botão:</label>
+                  <Input
+                    value={(section.settings?.ctaText as string) || ''}
+                    onChange={e => setSetting(section.id, 'ctaText', e.target.value)}
+                    placeholder="Criar conta"
+                    className="h-7 text-xs"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-[11px] text-muted-foreground">Link do botão:</label>
+                  <Input
+                    value={(section.settings?.ctaLink as string) || ''}
+                    onChange={e => setSetting(section.id, 'ctaLink', e.target.value)}
+                    placeholder="/products"
+                    className="h-7 text-xs"
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* ── Double/Triple Banner Settings ── */}
+            {(section.type === 'double-banner' || section.type === 'triple-banner') && section.enabled && (
+              <div className="ml-6 mt-1 mb-2 p-2 bg-muted/30 rounded-md space-y-2">
+                <SectionDivider label="Imagens e Links" />
+                {(section.type === 'triple-banner' ? [1, 2, 3] : [1, 2]).map(n => (
+                  <div key={n} className="space-y-1.5 pb-2 border-b border-border/30 last:border-0">
+                    <p className="text-[11px] font-medium text-muted-foreground">Banner {n}</p>
+                    <div className="space-y-1">
+                      <label className="text-[10px] text-muted-foreground">Imagem (URL):</label>
+                      <Input
+                        value={(section.settings?.[`image${n}`] as string) || ''}
+                        onChange={e => setSetting(section.id, `image${n}`, e.target.value)}
+                        placeholder="https://exemplo.com/banner.jpg"
+                        className="h-7 text-xs"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-[10px] text-muted-foreground">Link:</label>
+                      <Input
+                        value={(section.settings?.[`link${n}`] as string) || ''}
+                        onChange={e => setSetting(section.id, `link${n}`, e.target.value)}
+                        placeholder="/products"
+                        className="h-7 text-xs"
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* ── Video Settings ── */}
+            {section.type === 'video' && section.enabled && (
+              <div className="ml-6 mt-1 mb-2 p-2 bg-muted/30 rounded-md space-y-2">
+                <SectionDivider label="Configuração do Vídeo" />
+                <div className="space-y-1.5">
+                  <label className="text-[11px] text-muted-foreground">URL do vídeo:</label>
+                  <Input
+                    value={(section.settings?.url as string) || ''}
+                    onChange={e => setSetting(section.id, 'url', e.target.value)}
+                    placeholder="https://youtube.com/watch?v=..."
+                    className="h-7 text-xs"
+                  />
+                  <p className="text-[10px] text-muted-foreground/60">Cole o link do YouTube ou URL direta do vídeo</p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <label className="text-[11px] text-muted-foreground">Provedor:</label>
+                  <select
+                    value={(section.settings?.provider as string) || 'youtube'}
+                    onChange={e => setSetting(section.id, 'provider', e.target.value)}
+                    className="h-6 text-[11px] rounded border border-border bg-background px-1.5"
+                  >
+                    <option value="youtube">YouTube</option>
+                    <option value="direct">Vídeo direto (URL)</option>
+                  </select>
+                </div>
+                <div className="flex items-center gap-2">
+                  <label className="text-[11px] text-muted-foreground">Autoplay:</label>
+                  <input
+                    type="checkbox"
+                    checked={(section.settings?.autoplay as boolean) ?? false}
+                    onChange={e => setSetting(section.id, 'autoplay', e.target.checked)}
+                    className="rounded"
+                  />
+                  <HintTooltip text="Inicia o vídeo automaticamente (sem som)" />
+                </div>
+              </div>
+            )}
+
+            {/* ── Countdown Settings ── */}
+            {section.type === 'countdown' && section.enabled && (
+              <div className="ml-6 mt-1 mb-2 p-2 bg-muted/30 rounded-md space-y-2">
+                <SectionDivider label="Contagem Regressiva" />
+                <div className="space-y-1.5">
+                  <label className="text-[11px] text-muted-foreground">Data alvo:</label>
+                  <Input
+                    type="datetime-local"
+                    value={(section.settings?.targetDate as string) || ''}
+                    onChange={e => setSetting(section.id, 'targetDate', e.target.value)}
+                    className="h-7 text-xs"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-[11px] text-muted-foreground">Texto auxiliar:</label>
+                  <Input
+                    value={(section.settings?.label as string) || ''}
+                    onChange={e => setSetting(section.id, 'label', e.target.value)}
+                    placeholder="Promoção termina em"
+                    className="h-7 text-xs"
+                  />
+                </div>
+                <div className="flex items-center gap-2">
+                  <label className="text-[11px] text-muted-foreground">Cor de fundo:</label>
+                  <input
+                    type="color"
+                    value={(section.settings?.backgroundColor as string) || '#1a1a1a'}
+                    onChange={e => setSetting(section.id, 'backgroundColor', e.target.value)}
+                    className="h-6 w-8 rounded border border-border cursor-pointer"
+                  />
+                </div>
+                <div className="flex items-center gap-2">
+                  <label className="text-[11px] text-muted-foreground">Cor do texto:</label>
+                  <input
+                    type="color"
+                    value={(section.settings?.textColor as string) || '#ffffff'}
+                    onChange={e => setSetting(section.id, 'textColor', e.target.value)}
+                    className="h-6 w-8 rounded border border-border cursor-pointer"
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* ── Image + Text Settings ── */}
+            {section.type === 'image-text' && section.enabled && (
+              <div className="ml-6 mt-1 mb-2 p-2 bg-muted/30 rounded-md space-y-2">
+                <SectionDivider label="Imagem + Texto" />
+                <div className="space-y-1.5">
+                  <label className="text-[11px] text-muted-foreground">Imagem (URL):</label>
+                  <Input
+                    value={(section.settings?.imageUrl as string) || ''}
+                    onChange={e => setSetting(section.id, 'imageUrl', e.target.value)}
+                    placeholder="https://exemplo.com/imagem.jpg"
+                    className="h-7 text-xs"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-[11px] text-muted-foreground">Título:</label>
+                  <Input
+                    value={(section.settings?.title as string) || ''}
+                    onChange={e => setSetting(section.id, 'title', e.target.value)}
+                    placeholder="Título da seção"
+                    className="h-7 text-xs"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-[11px] text-muted-foreground">Descrição:</label>
+                  <textarea
+                    value={(section.settings?.description as string) || ''}
+                    onChange={e => setSetting(section.id, 'description', e.target.value)}
+                    placeholder="Texto descritivo..."
+                    className="w-full text-xs rounded border border-border bg-background px-2 py-1.5 min-h-[60px] resize-y"
+                  />
+                </div>
+                <div className="flex items-center gap-2">
+                  <label className="text-[11px] text-muted-foreground">Posição da imagem:</label>
+                  <select
+                    value={(section.settings?.imagePosition as string) || 'left'}
+                    onChange={e => setSetting(section.id, 'imagePosition', e.target.value)}
+                    className="h-6 text-[11px] rounded border border-border bg-background px-1.5"
+                  >
+                    <option value="left">Esquerda</option>
+                    <option value="right">Direita</option>
+                  </select>
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-[11px] text-muted-foreground">Texto do botão:</label>
+                  <Input
+                    value={(section.settings?.ctaText as string) || ''}
+                    onChange={e => setSetting(section.id, 'ctaText', e.target.value)}
+                    placeholder="Saiba mais"
+                    className="h-7 text-xs"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-[11px] text-muted-foreground">Link do botão:</label>
+                  <Input
+                    value={(section.settings?.ctaLink as string) || ''}
+                    onChange={e => setSetting(section.id, 'ctaLink', e.target.value)}
+                    placeholder="/products"
+                    className="h-7 text-xs"
+                  />
+                </div>
+              </div>
+            )}
+
           </React.Fragment>
         ))}
       </div>

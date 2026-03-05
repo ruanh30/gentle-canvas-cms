@@ -409,15 +409,23 @@ const HomePage = () => {
       }
 
       case 'banner': {
-        const settings = section.settings as { title?: string; description?: string };
+        const settings = section.settings as { title?: string; description?: string; backgroundImage?: string; ctaText?: string; ctaLink?: string };
         return (
           <section key={section.id} className={cn('container mx-auto px-4 py-8', wrapperClass)}>
-            <div className="bg-secondary rounded-2xl p-8 md:p-16 text-center">
-              <h2 className="text-3xl md:text-4xl font-display font-bold mb-3">{settings.title || 'Banner'}</h2>
-              <p className="text-muted-foreground mb-6 font-body">{settings.description || ''}</p>
-              <Link to="/login">
-                <Button variant="outline" size="lg" className="rounded-full px-8 font-body">Criar conta</Button>
-              </Link>
+            <div
+              className="bg-secondary rounded-2xl p-8 md:p-16 text-center bg-cover bg-center relative overflow-hidden"
+              style={settings.backgroundImage ? { backgroundImage: `url(${settings.backgroundImage})` } : undefined}
+            >
+              {settings.backgroundImage && <div className="absolute inset-0 bg-black/30 rounded-2xl" />}
+              <div className="relative z-10">
+                <h2 className={cn('text-3xl md:text-4xl font-display font-bold mb-3', settings.backgroundImage && 'text-white')}>{settings.title || 'Banner'}</h2>
+                <p className={cn('text-muted-foreground mb-6 font-body', settings.backgroundImage && 'text-white/80')}>{settings.description || ''}</p>
+                {(settings.ctaText || !settings.backgroundImage) && (
+                  <Link to={settings.ctaLink || '/login'}>
+                    <Button variant="outline" size="lg" className={cn('rounded-full px-8 font-body', settings.backgroundImage && 'border-white text-white hover:bg-white/20')}>{settings.ctaText || 'Criar conta'}</Button>
+                  </Link>
+                )}
+              </div>
             </div>
           </section>
         );
