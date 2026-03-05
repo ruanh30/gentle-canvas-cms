@@ -16,6 +16,8 @@ import {
 } from 'lucide-react';
 import { SingleBannerEditor, MultiBannerEditor } from './BannerSectionEditor';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { MediaPickerModal } from '../MediaPickerModal';
+import SecureFileUpload from '@/components/admin/SecureFileUpload';
 
 const sectionTypeIcons: Record<string, React.ElementType> = {
   banner: Image,
@@ -540,32 +542,97 @@ function MultiBannerSettings({ section, setSetting }: SettingsProps) {
 }
 
 function VideoSettings({ section, setSetting }: SettingsProps) {
+  const [pickerOpen, setPickerOpen] = useState(false);
+  const [showUpload, setShowUpload] = useState(false);
+  const provider = (section.settings?.provider as string) || 'youtube';
+  const url = (section.settings?.url as string) || '';
+
   return (
     <SettingsCard title="Configuração do Vídeo">
-      <FieldGroup label="URL do vídeo" hint="Cole o link do YouTube ou URL direta do vídeo">
-        <Input value={(section.settings?.url as string) || ''} onChange={e => setSetting(section.id, 'url', e.target.value)} placeholder="https://youtube.com/watch?v=..." className="h-9" />
+      <FieldGroup label="Origem do vídeo">
+        <select
+          value={provider}
+          onChange={e => {
+            setSetting(section.id, 'provider', e.target.value);
+            setSetting(section.id, 'url', '');
+          }}
+          className="w-full h-9 text-sm rounded-md border border-border bg-background px-3"
+        >
+          <option value="youtube">YouTube</option>
+          <option value="gallery">Galeria de mídia</option>
+          <option value="upload">Upload de vídeo</option>
+        </select>
       </FieldGroup>
-      <TwoCol>
-        <FieldGroup label="Provedor">
-          <select
-            value={(section.settings?.provider as string) || 'youtube'}
-            onChange={e => setSetting(section.id, 'provider', e.target.value)}
-            className="w-full h-9 text-sm rounded-md border border-border bg-background px-3"
+
+      {provider === 'youtube' && (
+        <FieldGroup label="Link do YouTube" hint="Cole o link do vídeo do YouTube">
+          <Input
+            value={url}
+            onChange={e => {
+              const v = e.target.value;
+              const lower = v.toLowerCase().replace(/\s/g, '');
+              if (lower.startsWith('javascript:') || lower.startsWith('vbscript:')) return;
+              setSetting(section.id, 'url', v);
+            }}
+            placeholder="https://youtube.com/watch?v=..."
+            className="h-9"
+          />
+        </FieldGroup>
+      )}
+
+      {provider === 'gallery' && (
+        <FieldGroup label="Vídeo da galeria">
+          {url && (
+            <div className="flex items-center gap-2 p-2 rounded-lg bg-secondary/50 border border-border/30 mb-2">
+              <Video className="h-4 w-4 text-muted-foreground shrink-0" />
+              <span className="text-xs text-foreground truncate flex-1">{url}</span>
+              <button onClick={() => setSetting(section.id, 'url', '')} className="text-[10px] text-muted-foreground hover:text-foreground">Remover</button>
+            </div>
+          )}
+          <button
+            onClick={() => setPickerOpen(true)}
+            className="w-full flex items-center justify-center gap-1.5 h-9 rounded-lg border border-border/50 bg-secondary/30 hover:bg-secondary text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
           >
-            <option value="youtube">YouTube</option>
-            <option value="direct">Vídeo direto (URL)</option>
-          </select>
+            <Image className="h-3.5 w-3.5" />
+            Selecionar da galeria
+          </button>
+          <MediaPickerModal
+            open={pickerOpen}
+            onClose={() => setPickerOpen(false)}
+            onSelect={(v) => setSetting(section.id, 'url', v)}
+            currentValue={url}
+          />
         </FieldGroup>
-        <FieldGroup label="Reprodução automática">
-          <div className="flex items-center gap-2 h-9">
-            <Switch
-              checked={(section.settings?.autoplay as boolean) ?? false}
-              onCheckedChange={v => setSetting(section.id, 'autoplay', v)}
+      )}
+
+      {provider === 'upload' && (
+        <FieldGroup label="Upload de vídeo">
+          {url && (
+            <div className="flex items-center gap-2 p-2 rounded-lg bg-secondary/50 border border-border/30 mb-2">
+              <Video className="h-4 w-4 text-muted-foreground shrink-0" />
+              <span className="text-xs text-foreground truncate flex-1">Vídeo carregado</span>
+              <button onClick={() => setSetting(section.id, 'url', '')} className="text-[10px] text-muted-foreground hover:text-foreground">Remover</button>
+            </div>
+          )}
+          {!url && (
+            <SecureFileUpload
+              onFileAccepted={(dataUrl) => setSetting(section.id, 'url', dataUrl)}
+              accept="video/mp4,video/webm,video/ogg,.mp4,.webm,.ogg"
+              compact
             />
-            <span className="text-xs text-muted-foreground">Autoplay (sem som)</span>
-          </div>
+          )}
         </FieldGroup>
-      </TwoCol>
+      )}
+
+      <FieldGroup label="Reprodução automática">
+        <div className="flex items-center gap-2 h-9">
+          <Switch
+            checked={(section.settings?.autoplay as boolean) ?? false}
+            onCheckedChange={v => setSetting(section.id, 'autoplay', v)}
+          />
+          <span className="text-xs text-muted-foreground">Autoplay (sem som)</span>
+        </div>
+      </FieldGroup>
     </SettingsCard>
   );
 }
