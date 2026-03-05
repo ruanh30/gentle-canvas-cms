@@ -7,7 +7,7 @@ interface SectionHeaderProps {
   title: string;
   subtitle?: string;
   size?: SectionSize;
-  align?: 'left' | 'center';
+  align?: 'left' | 'center' | 'right';
   accent?: boolean;
   className?: string;
 }
@@ -36,7 +36,7 @@ export function SectionHeader({
     <div
       className={cn(
         'flex flex-col gap-2',
-        align === 'center' ? 'items-center text-center' : 'items-start text-left',
+        align === 'center' ? 'items-center text-center' : align === 'right' ? 'items-end text-right' : 'items-start text-left',
         mbMap[size],
         className,
       )}
