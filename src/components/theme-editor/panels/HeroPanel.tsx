@@ -131,9 +131,21 @@ export function HeroPanel() {
               <p className="text-[10px] text-muted-foreground/60 leading-relaxed -mt-2">
                 Imagem de fundo do slide. Use o overlay para melhorar a legibilidade.
               </p>
-              <p className="text-[10px] text-primary/80 font-medium -mt-1">
-                📐 Tamanho recomendado: 1920×600px (desktop) · 768×500px (mobile)
-              </p>
+              {(() => {
+                const sizeMap: Record<string, { desktop: string; mobile: string }> = {
+                  '200': { desktop: '1920×200px', mobile: '768×160px' },
+                  '300': { desktop: '1920×300px', mobile: '768×220px' },
+                  '400': { desktop: '1920×400px', mobile: '768×300px' },
+                  '500': { desktop: '1920×500px', mobile: '768×360px' },
+                  fullscreen: { desktop: '1920×1080px', mobile: '768×1024px' },
+                };
+                const rec = sizeMap[h.height] || sizeMap['500'];
+                return (
+                  <p className="text-[10px] text-primary/80 font-medium -mt-1">
+                    📐 Tamanho recomendado: {rec.desktop} (desktop) · {rec.mobile} (mobile)
+                  </p>
+                );
+              })()}
               <ImageField label="Imagem desktop" value={slide.backgroundImage || ''} onChange={v => setSlide({ backgroundImage: v })} />
               <ImageField label="Imagem mobile (opcional)" value={slide.backgroundImageMobile || ''} onChange={v => setSlide({ backgroundImageMobile: v })} />
               {(slide.backgroundImage || slide.backgroundImageMobile) && (
