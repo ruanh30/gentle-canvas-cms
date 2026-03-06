@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
@@ -7,7 +7,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
-import { HelpCircle, Check, ExternalLink, ImageIcon } from 'lucide-react';
+import { HelpCircle, Check, ExternalLink, ImageIcon, Search, X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { MediaPickerModal } from './MediaPickerModal';
 
@@ -171,37 +171,209 @@ export function NumberSlider({ label, value, onChange, min, max, step = 1, suffi
   );
 }
 
-// Font picker
-const headingFonts = ['Playfair Display', 'Poppins', 'Montserrat', 'Lora', 'Merriweather', 'Raleway', 'Oswald', 'Cormorant Garamond', 'DM Serif Display', 'Libre Baskerville', 'Bebas Neue', 'Archivo Black', 'Quicksand', 'Josefin Sans', 'Cinzel', 'Abril Fatface', 'Righteous', 'Alfa Slab One', 'Bitter', 'Crimson Text'];
-const bodyFonts = ['Inter', 'Roboto', 'Open Sans', 'Lato', 'Nunito', 'Work Sans', 'DM Sans', 'Source Sans 3', 'Rubik', 'Manrope', 'Poppins', 'Outfit', 'Plus Jakarta Sans', 'Mulish', 'Karla', 'Figtree', 'Albert Sans', 'Lexend', 'Urbanist', 'Sora'];
+// Font data with categories
+type FontCategory = 'serif' | 'sans' | 'display' | 'mono';
 
+interface FontEntry {
+  name: string;
+  category: FontCategory;
+}
+
+const allFonts: FontEntry[] = [
+  // Serif
+  { name: 'Playfair Display', category: 'serif' },
+  { name: 'Lora', category: 'serif' },
+  { name: 'Merriweather', category: 'serif' },
+  { name: 'Cormorant Garamond', category: 'serif' },
+  { name: 'DM Serif Display', category: 'serif' },
+  { name: 'Libre Baskerville', category: 'serif' },
+  { name: 'Cinzel', category: 'serif' },
+  { name: 'Crimson Text', category: 'serif' },
+  { name: 'Bitter', category: 'serif' },
+  // Sans-serif
+  { name: 'Inter', category: 'sans' },
+  { name: 'Poppins', category: 'sans' },
+  { name: 'Montserrat', category: 'sans' },
+  { name: 'Raleway', category: 'sans' },
+  { name: 'Quicksand', category: 'sans' },
+  { name: 'Josefin Sans', category: 'sans' },
+  { name: 'Roboto', category: 'sans' },
+  { name: 'Open Sans', category: 'sans' },
+  { name: 'Lato', category: 'sans' },
+  { name: 'Nunito', category: 'sans' },
+  { name: 'Work Sans', category: 'sans' },
+  { name: 'DM Sans', category: 'sans' },
+  { name: 'Source Sans 3', category: 'sans' },
+  { name: 'Rubik', category: 'sans' },
+  { name: 'Manrope', category: 'sans' },
+  { name: 'Outfit', category: 'sans' },
+  { name: 'Plus Jakarta Sans', category: 'sans' },
+  { name: 'Mulish', category: 'sans' },
+  { name: 'Karla', category: 'sans' },
+  { name: 'Figtree', category: 'sans' },
+  { name: 'Albert Sans', category: 'sans' },
+  { name: 'Lexend', category: 'sans' },
+  { name: 'Urbanist', category: 'sans' },
+  { name: 'Sora', category: 'sans' },
+  // Display
+  { name: 'Oswald', category: 'display' },
+  { name: 'Bebas Neue', category: 'display' },
+  { name: 'Archivo Black', category: 'display' },
+  { name: 'Abril Fatface', category: 'display' },
+  { name: 'Righteous', category: 'display' },
+  { name: 'Alfa Slab One', category: 'display' },
+  // Monospace
+  { name: 'Space Mono', category: 'mono' },
+  { name: 'JetBrains Mono', category: 'mono' },
+  { name: 'Fira Code', category: 'mono' },
+];
+
+const categoryLabels: Record<FontCategory | 'all', string> = {
+  all: 'Todas',
+  serif: 'Serifadas',
+  sans: 'Sem serifa',
+  display: 'Display',
+  mono: 'Monoespaço',
+};
+
+// Font picker with categories and rich preview
 export function FontPicker({ label, value, onChange, type = 'heading' }: {
   label: string; value: string; onChange: (v: string) => void; type?: 'heading' | 'body';
 }) {
-  const fonts = type === 'heading' ? headingFonts : bodyFonts;
+  const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState('');
+  const [category, setCategory] = useState<FontCategory | 'all'>('all');
 
+  // Load all fonts
   React.useEffect(() => {
-    fonts.forEach(f => {
-      const id = `gfont-${f.replace(/\s+/g, '-').toLowerCase()}`;
+    allFonts.forEach(f => {
+      const id = `gfont-${f.name.replace(/\s+/g, '-').toLowerCase()}`;
       if (!document.getElementById(id)) {
         const link = document.createElement('link');
         link.id = id;
         link.rel = 'stylesheet';
-        link.href = `https://fonts.googleapis.com/css2?family=${encodeURIComponent(f)}:wght@400;700&display=swap`;
+        link.href = `https://fonts.googleapis.com/css2?family=${encodeURIComponent(f.name)}:wght@400;700&display=swap`;
         document.head.appendChild(link);
       }
     });
-  }, [fonts]);
+  }, []);
+
+  const filtered = useMemo(() => {
+    return allFonts.filter(f => {
+      if (category !== 'all' && f.category !== category) return false;
+      if (search && !f.name.toLowerCase().includes(search.toLowerCase())) return false;
+      return true;
+    });
+  }, [category, search]);
 
   return (
     <div className="space-y-1.5">
       <Label className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">{label}</Label>
-      <Select value={value} onValueChange={onChange}>
-        <SelectTrigger className="h-9 text-sm bg-secondary/30 border-border/50"><SelectValue /></SelectTrigger>
-        <SelectContent>
-          {fonts.map(f => <SelectItem key={f} value={f}><span style={{ fontFamily: `'${f}', sans-serif` }}>{f}</span></SelectItem>)}
-        </SelectContent>
-      </Select>
+      
+      {/* Selected font display / trigger */}
+      <button
+        onClick={() => setOpen(!open)}
+        className={cn(
+          'w-full text-left px-3 py-2.5 rounded-lg border transition-all',
+          open 
+            ? 'border-foreground/30 bg-foreground/5 shadow-sm' 
+            : 'border-border/50 bg-secondary/30 hover:bg-secondary/50'
+        )}
+      >
+        <p className="text-[13px] font-semibold" style={{ fontFamily: `'${value}', sans-serif` }}>{value}</p>
+        <p className="text-[10px] text-muted-foreground/60 mt-0.5">
+          {allFonts.find(f => f.name === value)?.category === 'serif' ? 'Serifada' :
+           allFonts.find(f => f.name === value)?.category === 'display' ? 'Display' :
+           allFonts.find(f => f.name === value)?.category === 'mono' ? 'Monoespaço' : 'Sem serifa'}
+        </p>
+      </button>
+
+      {/* Expanded picker */}
+      {open && (
+        <div className="rounded-lg border border-border/50 bg-background shadow-lg overflow-hidden">
+          {/* Search */}
+          <div className="p-2 border-b border-border/30">
+            <div className="relative">
+              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground/50" />
+              <Input
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+                placeholder="Buscar fonte..."
+                className="h-8 text-xs pl-8 pr-8 bg-secondary/30 border-border/30"
+                autoFocus
+              />
+              {search && (
+                <button onClick={() => setSearch('')} className="absolute right-2 top-1/2 -translate-y-1/2">
+                  <X className="h-3.5 w-3.5 text-muted-foreground/50 hover:text-foreground" />
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* Category filters */}
+          <div className="flex gap-1 p-2 border-b border-border/30 overflow-x-auto no-scrollbar">
+            {(Object.keys(categoryLabels) as (FontCategory | 'all')[]).map(cat => (
+              <button
+                key={cat}
+                onClick={() => setCategory(cat)}
+                className={cn(
+                  'px-2.5 py-1 rounded-md text-[10px] font-medium whitespace-nowrap transition-all',
+                  category === cat
+                    ? 'bg-foreground text-background'
+                    : 'bg-secondary/50 text-muted-foreground hover:bg-secondary hover:text-foreground'
+                )}
+              >
+                {categoryLabels[cat]}
+              </button>
+            ))}
+          </div>
+
+          {/* Font list with rich preview */}
+          <div className="max-h-[320px] overflow-y-auto qv-scrollbar">
+            {filtered.map(f => {
+              const isSelected = value === f.name;
+              return (
+                <button
+                  key={f.name}
+                  onClick={() => { onChange(f.name); setOpen(false); setSearch(''); }}
+                  className={cn(
+                    'w-full text-left px-3 py-3 border-b border-border/20 transition-all',
+                    isSelected 
+                      ? 'bg-foreground/5' 
+                      : 'hover:bg-secondary/40'
+                  )}
+                >
+                  <div className="flex items-center justify-between mb-1.5">
+                    <span className="text-[11px] font-medium text-muted-foreground/70">{f.name}</span>
+                    <span className="text-[9px] uppercase tracking-wider text-muted-foreground/40">
+                      {categoryLabels[f.category]}
+                    </span>
+                  </div>
+                  {/* Mini-preview */}
+                  <div style={{ fontFamily: `'${f.name}', sans-serif` }} className="space-y-0.5">
+                    <p className="text-[18px] font-bold leading-tight text-foreground/90">Coleção Verão</p>
+                    <p className="text-[13px] font-semibold leading-tight text-foreground/70">Novidades da semana</p>
+                    <p className="text-[11px] font-normal leading-snug text-muted-foreground/60">
+                      Texto de corpo para visualizar a legibilidade.
+                    </p>
+                  </div>
+                  {isSelected && (
+                    <div className="flex items-center gap-1.5 mt-1.5">
+                      <Check className="h-3 w-3 text-foreground" />
+                      <span className="text-[10px] font-medium text-foreground/70">Selecionada</span>
+                    </div>
+                  )}
+                </button>
+              );
+            })}
+            {filtered.length === 0 && (
+              <div className="p-6 text-center">
+                <p className="text-xs text-muted-foreground/60">Nenhuma fonte encontrada</p>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -253,7 +425,6 @@ export function ImageField({ label, value, onChange, placeholder }: {
           value={value}
           onChange={e => {
             const v = e.target.value;
-            // Block dangerous protocols inline
             const lower = v.toLowerCase().replace(/\s/g, '');
             if (lower.startsWith('javascript:') || lower.startsWith('vbscript:') || lower.startsWith('data:text') || lower.startsWith('data:application')) return;
             onChange(v);

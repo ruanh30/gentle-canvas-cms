@@ -164,6 +164,8 @@ function applyThemeCSS(t: ThemeConfig) {
   root.style.setProperty('--pm-line-height', `${t.typography.lineHeight}`);
   root.style.setProperty('--pm-letter-spacing', `${t.typography.letterSpacing}px`);
   root.style.setProperty('--pm-heading-line-height', `${t.typography.headingLineHeight ?? 1.2}`);
+  root.style.setProperty('--pm-heading-scale', `${(t.typography.headingScale ?? 100) / 100}`);
+  root.style.setProperty('--pm-body-scale', `${(t.typography.bodyScale ?? 100) / 100}`);
 
   root.style.setProperty('--pm-radius', getRadiusPx(t.global.borderRadius));
   root.style.setProperty('--pm-container-width', t.global.containerWidth === 'full' ? '100%' : (t.global.containerMaxPx ? `${t.global.containerMaxPx}px` : '1280px'));
