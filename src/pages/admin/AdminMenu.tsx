@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { FontPicker } from '@/components/theme-editor/EditorControls';
 import { StoreHeader } from '@/components/store/StoreHeader';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useNavigate } from 'react-router-dom';
@@ -1187,39 +1188,9 @@ function MenuStyleSection() {
           const mt = h.menuTypography ?? { fontFamily: 'Inter', fontWeight: 500, fontSizeDesktop: 14, fontSizeMobile: 14, letterSpacing: 0.02, textTransform: 'uppercase', lineHeight: 1.2 };
           const setMT = (u: Partial<typeof mt>) => updateDraftSection('header', { menuTypography: { ...mt, ...u } });
 
-          const CURATED_FONTS = [
-            { value: 'Inter', label: 'Inter', desc: 'Clean e moderna' },
-            { value: 'Poppins', label: 'Poppins', desc: 'Geométrica e amigável' },
-            { value: 'Montserrat', label: 'Montserrat', desc: 'Elegante e versátil' },
-            { value: 'DM Sans', label: 'DM Sans', desc: 'Minimalista e leve' },
-            { value: 'Rubik', label: 'Rubik', desc: 'Arredondada e legível' },
-            { value: 'Manrope', label: 'Manrope', desc: 'Moderna e técnica' },
-            { value: 'Nunito Sans', label: 'Nunito Sans', desc: 'Suave e equilibrada' },
-          ];
-
           return (
             <>
-              <div className="space-y-2">
-                <p className="text-[13px] font-medium text-foreground">Fonte</p>
-                <p className="text-[10px] text-muted-foreground/60">Família tipográfica aplicada apenas nos links do menu</p>
-                <div className="grid grid-cols-1 gap-1.5">
-                  {CURATED_FONTS.map(f => (
-                    <button key={f.value} onClick={() => setMT({ fontFamily: f.value })}
-                      className={cn(
-                        'w-full text-left px-3.5 py-2.5 rounded-xl text-[13px] border transition-all duration-150',
-                        mt.fontFamily === f.value
-                          ? 'bg-[hsl(var(--flash-brand)/0.06)] border-[hsl(var(--flash-brand-deep)/0.3)] ring-1 ring-[hsl(var(--flash-brand-deep)/0.15)]'
-                          : 'bg-muted/20 border-border/40 hover:bg-muted/40 hover:border-border/60'
-                      )}>
-                      <div className="flex items-center justify-between">
-                        <span className={cn('font-medium', mt.fontFamily === f.value ? 'text-[hsl(var(--flash-brand-deep))]' : 'text-foreground')} style={{ fontFamily: f.value }}>{f.label}</span>
-                        {mt.fontFamily === f.value && <Check className="h-3.5 w-3.5 text-[hsl(var(--flash-brand-deep))]" />}
-                      </div>
-                      <span className="text-[11px] text-muted-foreground/60 block mt-0.5">{f.desc}</span>
-                    </button>
-                  ))}
-                </div>
-              </div>
+              <FontPicker label="Fonte do menu" value={mt.fontFamily} onChange={v => setMT({ fontFamily: v })} type="body" />
               <Pills label="Peso da fonte" value={String(mt.fontWeight)} onChange={v => setMT({ fontWeight: Number(v) as any })} hint="Grossura dos caracteres do menu" options={[
                 { value: '400', label: 'Regular' },
                 { value: '500', label: 'Medium' },
