@@ -126,9 +126,12 @@ function applyThemeCSS(t: ThemeConfig) {
   root.style.setProperty('--line-height', `${t.typography.lineHeight}`);
   root.style.setProperty('--letter-spacing', `${t.typography.letterSpacing}em`);
   root.style.setProperty('--heading-line-height', `${t.typography.headingLineHeight ?? 1.2}`);
+  root.style.setProperty('--heading-scale', `${(t.typography.headingScale ?? 100) / 100}`);
+  root.style.setProperty('--body-scale', `${(t.typography.bodyScale ?? 100) / 100}`);
 
   // Set base font on root
-  root.style.fontSize = `${t.typography.baseFontSize}px`;
+  const bodyScaleFactor = (t.typography.bodyScale ?? 100) / 100;
+  root.style.fontSize = `${t.typography.baseFontSize * bodyScaleFactor}px`;
   root.style.fontFamily = t.typography.bodyFont;
   root.style.fontWeight = `${t.typography.bodyWeight}`;
   root.style.lineHeight = `${t.typography.lineHeight}`;
