@@ -1513,15 +1513,13 @@ function BannersSection() {
   const { draft, updateDraftSection } = useTheme();
   const h = draft.header ?? {} as any;
   const a = h.announcement ?? { enabled: false, messages: [], speed: 5, backgroundColor: '#1a1a1a', textColor: '#fafafa', showIcon: false, icon: 'truck', link: '', pauseOnHover: true, style: 'static' as const, direction: 'rtl' as const };
-  const bb = h.bannerBelow ?? { enabled: false, imageUrl: '', images: [], link: '', height: 60, fullWidth: true, carousel: false, carouselSpeed: 5 };
   const setAnn = (u: Partial<typeof a>) => updateDraftSection('header', { announcement: { ...a, ...u } });
-  const setBanner = (u: Partial<typeof bb>) => updateDraftSection('header', { bannerBelow: { ...bb, ...u } });
 
   return (
     <div className="space-y-6">
       <div>
         <h3 className="text-[15px] font-semibold text-foreground">Banners & Anúncios</h3>
-        <p className="text-[12px] text-muted-foreground/60 mt-0.5">Barra de mensagens promocionais no topo e banner com imagem abaixo do cabeçalho.</p>
+        <p className="text-[12px] text-muted-foreground/60 mt-0.5">Barra de mensagens promocionais exibida no topo do site.</p>
       </div>
 
       {/* ── ANNOUNCEMENT BAR ── */}
@@ -1585,58 +1583,6 @@ function BannersSection() {
         </div>
       </div>
 
-      {/* ── BANNER BELOW ── */}
-      <div className="rounded-2xl border border-border/50 bg-card overflow-hidden">
-        <div className="px-4 py-3 border-b border-border/30 flex items-center gap-2">
-          <ImageIcon className="h-4 w-4 text-[hsl(var(--flash-brand-deep))]" />
-          <div>
-            <p className="text-[13px] font-semibold text-foreground">Banner abaixo do Cabeçalho</p>
-            <p className="text-[10px] text-muted-foreground/50">Imagem clicável exibida logo abaixo do cabeçalho — ideal para promoções sazonais</p>
-          </div>
-        </div>
-        <div className="p-4 space-y-4">
-          <ToggleRow label="Ativar banner" hint="Exibe uma imagem (ou carrossel) entre o cabeçalho e o conteúdo da página" checked={bb.enabled} onChange={v => setBanner({ enabled: v })} />
-
-          {bb.enabled && (
-            <>
-              <div>
-                <p className="text-[11px] text-muted-foreground/60 mb-1">URL da imagem principal</p>
-                <Input className="h-8 text-xs" value={bb.imageUrl} placeholder="https://..."
-                  onChange={e => setBanner({ imageUrl: e.target.value })} />
-                <p className="text-[10px] text-muted-foreground/40 mt-1">Cole a URL de uma imagem (ex: do Imgur, Cloudinary ou Biblioteca de Mídia)</p>
-              </div>
-
-              <ToggleRow label="Carrossel de imagens" hint="Ativa rotação automática entre múltiplas imagens no banner" checked={bb.carousel} onChange={v => setBanner({ carousel: v })} />
-
-              {bb.carousel && (
-                <ControlGroup title="Imagens adicionais" hint="Imagens que se alternam automaticamente com a principal">
-                  <div>
-                    <p className="text-[11px] text-muted-foreground/60 mb-1">Imagem 2</p>
-                    <Input className="h-8 text-xs" value={bb.images[0] || ''} placeholder="https://..."
-                      onChange={e => { const imgs = [...(bb.images || [])]; while (imgs.length < 1) imgs.push(''); imgs[0] = e.target.value; setBanner({ images: imgs }); }} />
-                  </div>
-                  <div>
-                    <p className="text-[11px] text-muted-foreground/60 mb-1">Imagem 3</p>
-                    <Input className="h-8 text-xs" value={bb.images[1] || ''} placeholder="https://..."
-                      onChange={e => { const imgs = [...(bb.images || [])]; while (imgs.length < 2) imgs.push(''); imgs[1] = e.target.value; setBanner({ images: imgs }); }} />
-                  </div>
-                  <NumSlider label="Velocidade do carrossel" value={bb.carouselSpeed} onChange={v => setBanner({ carouselSpeed: v })} min={2} max={10} suffix="s" hint="Tempo em segundos entre cada troca de imagem" />
-                </ControlGroup>
-              )}
-
-              <div>
-                <p className="text-[11px] text-muted-foreground/60 mb-1">Link de destino</p>
-                <Input className="h-8 text-xs" value={bb.link} placeholder="/products"
-                  onChange={e => setBanner({ link: e.target.value })} />
-                <p className="text-[10px] text-muted-foreground/40 mt-1">Página para onde o cliente vai ao clicar no banner</p>
-              </div>
-
-              <NumSlider label="Altura do banner" value={bb.height} onChange={v => setBanner({ height: v })} min={40} max={200} suffix="px" hint="Altura em pixels da imagem do banner" />
-              <ToggleRow label="Largura total" hint="Banner ocupa toda a largura da tela, sem margens laterais" checked={bb.fullWidth} onChange={v => setBanner({ fullWidth: v })} />
-            </>
-          )}
-        </div>
-      </div>
     </div>
   );
 }
