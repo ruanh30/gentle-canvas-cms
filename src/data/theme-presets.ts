@@ -87,6 +87,8 @@ export const defaultThemeConfig: ThemeConfig = {
     headingFont: 'Poppins',
     bodyFont: 'Nunito',
     baseFontSize: 16,
+    headingScale: 100,
+    bodyScale: 100,
     headingWeight: 800,
     bodyWeight: 400,
     lineHeight: 1.6,
