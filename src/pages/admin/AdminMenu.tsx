@@ -70,7 +70,7 @@ const SIDEBAR_ITEMS: SidebarItem[] = [
   { key: 'items', label: 'Itens do Menu', icon: Menu, group: 'NAVEGAÇÃO', hint: 'Links e subitens' },
   { key: 'icons', label: 'Ícones', icon: MousePointer, group: 'ELEMENTOS', hint: 'Visibilidade, estilo e personalização' },
   { key: 'search', label: 'Busca', icon: Search, group: 'ELEMENTOS', hint: 'Estilo e comportamento da busca' },
-  { key: 'banners', label: 'Banners & Anúncios', icon: Megaphone, group: 'CONTEÚDO', hint: 'Barra de anúncio + banner' },
+  { key: 'banners', label: 'Barra de Anúncio', icon: Megaphone, group: 'CONTEÚDO', hint: 'Mensagens promocionais no topo' },
 ];
 
 /* ================================================================== */
