@@ -26,7 +26,9 @@ export interface ThemeColors {
 export interface ThemeTypography {
   headingFont: string;
   bodyFont: string;
-  baseFontSize: number;       // px
+  baseFontSize: number;       // px — kept for backward compat
+  headingScale: number;       // % scale for headings (100 = default)
+  bodyScale: number;          // % scale for body text (100 = default)
   headingWeight: number;
   bodyWeight: number;
   lineHeight: number;         // ratio
